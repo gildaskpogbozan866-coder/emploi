@@ -1,0 +1,360 @@
+﻿﻿/* ═══════════════════════════════════════
+       PAGE COMMANDE — Styles spécifiques
+    ═══════════════════════════════════════ */
+
+    .commande-page {
+      background: #f8faff;
+      min-height: 100vh;
+    }
+
+    /* ── Hero compact ── */
+    .commande-hero {
+      background: linear-gradient(135deg, #042C53 0%, #0d4a8a 100%);
+      padding: 52px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .commande-hero::before {
+      content: '';
+      position: absolute;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(245,200,66,0.05);
+      top: -120px; right: -80px;
+    }
+    .commande-hero__inner { position: relative; z-index: 1; }
+    .commande-hero__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,200,66,0.15);
+      color: var(--jaune);
+      border: 1px solid rgba(245,200,66,0.3);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .commande-hero__title {
+      font-family: var(--font-body);
+      font-size: clamp(22px, 3.5vw, 34px);
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 10px;
+    }
+    .commande-hero__sub {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      margin: 0;
+    }
+
+    /* ── Layout principal ── */
+    .commande-layout {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 52px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── Carte formulaire ── */
+    .commande-form-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 40px 40px 36px;
+      box-shadow: 0 4px 24px rgba(4,44,83,0.08);
+    }
+    .commande-form-card__title {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--bleu-fonce);
+      margin: 0 0 28px;
+    }
+
+    /* ── Champs du formulaire ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--bleu-fonce);
+      margin-bottom: 7px;
+      letter-spacing: 0.01em;
+    }
+    .form-label span {
+      color: #378ADD;
+      margin-left: 2px;
+    }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #1e293b;
+      background: #f8faff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--bleu-clair);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+    .form-select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* ── Bouton submit ── */
+    .btn-commande {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--bleu-fonce);
+      background: var(--jaune);
+      border: none;
+      border-radius: 12px;
+      padding: 15px 28px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 8px;
+    }
+    .btn-commande:hover {
+      background: #e6b800;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245,200,66,0.4);
+    }
+    .btn-commande:active { transform: translateY(0); }
+
+    /* ── Confirmation ── */
+    .commande-confirm {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 48px 24px;
+      gap: 16px;
+    }
+    .commande-confirm.visible { display: flex; }
+    .commande-confirm__icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(56,161,105,0.12);
+      color: #38A169;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .commande-confirm__title {
+      font-family: var(--font-body);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--bleu-fonce);
+    }
+    .commande-confirm__text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.7;
+      max-width: 380px;
+    }
+    .commande-confirm__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      background: var(--bleu-fonce);
+      border-radius: 10px;
+      padding: 12px 24px;
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .commande-confirm__btn:hover { background: var(--bleu-moyen); }
+
+    /* ── Carte récapitulatif ── */
+    .commande-recap {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 24px rgba(4,44,83,0.08);
+      position: sticky;
+      top: 100px;
+    }
+    .commande-recap__title {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0 0 20px;
+    }
+    .commande-recap__service {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 20px;
+    }
+    .commande-recap__icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #042C53, #378ADD);
+      color: var(--jaune);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .commande-recap__service-name {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--bleu-fonce);
+      line-height: 1.3;
+    }
+    .commande-recap__service-sub {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+    .commande-recap__line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+    .commande-recap__total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--bleu-fonce);
+      border-top: 1px solid #f1f5f9;
+      padding-top: 14px;
+      margin-top: 6px;
+    }
+    .commande-recap__total-price {
+      color: var(--bleu-clair);
+      font-size: 20px;
+    }
+    .commande-recap__badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(56,161,105,0.08);
+      border: 1px solid rgba(56,161,105,0.2);
+      color: #38A169;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .commande-recap__includes {
+      margin-top: 20px;
+    }
+    .commande-recap__includes-title {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .commande-recap__include {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 9px;
+    }
+    .commande-recap__include svg { color: #38A169; flex-shrink: 0; }
+
+    .commande-note {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .commande-layout {
+        grid-template-columns: 1fr;
+        padding: 32px 16px 60px;
+      }
+      .commande-recap { position: static; }
+      .commande-form-card { padding: 28px 22px 26px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .commande-hero { padding: 36px 16px 32px; }
+      .commande-layout { padding: 20px 12px 48px; gap: 16px; }
+      .commande-form-card { padding: 20px 16px 18px; border-radius: 12px; }
+      .commande-form-card__title { font-size: 17px; }
+      .commande-recap { border-radius: 12px; padding: 22px 18px; }
+      .form-group { margin-bottom: 14px; }
+      .btn-commande { padding: 13px 20px; font-size: 14px; }
+    }

@@ -1,0 +1,252 @@
+﻿*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --page-bg: #f4f7f5;
+  --white: #fff;
+  --border: #d1e7d5;
+  --text-main: #0a3d20;
+  --text-muted: #5a7a65;
+  --radius: 10px;
+  --font: 'Jost', sans-serif;
+}
+
+body { font-family: var(--font); background: var(--page-bg); color: var(--text-main); }
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ── HERO PREMIUM ── */
+.depotP-hero {
+  background: linear-gradient(150deg, #041a0b 0%, #0a3d20 45%, #1a6640 100%);
+  padding: 48px 0 40px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.depotP-hero::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,200,66,0.07) 0%, transparent 70%);
+  top: -160px; right: -100px; pointer-events: none;
+}
+.depotP-hero__inner { max-width: 600px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+.depotP-hero__badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.20), rgba(245,200,66,0.10));
+  border: 1px solid rgba(245,200,66,0.40);
+  color: #F5C842;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 18px; border-radius: 20px; margin-bottom: 16px;
+}
+.depotP-hero__title {
+  font-size: clamp(22px, 4vw, 32px); font-weight: 700;
+  color: #fff; line-height: 1.25; margin-bottom: 10px;
+}
+.depotP-hero__title em { font-style: normal; color: #F5C842; }
+.depotP-hero__sub { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+/* ── BANDEAU PRIX ── */
+.depotP-price-bar {
+  background: rgba(245,200,66,0.10);
+  border-top: 1px solid rgba(245,200,66,0.22);
+  border-bottom: 1px solid rgba(245,200,66,0.22);
+  padding: 12px 24px; text-align: center;
+}
+.depotP-price-bar__inner {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 13.5px; color: #b45309; font-weight: 500;
+}
+.depotP-price-bar__amount { font-size: 20px; font-weight: 800; color: #0a3d20; }
+
+/* ── BODY ── */
+.depotP-body { max-width: 720px; margin: 0 auto; padding: 36px 24px 72px; }
+
+/* ── ÉTAPES ── */
+.depot-steps { display: flex; gap: 8px; margin-bottom: 24px; }
+.depot-step {
+  flex: 1; padding: 12px 10px; text-align: center;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+}
+.depot-step--active { border-color: #0a3d20; background: #f0faf3; }
+.depot-step--done   { border-color: #38A169; background: #f0fdf4; }
+.depot-step__num {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 2px; color: var(--text-muted);
+}
+.depot-step--active .depot-step__num { color: #0a3d20; }
+.depot-step--done .depot-step__num   { color: #38A169; }
+.depot-step__label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.depot-step--active .depot-step__label { color: #0a3d20; }
+.depot-step--done .depot-step__label   { color: #38A169; }
+
+/* ── CARTE FORMULAIRE ── */
+.depot-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.depot-card__head {
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.depot-card__head-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
+.depot-card__body { padding: 24px; }
+
+/* ── CHAMPS ── */
+.form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+.form-row--2 { grid-template-columns: 1fr 1fr; }
+.form-row--1 { grid-template-columns: 1fr; }
+.field__label { display: block; font-size: 13px; font-weight: 500; color: var(--text-main); margin-bottom: 6px; }
+.req { color: #ef4444; }
+.field__input, .field__select, .field__textarea {
+  width: 100%; font-family: var(--font); font-size: 14px;
+  color: var(--text-main); background: #fff;
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  box-sizing: border-box;
+}
+.field__input:focus, .field__select:focus, .field__textarea:focus {
+  border-color: #0a3d20;
+  box-shadow: 0 0 0 3px rgba(10,61,32,0.10);
+}
+.field__input::placeholder, .field__textarea::placeholder { color: #94a3b8; }
+.field__textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+.field__select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.field__pwd-wrap { position: relative; }
+.field__pwd-wrap .field__input { padding-right: 42px; }
+.field__pwd-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: #94a3b8;
+  display: flex; align-items: center; padding: 4px;
+}
+.field__pwd-toggle:hover { color: #0a3d20; }
+.field-hint { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+.char-count { font-size: 11.5px; color: #94a3b8; text-align: right; margin-top: 3px; }
+
+.form-section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: #38A169; margin: 24px 0 14px;
+}
+
+/* ── Check pills ── */
+.check-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.check-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 6px;
+  border: 1px solid var(--border); background: #fff;
+  cursor: pointer; font-size: 13px; font-weight: 500;
+  color: var(--text-muted); transition: all .15s; user-select: none;
+}
+.check-pill input[type="radio"] { display: none; }
+.check-pill:hover { border-color: #0a3d20; color: #0a3d20; }
+.check-pill.selected { border-color: #0a3d20; background: rgba(10,61,32,0.07); color: #0a3d20; }
+.check-pill .pill-dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid currentColor; flex-shrink: 0; }
+.check-pill.selected .pill-dot { background: #0a3d20; }
+
+/* ── Navigation ── */
+.depot-nav { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+.depot-nav--right { justify-content: flex-end; }
+.depot-nav--between { justify-content: space-between; }
+.depot-btn-next {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 12px 24px; background: #0a3d20; color: #fff;
+  font-family: var(--font); font-size: 14px; font-weight: 700;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background .15s; white-space: nowrap;
+}
+.depot-btn-next:hover { background: #38A169; }
+.depot-btn-back {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 12px 20px; background: #fff; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: var(--font); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: border-color .15s, color .15s; white-space: nowrap;
+}
+.depot-btn-back:hover { border-color: #0a3d20; color: #0a3d20; }
+
+/* ── Bouton paiement PREMIUM ── */
+.depot-pay-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px 32px;
+  background: #F5C842; color: #0a3d20;
+  font-family: var(--font); font-size: 15px; font-weight: 800;
+  border-radius: 10px; border: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(245,200,66,0.36);
+  transition: background .18s, transform .18s, box-shadow .18s;
+  position: relative; overflow: hidden; white-space: nowrap;
+}
+.depot-pay-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  background-size: 200% auto;
+  animation: shimmer 2.2s linear infinite;
+}
+.depot-pay-btn:hover { background: #e6b800; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(245,200,66,0.5); }
+
+/* ── Erreurs ── */
+.depot-error {
+  display: none; align-items: center; gap: 8px;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 8px; padding: 11px 14px;
+  font-size: 13px; font-weight: 500; color: #b91c1c; margin-bottom: 16px;
+}
+.depot-error.show { display: flex; }
+
+/* ── Confirmation ── */
+.conf-block {
+  background: #fafafa; border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px; margin-bottom: 10px;
+}
+.conf-block__title {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.conf-edit {
+  margin-left: auto; background: none; border: 1px solid var(--border);
+  border-radius: 5px; padding: 3px 9px; font-family: var(--font);
+  font-size: 11px; font-weight: 500; color: #0a3d20; cursor: pointer;
+}
+.conf-edit:hover { border-color: #0a3d20; }
+.conf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.conf-row { display: flex; flex-direction: column; gap: 2px; }
+.conf-row--full { grid-column: 1 / -1; }
+.conf-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+.conf-val { font-size: 14px; font-weight: 500; color: #0a3d20; }
+.conf-notice {
+  display: flex; align-items: flex-start; gap: 9px;
+  background: #fafafa; border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px;
+}
+.conf-notice svg { flex-shrink: 0; margin-top: 1px; }
+
+/* ── Bandeau Premium confirmation ── */
+.conf-premium-badge {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, #0a3d20, #1a6640);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 10px;
+}
+.conf-premium-badge__icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(245,200,66,0.18); color: #F5C842;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.conf-premium-badge__title { font-size: 13.5px; font-weight: 700; color: #fff; }
+.conf-premium-badge__sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.conf-premium-badge__price { margin-left: auto; font-size: 18px; font-weight: 800; color: #F5C842; flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .depotP-body { padding: 24px 16px 56px; }
+  .depot-card__body { padding: 18px 16px; }
+  .form-row--2 { grid-template-columns: 1fr; }
+  .conf-grid { grid-template-columns: 1fr; }
+  .depot-nav--between { flex-direction: column-reverse; }
+  .depot-btn-back { width: 100%; justify-content: center; }
+  .depot-pay-btn { width: 100%; justify-content: center; }
+}

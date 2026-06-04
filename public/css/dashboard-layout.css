@@ -1,0 +1,380 @@
+﻿/* ═══════════════════════════════════════════════
+   DASHBOARD LAYOUT — Entête & Footer
+   Partagé par : talent · candidat · recruteur · admin
+═══════════════════════════════════════════════ */
+
+/* ── Reset body (annule le padding-top:80px de style.css) ── */
+body {
+  padding-top: 0 !important;
+  margin: 0;
+}
+
+:root {
+  --dash-h: 62px;
+}
+
+/* ════════════════════════════════════════
+   ENTÊTE DASHBOARD
+════════════════════════════════════════ */
+.dash-header {
+  height: var(--dash-h);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.dash-header__inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ── Gauche ── */
+.dash-header__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* Hamburger mobile */
+.dash-header__burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 9px;
+  cursor: pointer;
+  color: #fff;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+.dash-header__burger:hover { background: rgba(255,255,255,0.16); }
+.dash-header__burger svg { display: block; }
+
+/* Logo — fond blanc forcé à disparaître sur fond sombre */
+.dash-header__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.dash-header__logo img {
+  height: 32px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+  transition: opacity 0.2s;
+}
+.dash-header__logo:hover img { opacity: 1; }
+
+/* Séparateur vertical */
+.dash-header__divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,0.18);
+  flex-shrink: 0;
+}
+
+/* Nom de l'espace */
+.dash-header__space {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.60);
+  white-space: nowrap;
+}
+
+/* ── Droite ── */
+.dash-header__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Bloc utilisateur */
+.dash-header__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Avatar initiales */
+.dash-header__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Nom */
+.dash-header__username {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* Bouton déconnexion */
+.dash-header__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.05);
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+}
+.dash-header__logout:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.28);
+}
+
+/* ════════════════════════════════════════
+   COULEURS PAR RÔLE
+════════════════════════════════════════ */
+
+/* Talent — vert */
+.dash-header--talent {
+  background: linear-gradient(135deg, #072b16 0%, #0a3d20 100%);
+}
+.dash-header--talent .dash-header__avatar {
+  background: linear-gradient(135deg, #1a6640, #38A169);
+  color: #e6faf0;
+  box-shadow: 0 0 0 2px rgba(56,161,105,0.35);
+}
+
+/* Candidat — bleu */
+.dash-header--candidat {
+  background: linear-gradient(135deg, #021e3a 0%, #042C53 100%);
+}
+.dash-header--candidat .dash-header__avatar {
+  background: linear-gradient(135deg, #185FA5, #378ADD);
+  color: #e8f3ff;
+  box-shadow: 0 0 0 2px rgba(55,138,221,0.35);
+}
+
+/* Recruteur — bleu */
+.dash-header--recruteur {
+  background: linear-gradient(135deg, #021e3a 0%, #042C53 100%);
+}
+.dash-header--recruteur .dash-header__avatar {
+  background: linear-gradient(135deg, #185FA5, #378ADD);
+  color: #e8f3ff;
+  box-shadow: 0 0 0 2px rgba(55,138,221,0.35);
+}
+
+/* Admin — très sombre */
+.dash-header--admin {
+  background: linear-gradient(135deg, #060d18 0%, #0f172a 100%);
+}
+.dash-header--admin .dash-header__avatar {
+  background: linear-gradient(135deg, #E6A800, #F5C842);
+  color: #1a1000;
+  box-shadow: 0 0 0 2px rgba(245,200,66,0.35);
+}
+
+/* ════════════════════════════════════════
+   LAYOUT PARTAGÉ (wrap / sidebar / main)
+════════════════════════════════════════ */
+.dash-wrap {
+  display: flex;
+  min-height: calc(100vh - var(--dash-h));
+  background: #f0f2f5;
+}
+
+.dash-sidebar {
+  width: 256px;
+  flex-shrink: 0;
+  background: #042C53;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: var(--dash-h);
+  height: calc(100vh - var(--dash-h));
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  z-index: 100;
+}
+
+.dash-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 28px 72px;
+  background: #f0f2f5;
+}
+
+@media (max-width: 768px) {
+  .dash-wrap { flex-direction: column; }
+  .dash-sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    top: 0;
+  }
+  .dash-main { padding: 20px 14px 56px; }
+}
+
+/* ════════════════════════════════════════
+   AJUSTEMENTS LAYOUT SIDEBARS
+════════════════════════════════════════ */
+
+/* Recruteur et admin — sticky + fixed (desktop et mobile) */
+.rec-sidebar {
+  top: var(--dash-h);
+  height: calc(100vh - var(--dash-h));
+  min-height: 0;
+}
+.adm-sidebar {
+  top: var(--dash-h);
+  height: calc(100vh - var(--dash-h));
+}
+.rec-wrap,
+.adm-wrap {
+  min-height: calc(100vh - var(--dash-h));
+}
+
+/* Talent — desktop uniquement (mobile : static dans dashboard.css) */
+@media (min-width: 701px) {
+  .tld-sidebar {
+    top: var(--dash-h);
+    height: calc(100vh - var(--dash-h));
+  }
+  .tld-wrap { min-height: calc(100vh - var(--dash-h)); }
+}
+
+/* Candidat — desktop uniquement (mobile : static dans candidat.css) */
+@media (min-width: 769px) {
+  .cand-sidebar {
+    top: var(--dash-h);
+    height: calc(100vh - var(--dash-h));
+  }
+  .cand-wrap { min-height: calc(100vh - var(--dash-h)); }
+}
+
+/* ════════════════════════════════════════
+   FOOTER DASHBOARD
+════════════════════════════════════════ */
+.dash-footer {
+  background: #f1f5f9;
+  border-top: 1px solid #e2e8f0;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.dash-footer__inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+
+.dash-footer__copy {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.dash-footer__site {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  transition: color 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.dash-footer__site:hover {
+  color: #185FA5;
+  border-color: #bfdbfe;
+  box-shadow: 0 1px 4px rgba(24,95,165,0.10);
+}
+.dash-footer__site svg { flex-shrink: 0; }
+
+.dash-footer__legal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dash-footer__legal a {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 11.5px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.dash-footer__legal a:hover { color: #64748b; }
+.dash-footer__legal span {
+  color: #cbd5e1;
+  font-size: 10px;
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .dash-header__burger   { display: flex; }
+  .dash-header__username { display: none; }
+  .dash-header__space    { display: none; }
+  .dash-header__divider  { display: none; }
+  .dash-header__logout span { display: none; }
+  .dash-header__logout   { padding: 8px 10px; gap: 0; }
+  .dash-header           { padding: 0 14px; }
+
+  .dash-footer__copy { display: none; }
+  .dash-footer__inner { justify-content: center; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .dash-footer__site { display: none; }
+  .dash-footer__legal { justify-content: center; }
+}

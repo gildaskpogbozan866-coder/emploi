@@ -1,0 +1,409 @@
+﻿﻿/* ══ HERO ══ */
+    .mc-hero {
+      background: linear-gradient(135deg, #042C53 0%, #0d4a8a 60%, #185FA5 100%);
+      padding: 60px 0 52px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mc-hero::before {
+      content: '';
+      position: absolute;
+      width: 360px; height: 360px;
+      border-radius: 50%;
+      background: rgba(245,200,66,0.05);
+      top: -140px; right: -80px;
+      pointer-events: none;
+    }
+    .mc-hero__inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .mc-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 24px;
+    }
+    .mc-breadcrumb a { color: rgba(255,255,255,0.45); text-decoration: none; transition: color .2s; }
+    .mc-breadcrumb a:hover { color: #F5C842; }
+    .mc-breadcrumb span { color: rgba(255,255,255,0.22); }
+    .mc-hero__title {
+      font-family: var(--font-body);
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 10px;
+    }
+    .mc-hero__sub {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: rgba(255,255,255,0.60);
+    }
+
+    /* ══ CORPS ══ */
+    .mc-body {
+      background: #f0f4f9;
+      padding: 40px 0 72px;
+      min-height: 400px;
+    }
+    .mc-container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ══ BARRE DE STATS ══ */
+    .mc-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .mc-stat {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(4,44,83,0.08);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .mc-stat__icon {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mc-stat__icon--blue   { background: rgba(55,138,221,0.10); color: #378ADD; }
+    .mc-stat__icon--yellow { background: rgba(245,200,66,0.14); color: #d4a017; }
+    .mc-stat__icon--green  { background: rgba(56,161,105,0.12); color: #38A169; }
+    .mc-stat__val {
+      font-family: var(--font-body);
+      font-size: 26px;
+      font-weight: 800;
+      color: #042C53;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .mc-stat__label {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ══ BARRE FILTRE ══ */
+    .mc-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .mc-toolbar__title {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 700;
+      color: #042C53;
+    }
+    .mc-filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mc-filter-btn {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #dde9fb;
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+      transition: background .18s, border-color .18s, color .18s;
+    }
+    .mc-filter-btn:hover { border-color: #378ADD; color: #185FA5; background: #eef4fb; }
+    .mc-filter-btn.active {
+      background: #185FA5;
+      border-color: #185FA5;
+      color: #fff;
+    }
+
+    /* ══ LISTE DE CANDIDATURES ══ */
+    .mc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ══ CARTE CANDIDATURE ══ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mc-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(4,44,83,0.08);
+      border: 1.5px solid #e8f0fe;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transition: box-shadow .2s, border-color .2s, transform .2s;
+      animation: fadeInUp 0.3s ease both;
+    }
+    .mc-card:hover {
+      box-shadow: 0 6px 24px rgba(4,44,83,0.12);
+      border-color: #b0cdf5;
+      transform: translateY(-2px);
+    }
+
+    /* Logo entreprise */
+    .mc-card__logo {
+      width: 52px; height: 52px;
+      min-width: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: 22px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Infos centrales */
+    .mc-card__info {
+      flex: 1;
+      min-width: 0;
+    }
+    .mc-card__titre {
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #042C53;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mc-card__entreprise {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #378ADD;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .mc-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .mc-card__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+
+    /* Badge statut */
+    .mc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .mc-badge--attente  { background: #fff8e1; color: #b45309; border: 1.5px solid rgba(245,158,11,0.3); }
+    .mc-badge--acceptee { background: #f0fdf4; color: #15803d; border: 1.5px solid rgba(56,161,105,0.3); }
+    .mc-badge--refusee  { background: #fef2f2; color: #042C53; border: 1.5px solid rgba(55,138,221,0.3); }
+
+    /* Actions droite */
+    .mc-card__actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .mc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background .18s, color .18s, transform .15s;
+      white-space: nowrap;
+    }
+    .mc-btn--view {
+      background: rgba(55,138,221,0.09);
+      color: #185FA5;
+      border: 1.5px solid rgba(55,138,221,0.2);
+    }
+    .mc-btn--view:hover { background: #185FA5; color: #fff; border-color: #185FA5; transform: translateY(-1px); }
+    .mc-btn--delete {
+      background: rgba(239,68,68,0.07);
+      color: #042C53;
+      border: 1.5px solid rgba(239,68,68,0.18);
+    }
+    .mc-btn--delete:hover { background: #fee2e2; border-color: rgba(239,68,68,0.4); transform: translateY(-1px); }
+
+    /* ══ ÉTAT VIDE ══ */
+    .mc-empty {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(4,44,83,0.07);
+      padding: 64px 32px;
+      text-align: center;
+    }
+    .mc-empty__icon {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(55,138,221,0.08);
+      color: #378ADD;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .mc-empty__title {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 700;
+      color: #042C53;
+      margin-bottom: 10px;
+    }
+    .mc-empty__text {
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: #64748b;
+      line-height: 1.7;
+      margin-bottom: 28px;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .mc-empty__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      color: #042C53;
+      background: #F5C842;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background .2s, transform .18s;
+    }
+    .mc-empty__btn:hover { background: #e6b800; transform: translateY(-2px); }
+
+    /* ══ MODAL CONFIRMATION SUPPRESSION ══ */
+    .mc-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4,44,83,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .mc-overlay.open { display: flex; }
+    .mc-modal {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(4,44,83,0.22);
+      padding: 36px 32px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: fadeInUp 0.25s ease both;
+    }
+    .mc-modal__icon {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: #fef2f2;
+      color: #185FA5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .mc-modal__title {
+      font-family: var(--font-body);
+      font-size: 18px;
+      font-weight: 700;
+      color: #042C53;
+      margin-bottom: 8px;
+    }
+    .mc-modal__text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+    .mc-modal__actions {
+      display: flex;
+      gap: 12px;
+    }
+    .mc-modal__btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background .18s, transform .15s;
+    }
+    .mc-modal__btn--cancel { background: #f1f5f9; color: #374151; }
+    .mc-modal__btn--cancel:hover { background: #e2e8f0; }
+    .mc-modal__btn--confirm { background: #185FA5; color: #fff; }
+    .mc-modal__btn--confirm:hover { background: #042C53; transform: translateY(-1px); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 720px) {
+      .mc-stats { grid-template-columns: 1fr 1fr; }
+      .mc-stats .mc-stat:last-child { grid-column: 1 / -1; }
+      .mc-card { flex-wrap: wrap; }
+      .mc-card__actions { flex-direction: row; width: 100%; }
+      .mc-btn { flex: 1; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .mc-container { padding: 0 16px; }
+      .mc-hero__inner { padding: 0 16px; }
+      .mc-stats { grid-template-columns: 1fr; }
+      .mc-stats .mc-stat:last-child { grid-column: 1; }
+      .mc-card { padding: 16px; }
+    }

@@ -1,0 +1,413 @@
+﻿﻿/* ══ ANIMATIONS ══ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0);    opacity: 0; }
+      70%  { transform: scale(1.12); }
+      100% { transform: scale(1);    opacity: 1; }
+    }
+    @keyframes drawCheck {
+      from { stroke-dashoffset: 80; }
+      to   { stroke-dashoffset: 0; }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+
+    /* ══ PAGE BODY ══ */
+    .succes-body {
+      background: #f0f4f9;
+      padding: 56px 24px 80px;
+      min-height: calc(100vh - 66px - 300px);
+    }
+    .succes-container {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* ══ CARTE PRINCIPALE ══ */
+    .succes-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 36px rgba(4,44,83,0.11);
+      overflow: hidden;
+      animation: fadeInUp 0.45s ease both;
+    }
+
+    /* En-tête dégradé bleu */
+    .succes-card__hero {
+      background: linear-gradient(135deg, #042C53 0%, #0d4a8a 55%, #185FA5 100%);
+      padding: 48px 32px 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .succes-card__hero::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(245,200,66,0.06);
+      top: -130px; right: -80px;
+      pointer-events: none;
+    }
+    .succes-card__hero::after {
+      content: '';
+      position: absolute;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: rgba(55,138,221,0.08);
+      bottom: -80px; left: -40px;
+      pointer-events: none;
+    }
+
+    /* Icône checkmark animée */
+    .succes-icon {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(56,161,105,0.18);
+      border: 3px solid rgba(56,161,105,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 26px;
+      position: relative;
+      z-index: 1;
+      animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+    .succes-icon svg { width: 46px; height: 46px; }
+    .succes-icon__check {
+      stroke: #38A169;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      fill: none;
+      animation: drawCheck 0.45s ease 0.7s forwards;
+    }
+
+    .succes-card__title {
+      font-family: var(--font-body);
+      font-size: clamp(20px, 3.5vw, 26px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .succes-card__subtitle {
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: rgba(255,255,255,0.68);
+      position: relative;
+      z-index: 1;
+      line-height: 1.65;
+    }
+
+    /* Badge de confirmation */
+    .succes-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(56,161,105,0.2);
+      border: 1px solid rgba(56,161,105,0.4);
+      color: #6ee7a0;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Corps de la carte */
+    .succes-card__body { padding: 34px 36px 38px; }
+
+    /* Ligne d'info rapide */
+    .succes-info-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f8faff;
+      border: 1.5px solid #dde9fb;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+    }
+    .succes-info-strip__icon {
+      width: 40px; height: 40px; min-width: 40px;
+      border-radius: 10px;
+      background: rgba(56,161,105,0.1);
+      color: #38A169;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .succes-info-strip__text {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #1e293b;
+      line-height: 1.55;
+    }
+    .succes-info-strip__text strong { color: #042C53; font-weight: 700; }
+
+    /* ══ BLOC COMPTE (priorité visuelle) ══ */
+    .compte-bloc {
+      background: linear-gradient(135deg, #f5faff 0%, #edf4ff 100%);
+      border: 2px solid #c5dcf8;
+      border-radius: 16px;
+      padding: 26px 28px 28px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .compte-bloc::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(55,138,221,0.07);
+      pointer-events: none;
+    }
+
+    .compte-bloc__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .compte-bloc__header-icon {
+      width: 42px; height: 42px;
+      border-radius: 11px;
+      background: #185FA5;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .compte-bloc__header-title {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 800;
+      color: #042C53;
+      line-height: 1.25;
+    }
+    .compte-bloc__header-sub {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Avantages */
+    .avantages-list {
+      list-style: none;
+      padding: 0; margin: 0 0 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .avantage-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.55;
+    }
+    .avantage-item__icon {
+      width: 26px; height: 26px; min-width: 26px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .avantage-item__icon--blue  { background: rgba(55,138,221,0.12); }
+    .avantage-item__icon--green { background: rgba(56,161,105,0.12); }
+    .avantage-item__icon--yellow{ background: rgba(245,200,66,0.18); }
+    .avantage-item__icon--purple{ background: rgba(139,92,246,0.10); }
+
+    .avantage-item strong { font-weight: 700; color: #042C53; }
+
+    /* Bouton principal "Créer un compte" */
+    .btn-creer-compte {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 24px;
+      background: #F5C842;
+      color: #042C53;
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      font-weight: 800;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.18s, box-shadow 0.2s;
+      box-shadow: 0 4px 18px rgba(245,200,66,0.32);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-creer-compte::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      background-size: 200% auto;
+      animation: shimmer 2.4s linear infinite;
+    }
+    .btn-creer-compte:hover {
+      background: #e6b800;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(245,200,66,0.48);
+    }
+
+    /* Séparateur "ou" */
+    .separator-or {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0;
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .separator-or::before,
+    .separator-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    /* Bouton secondaire "Continuer sans compte" */
+    .btn-sans-compte {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      padding: 14px 24px;
+      background: #fff;
+      color: #64748b;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 11px;
+      border: 1.5px solid #dde9fb;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.18s;
+    }
+    .btn-sans-compte:hover {
+      background: #f8faff;
+      border-color: #b0cdf5;
+      color: #185FA5;
+      transform: translateY(-1px);
+    }
+
+    /* ══ CARTE SECONDAIRE — info de confirmation ══ */
+    .info-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(4,44,83,0.07);
+      padding: 22px 28px;
+      animation: fadeInUp 0.45s ease 0.12s both;
+    }
+    .info-card__title {
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #378ADD;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-card__title::before {
+      content: '';
+      width: 18px; height: 2px;
+      background: rgba(55,138,221,0.5);
+      border-radius: 2px;
+    }
+    .info-steps {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .info-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .info-step__num {
+      width: 22px; height: 22px; min-width: 22px;
+      border-radius: 50%;
+      background: #185FA5;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ══ CANDIDAT INFO ══ */
+    .candidat-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f8faff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+    .candidat-strip__name {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      color: #042C53;
+    }
+    .candidat-strip__email {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: #64748b;
+    }
+    .candidat-strip__date {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 580px) {
+      .succes-body { padding: 32px 16px 64px; }
+      .succes-card__hero { padding: 38px 20px 34px; }
+      .succes-card__body { padding: 24px 20px 28px; }
+      .compte-bloc { padding: 20px 18px 22px; }
+      .info-card { padding: 18px 20px; }
+    }

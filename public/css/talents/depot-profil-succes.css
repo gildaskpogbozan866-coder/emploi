@@ -1,0 +1,205 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes drawCheck {
+  from { stroke-dashoffset: 80; }
+  to   { stroke-dashoffset: 0; }
+}
+
+body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
+
+.succes-body {
+  background: #f4f7f5;
+  padding: 48px 24px 80px;
+  min-height: calc(100vh - 80px - 280px);
+}
+.succes-container {
+  max-width: 640px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+/* ── CARTE PRINCIPALE ── */
+.succes-card {
+  background: #fff; border-radius: 22px;
+  box-shadow: 0 8px 44px rgba(10,61,32,0.12);
+  overflow: hidden;
+  animation: fadeInUp 0.45s ease both;
+}
+
+/* ── HERO ── */
+.succes-card__hero {
+  background: linear-gradient(150deg, #041a0b 0%, #0a3d20 45%, #1a6640 100%);
+  padding: 48px 28px 44px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.succes-card__hero::before {
+  content: '';
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,200,66,0.07) 0%, transparent 70%);
+  top: -120px; right: -70px; pointer-events: none;
+}
+.succes-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(56,161,105,0.20); border: 1px solid rgba(56,161,105,0.40);
+  color: #6ee7a0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 18px; border-radius: 20px; margin-bottom: 22px;
+  position: relative; z-index: 1;
+}
+.succes-icon {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: rgba(56,161,105,0.15); border: 3px solid rgba(56,161,105,0.40);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px; position: relative; z-index: 1;
+  animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.succes-icon svg { width: 48px; height: 48px; }
+.succes-icon__check {
+  stroke: #38A169; stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 80; stroke-dashoffset: 80;
+  fill: none;
+  animation: drawCheck 0.45s ease 0.65s forwards;
+}
+.succes-card__title {
+  font-family: 'Jost', sans-serif; font-size: clamp(20px, 3.5vw, 26px);
+  font-weight: 800; color: #fff; margin-bottom: 10px; position: relative; z-index: 1;
+}
+.succes-card__subtitle {
+  font-family: 'Jost', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,0.60); line-height: 1.65; position: relative; z-index: 1;
+}
+
+/* ── CORPS ── */
+.succes-card__body { padding: 30px 32px 34px; }
+
+.candidat-strip {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  background: #f0faf3; border: 1px solid #d1e7d5; border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 20px;
+}
+.candidat-strip__name { font-size: 14px; font-weight: 700; color: #0a3d20; }
+.candidat-strip__email { font-size: 12px; color: #5a7a65; margin-top: 2px; }
+.candidat-strip__date { font-size: 12px; color: #94a3b8; }
+
+.succes-info-strip {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 24px;
+}
+.succes-info-strip__icon {
+  width: 38px; height: 38px; min-width: 38px;
+  border-radius: 9px; background: rgba(56,161,105,0.12); color: #38A169;
+  display: flex; align-items: center; justify-content: center;
+}
+.succes-info-strip__text {
+  font-family: 'Jost', sans-serif; font-size: 13.5px; color: #166534; line-height: 1.55;
+}
+.succes-info-strip__text strong { font-weight: 700; }
+
+/* ── Compte bloc ── */
+.compte-bloc {
+  background: #f9fafb; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 22px 22px 18px;
+}
+.compte-bloc__header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+}
+.compte-bloc__header-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: linear-gradient(135deg, #0a3d20, #38A169);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #F5C842;
+}
+.compte-bloc__header-title {
+  font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 700; color: #0a3d20;
+}
+.compte-bloc__header-sub {
+  font-family: 'Jost', sans-serif; font-size: 12px; color: #38A169; margin-top: 2px; font-weight: 600;
+}
+
+.avantages-list { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-direction: column; gap: 10px; }
+.avantage-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-family: 'Jost', sans-serif; font-size: 13.5px; color: #334155; line-height: 1.5;
+}
+.avantage-item__icon {
+  width: 26px; height: 26px; min-width: 26px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.avantage-item__icon--blue   { background: rgba(24,95,165,0.10); }
+.avantage-item__icon--green  { background: rgba(56,161,105,0.12); }
+.avantage-item__icon--yellow { background: rgba(245,200,66,0.18); }
+.avantage-item__icon--purple { background: rgba(124,58,237,0.10); }
+.avantage-item strong { font-weight: 700; color: #0a3d20; }
+
+/* ── CTA ── */
+.btn-creer-compte {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; padding: 15px 24px;
+  background: #0a3d20; color: #F5C842;
+  font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 800;
+  border-radius: 12px; text-decoration: none;
+  transition: background .18s, transform .18s;
+  box-shadow: 0 4px 16px rgba(10,61,32,0.20);
+}
+.btn-creer-compte:hover { background: #38A169; transform: translateY(-2px); }
+
+.separator-or {
+  text-align: center; color: #94a3b8; font-size: 12.5px;
+  margin: 14px 0; position: relative;
+}
+.separator-or::before, .separator-or::after {
+  content: ''; position: absolute; top: 50%; width: 42%;
+  height: 1px; background: #e2e8f0;
+}
+.separator-or::before { left: 0; }
+.separator-or::after  { right: 0; }
+
+.btn-sans-compte {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 13px 24px;
+  background: #fff; color: #5a7a65;
+  font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500;
+  border-radius: 11px; border: 1.5px solid #d1e7d5; text-decoration: none;
+  transition: all .18s;
+}
+.btn-sans-compte:hover { background: #f0faf3; border-color: #38A169; color: #0a3d20; }
+
+/* ── Carte info ── */
+.info-card {
+  background: #fff; border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(10,61,32,0.07);
+  padding: 22px 26px;
+  animation: fadeInUp 0.45s ease 0.12s both;
+}
+.info-card__title {
+  font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.09em; color: #38A169;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.info-card__title::before {
+  content: ''; width: 14px; height: 2px; background: rgba(56,161,105,0.5); border-radius: 2px;
+}
+.info-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.info-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-family: 'Jost', sans-serif; font-size: 13.5px; color: #374151; line-height: 1.6;
+}
+.info-step__num {
+  width: 24px; height: 24px; min-width: 24px; border-radius: 50%;
+  background: #0a3d20; color: #fff; font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0;
+}
+
+@media (max-width: 580px) {
+  .succes-body { padding: 28px 16px 56px; }
+  .succes-card__body { padding: 22px 18px 26px; }
+  .info-card { padding: 18px 18px; }
+}

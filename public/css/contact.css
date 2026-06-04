@@ -1,0 +1,123 @@
+﻿﻿/* ═══════════════════════════════════════
+   PAGE CONTACT — Styles spécifiques
+═══════════════════════════════════════ */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.contact-form__label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bleu-fonce);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.contact-form__input {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--bleu-fonce);
+  background: #f8fafc;
+  border: 1.5px solid #dde3ec;
+  border-radius: 10px;
+  padding: 11px 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  resize: none;
+}
+
+.contact-form__input::placeholder {
+  color: #a0aec0;
+}
+
+.contact-form__input:focus {
+  border-color: var(--bleu-clair);
+  box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+  background: #fff;
+}
+
+.contact-form__textarea {
+  min-height: 140px;
+}
+
+/* Infos rapides sous le formulaire */
+.contact-info-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+  background: #f8fafc;
+  border: 1.5px solid #dde3ec;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bleu-fonce);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.contact-info-item:hover {
+  border-color: var(--bleu-clair);
+  box-shadow: 0 2px 12px rgba(55,138,221,0.10);
+}
+
+.contact-info-item--green {
+  color: #1a7a3c;
+}
+
+.contact-info-item--green:hover {
+  border-color: #38a169;
+  box-shadow: 0 2px 12px rgba(56,161,105,0.12);
+}
+
+.contact-info-item__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #eef4ff;
+  border-radius: 8px;
+  flex-shrink: 0;
+  color: var(--bleu-clair);
+}
+
+.contact-info-item--green .contact-info-item__icon {
+  background: #e6f6ee;
+  color: #38a169;
+}
+
+@media (max-width: 600px) {
+  .contact-form__row {
+    grid-template-columns: 1fr;
+  }
+  .contact-info-row {
+    flex-direction: column;
+  }
+}

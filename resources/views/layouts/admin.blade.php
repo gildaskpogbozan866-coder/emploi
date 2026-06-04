@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@yield('title', 'Administration') — Emploi Bouge Bénin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
+  <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
+  @yield('css')
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+
+  <header class="dash-header dash-header--admin">
+    <div class="dash-header__inner">
+      <div class="dash-header__left">
+        <button class="dash-header__burger" onclick="document.getElementById('admSidebar').classList.toggle('open')" aria-label="Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <a href="{{ route('home') }}" class="dash-header__logo">
+          <img src="{{ asset('images/Logo.png') }}" alt="Emploi Bouge Bénin">
+        </a>
+        <div class="dash-header__divider"></div>
+        <span class="dash-header__space">Administration</span>
+      </div>
+      <div class="dash-header__right">
+        <div class="dash-header__user">
+          <div class="dash-header__avatar">{{ auth()->user()->initiale }}</div>
+          <span class="dash-header__username">{{ auth()->user()->nom_complet }}</span>
+        </div>
+        <form method="POST" action="{{ route('auth.deconnecter') }}" style="display:inline">
+          @csrf
+          <button type="submit" class="dash-header__logout">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Déconnexion
+          </button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="adm-wrap">
+    <aside class="adm-sidebar" id="admSidebar">
+      <a href="{{ route('home') }}" class="adm-sidebar__logo">
+        <span>Emploi Bouge</span><small>Bénin · Administration</small>
+      </a>
+      <div class="adm-sidebar__user">
+        <div class="adm-sidebar__avatar">{{ auth()->user()->initiale }}</div>
+        <div class="adm-sidebar__info">
+          <div class="adm-sidebar__name">{{ auth()->user()->nom_complet }}</div>
+          <div class="adm-sidebar__role">Super Admin</div>
+        </div>
+      </div>
+      <ul class="adm-nav">
+        <li class="adm-nav__section">Vue d'ensemble</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+          <a href="{{ route('admin.dashboard') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Tableau de bord
+          </a>
+        </li>
+        <li class="adm-nav__section">Utilisateurs</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.utilisateurs.candidats*') ? 'active' : '' }}">
+          <a href="{{ route('admin.utilisateurs.candidats') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Candidats
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.utilisateurs.recruteurs*') ? 'active' : '' }}">
+          <a href="{{ route('admin.utilisateurs.recruteurs') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Recruteurs
+          </a>
+        </li>
+        <li class="adm-nav__section">Contenu</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.offres*') ? 'active' : '' }}">
+          <a href="{{ route('admin.offres.list') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Offres d'emploi
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.cvs*') ? 'active' : '' }}">
+          <a href="{{ route('admin.cvs.list') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            CVs
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
+          <a href="{{ route('admin.blog.list') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Blog
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.services*') ? 'active' : '' }}">
+          <a href="{{ route('admin.services.list') }}">Services</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.commandes*') ? 'active' : '' }}">
+          <a href="{{ route('admin.commandes.list') }}">Commandes</a>
+        </li>
+        <li class="adm-nav__section">Commerce</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.paiements*') ? 'active' : '' }}">
+          <a href="{{ route('admin.paiements.list') }}">Paiements</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.abonnements*') ? 'active' : '' }}">
+          <a href="{{ route('admin.abonnements') }}">Abonnements</a>
+        </li>
+        <li class="adm-nav__section">Modération</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.messagerie*') ? 'active' : '' }}">
+          <a href="{{ route('admin.messagerie') }}">Messagerie</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.signalements*') ? 'active' : '' }}">
+          <a href="{{ route('admin.signalements.list') }}">Signalements</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.statistiques*') ? 'active' : '' }}">
+          <a href="{{ route('admin.statistiques') }}">Statistiques</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
+          <a href="{{ route('admin.parametres') }}">Paramètres</a>
+        </li>
+        <li class="adm-nav__section">Sécurité</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.permissions*') ? 'active' : '' }}">
+          <a href="{{ route('admin.permissions.index') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Rôles &amp; Permissions
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="adm-main">
+      @include('components.flash')
+      @yield('content')
+    </main>
+  </div>
+
+  @yield('scripts')
+</body>
+</html>

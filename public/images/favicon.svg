@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Fond vert foncé arrondi -->
+  <rect width="32" height="32" rx="7" fill="#1d6b45"/>
+  <!-- E : barre verticale gauche (blanc) -->
+  <rect x="5.5" y="8" width="2.5" height="16" rx="0.8" fill="white"/>
+  <!-- E : barre haute (blanc) -->
+  <rect x="5.5" y="8" width="10" height="2.5" rx="0.8" fill="white"/>
+  <!-- E : barre centrale courte (blanc) -->
+  <rect x="5.5" y="14.75" width="7.5" height="2" rx="0.8" fill="white"/>
+  <!-- E : barre basse (blanc) -->
+  <rect x="5.5" y="21.5" width="10" height="2.5" rx="0.8" fill="white"/>
+  <!-- B : axe vertical (orange) -->
+  <line x1="16.5" y1="8" x2="16.5" y2="24" stroke="#e8873b" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- B : bosse supérieure (orange) -->
+  <path d="M 16.5 8 Q 25.5 8 25.5 13 Q 25.5 16 16.5 16" fill="none" stroke="#e8873b" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- B : bosse inférieure (orange) -->
+  <path d="M 16.5 16 Q 26.5 16 26.5 20 Q 26.5 24 16.5 24" fill="none" stroke="#e8873b" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

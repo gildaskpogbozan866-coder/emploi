@@ -1,0 +1,265 @@
+﻿/* ── Animations ── */
+    /* ── Premium CV card ── */
+    .cv-premium-card {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(4,44,83,.16);
+      margin-bottom: 64px;
+      border: 1.5px solid #dce8f5;
+      position: relative;
+    }
+/* Left column */
+    .cv-card__left {
+      background: #fff;
+      padding: 48px 44px 44px;
+      display: flex;
+      flex-direction: column;
+    }
+    .cv-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFF8E1;
+      color: #c8900a;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 50px;
+      border: 1px solid #ffe082;
+      width: fit-content;
+      margin-bottom: 22px;
+    }
+.cv-card__title {
+      font-family: var(--font-body);
+      font-size: clamp(22px, 2.4vw, 30px);
+      font-weight: 800;
+      color: var(--bleu-fonce);
+      line-height: 1.2;
+      margin: 0 0 20px;
+    }
+    .cv-card__hook {
+      border-left: 4px solid var(--jaune);
+      padding: 10px 16px;
+      background: #fffbee;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: #4a6080;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+    .cv-card__hook strong { color: var(--bleu-fonce); }
+    .cv-card__features {
+      list-style: none;
+      margin: 0 0 28px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .cv-card__features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: var(--bleu-fonce);
+      line-height: 1.45;
+    }
+    .cv-card__features li::before {
+      content: '✔';
+      color: var(--vert);
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Social proof bar */
+    .cv-card__proof {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .cv-card__proof-avatars { display: flex; }
+    .cv-card__proof-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: linear-gradient(135deg, #378ADD, #042C53);
+      margin-left: -9px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .cv-card__proof-avatar:first-child { margin-left: 0; }
+    .cv-card__proof-text {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: #4a6080;
+    }
+    .cv-card__proof-text strong { color: var(--bleu-fonce); font-weight: 700; }
+
+    /* CTA button */
+    .cv-card__btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--jaune) 0%, #e6b800 100%);
+      color: var(--bleu-fonce);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 800;
+      padding: 15px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(245,200,66,.45);
+      transition: transform .2s, box-shadow .2s;
+      width: fit-content;
+    }
+    .cv-card__btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(245,200,66,.55);
+    }
+
+    /* Right column */
+    .cv-card__right {
+      background: linear-gradient(160deg, #042C53 0%, #0d4580 60%, #185FA5 100%);
+      padding: 44px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cv-card__right::before,
+    .cv-card__right::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      opacity: .07;
+    }
+    .cv-card__right::before {
+      width: 240px; height: 240px;
+      background: var(--bleu-clair);
+      top: -70px; right: -70px;
+    }
+    .cv-card__right::after {
+      width: 160px; height: 160px;
+      background: var(--jaune);
+      bottom: -50px; left: -50px;
+    }
+    .cv-card__right-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,200,66,.15);
+      border: 1px solid rgba(245,200,66,.35);
+      color: var(--jaune);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 13px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      position: relative; z-index: 1;
+    }
+    .cv-card__price-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 6px;
+      position: relative; z-index: 1;
+    }
+    .cv-card__price {
+      font-family: var(--font-body);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      position: relative; z-index: 1;
+    }
+    .cv-card__price em {
+      font-style: normal;
+      color: var(--jaune);
+      font-size: clamp(36px, 4vw, 50px);
+    }
+    .cv-card__price span {
+      font-size: 16px;
+      color: rgba(255,255,255,.8);
+    }
+    .cv-card__price-sub {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 22px;
+      position: relative; z-index: 1;
+    }
+    .cv-card__delivery-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56,161,105,.2);
+      border: 1px solid rgba(56,161,105,.4);
+      color: #68d391;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      position: relative; z-index: 1;
+    }
+    .cv-card__guarantee {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 26px;
+      position: relative; z-index: 1;
+      line-height: 1.5;
+    }
+    .cv-card__right-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--jaune);
+      color: var(--bleu-fonce);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 13px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(245,200,66,.4);
+      transition: transform .2s, box-shadow .2s;
+      position: relative; z-index: 1;
+      width: 100%;
+    }
+    .cv-card__right-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(245,200,66,.5);
+    }
+
+    @media (max-width: 860px) {
+      .cv-premium-card { grid-template-columns: 1fr; }
+      .cv-card__left { padding: 44px 28px 36px; }
+      .cv-card__right { padding: 36px 28px; }
+    }
+    @media (max-width: 600px) {
+      .cv-card__btn-primary { width: 100%; justify-content: center; }
+    }
