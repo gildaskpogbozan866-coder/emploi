@@ -101,16 +101,18 @@ Route::prefix('blog')->name('blog.')->group(function () {
 //  AUTHENTIFICATION (OTP sans mot de passe)
 // ════════════════════════════════════════════════════════
 Route::prefix('auth')->name('auth.')->group(function () {
-    Route::get('/connexion',     [AuthController::class, 'showConnexion'])->name('connexion');
-    Route::post('/connexion',    [AuthController::class, 'envoyerOtp'])->name('connexion.otp');
-    Route::get('/inscription',   [AuthController::class, 'showInscription'])->name('inscription');
-    Route::post('/inscription',  [AuthController::class, 'inscrire'])->name('inscription.store');
-    Route::get('/verification',         [AuthController::class, 'showVerificationEmail'])->name('verification-email');
-    Route::post('/verification',        [AuthController::class, 'verifierOtp'])->name('verification.otp');
-    Route::post('/verification/renvoyer',[AuthController::class, 'renvoyerOtp'])->name('verification.renvoyer');
-    Route::get('/compte-confirme',      [AuthController::class, 'showCompteConfirme'])->name('compte-confirme');
-    Route::get('/mot-de-passe-oublie',[AuthController::class, 'showMotDePasseOublie'])->name('mot-de-passe-oublie');
-    Route::post('/deconnecter',  [AuthController::class, 'deconnecter'])->name('deconnecter')->middleware('auth');
+    Route::get('/connexion',    [AuthController::class, 'showConnexion'])->name('connexion');
+    Route::get('/inscription',  [AuthController::class, 'showInscription'])->name('inscription');
+    Route::get('/verification', [AuthController::class, 'showVerificationEmail'])->name('verification-email');
+    Route::get('/compte-confirme', [AuthController::class, 'showCompteConfirme'])->name('compte-confirme');
+  
+    // Routes POST protégées contre le spam OTP
+    Route::post('/connexion',   [AuthController::class, 'envoyerOtp'])->name('connexion.otp')->middleware('throttle:otp-envoi');
+    Route::post('/inscription', [AuthController::class, 'inscrire'])->name('inscription.store')->middleware('throttle:otp-envoi');
+    Route::post('/verification', [AuthController::class, 'verifierOtp'])->name('verification.otp')->middleware('throttle:otp-verification');
+    Route::post('/verification/renvoyer', [AuthController::class, 'renvoyerOtp'])->name('verification.renvoyer')->middleware('throttle:otp-renvoyer');
+
+    Route::post('/deconnecter', [AuthController::class, 'deconnecter'])->name('deconnecter')->middleware('auth');
 });
 
 // ════════════════════════════════════════════════════════

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\IncriptionRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,24 +39,11 @@ class AuthController extends Controller
         return view('auth.compte-confirme');
     }
 
-    public function showMotDePasseOublie()
-    {
-        return view('auth.mot-de-passe-oublie');
-    }
 
     // ── Inscription ───────────────────────────────────────
-    public function inscrire(Request $request)
+    public function inscrire(IncriptionRequest $request)
     {
-        $request->validate([
-            'prenom'     => 'required|string|max:100',
-            'nom'        => 'required|string|max:100',
-            'email'      => 'required|email|unique:users,email',
-            'tel'        => 'nullable|string|max:20',
-            'pays'       => 'required|string|max:100',
-            'role'       => 'required|in:candidat,talent,recruteur',
-            'entreprise' => 'nullable|string|max:200',
-            'metier'     => 'nullable|string|max:200',
-        ]);
+        
 
         $code = $this->genererCode();
 
@@ -160,7 +148,13 @@ class AuthController extends Controller
         Auth::login($user, remember: true);
         session()->forget('otp_email');
 
-        return redirect()->route('auth.compte-confirme');
+        // Première inscription → page de bienvenue avec choix du dashboard.
+        // Reconnexion → redirection directe vers le bon espace, sans friction.
+        if ($record->type === 'register') {
+            return redirect()->route('auth.compte-confirme');
+        }
+
+        return $this->redirectDashboard($user);
     }
 
     // ── Renvoi OTP ────────────────────────────────────────
