@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\Article;
 use App\Models\TalentProfil;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,70 +21,76 @@ class DatabaseSeeder extends Seeder
 
         // ── ÉTAPE 2 : Utilisateurs ────────────────────────────
         $admin = User::create([
-            'prenom' => 'Super',
-            'nom'    => 'Admin',
-            'email'  => 'admin@emploibougebenin.com',
-            'role'   => Role::ADMIN,
-            'pays'   => 'Bénin',
-            'actif'  => true,
+            'prenom'            => 'Super',
+            'nom'               => 'Admin',
+            'email'             => 'admin@emploibougebenin.com',
+            'password'          => Hash::make('Admin@2026'),
+            'role'              => Role::ADMIN,
+            'pays'              => 'Bénin',
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $admin->assignRole(Role::ADMIN);
 
         $recruteur1 = User::create([
-            'prenom'     => 'Kokou',
-            'nom'        => 'Ahonou',
-            'email'      => 'recruteur@techbenin.com',
-            'role'       => Role::RECRUTEUR,
-            'entreprise' => 'TechBénin SARL',
-            'pays'       => 'Bénin',
-            'actif'      => true,
+            'prenom'            => 'Kokou',
+            'nom'               => 'Ahonou',
+            'email'             => 'recruteur@techbenin.com',
+            'password'          => Hash::make('password'),
+            'role'              => Role::RECRUTEUR,
+            'entreprise'        => 'TechBénin SARL',
+            'pays'              => 'Bénin',
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $recruteur1->assignRole(Role::RECRUTEUR);
 
         $recruteur2 = User::create([
-            'prenom'     => 'Fatou',
-            'nom'        => 'Diallo',
-            'email'      => 'rh@senservices.sn',
-            'role'       => Role::RECRUTEUR,
-            'entreprise' => 'SenServices SA',
-            'pays'       => 'Sénégal',
-            'actif'      => true,
+            'prenom'            => 'Fatou',
+            'nom'               => 'Diallo',
+            'email'             => 'rh@senservices.sn',
+            'password'          => Hash::make('password'),
+            'role'              => Role::RECRUTEUR,
+            'entreprise'        => 'SenServices SA',
+            'pays'              => 'Sénégal',
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $recruteur2->assignRole(Role::RECRUTEUR);
 
         $candidat1 = User::create([
-            'prenom' => 'Jean-Baptiste',
-            'nom'    => 'Kpossou',
-            'email'  => 'jb.kpossou@gmail.com',
-            'role'   => Role::CANDIDAT,
-            'pays'   => 'Bénin',
-            'actif'  => true,
+            'prenom'            => 'Jean-Baptiste',
+            'nom'               => 'Kpossou',
+            'email'             => 'jb.kpossou@gmail.com',
+            'password'          => Hash::make('password'),
+            'role'              => Role::CANDIDAT,
+            'pays'              => 'Bénin',
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $candidat1->assignRole(Role::CANDIDAT);
 
         $candidat2 = User::create([
-            'prenom' => 'Aïssatou',
-            'nom'    => 'Traoré',
-            'email'  => 'aissatou.traore@gmail.com',
-            'role'   => Role::CANDIDAT,
-            'pays'   => "Côte d'Ivoire",
-            'actif'  => true,
+            'prenom'            => 'Aïssatou',
+            'nom'               => 'Traoré',
+            'email'             => 'aissatou.traore@gmail.com',
+            'password'          => Hash::make('password'),
+            'role'              => Role::CANDIDAT,
+            'pays'              => "Côte d'Ivoire",
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $candidat2->assignRole(Role::CANDIDAT);
 
         $talent1 = User::create([
-            'prenom' => 'Moussa',
-            'nom'    => 'Diarra',
-            'email'  => 'moussa.diarra@gmail.com',
-            'role'   => Role::TALENT,
-            'metier' => 'Développeur Web Full Stack',
-            'pays'   => 'Mali',
-            'actif'  => true,
+            'prenom'            => 'Moussa',
+            'nom'               => 'Diarra',
+            'email'             => 'moussa.diarra@gmail.com',
+            'password'          => Hash::make('password'),
+            'role'              => Role::TALENT,
+            'metier'            => 'Développeur Web Full Stack',
+            'pays'              => 'Mali',
+            'actif'             => true,
             'email_verified_at' => now(),
         ]);
         $talent1->assignRole(Role::TALENT);

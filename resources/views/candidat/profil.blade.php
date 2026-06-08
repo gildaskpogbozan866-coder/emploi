@@ -60,8 +60,9 @@
       </select>
     </div>
 
-    <div style="background:rgba(55,138,221,0.06);border:1px solid rgba(55,138,221,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#185FA5">
-      <strong>Email :</strong> {{ $user->email }} — modifiable dans les paramètres
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#64748b">
+      <strong style="color:#374151">Email :</strong> {{ $user->email }}
+      <span style="margin-left:6px;font-size:11px;background:#e2e8f0;color:#64748b;padding:2px 8px;border-radius:20px">non modifiable</span>
     </div>
 
     <div class="cand-form-actions">

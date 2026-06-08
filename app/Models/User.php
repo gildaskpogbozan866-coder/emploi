@@ -2,30 +2,45 @@
 
 namespace App\Models;
 
+use App\Notifications\ReinitialisationMotDePasse;
+use App\Notifications\VerificationEmailFr;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'prenom', 'nom', 'email', 'tel', 'pays',
+        'prenom', 'nom', 'email', 'password', 'tel', 'pays',
         'role', 'entreprise', 'metier', 'premium',
         'avatar', 'actif', 'email_verified_at',
     ];
 
-    protected $hidden = ['remember_token'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'password'          => 'hashed',
             'premium'           => 'boolean',
             'actif'             => 'boolean',
         ];
+    }
+
+    // ── Notifications françaises ────────────────────────────
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerificationEmailFr());
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ReinitialisationMotDePasse($token));
     }
 
     // ── Accesseurs ──────────────────────────────────────────
@@ -109,5 +124,10 @@ class User extends Authenticatable
     public function cvsFavoris()
     {
         return $this->belongsToMany(CV::class, 'cv_favoris', 'user_id', 'cv_id');
+    }
+
+    public function recruteurVerification()
+    {
+        return $this->hasOne(RecruteurVerification::class);
     }
 }

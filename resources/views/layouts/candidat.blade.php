@@ -67,6 +67,7 @@
       btn.addEventListener('click', () => { if (candNav) candNav.classList.toggle('open'); });
     });
   </script>
+  @include('partials._form-guard')
   @yield('scripts')
 </body>
 </html>

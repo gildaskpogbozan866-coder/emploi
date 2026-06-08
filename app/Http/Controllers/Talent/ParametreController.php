@@ -16,11 +16,14 @@ class ParametreController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,' . Auth::id(),
-            'tel'   => 'nullable|string|max:20',
+            'prenom' => 'required|string|max:100',
+            'nom'    => 'required|string|max:100',
+            'tel'    => 'nullable|string|max:20',
+            'pays'   => 'nullable|string|max:100',
+            'metier' => 'nullable|string|max:200',
         ]);
 
-        Auth::user()->update($request->only(['email', 'tel']));
-        return back()->with('success', 'Paramètres mis à jour.');
+        Auth::user()->update($request->only(['prenom', 'nom', 'tel', 'pays', 'metier']));
+        return back()->with('success', 'Profil mis à jour avec succès.');
     }
 }

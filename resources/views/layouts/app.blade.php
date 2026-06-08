@@ -29,6 +29,7 @@
   @include('components.footer')
 
   <script src="{{ asset('js/app.js') }}" defer></script>
+  @include('partials._form-guard')
   @yield('scripts')
 </body>
 </html>

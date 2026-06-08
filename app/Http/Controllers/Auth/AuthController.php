@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\IncriptionRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -29,163 +30,151 @@ class AuthController extends Controller
         return view('auth.inscription');
     }
 
-    public function showVerificationEmail()
-    {
-        return view('auth.verification-email');
-    }
-
     public function showCompteConfirme()
     {
         return view('auth.compte-confirme');
     }
 
+    public function showMotDePasseOublie()
+    {
+        return view('auth.mot-de-passe-oublie');
+    }
+
+    public function showReinitialisation(Request $request, string $token)
+    {
+        return view('auth.reinitialiser-mot-de-passe', [
+            'token' => $token,
+            'email' => $request->query('email', ''),
+        ]);
+    }
+
+    // ── Connexion ─────────────────────────────────────────
+    public function connecter(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ], [
+            'email.required'    => 'L\'adresse e-mail est requise.',
+            'email.email'       => 'Veuillez entrer une adresse e-mail valide.',
+            'password.required' => 'Le mot de passe est requis.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! $user->actif) {
+            return back()->withErrors(['credentials' => 'Email ou mot de passe incorrect.'])->withInput();
+        }
+
+        if (! Auth::attempt(
+            ['email' => $request->email, 'password' => $request->password],
+            $request->boolean('remember')
+        )) {
+            return back()->withErrors(['credentials' => 'Email ou mot de passe incorrect.'])->withInput();
+        }
+
+        $request->session()->regenerate();
+
+        return $this->redirectDashboard(Auth::user());
+    }
 
     // ── Inscription ───────────────────────────────────────
     public function inscrire(IncriptionRequest $request)
     {
-        
+        $role = $request->role;
 
-        $code = $this->genererCode();
-
-        DB::table('otp_codes')->where('email', $request->email)->delete();
-        DB::table('otp_codes')->insert([
+        $user = User::create([
+            'prenom'     => $request->prenom,
+            'nom'        => $request->nom,
             'email'      => $request->email,
-            'code'       => $code,
-            'type'       => 'register',
-            'payload'    => json_encode($request->all()),
-            'expires_at' => Carbon::now()->addMinutes(10),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'password'   => Hash::make($request->password),
+            'tel'        => $request->tel,
+            'pays'       => $request->pays,
+            'role'       => $role,
+            'entreprise' => $request->entreprise,
+            'metier'     => $request->metier,
         ]);
 
-        session(['otp_email' => $request->email]);
-
-        // En production: Mail::to($request->email)->send(new OtpMail($code));
-
-        return redirect()->route('auth.verification-email')
-            ->with('otp_debug', $code); // retirer en production
-    }
-
-    // ── Connexion (envoi OTP) ─────────────────────────────
-    public function envoyerOtp(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return back()->withErrors(['email' => 'Aucun compte associé à cet e-mail.']);
-        }
-
-        if (!$user->actif) {
-            return back()->withErrors(['email' => 'Ce compte a été suspendu.']);
-        }
-
-        $code = $this->genererCode();
-
-        DB::table('otp_codes')->where('email', $request->email)->delete();
-        DB::table('otp_codes')->insert([
-            'email'      => $request->email,
-            'code'       => $code,
-            'type'       => 'login',
-            'expires_at' => Carbon::now()->addMinutes(10),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        session(['otp_email' => $request->email]);
-
-        // En production: Mail::to($request->email)->send(new OtpMail($code));
-
-        return redirect()->route('auth.verification-email')
-            ->with('otp_debug', $code);
-    }
-
-    // ── Vérification OTP ──────────────────────────────────
-    public function verifierOtp(Request $request)
-    {
-        $request->validate(['code' => 'required|string|size:6']);
-
-        $email = session('otp_email');
-
-        if (!$email) {
-            return redirect()->route('auth.connexion')->withErrors(['code' => 'Session expirée. Recommencez.']);
-        }
-
-        $record = DB::table('otp_codes')
-            ->where('email', $email)
-            ->where('code', $request->code)
-            ->where('expires_at', '>', now())
-            ->first();
-
-        if (!$record) {
-            return back()->withErrors(['code' => 'Code invalide ou expiré.']);
-        }
-
-        DB::table('otp_codes')->where('id', $record->id)->delete();
-
-        if ($record->type === 'register') {
-            $payload = json_decode($record->payload, true);
-            $role    = $payload['role'] ?? 'candidat';
-
-            $user = User::create([
-                'prenom'            => $payload['prenom'],
-                'nom'               => $payload['nom'],
-                'email'             => $payload['email'],
-                'tel'               => $payload['tel'] ?? null,
-                'pays'              => $payload['pays'],
-                'role'              => $role,
-                'entreprise'        => $payload['entreprise'] ?? null,
-                'metier'            => $payload['metier'] ?? null,
-                'email_verified_at' => now(),
-            ]);
-
-            // Assigner le rôle Spatie automatiquement
-            $user->assignRole($role);
-        } else {
-            $user = User::where('email', $email)->firstOrFail();
-        }
+        $user->assignRole($role);
 
         Auth::login($user, remember: true);
-        session()->forget('otp_email');
 
-        // Première inscription → page de bienvenue avec choix du dashboard.
-        // Reconnexion → redirection directe vers le bon espace, sans friction.
-        if ($record->type === 'register') {
-            return redirect()->route('auth.compte-confirme');
-        }
+        $user->sendEmailVerificationNotification();
 
-        return $this->redirectDashboard($user);
+        return redirect()->route('verification.notice');
     }
 
-    // ── Renvoi OTP ────────────────────────────────────────
-    public function renvoyerOtp(Request $request)
+    // ── Mot de passe oublié ───────────────────────────────
+    public function envoyerLienReinitialisation(Request $request)
     {
-        $email = session('otp_email');
-
-        if (!$email) {
-            return redirect()->route('auth.connexion');
-        }
-
-        $existing = DB::table('otp_codes')->where('email', $email)->first();
-
-        $code = $this->genererCode();
-
-        DB::table('otp_codes')->where('email', $email)->delete();
-        DB::table('otp_codes')->insert([
-            'email'      => $email,
-            'code'       => $code,
-            'type'       => $existing->type    ?? 'login',
-            'payload'    => $existing->payload ?? null,
-            'expires_at' => Carbon::now()->addMinutes(10),
-            'created_at' => now(),
-            'updated_at' => now(),
+        $request->validate(['email' => 'required|email'], [
+            'email.required' => 'L\'adresse e-mail est requise.',
+            'email.email'    => 'Veuillez entrer une adresse e-mail valide.',
         ]);
 
-        // En production: Mail::to($email)->send(new OtpMail($code));
+        $status = Password::sendResetLink($request->only('email'));
 
-        return redirect()->route('auth.verification-email')
-            ->with('otp_debug', $code)
-            ->with('resent', true);
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('success', 'Un lien de réinitialisation a été envoyé à votre adresse e-mail.');
+        }
+
+        return back()->withErrors(['email' => __($status)])->withInput();
+    }
+
+    // ── Réinitialisation du mot de passe ──────────────────
+    public function reinitialiserMotDePasse(Request $request)
+    {
+        $request->validate([
+            'token'                 => 'required',
+            'email'                 => 'required|email',
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
+        ], [
+            'password.min'       => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill(['password' => Hash::make($password)])->save();
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('auth.connexion')
+                ->with('success', 'Mot de passe réinitialisé avec succès. Vous pouvez vous connecter.');
+        }
+
+        return back()->withErrors(['email' => __($status)])->withInput();
+    }
+
+    // ── Changement de mot de passe (connecté) ────────────
+    public function showChangerMotDePasse()
+    {
+        return view('auth.changer-mot-de-passe');
+    }
+
+    public function changerMotDePasse(Request $request)
+    {
+        $request->validate([
+            'mot_de_passe_actuel'   => 'required|string',
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
+        ], [
+            'mot_de_passe_actuel.required' => 'Le mot de passe actuel est requis.',
+            'password.min'                 => 'Le nouveau mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed'           => 'Les nouveaux mots de passe ne correspondent pas.',
+        ]);
+
+        if (! Hash::check($request->mot_de_passe_actuel, Auth::user()->password)) {
+            return back()->withErrors(['mot_de_passe_actuel' => 'Mot de passe actuel incorrect.']);
+        }
+
+        Auth::user()->update(['password' => Hash::make($request->password)]);
+
+        return back()->with('mdp_success', 'Mot de passe modifié avec succès.');
     }
 
     // ── Déconnexion ───────────────────────────────────────
@@ -198,11 +187,6 @@ class AuthController extends Controller
     }
 
     // ── Helpers ───────────────────────────────────────────
-    private function genererCode(): string
-    {
-        return str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
-    }
-
     private function redirectDashboard(User $user)
     {
         return match ($user->role) {

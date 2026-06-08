@@ -9,34 +9,63 @@
 <div class="rec-topbar">
   <div class="rec-topbar__left">
     <h1>Paramètres du compte</h1>
-    <p>Gérez votre adresse e-mail et vos identifiants de connexion</p>
+    <p>Sécurité et gestion de votre compte recruteur</p>
   </div>
 </div>
 
+@include('partials._statut-compte')
+
+{{-- Informations non modifiables --}}
 <div class="rec-card" style="max-width:560px;margin-bottom:20px">
   <div class="rec-card__head">
-    <span class="rec-card__title">Identifiants de connexion</span>
+    <span class="rec-card__title">Informations de connexion</span>
   </div>
   <div class="rec-card__body">
-    <form method="POST" action="{{ route('recruteur.parametres.update') }}">
-      @csrf @method('PUT')
+    <p style="font-size:13px;color:#6b7280;margin:0 0 10px">Votre adresse e-mail est votre identifiant de connexion. Elle ne peut pas être modifiée.</p>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-size:14px;color:#374151">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:8px;color:#6b7280"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      {{ auth()->user()->email }}
+    </div>
+  </div>
+</div>
 
-      <div class="rec-form-group" style="margin-bottom:16px">
-        <label>Adresse e-mail <span style="color:#e53e3e">*</span></label>
-        <input type="email" name="email" value="{{ old('email', $user->email) }}" required>
-        @error('email')<small style="color:#e53e3e">{{ $message }}</small>@enderror
+{{-- Mot de passe --}}
+<div class="rec-card" style="max-width:560px;margin-bottom:20px">
+  <div class="rec-card__head">
+    <span class="rec-card__title">Changer le mot de passe</span>
+  </div>
+  <div class="rec-card__body">
+
+    @if(session('mdp_success'))
+      <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;font-size:.85rem;color:#065f46;margin-bottom:16px">
+        {{ session('mdp_success') }}
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('auth.changer-mot-de-passe.store') }}">
+      @csrf
+
+      <div class="rec-form-group" style="margin-bottom:14px">
+        <label>Mot de passe actuel <span style="color:#e53e3e">*</span></label>
+        <input type="password" name="mot_de_passe_actuel" placeholder="••••••••" autocomplete="current-password"
+               style="{{ $errors->has('mot_de_passe_actuel') ? 'border-color:#e53e3e' : '' }}">
+        @error('mot_de_passe_actuel')<small style="color:#e53e3e">{{ $message }}</small>@enderror
       </div>
 
-      <div class="rec-form-group" style="margin-bottom:16px">
-        <label>Téléphone</label>
-        <input type="tel" name="tel" value="{{ old('tel', $user->tel) }}" placeholder="+229 01 00 00 00">
+      <div class="rec-form-grid" style="margin-bottom:18px">
+        <div class="rec-form-group">
+          <label>Nouveau mot de passe <span style="color:#e53e3e">*</span></label>
+          <input type="password" name="password" placeholder="Min. 8 caractères" autocomplete="new-password"
+                 style="{{ $errors->has('password') ? 'border-color:#e53e3e' : '' }}">
+          @error('password')<small style="color:#e53e3e">{{ $message }}</small>@enderror
+        </div>
+        <div class="rec-form-group">
+          <label>Confirmer <span style="color:#e53e3e">*</span></label>
+          <input type="password" name="password_confirmation" placeholder="Répétez" autocomplete="new-password">
+        </div>
       </div>
 
-      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#92400e">
-        ⚠ La modification de votre e-mail nécessitera une vérification par code OTP lors de votre prochaine connexion.
-      </div>
-
-      <button type="submit" class="rec-btn rec-btn--primary">Sauvegarder les modifications</button>
+      <button type="submit" class="rec-btn rec-btn--primary">Enregistrer le nouveau mot de passe</button>
     </form>
   </div>
 </div>

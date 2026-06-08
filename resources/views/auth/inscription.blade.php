@@ -94,6 +94,23 @@
           @error('email')<p class="aform__error">{{ $message }}</p>@enderror
         </div>
 
+        <div class="aform__row">
+          <div class="aform__field">
+            <label class="aform__label" for="password">Mot de passe</label>
+            <input class="aform__input @error('password') aform__input--error @enderror"
+                   type="password" id="password" name="password"
+                   placeholder="Min. 8 caractères" required autocomplete="new-password" />
+            @error('password')<p class="aform__error">{{ $message }}</p>@enderror
+          </div>
+          <div class="aform__field">
+            <label class="aform__label" for="password_confirmation">Confirmer le mot de passe</label>
+            <input class="aform__input @error('password_confirmation') aform__input--error @enderror"
+                   type="password" id="password_confirmation" name="password_confirmation"
+                   placeholder="Répétez le mot de passe" required autocomplete="new-password" />
+            @error('password_confirmation')<p class="aform__error">{{ $message }}</p>@enderror
+          </div>
+        </div>
+
         <div class="aform__field">
           <label class="aform__label" for="tel">Téléphone</label>
           <input class="aform__input" type="tel" id="tel" name="tel" value="{{ old('tel') }}" placeholder="+229 01 00 00 00" />
@@ -117,11 +134,6 @@
         <div class="aform__field" id="entrepriseField" style="{{ old('role') === 'recruteur' ? '' : 'display:none' }}">
           <label class="aform__label" for="entreprise">Nom de l'entreprise</label>
           <input class="aform__input" type="text" id="entreprise" name="entreprise" value="{{ old('entreprise') }}" placeholder="Ex : TechBénin SARL" />
-        </div>
-
-        <div style="display:flex;align-items:center;gap:8px;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:.82rem;color:#185FA5;margin-bottom:12px">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-          Aucun mot de passe requis — vous recevrez un <strong>code OTP</strong> par e-mail.
         </div>
 
         <label class="aform__check">

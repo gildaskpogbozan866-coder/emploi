@@ -44,6 +44,9 @@ use App\Http\Controllers\Admin\SignalementController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStat;
 use App\Http\Controllers\Admin\ParametreController as AdminParametre;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\VerificationRecruteurController;
+use App\Http\Controllers\Recruteur\VerificationController as RecruteurVerifCtrl;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // ════════════════════════════════════════════════════════
 //  PAGES PUBLIQUES
@@ -98,27 +101,56 @@ Route::prefix('blog')->name('blog.')->group(function () {
 });
 
 // ════════════════════════════════════════════════════════
-//  AUTHENTIFICATION (OTP sans mot de passe)
+//  AUTHENTIFICATION (email + mot de passe)
 // ════════════════════════════════════════════════════════
 Route::prefix('auth')->name('auth.')->group(function () {
-    Route::get('/connexion',    [AuthController::class, 'showConnexion'])->name('connexion');
-    Route::get('/inscription',  [AuthController::class, 'showInscription'])->name('inscription');
-    Route::get('/verification', [AuthController::class, 'showVerificationEmail'])->name('verification-email');
-    Route::get('/compte-confirme', [AuthController::class, 'showCompteConfirme'])->name('compte-confirme');
-  
-    // Routes POST protégées contre le spam OTP
-    Route::post('/connexion',   [AuthController::class, 'envoyerOtp'])->name('connexion.otp')->middleware('throttle:otp-envoi');
-    Route::post('/inscription', [AuthController::class, 'inscrire'])->name('inscription.store')->middleware('throttle:otp-envoi');
-    Route::post('/verification', [AuthController::class, 'verifierOtp'])->name('verification.otp')->middleware('throttle:otp-verification');
-    Route::post('/verification/renvoyer', [AuthController::class, 'renvoyerOtp'])->name('verification.renvoyer')->middleware('throttle:otp-renvoyer');
+    Route::get('/connexion',           [AuthController::class, 'showConnexion'])->name('connexion');
+    Route::get('/inscription',         [AuthController::class, 'showInscription'])->name('inscription');
+    Route::get('/compte-confirme',     [AuthController::class, 'showCompteConfirme'])->name('compte-confirme');
+    Route::get('/mot-de-passe-oublie', [AuthController::class, 'showMotDePasseOublie'])->name('mot-de-passe-oublie');
+    Route::get('/reinitialiser/{token}', [AuthController::class, 'showReinitialisation'])->name('reinitialiser');
+
+    Route::post('/connexion',           [AuthController::class, 'connecter'])->name('connexion.store')->middleware('throttle:10,1');
+    Route::post('/inscription',         [AuthController::class, 'inscrire'])->name('inscription.store');
+    Route::post('/mot-de-passe-oublie', [AuthController::class, 'envoyerLienReinitialisation'])->name('mot-de-passe-oublie.store');
+    Route::post('/reinitialiser',       [AuthController::class, 'reinitialiserMotDePasse'])->name('reinitialiser.store');
+
+    Route::get('/changer-mot-de-passe',  [AuthController::class, 'showChangerMotDePasse'])->name('changer-mot-de-passe')->middleware('auth');
+    Route::post('/changer-mot-de-passe', [AuthController::class, 'changerMotDePasse'])->name('changer-mot-de-passe.store')->middleware('auth');
 
     Route::post('/deconnecter', [AuthController::class, 'deconnecter'])->name('deconnecter')->middleware('auth');
 });
 
 // ════════════════════════════════════════════════════════
+//  VÉRIFICATION EMAIL (Laravel natif)
+// ════════════════════════════════════════════════════════
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verifier', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verifier/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        $user = $request->user();
+        if ($user->role === 'recruteur') {
+            return redirect()->route('recruteur.verification');
+        }
+        return redirect()->route('auth.compte-confirme');
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/renvoyer', function (Illuminate\Http\Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('home'));
+        }
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('resent', true);
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
+// ════════════════════════════════════════════════════════
 //  ESPACE CANDIDAT — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'spatie.role:'.Role::CANDIDAT])->group(function () {
+Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
     Route::get('/tableau-de-bord', [CandidatDashboard::class, 'index'])->name('dashboard');
 
     // CVs — nécessite permission deposit-cv
@@ -170,7 +202,17 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'spatie.role:'
 // ════════════════════════════════════════════════════════
 //  ESPACE RECRUTEUR — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'spatie.role:'.Role::RECRUTEUR])->group(function () {
+Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 'spatie.role:'.Role::RECRUTEUR])->group(function () {
+
+    // Vérification du compte entreprise (accessible avant approbation admin)
+    Route::get('/verification',             [RecruteurVerifCtrl::class, 'soumettre'])->name('verification');
+    Route::post('/verification',            [RecruteurVerifCtrl::class, 'store'])->name('verification.store');
+    Route::get('/verification/en-attente',  [RecruteurVerifCtrl::class, 'enAttente'])->name('verification.en-attente');
+    Route::get('/verification/rejete',      [RecruteurVerifCtrl::class, 'rejete'])->name('verification.rejete');
+
+    // ── Tout ce qui suit nécessite l'approbation du dossier par l'admin ──
+    Route::middleware('recruteur.approuve')->group(function () {
+
     Route::get('/tableau-de-bord', [RecruteurDashboard::class, 'index'])->name('dashboard');
 
     // Publication d'offres — nécessite publish-offre
@@ -214,12 +256,14 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'spatie.role
     Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
     Route::get('/parametres',    [RecruteurProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
+
+    }); // fin recruteur.approuve
 });
 
 // ════════════════════════════════════════════════════════
 //  ESPACE TALENT — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('talent')->name('talent.')->middleware(['auth', 'spatie.role:'.Role::TALENT])->group(function () {
+Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:'.Role::TALENT])->group(function () {
     Route::get('/tableau-de-bord', [TalentDashboard::class, 'index'])->name('dashboard');
 
     // Profil talent — nécessite create-profil-talent
@@ -254,6 +298,15 @@ Route::prefix('talent')->name('talent.')->middleware(['auth', 'spatie.role:'.Rol
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role::ADMIN])->group(function () {
 
     Route::get('/tableau-de-bord', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Vérification des comptes recruteurs
+    Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('verifications')->name('verifications.')->group(function () {
+        Route::get('/',                                  [VerificationRecruteurController::class, 'index'])->name('list');
+        Route::get('/{verification}',                    [VerificationRecruteurController::class, 'show'])->name('show');
+        Route::patch('/{verification}/approuver',        [VerificationRecruteurController::class, 'approuver'])->name('approuver');
+        Route::patch('/{verification}/rejeter',          [VerificationRecruteurController::class, 'rejeter'])->name('rejeter');
+        Route::get('/{verification}/document/{field}',   [VerificationRecruteurController::class, 'servirDocument'])->name('document');
+    });
 
     // Gestion utilisateurs
     Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('utilisateurs')->name('utilisateurs.')->group(function () {

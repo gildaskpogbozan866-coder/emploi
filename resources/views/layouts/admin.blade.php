@@ -67,6 +67,18 @@
           </a>
         </li>
         <li class="adm-nav__section">Utilisateurs</li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.verifications*') ? 'active' : '' }}">
+          <a href="{{ route('admin.verifications.list') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.02"/><path d="M16 5l2 2 4-4"/></svg>
+            Vérifications recruteurs
+            @php
+              $enAttente = \App\Models\RecruteurVerification::where('statut','en_attente')->count();
+            @endphp
+            @if($enAttente > 0)
+              <span style="background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:auto">{{ $enAttente }}</span>
+            @endif
+          </a>
+        </li>
         <li class="adm-nav__item {{ request()->routeIs('admin.utilisateurs.candidats*') ? 'active' : '' }}">
           <a href="{{ route('admin.utilisateurs.candidats') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -140,6 +152,7 @@
     </main>
   </div>
 
+  @include('partials._form-guard')
   @yield('scripts')
 </body>
 </html>

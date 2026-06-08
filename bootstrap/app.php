@@ -11,31 +11,44 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            // Notre middleware de rôle custom (garde-fou simple)
-            'role'       => \App\Http\Middleware\CheckRole::class,
+        $middleware->redirectGuestsTo(fn () => route('auth.connexion'));
 
-            // Middlewares Spatie granulaires
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'spatie.role'=> \Spatie\Permission\Middleware\RoleMiddleware::class,
+        $middleware->alias([
+            'role'               => \App\Http\Middleware\CheckRole::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'spatie.role'        => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'recruteur.approuve' => \App\Http\Middleware\RecruteurApprouve::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Pour les routes web OTP, rediriger avec un message d'erreur ciblé
-        // plutôt qu'afficher une page 429 générique incompréhensible.
+
+        // 419 — CSRF expiré : redirect back avec message au lieu de page blanche
+        $exceptions->render(function (
+            \Illuminate\Session\TokenMismatchException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Session expirée. Veuillez réessayer.'], 419);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('password', 'mot_de_passe_actuel', 'password_confirmation'))
+                ->withErrors(['session' => 'Votre session a expiré. Veuillez soumettre le formulaire à nouveau.']);
+        });
+
+        // 429 — Trop de tentatives
         $exceptions->render(function (
             \Illuminate\Http\Exceptions\ThrottleRequestsException $e,
             \Illuminate\Http\Request $request
         ) {
             if ($request->expectsJson()) {
-                return null; // laisser le comportement API par défaut
+                return null;
             }
 
-            $field = str_contains($request->path(), 'verification') ? 'code' : 'email';
-
             return back()
-                ->withErrors([$field => 'Trop de tentatives. Patientez quelques minutes avant de réessayer.'])
-                ->withInput();
+                ->withErrors(['credentials' => 'Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.'])
+                ->withInput($request->except('password', 'mot_de_passe_actuel', 'password_confirmation'));
         });
+
     })->create();

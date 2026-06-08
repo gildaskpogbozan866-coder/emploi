@@ -60,6 +60,7 @@
     </main>
   </div>
 
+  @include('partials._form-guard')
   @yield('scripts')
 </body>
 </html>

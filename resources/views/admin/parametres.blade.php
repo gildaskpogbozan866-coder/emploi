@@ -11,6 +11,13 @@
 
 <div class="adm-card" style="max-width:640px">
   <div style="padding:24px">
+
+    @if(session('success'))
+      <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#065f46;margin-bottom:20px">
+        {{ session('success') }}
+      </div>
+    @endif
+
     <form method="POST" action="{{ route('admin.parametres.update') }}">
       @csrf @method('PUT')
 
@@ -23,10 +30,26 @@
                    style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
           </div>
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Email de contact</label>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Email de contact (expéditeur)</label>
             <input type="email" name="site_email" value="{{ $parametres['site_email'] }}"
                    style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
           </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
+        <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 6px">Notifications admin</h3>
+        <p style="font-size:12.5px;color:#6b7280;margin:0 0 14px">Adresse e-mail qui reçoit les alertes : nouveaux dossiers recruteurs soumis, etc.</p>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">E-mail de réception des alertes</label>
+          <input type="email" name="admin_notification_email"
+                 value="{{ $parametres['admin_notification_email'] }}"
+                 placeholder="ex : notifications@emploibouge.bj"
+                 style="width:100%;padding:10px 14px;border:1.5px solid {{ $errors->has('admin_notification_email') ? '#e53e3e' : '#d1d5db' }};border-radius:8px;font-size:14px;box-sizing:border-box">
+          @error('admin_notification_email')
+            <p style="color:#e53e3e;font-size:12px;margin-top:4px">{{ $message }}</p>
+          @enderror
+          <p style="font-size:12px;color:#94a3b8;margin-top:6px">Laisser vide pour désactiver les notifications par e-mail.</p>
         </div>
       </div>
 

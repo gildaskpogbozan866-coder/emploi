@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Mot de passe oublié — Emploi Bouge Bénin')
+@section('title', 'Nouveau mot de passe — Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/auth/mot-de-passe-oublie.css') }}">
@@ -19,27 +19,13 @@
     </a>
 
     <div class="auth-panel__body">
-      <div class="auth-panel__tag">Réinitialisation</div>
+      <div class="auth-panel__tag">Nouveau mot de passe</div>
       <h2 class="auth-panel__title">
-        Récupérez l'accès<br>à votre <span>compte</span>.
+        Choisissez un<br>nouveau <span>mot de passe</span>.
       </h2>
       <p class="auth-panel__desc">
-        Entrez votre adresse e-mail et nous vous enverrons un lien pour créer un nouveau mot de passe.
+        Votre nouveau mot de passe doit contenir au moins 8 caractères. Choisissez quelque chose de mémorable mais difficile à deviner.
       </p>
-      <div class="auth-panel__steps">
-        <div class="auth-step">
-          <span class="auth-step__num">1</span>
-          <span class="auth-step__label">Entrez votre adresse e-mail</span>
-        </div>
-        <div class="auth-step">
-          <span class="auth-step__num">2</span>
-          <span class="auth-step__label">Recevez le lien par e-mail</span>
-        </div>
-        <div class="auth-step">
-          <span class="auth-step__num">3</span>
-          <span class="auth-step__label">Choisissez un nouveau mot de passe</span>
-        </div>
-      </div>
     </div>
 
     <div class="auth-panel__footer">© {{ date('Y') }} Emploi Bouge Bénin</div>
@@ -55,37 +41,42 @@
         Retour à la connexion
       </a>
 
-      <h1 class="auth-form-wrap__title">Mot de passe<br>oublié ?</h1>
-      <p class="auth-form-wrap__sub">
-        Pas de panique. Indiquez votre adresse e-mail et nous vous enverrons un lien de réinitialisation.
-      </p>
+      <h1 class="auth-form-wrap__title">Nouveau<br>mot de passe</h1>
+      <p class="auth-form-wrap__sub">Choisissez un mot de passe sécurisé d'au moins 8 caractères.</p>
 
-      @if(session('success'))
-        <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#065f46;margin-bottom:20px;display:flex;align-items:center;gap:10px">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          {{ session('success') }}
-        </div>
-      @endif
-
-      <form class="aform" method="POST" action="{{ route('auth.mot-de-passe-oublie.store') }}">
+      <form class="aform" method="POST" action="{{ route('auth.reinitialiser.store') }}">
         @csrf
+        <input type="hidden" name="token" value="{{ $token }}">
+
         <div class="aform__field">
           <label class="aform__label" for="email">Adresse e-mail</label>
           <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
-                 value="{{ old('email') }}"
+                 value="{{ old('email', $email) }}"
                  placeholder="vous@exemple.com" required autocomplete="email" />
           @error('email')
             <p class="aform__error">{{ $message }}</p>
           @enderror
         </div>
 
-        <button type="submit" class="aform__submit">Envoyer le lien de réinitialisation</button>
+        <div class="aform__field">
+          <label class="aform__label" for="password">Nouveau mot de passe</label>
+          <input class="aform__input @error('password') aform__input--error @enderror"
+                 type="password" id="password" name="password"
+                 placeholder="Min. 8 caractères" required autocomplete="new-password" />
+          @error('password')
+            <p class="aform__error">{{ $message }}</p>
+          @enderror
+        </div>
 
-        <p class="aform__switch">
-          Vous vous souvenez de votre mot de passe ?
-          <a href="{{ route('auth.connexion') }}">Se connecter</a>
-        </p>
+        <div class="aform__field">
+          <label class="aform__label" for="password_confirmation">Confirmer le mot de passe</label>
+          <input class="aform__input"
+                 type="password" id="password_confirmation" name="password_confirmation"
+                 placeholder="Répétez le mot de passe" required autocomplete="new-password" />
+        </div>
+
+        <button type="submit" class="aform__submit">Enregistrer le nouveau mot de passe</button>
       </form>
 
     </div>

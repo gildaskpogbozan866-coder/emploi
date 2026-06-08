@@ -42,11 +42,10 @@ class ProfilController extends Controller
     public function updateParametres(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,' . Auth::id(),
-            'tel'   => 'nullable|string|max:20',
+            'tel' => 'nullable|string|max:20',
         ]);
 
-        Auth::user()->update($request->only(['email','tel']));
+        Auth::user()->update($request->only(['tel']));
         return back()->with('success', 'Paramètres mis à jour.');
     }
 }

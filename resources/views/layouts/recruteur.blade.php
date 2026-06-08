@@ -74,6 +74,7 @@
       });
     }
   </script>
+  @include('partials._form-guard')
   @yield('scripts')
 </body>
 </html>

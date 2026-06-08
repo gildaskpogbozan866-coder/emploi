@@ -2,12 +2,17 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\RecruteurVerification;
 use App\Models\User;
-use Carbon\Carbon;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use App\Notifications\ReinitialisationMotDePasse;
+use App\Notifications\VerificationEmailFr;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -18,54 +23,39 @@ class AuthTest extends TestCase
     {
         parent::setUp();
         $this->seed(RolesAndPermissionsSeeder::class);
-        Cache::flush(); // isoler les compteurs de rate-limiting entre chaque test
+        Cache::flush();
+        Notification::fake();
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private function creerUser(
-        string $email = 'test@test.com',
-        string $role  = 'candidat',
-        bool   $actif = true
+        string $role     = 'candidat',
+        bool   $verifie  = true,
+        bool   $actif    = true,
+        string $password = 'password123'
     ): User {
-        $user = User::create([
-            'prenom'            => 'Test',
-            'nom'               => 'User',
-            'email'             => $email,
-            'pays'              => 'Bénin',
+        $user = User::factory()->create([
             'role'              => $role,
+            'email_verified_at' => $verifie ? now() : null,
             'actif'             => $actif,
-            'email_verified_at' => now(),
+            'password'          => Hash::make($password),
         ]);
         $user->assignRole($role);
         return $user;
     }
 
-    private function creerOtp(string $email, string $type, ?array $payload = null): string
-    {
-        $code = '123456';
-        DB::table('otp_codes')->where('email', $email)->delete();
-        DB::table('otp_codes')->insert([
-            'email'      => $email,
-            'code'       => $code,
-            'type'       => $type,
-            'payload'    => $payload ? json_encode($payload) : null,
-            'expires_at' => Carbon::now()->addMinutes(10),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        return $code;
-    }
-
     private function payloadInscription(string $role = 'candidat', array $extra = []): array
     {
         return array_merge([
-            'prenom' => 'Jean',
-            'nom'    => 'Dupont',
-            'email'  => 'jean@test.com',
-            'tel'    => '+229 01 00 00 00',
-            'pays'   => 'Bénin',
-            'role'   => $role,
+            'prenom'               => 'Jean',
+            'nom'                  => 'Dupont',
+            'email'                => 'jean@test.com',
+            'password'             => 'motdepasse123',
+            'password_confirmation' => 'motdepasse123',
+            'tel'                  => '+229 01 00 00 00',
+            'pays'                 => 'Bénin',
+            'role'                 => $role,
         ], $extra);
     }
 
@@ -75,34 +65,30 @@ class AuthTest extends TestCase
 
     public function test_page_connexion_accessible(): void
     {
-        $this->get(route('auth.connexion'))->assertStatus(200);
+        $this->get(route('auth.connexion'))->assertOk();
     }
 
     public function test_page_inscription_accessible(): void
     {
-        $this->get(route('auth.inscription'))->assertStatus(200);
+        $this->get(route('auth.inscription'))->assertOk();
     }
 
-    public function test_page_verification_accessible(): void
+    public function test_page_mot_de_passe_oublie_accessible(): void
     {
-        $this->get(route('auth.verification-email'))->assertStatus(200);
+        $this->get(route('auth.mot-de-passe-oublie'))->assertOk();
     }
 
-    public function test_utilisateur_connecte_redirige_depuis_connexion_vers_son_dashboard(): void
+    public function test_utilisateur_connecte_redirige_depuis_connexion(): void
     {
-        $user = $this->creerUser('test@test.com', 'candidat');
-
-        $this->actingAs($user)
-            ->get(route('auth.connexion'))
+        $user = $this->creerUser('candidat');
+        $this->actingAs($user)->get(route('auth.connexion'))
             ->assertRedirect(route('candidat.dashboard'));
     }
 
     public function test_recruteur_connecte_redirige_vers_dashboard_recruteur(): void
     {
-        $user = $this->creerUser('rec@test.com', 'recruteur');
-
-        $this->actingAs($user)
-            ->get(route('auth.inscription'))
+        $user = $this->creerUser('recruteur');
+        $this->actingAs($user)->get(route('auth.connexion'))
             ->assertRedirect(route('recruteur.dashboard'));
     }
 
@@ -110,261 +96,411 @@ class AuthTest extends TestCase
     //  INSCRIPTION
     // ══════════════════════════════════════════════════════════════════════
 
-    public function test_inscription_candidat_cree_otp_et_redirige_vers_verification(): void
+    public function test_inscription_candidat_cree_utilisateur_et_envoie_email_verification(): void
     {
         $this->post(route('auth.inscription.store'), $this->payloadInscription())
-            ->assertRedirect(route('auth.verification-email'));
+            ->assertRedirect(route('verification.notice'));
 
-        $this->assertDatabaseHas('otp_codes', [
+        $this->assertDatabaseHas('users', [
             'email' => 'jean@test.com',
-            'type'  => 'register',
+            'role'  => 'candidat',
         ]);
+
+        $user = User::where('email', 'jean@test.com')->first();
+        $this->assertNull($user->email_verified_at);
+        $this->assertTrue($user->hasRole('candidat'));
+
+        Notification::assertSentTo($user, VerificationEmailFr::class);
     }
 
-    public function test_inscription_talent_avec_metier_cree_otp(): void
-    {
-        $payload = $this->payloadInscription('talent', ['metier' => 'Développeur Web']);
-
-        $this->post(route('auth.inscription.store'), $payload)
-            ->assertRedirect(route('auth.verification-email'));
-
-        $this->assertDatabaseHas('otp_codes', [
-            'email' => 'jean@test.com',
-            'type'  => 'register',
-        ]);
-    }
-
-    public function test_inscription_recruteur_avec_entreprise_cree_otp(): void
+    public function test_inscription_recruteur_assigne_role_recruteur(): void
     {
         $payload = $this->payloadInscription('recruteur', ['entreprise' => 'TechBénin SARL']);
+        $this->post(route('auth.inscription.store'), $payload);
 
-        $this->post(route('auth.inscription.store'), $payload)
-            ->assertRedirect(route('auth.verification-email'));
+        $user = User::where('email', 'jean@test.com')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue($user->hasRole('recruteur'));
+        $this->assertEquals('TechBénin SARL', $user->entreprise);
+    }
 
-        $this->assertDatabaseHas('otp_codes', [
-            'email' => 'jean@test.com',
-            'type'  => 'register',
-        ]);
+    public function test_inscription_talent_assigne_role_talent(): void
+    {
+        $payload = $this->payloadInscription('talent', ['metier' => 'Développeur Web']);
+        $this->post(route('auth.inscription.store'), $payload);
+
+        $user = User::where('email', 'jean@test.com')->first();
+        $this->assertTrue($user->hasRole('talent'));
+        $this->assertEquals('Développeur Web', $user->metier);
     }
 
     public function test_inscription_email_deja_utilise_retourne_erreur(): void
     {
-        $this->creerUser('jean@test.com');
+        $this->creerUser();
+        User::where('email', '!=', 'jean@test.com')->delete();
+        User::factory()->create(['email' => 'jean@test.com']);
 
         $this->post(route('auth.inscription.store'), $this->payloadInscription())
             ->assertSessionHasErrors('email');
     }
 
-    public function test_inscription_role_admin_est_refuse(): void
+    public function test_inscription_role_admin_refuse(): void
     {
-        $payload         = $this->payloadInscription();
-        $payload['role'] = 'admin';
-
-        $this->post(route('auth.inscription.store'), $payload)
+        $this->post(route('auth.inscription.store'), $this->payloadInscription('admin'))
             ->assertSessionHasErrors('role');
     }
 
-    public function test_inscription_champs_requis_manquants_retourne_erreurs(): void
+    public function test_inscription_mot_de_passe_trop_court(): void
+    {
+        $payload = $this->payloadInscription('candidat', [
+            'password'              => 'abc',
+            'password_confirmation' => 'abc',
+        ]);
+        $this->post(route('auth.inscription.store'), $payload)
+            ->assertSessionHasErrors('password');
+    }
+
+    public function test_inscription_mots_de_passe_non_correspondants(): void
+    {
+        $payload = $this->payloadInscription('candidat', [
+            'password'              => 'motdepasse123',
+            'password_confirmation' => 'autrechose456',
+        ]);
+        $this->post(route('auth.inscription.store'), $payload)
+            ->assertSessionHasErrors('password');
+    }
+
+    public function test_inscription_champs_requis_manquants(): void
     {
         $this->post(route('auth.inscription.store'), [])
-            ->assertSessionHasErrors(['prenom', 'nom', 'email', 'pays', 'role']);
+            ->assertSessionHasErrors(['prenom', 'nom', 'email', 'password', 'pays', 'role']);
+    }
+
+    public function test_utilisateur_est_connecte_apres_inscription(): void
+    {
+        $this->post(route('auth.inscription.store'), $this->payloadInscription());
+        $this->assertAuthenticated();
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  CONNEXION (envoi OTP)
+    //  CONNEXION
     // ══════════════════════════════════════════════════════════════════════
 
-    public function test_connexion_email_inconnu_retourne_erreur(): void
+    public function test_connexion_candidat_avec_identifiants_valides(): void
     {
-        $this->post(route('auth.connexion.otp'), ['email' => 'inconnu@test.com'])
-            ->assertSessionHasErrors('email');
+        $user = $this->creerUser('candidat');
+
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect(route('candidat.dashboard'));
+
+        $this->assertAuthenticatedAs($user);
     }
 
-    public function test_connexion_compte_suspendu_retourne_erreur(): void
+    public function test_connexion_recruteur_redirige_vers_dashboard_recruteur(): void
     {
-        $this->creerUser('suspendu@test.com', 'candidat', actif: false);
+        $user = $this->creerUser('recruteur');
 
-        $this->post(route('auth.connexion.otp'), ['email' => 'suspendu@test.com'])
-            ->assertSessionHasErrors('email');
-
-        $this->assertDatabaseMissing('otp_codes', ['email' => 'suspendu@test.com']);
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect(route('recruteur.dashboard'));
     }
 
-    public function test_connexion_email_valide_cree_otp_login_et_redirige(): void
+    public function test_connexion_talent_redirige_vers_dashboard_talent(): void
     {
-        $this->creerUser('actif@test.com');
+        $user = $this->creerUser('talent');
 
-        $this->post(route('auth.connexion.otp'), ['email' => 'actif@test.com'])
-            ->assertRedirect(route('auth.verification-email'));
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect(route('talent.dashboard'));
+    }
 
-        $this->assertDatabaseHas('otp_codes', [
-            'email' => 'actif@test.com',
-            'type'  => 'login',
-        ]);
+    public function test_connexion_mot_de_passe_incorrect(): void
+    {
+        $user = $this->creerUser();
+
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'mauvais_mdp',
+        ])->assertSessionHasErrors('credentials');
+
+        $this->assertGuest();
+    }
+
+    public function test_connexion_email_inconnu(): void
+    {
+        $this->post(route('auth.connexion.store'), [
+            'email'    => 'inconnu@test.com',
+            'password' => 'password123',
+        ])->assertSessionHasErrors('credentials');
+    }
+
+    public function test_connexion_compte_suspendu(): void
+    {
+        $user = $this->creerUser('candidat', true, false);
+
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'password123',
+        ])->assertSessionHasErrors('credentials');
+
+        $this->assertGuest();
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  VÉRIFICATION OTP
+    //  VÉRIFICATION EMAIL
     // ══════════════════════════════════════════════════════════════════════
 
-    public function test_verification_register_candidat_cree_user_avec_role_spatie(): void
+    public function test_utilisateur_non_verifie_redirige_vers_notice(): void
     {
-        $email   = 'nouveau@test.com';
-        $payload = $this->payloadInscription('candidat', ['email' => $email]);
-        $code    = $this->creerOtp($email, 'register', $payload);
+        $user = $this->creerUser('candidat', verifie: false);
 
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => $code]);
+        $this->actingAs($user)
+            ->get(route('candidat.dashboard'))
+            ->assertRedirect(route('verification.notice'));
+    }
 
-        $user = User::where('email', $email)->first();
-        $this->assertNotNull($user);
-        $this->assertEquals('candidat', $user->role);
-        $this->assertTrue($user->hasRole('candidat'));
+    public function test_page_verification_notice_accessible_pour_utilisateur_connecte(): void
+    {
+        $user = $this->creerUser('candidat', verifie: false);
+
+        $this->actingAs($user)
+            ->get(route('verification.notice'))
+            ->assertOk();
+    }
+
+    public function test_email_verifie_via_lien_signe(): void
+    {
+        $user = $this->creerUser('candidat', verifie: false);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $this->actingAs($user)->get($url)->assertRedirect(route('auth.compte-confirme'));
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
+    }
+
+    public function test_recruteur_redirige_vers_verification_entreprise_apres_email_verifie(): void
+    {
+        $user = $this->creerUser('recruteur', verifie: false);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $this->actingAs($user)->get($url)
+            ->assertRedirect(route('recruteur.verification'));
+    }
+
+    public function test_renvoi_email_verification(): void
+    {
+        $user = $this->creerUser('candidat', verifie: false);
+
+        $this->actingAs($user)
+            ->post(route('verification.send'))
+            ->assertRedirect();
+
+        Notification::assertSentTo($user, VerificationEmailFr::class);
+    }
+
+    public function test_utilisateur_deja_verifie_ne_peut_pas_acceder_verification_notice(): void
+    {
+        $user = $this->creerUser('candidat', verifie: true);
+
+        // L'utilisateur vérifié qui clique sur un lien de vérification
+        // voit son email_verified_at rester non-null
         $this->assertNotNull($user->email_verified_at);
     }
 
-    public function test_verification_register_redirige_vers_compte_confirme(): void
-    {
-        $email   = 'nouveau@test.com';
-        $payload = $this->payloadInscription('candidat', ['email' => $email]);
-        $code    = $this->creerOtp($email, 'register', $payload);
+    // ══════════════════════════════════════════════════════════════════════
+    //  RÉINITIALISATION DE MOT DE PASSE
+    // ══════════════════════════════════════════════════════════════════════
 
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => $code])
-            ->assertRedirect(route('auth.compte-confirme'));
+    public function test_mot_de_passe_oublie_envoie_email_reset(): void
+    {
+        $user = $this->creerUser();
+
+        $this->post(route('auth.mot-de-passe-oublie.store'), ['email' => $user->email])
+            ->assertSessionHas('success');
+
+        Notification::assertSentTo($user, ReinitialisationMotDePasse::class);
     }
 
-    public function test_verification_register_talent_assigne_role_talent(): void
+    public function test_mot_de_passe_oublie_email_inconnu_ne_revele_pas_existence(): void
     {
-        $email   = 'talent@test.com';
-        $payload = $this->payloadInscription('talent', ['email' => $email, 'metier' => 'Designer']);
-        $code    = $this->creerOtp($email, 'register', $payload);
-
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => $code]);
-
-        $this->assertTrue(User::where('email', $email)->first()->hasRole('talent'));
+        $this->post(route('auth.mot-de-passe-oublie.store'), ['email' => 'inexistant@test.com'])
+            ->assertSessionHasErrors('email');
     }
 
-    public function test_verification_register_recruteur_persiste_entreprise(): void
+    public function test_reinitialisation_mot_de_passe_avec_token_valide(): void
     {
-        $email   = 'rec@test.com';
-        $payload = $this->payloadInscription('recruteur', [
-            'email'      => $email,
-            'entreprise' => 'TechBénin SARL',
-        ]);
-        $code = $this->creerOtp($email, 'register', $payload);
+        $user  = $this->creerUser();
+        $token = Password::createToken($user);
 
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => $code]);
+        $this->post(route('auth.reinitialiser.store'), [
+            'token'                 => $token,
+            'email'                 => $user->email,
+            'password'              => 'nouveau_mdp123',
+            'password_confirmation' => 'nouveau_mdp123',
+        ])->assertRedirect(route('auth.connexion'));
 
-        $this->assertDatabaseHas('users', [
-            'email'      => $email,
-            'entreprise' => 'TechBénin SARL',
-            'role'       => 'recruteur',
-        ]);
+        $this->assertTrue(Hash::check('nouveau_mdp123', $user->fresh()->password));
     }
 
-    public function test_verification_login_candidat_redirige_vers_dashboard_candidat(): void
+    public function test_reinitialisation_echoue_avec_token_invalide(): void
     {
-        $this->creerUser('actif@test.com', 'candidat');
-        $code = $this->creerOtp('actif@test.com', 'login');
+        $user = $this->creerUser();
 
-        $this->withSession(['otp_email' => 'actif@test.com'])
-            ->post(route('auth.verification.otp'), ['code' => $code])
-            ->assertRedirect(route('candidat.dashboard'));
+        $this->post(route('auth.reinitialiser.store'), [
+            'token'                 => 'token_bidon',
+            'email'                 => $user->email,
+            'password'              => 'nouveau_mdp123',
+            'password_confirmation' => 'nouveau_mdp123',
+        ])->assertSessionHasErrors('email');
     }
 
-    public function test_verification_login_recruteur_redirige_vers_dashboard_recruteur(): void
+    public function test_reinitialisation_echoue_avec_mot_de_passe_trop_court(): void
     {
-        $this->creerUser('rec@test.com', 'recruteur');
-        $code = $this->creerOtp('rec@test.com', 'login');
+        $user  = $this->creerUser();
+        $token = Password::createToken($user);
 
-        $this->withSession(['otp_email' => 'rec@test.com'])
-            ->post(route('auth.verification.otp'), ['code' => $code])
-            ->assertRedirect(route('recruteur.dashboard'));
-    }
-
-    public function test_verification_login_talent_redirige_vers_dashboard_talent(): void
-    {
-        $this->creerUser('talent@test.com', 'talent');
-        $code = $this->creerOtp('talent@test.com', 'login');
-
-        $this->withSession(['otp_email' => 'talent@test.com'])
-            ->post(route('auth.verification.otp'), ['code' => $code])
-            ->assertRedirect(route('talent.dashboard'));
-    }
-
-    public function test_verification_code_invalide_retourne_erreur(): void
-    {
-        $email = 'actif@test.com';
-        $this->creerUser($email);
-        $this->creerOtp($email, 'login');
-
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => '000000'])
-            ->assertSessionHasErrors('code');
-    }
-
-    public function test_verification_code_expire_retourne_erreur(): void
-    {
-        $email = 'actif@test.com';
-        $this->creerUser($email);
-
-        DB::table('otp_codes')->insert([
-            'email'      => $email,
-            'code'       => '999999',
-            'type'       => 'login',
-            'payload'    => null,
-            'expires_at' => Carbon::now()->subMinutes(1),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => '999999'])
-            ->assertSessionHasErrors('code');
-    }
-
-    public function test_verification_sans_session_redirige_vers_connexion(): void
-    {
-        $this->post(route('auth.verification.otp'), ['code' => '123456'])
-            ->assertRedirect(route('auth.connexion'));
-    }
-
-    public function test_otp_supprime_de_la_base_apres_verification_reussie(): void
-    {
-        $email   = 'nouveau@test.com';
-        $payload = $this->payloadInscription('candidat', ['email' => $email]);
-        $code    = $this->creerOtp($email, 'register', $payload);
-
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.otp'), ['code' => $code]);
-
-        $this->assertDatabaseMissing('otp_codes', ['email' => $email]);
+        $this->post(route('auth.reinitialiser.store'), [
+            'token'                 => $token,
+            'email'                 => $user->email,
+            'password'              => 'court',
+            'password_confirmation' => 'court',
+        ])->assertSessionHasErrors('password');
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  RENVOI OTP
+    //  CHANGEMENT DE MOT DE PASSE (connecté)
     // ══════════════════════════════════════════════════════════════════════
 
-    public function test_renvoyer_otp_genere_un_nouveau_code(): void
+    public function test_page_changer_mot_de_passe_accessible_connecte(): void
     {
-        $email      = 'actif@test.com';
-        $ancienCode = $this->creerOtp($email, 'login');
-
-        $this->withSession(['otp_email' => $email])
-            ->post(route('auth.verification.renvoyer'));
-
-        $nouveau = DB::table('otp_codes')->where('email', $email)->first();
-        $this->assertNotNull($nouveau);
-        $this->assertNotEquals($ancienCode, $nouveau->code);
+        $user = $this->creerUser();
+        $this->actingAs($user)->get(route('auth.changer-mot-de-passe'))->assertOk();
     }
 
-    public function test_renvoyer_otp_sans_session_redirige_vers_connexion(): void
+    public function test_utilisateur_peut_changer_son_mot_de_passe(): void
     {
-        $this->post(route('auth.verification.renvoyer'))
-            ->assertRedirect(route('auth.connexion'));
+        $user = $this->creerUser(password: 'ancien_mdp123');
+
+        $this->actingAs($user)->post(route('auth.changer-mot-de-passe.store'), [
+            'mot_de_passe_actuel'   => 'ancien_mdp123',
+            'password'              => 'nouveau_mdp456',
+            'password_confirmation' => 'nouveau_mdp456',
+        ])->assertSessionHas('mdp_success');
+
+        $this->assertTrue(Hash::check('nouveau_mdp456', $user->fresh()->password));
+    }
+
+    public function test_changement_echoue_avec_mauvais_mot_de_passe_actuel(): void
+    {
+        $user = $this->creerUser();
+
+        $this->actingAs($user)->post(route('auth.changer-mot-de-passe.store'), [
+            'mot_de_passe_actuel'   => 'mauvais_mdp',
+            'password'              => 'nouveau_mdp456',
+            'password_confirmation' => 'nouveau_mdp456',
+        ])->assertSessionHasErrors('mot_de_passe_actuel');
+    }
+
+    public function test_changement_echoue_avec_nouveau_mdp_trop_court(): void
+    {
+        $user = $this->creerUser(password: 'ancien_mdp123');
+
+        $this->actingAs($user)->post(route('auth.changer-mot-de-passe.store'), [
+            'mot_de_passe_actuel'   => 'ancien_mdp123',
+            'password'              => 'abc',
+            'password_confirmation' => 'abc',
+        ])->assertSessionHasErrors('password');
+    }
+
+    public function test_changer_mdp_inaccessible_sans_connexion(): void
+    {
+        $this->get(route('auth.changer-mot-de-passe'))->assertRedirect(route('auth.connexion'));
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MIDDLEWARE RECRUTEUR — VÉRIFICATION ENTREPRISE
+    // ══════════════════════════════════════════════════════════════════════
+
+    public function test_recruteur_sans_dossier_redirige_vers_formulaire_verification(): void
+    {
+        $user = $this->creerUser('recruteur');
+
+        $this->actingAs($user)
+            ->get(route('recruteur.dashboard'))
+            ->assertRedirect(route('recruteur.verification'));
+    }
+
+    public function test_recruteur_en_attente_bloque_acces_dashboard(): void
+    {
+        $user = $this->creerUser('recruteur');
+        RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'en_attente']);
+
+        $this->actingAs($user)
+            ->get(route('recruteur.dashboard'))
+            ->assertRedirect(route('recruteur.verification.en-attente'));
+    }
+
+    public function test_recruteur_rejete_bloque_acces_dashboard(): void
+    {
+        $user = $this->creerUser('recruteur');
+        RecruteurVerification::create([
+            'user_id'    => $user->id,
+            'statut'     => 'rejete',
+            'note_admin' => 'Documents illisibles.',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('recruteur.dashboard'))
+            ->assertRedirect(route('recruteur.verification.rejete'));
+    }
+
+    public function test_recruteur_approuve_acces_complet_dashboard(): void
+    {
+        $user = $this->creerUser('recruteur');
+        RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'approuve']);
+
+        $this->actingAs($user)
+            ->get(route('recruteur.dashboard'))
+            ->assertOk();
+    }
+
+    public function test_page_en_attente_accessible_recruteur(): void
+    {
+        $user = $this->creerUser('recruteur');
+        RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'en_attente']);
+
+        $this->actingAs($user)
+            ->get(route('recruteur.verification.en-attente'))
+            ->assertOk();
+    }
+
+    public function test_page_rejete_affiche_motif(): void
+    {
+        $user = $this->creerUser('recruteur');
+        RecruteurVerification::create([
+            'user_id'    => $user->id,
+            'statut'     => 'rejete',
+            'note_admin' => 'Photo floue.',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('recruteur.verification.rejete'))
+            ->assertOk()
+            ->assertSee('Photo floue.');
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -382,33 +518,10 @@ class AuthTest extends TestCase
         $this->assertGuest();
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    //  RATE LIMITING
-    // ══════════════════════════════════════════════════════════════════════
-
-    public function test_rate_limit_inscription_bloque_a_partir_du_6eme_envoi(): void
+    public function test_deconnexion_inaccessible_sans_connexion(): void
     {
-        // Même email + même IP (127.0.0.1 en test) = même clé de throttle.
-        // L'email n'existe pas encore en users, la validation passe les 5 fois.
-        $payload = $this->payloadInscription('candidat', ['email' => 'spam@test.com']);
-
-        for ($i = 0; $i < 5; $i++) {
-            $this->post(route('auth.inscription.store'), $payload);
-        }
-
-        $this->post(route('auth.inscription.store'), $payload)
-            ->assertSessionHasErrors('email');
+        $this->post(route('auth.deconnecter'))->assertRedirect(route('auth.connexion'));
     }
 
-    public function test_rate_limit_connexion_bloque_a_partir_du_6eme_envoi(): void
-    {
-        $this->creerUser('actif@test.com');
 
-        for ($i = 0; $i < 5; $i++) {
-            $this->post(route('auth.connexion.otp'), ['email' => 'actif@test.com']);
-        }
-
-        $this->post(route('auth.connexion.otp'), ['email' => 'actif@test.com'])
-            ->assertSessionHasErrors('email');
-    }
 }
