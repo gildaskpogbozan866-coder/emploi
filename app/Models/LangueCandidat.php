@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LangueCandidat extends Model
 {
+    use HasFactory;
+
     protected $table = 'langues_candidat';
 
     protected $fillable = ['candidat_id', 'langue', 'niveau'];

@@ -80,7 +80,7 @@ class ProfilController extends Controller
             ]
         );
 
-        return back()->with('success', 'Profil mis à jour avec succès.');
+        return redirect()->route('candidat.profil')->with('success', 'Profil mis à jour avec succès.');
     }
 
     // ── Suppression d'avatar ──────────────────────────────
@@ -91,7 +91,7 @@ class ProfilController extends Controller
             Storage::disk('public')->delete($user->avatar);
             $user->update(['avatar' => null]);
         }
-        return back()->with('success', 'Photo supprimée.');
+        return redirect()->route('candidat.profil')->with('success', 'Photo supprimée.');
     }
 
     // ── Paramètres compte ─────────────────────────────────

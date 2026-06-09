@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Formation extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'candidat_id', 'diplome', 'etablissement', 'domaine',
-        'date_debut', 'date_fin', 'en_cours', 'description', 'ordre',
+        'date_debut', 'date_fin', 'en_cours', 'description', 'activites', 'ordre',
     ];
 
     protected function casts(): array
@@ -17,6 +19,7 @@ class Formation extends Model
             'date_debut' => 'date',
             'date_fin'   => 'date',
             'en_cours'   => 'boolean',
+            'activites'  => 'array',
         ];
     }
 

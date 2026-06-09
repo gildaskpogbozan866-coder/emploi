@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Experience extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'candidat_id', 'poste', 'entreprise', 'lieu', 'secteur',
-        'date_debut', 'date_fin', 'en_cours', 'description', 'ordre',
+        'date_debut', 'date_fin', 'en_cours', 'description', 'missions', 'ordre',
     ];
 
     protected function casts(): array
@@ -17,6 +19,7 @@ class Experience extends Model
             'date_debut' => 'date',
             'date_fin'   => 'date',
             'en_cours'   => 'boolean',
+            'missions'   => 'array',
         ];
     }
 

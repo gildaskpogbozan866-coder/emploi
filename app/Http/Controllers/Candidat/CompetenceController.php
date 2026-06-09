@@ -36,7 +36,7 @@ class CompetenceController extends Controller
             'niveau'      => $data['niveau'],
         ]);
 
-        return response()->json(['success' => true, 'competence' => $competence]);
+        return response()->json(['success' => true, 'competence' => $competence], 201);
     }
 
     public function destroy(CompetenceCandidat $competence)

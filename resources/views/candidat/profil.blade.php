@@ -25,13 +25,9 @@
     </div>
   </div>
 
-  {{-- Flash --}}
-  @if(session('success'))
-    <div class="cp-alert cp-alert--success" id="flash-success">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-      {{ session('success') }}
-    </div>
-  @endif
+  {{-- Flash (géré via toast JS) --}}
+  @if(session('success'))<div id="flash-data" data-type="success" data-msg="{{ session('success') }}" style="display:none"></div>@endif
+  @if(session('error'))<div id="flash-data" data-type="error" data-msg="{{ session('error') }}" style="display:none"></div>@endif
 
   {{-- Hero --}}
   <div class="cp-hero">
@@ -112,16 +108,68 @@
       <div class="cp-completion__fill {{ $completion >= 80 ? 'cp-completion__fill--high' : ($completion >= 50 ? '' : 'cp-completion__fill--mid') }}"
            style="width:{{ $completion }}%"></div>
     </div>
-    @if($completion < 100)
-      <div class="cp-completion__tips">
-        @if(!$user->avatar)<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Ajoutez une photo</span>@endif
-        @if(!$profil?->titre_professionnel)<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Titre professionnel</span>@endif
-        @if(!$profil?->bio)<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Bio / Résumé</span>@endif
-        @if($user->experiences->isEmpty())<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Expériences</span>@endif
-        @if($user->formations->isEmpty())<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Formation</span>@endif
-        @if($user->competences->count() < 3)<span class="cp-completion__tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>3 compétences min.</span>@endif
+  @php
+    $checks = [
+      ['done' => !!$user->avatar,                           'label' => 'Photo de profil',        'hint' => 'Un profil avec photo reçoit 3× plus de vues',                  'pts' => 10, 'action' => "openModal('modal-infos')"],
+      ['done' => !!$profil?->titre_professionnel,           'label' => 'Titre professionnel',    'hint' => 'Indique aux recruteurs votre métier en un coup d\'œil',          'pts' => 10, 'action' => "openModal('modal-infos')"],
+      ['done' => !!$profil?->bio,                           'label' => 'Bio / Résumé',           'hint' => 'Présentez votre parcours et vos ambitions (max 1 000 car.)',     'pts' => 10, 'action' => "openModal('modal-infos')"],
+      ['done' => $user->experiences->isNotEmpty(),          'label' => 'Expérience professionnelle', 'hint' => 'Ajoutez au moins 1 poste occupé',                          'pts' => 25, 'action' => "openExpModal()"],
+      ['done' => $user->formations->isNotEmpty(),           'label' => 'Formation / Diplôme',    'hint' => 'Ajoutez au moins 1 diplôme ou formation',                       'pts' => 15, 'action' => "openFormModal()"],
+      ['done' => $user->competences->count() >= 3,          'label' => 'Compétences (min. 3)',   'hint' => 'Vous en avez ' . $user->competences->count() . '/3 — ajoutez les vôtres', 'pts' => 10, 'action' => "openModal('modal-comp')"],
+      ['done' => !!$profil?->disponibilite,                 'label' => 'Disponibilité',          'hint' => 'Quand pouvez-vous commencer ? Les recruteurs filtrent par là',   'pts' => 5,  'action' => "openModal('modal-infos')"],
+      ['done' => !empty($profil?->types_contrat),           'label' => 'Types de contrat',       'hint' => 'CDI, CDD, Freelance… indiquez vos préférences',                 'pts' => 5,  'action' => "openModal('modal-infos')"],
+      ['done' => !!$profil?->ville,                         'label' => 'Ville de résidence',     'hint' => 'Permet aux recruteurs locaux de vous trouver',                   'pts' => 5,  'action' => "openModal('modal-infos')"],
+      ['done' => $user->langues->isNotEmpty(),              'label' => 'Langue maîtrisée',       'hint' => 'Ajoutez au moins 1 langue (français, anglais…)',                 'pts' => 5,  'action' => "openModal('modal-lang')"],
+    ];
+    $missing = collect($checks)->where('done', false);
+    $done    = collect($checks)->where('done', true);
+  @endphp
+
+  @if($completion < 100)
+    <div class="cp-completion__checklist">
+      <div class="cp-completion__checklist-title">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
+        {{ $missing->count() }} élément{{ $missing->count() > 1 ? 's' : '' }} manquant{{ $missing->count() > 1 ? 's' : '' }} — {{ $missing->sum('pts') }} pts à gagner
       </div>
-    @endif
+      <div class="cp-checklist-grid">
+        @foreach($missing as $item)
+          <div class="cp-check-item cp-check-item--miss" onclick="{{ $item['action'] }}" role="button" tabindex="0">
+            <div class="cp-check-icon cp-check-icon--miss">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v8m0 4h.01"/></svg>
+            </div>
+            <div class="cp-check-body">
+              <div class="cp-check-label">{{ $item['label'] }}</div>
+              <div class="cp-check-hint">{{ $item['hint'] }}</div>
+            </div>
+            <div class="cp-check-pts">+{{ $item['pts'] }} pts</div>
+          </div>
+        @endforeach
+      </div>
+      @if($done->isNotEmpty())
+        <details class="cp-checklist-done">
+          <summary>{{ $done->count() }} élément{{ $done->count() > 1 ? 's' : '' }} complété{{ $done->count() > 1 ? 's' : '' }}</summary>
+          <div class="cp-checklist-grid" style="margin-top:8px">
+            @foreach($done as $item)
+              <div class="cp-check-item cp-check-item--done">
+                <div class="cp-check-icon cp-check-icon--done">
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="cp-check-body">
+                  <div class="cp-check-label">{{ $item['label'] }}</div>
+                </div>
+                <div class="cp-check-pts cp-check-pts--done">+{{ $item['pts'] }} pts</div>
+              </div>
+            @endforeach
+          </div>
+        </details>
+      @endif
+    </div>
+  @else
+    <div style="text-align:center;padding:10px 0 4px;font-size:13px;color:#16a34a;font-weight:600">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      Profil 100% complet — félicitations !
+    </div>
+  @endif
   </div>
 
   {{-- Grille 2 colonnes --}}
@@ -153,7 +201,13 @@
                     @if($exp->lieu)<span>· {{ $exp->lieu }}</span>@endif
                     @if($exp->en_cours)<span class="cand-badge cand-badge--green">En poste</span>@endif
                   </div>
-                  @if($exp->description)<div class="cp-timeline__desc">{{ $exp->description }}</div>@endif
+                  @if($exp->missions && count($exp->missions))
+                    <ul class="cp-timeline__bullets">
+                      @foreach($exp->missions as $mission)
+                        <li>{{ $mission }}</li>
+                      @endforeach
+                    </ul>
+                  @endif
                 </div>
                 <div class="cp-timeline__actions" style="display:flex;gap:6px;flex-shrink:0;align-self:flex-start">
                   <button class="cand-btn cand-btn--outline cand-btn--sm cand-btn--icon-only"
@@ -201,7 +255,13 @@
                     <span>{{ $formation->date_debut->format('Y') }} — {{ $formation->en_cours ? 'En cours' : ($formation->date_fin?->format('Y') ?? '') }}</span>
                     @if($formation->domaine)<span>· {{ $formation->domaine }}</span>@endif
                   </div>
-                  @if($formation->description)<div class="cp-timeline__desc">{{ $formation->description }}</div>@endif
+                  @if($formation->activites && count($formation->activites))
+                    <ul class="cp-timeline__bullets">
+                      @foreach($formation->activites as $activite)
+                        <li>{{ $activite }}</li>
+                      @endforeach
+                    </ul>
+                  @endif
                 </div>
                 <div class="cp-timeline__actions" style="display:flex;gap:6px;flex-shrink:0;align-self:flex-start">
                   <button class="cand-btn cand-btn--outline cand-btn--sm cand-btn--icon-only"
@@ -452,11 +512,6 @@
             <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="cand-form-input" style="padding:7px">
             <div class="cand-form-hint">JPG, PNG ou WebP — max 2 Mo</div>
           </div>
-          @if($errors->any())
-            <div class="cp-alert cp-alert--error">
-              @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
-            </div>
-          @endif
           <div class="cp-modal__actions">
             <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-infos')">Annuler</button>
             <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
@@ -474,7 +529,6 @@
         <button class="cp-modal__close" onclick="closeModal('modal-exp')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="cp-modal__body">
-        <div id="exp-msg"></div>
         <div class="cand-form-grid">
           <div class="cand-form-group"><label class="cand-form-label">Poste <span class="req">*</span></label><input type="text" id="exp-poste" class="cand-form-input" placeholder="ex: Développeur Web"></div>
           <div class="cand-form-group"><label class="cand-form-label">Entreprise <span class="req">*</span></label><input type="text" id="exp-entreprise" class="cand-form-input" placeholder="ex: Société XYZ"></div>
@@ -490,7 +544,18 @@
         <div class="cand-form-group">
           <label class="cp-checkbox-wrap"><input type="checkbox" id="exp-en-cours" onchange="toggleDateFin('exp')"> Je suis actuellement en poste</label>
         </div>
-        <div class="cand-form-group"><label class="cand-form-label">Description</label><textarea id="exp-description" class="cand-form-textarea" rows="3" placeholder="Décrivez vos responsabilités..."></textarea></div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Missions / Responsabilités</label>
+          <div style="display:flex;gap:8px;margin-bottom:6px">
+            <input type="text" id="exp-mission-input" class="cand-form-input"
+                   placeholder="ex: Développement de l'application mobile..."
+                   style="flex:1"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addExpMission()}">
+            <button type="button" onclick="addExpMission()" class="cand-btn cand-btn--outline cand-btn--sm" style="flex-shrink:0;white-space:nowrap">+ Ajouter</button>
+          </div>
+          <div id="exp-missions-list"></div>
+          <div class="cand-form-hint">Max 20 missions — Entrée ou clic sur Ajouter</div>
+        </div>
         <div class="cp-modal__actions">
           <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-exp')">Annuler</button>
           <button type="button" class="cand-btn cand-btn--primary" onclick="saveExp()">Enregistrer</button>
@@ -507,7 +572,6 @@
         <button class="cp-modal__close" onclick="closeModal('modal-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="cp-modal__body">
-        <div id="form-msg"></div>
         <div class="cand-form-grid">
           <div class="cand-form-group"><label class="cand-form-label">Diplôme <span class="req">*</span></label><input type="text" id="form-diplome" class="cand-form-input" placeholder="ex: Master, Licence..."></div>
           <div class="cand-form-group"><label class="cand-form-label">Établissement <span class="req">*</span></label><input type="text" id="form-etablissement" class="cand-form-input" placeholder="ex: UAC"></div>
@@ -520,7 +584,18 @@
         <div class="cand-form-group">
           <label class="cp-checkbox-wrap"><input type="checkbox" id="form-en-cours" onchange="toggleDateFin('form')"> Formation en cours</label>
         </div>
-        <div class="cand-form-group"><label class="cand-form-label">Description</label><textarea id="form-description" class="cand-form-textarea" rows="2" placeholder="Informations complémentaires..."></textarea></div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Activités / Réalisations</label>
+          <div style="display:flex;gap:8px;margin-bottom:6px">
+            <input type="text" id="form-activite-input" class="cand-form-input"
+                   placeholder="ex: Major de promotion, Projet de fin d'études..."
+                   style="flex:1"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addFormActivite()}">
+            <button type="button" onclick="addFormActivite()" class="cand-btn cand-btn--outline cand-btn--sm" style="flex-shrink:0;white-space:nowrap">+ Ajouter</button>
+          </div>
+          <div id="form-activites-list"></div>
+          <div class="cand-form-hint">Max 20 activités — Entrée ou clic sur Ajouter</div>
+        </div>
         <div class="cp-modal__actions">
           <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-form')">Annuler</button>
           <button type="button" class="cand-btn cand-btn--primary" onclick="saveForm()">Enregistrer</button>
@@ -537,7 +612,6 @@
         <button class="cp-modal__close" onclick="closeModal('modal-comp')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="cp-modal__body">
-        <div id="comp-msg"></div>
         <div class="cand-form-group"><label class="cand-form-label">Compétence <span class="req">*</span></label><input type="text" id="comp-nom" class="cand-form-input" placeholder="ex: JavaScript, Comptabilité..."></div>
         <div class="cand-form-group">
           <label class="cand-form-label">Niveau</label>
@@ -564,7 +638,6 @@
         <button class="cp-modal__close" onclick="closeModal('modal-lang')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="cp-modal__body">
-        <div id="lang-msg"></div>
         <div class="cand-form-group"><label class="cand-form-label">Langue <span class="req">*</span></label><input type="text" id="lang-langue" class="cand-form-input" placeholder="ex: Français, Anglais, Fon..."></div>
         <div class="cand-form-group">
           <label class="cand-form-label">Niveau</label>
@@ -589,6 +662,42 @@
 <script>
 const CSRF = '{{ csrf_token() }}';
 let editingExpId = null, editingFormId = null;
+let expMissions = [], formActivites = [];
+
+function renderBulletList(containerId, items, removeFn) {
+  const el = document.getElementById(containerId);
+  if (!items.length) { el.innerHTML = ''; return; }
+  el.innerHTML = items.map((m, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#f8fafc;border-radius:6px;margin-bottom:4px;border:1px solid #e8ecf0">
+      <span style="color:#64748b;font-size:18px;line-height:1;flex-shrink:0">•</span>
+      <span style="flex:1;font-size:13px;color:#1e293b">${m.replace(/</g,'&lt;')}</span>
+      <button type="button" onclick="${removeFn}(${i})" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;line-height:1;padding:0 2px;flex-shrink:0" title="Supprimer">×</button>
+    </div>`).join('');
+}
+function addExpMission() {
+  const input = document.getElementById('exp-mission-input');
+  const val = input.value.trim();
+  if (!val || expMissions.length >= 20) return;
+  expMissions.push(val);
+  renderBulletList('exp-missions-list', expMissions, 'removeExpMission');
+  input.value = '';
+}
+function removeExpMission(i) {
+  expMissions.splice(i, 1);
+  renderBulletList('exp-missions-list', expMissions, 'removeExpMission');
+}
+function addFormActivite() {
+  const input = document.getElementById('form-activite-input');
+  const val = input.value.trim();
+  if (!val || formActivites.length >= 20) return;
+  formActivites.push(val);
+  renderBulletList('form-activites-list', formActivites, 'removeFormActivite');
+  input.value = '';
+}
+function removeFormActivite(i) {
+  formActivites.splice(i, 1);
+  renderBulletList('form-activites-list', formActivites, 'removeFormActivite');
+}
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
@@ -601,31 +710,69 @@ function toggleDateFin(p) {
   wrap.style.opacity = checked ? '.4' : '1';
   wrap.querySelector('input').disabled = checked;
 }
-function showMsg(id, msg, isErr=false) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<div class="cp-alert cp-alert--${isErr?'error':'success'}">${msg}</div>`;
-  if(!isErr) setTimeout(()=>{ el.innerHTML=''; }, 4000);
+// ── Toast SweetAlert2 ────────────────────────────────────
+const _SwalToast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 4000,
+  timerProgressBar: true,
+  didOpen: (t) => { t.onmouseenter = Swal.stopTimer; t.onmouseleave = Swal.resumeTimer; }
+});
+function showToast(msg, isErr=false) {
+  _SwalToast.fire({ icon: isErr ? 'error' : 'success', title: msg });
 }
+
 async function ajax(url, method, body) {
-  const r = await fetch(url, { method, headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'}, body:JSON.stringify(body) });
-  return { ok: r.ok, data: await r.json() };
+  const opts = { method, headers:{'X-CSRF-TOKEN':CSRF,'Accept':'application/json'} };
+  if(method !== 'DELETE' && method !== 'GET') {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const r = await fetch(url, opts);
+  let data = {};
+  try { data = await r.json(); } catch(e) {}
+  return { ok: r.ok, status: r.status, data };
 }
-function deleteItem(type, id, elId) {
-  if(!confirm('Supprimer cet élément ?')) return;
+async function deleteItem(type, id, elId) {
+  const labels = { experiences:'cette expérience', formations:'cette formation', competences:'cette compétence', langues:'cette langue' };
+  const { isConfirmed } = await Swal.fire({
+    title: 'Supprimer ' + (labels[type] ?? 'cet élément') + ' ?',
+    text: 'Cette action est irréversible.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler',
+    reverseButtons: true,
+    focusCancel: true,
+  });
+  if(!isConfirmed) return;
   const map = { experiences:`/candidat/profil/experiences/${id}`, formations:`/candidat/profil/formations/${id}`, competences:`/candidat/profil/competences/${id}`, langues:`/candidat/profil/langues/${id}` };
-  ajax(map[type],'DELETE',{}).then(({ok})=>{ if(ok){ const el=document.getElementById(elId); el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); } });
+  ajax(map[type],'DELETE').then(({ok,status,data})=>{
+    if(ok){
+      const el=document.getElementById(elId);
+      el.style.transition='opacity .3s'; el.style.opacity='0';
+      setTimeout(()=>el.remove(),300);
+      showToast('Supprimé avec succès');
+    } else {
+      showToast(status===403?'Action non autorisée.':(data.message??'Erreur lors de la suppression.'), true);
+    }
+  }).catch(()=> showToast('Erreur réseau — réessayez.', true));
 }
 
 // Expériences
 function openExpModal() {
-  editingExpId=null;
+  editingExpId=null; expMissions=[];
   document.getElementById('modal-exp-title').textContent='Ajouter une expérience';
-  ['exp-poste','exp-entreprise','exp-lieu','exp-secteur','exp-date-debut','exp-date-fin','exp-description'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['exp-poste','exp-entreprise','exp-lieu','exp-secteur','exp-date-debut','exp-date-fin','exp-mission-input'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('exp-en-cours').checked=false; toggleDateFin('exp');
+  renderBulletList('exp-missions-list', expMissions, 'removeExpMission');
   openModal('modal-exp');
 }
 function editExp(id, d) {
-  editingExpId=id;
+  editingExpId=id; expMissions=d.missions??[];
   document.getElementById('modal-exp-title').textContent="Modifier l'expérience";
   document.getElementById('exp-poste').value=d.poste;
   document.getElementById('exp-entreprise').value=d.entreprise;
@@ -634,26 +781,29 @@ function editExp(id, d) {
   document.getElementById('exp-date-debut').value=d.date_debut?.substring(0,10)??'';
   document.getElementById('exp-date-fin').value=d.date_fin?.substring(0,10)??'';
   document.getElementById('exp-en-cours').checked=!!d.en_cours;
-  document.getElementById('exp-description').value=d.description??'';
+  document.getElementById('exp-mission-input').value='';
+  renderBulletList('exp-missions-list', expMissions, 'removeExpMission');
   toggleDateFin('exp'); openModal('modal-exp');
 }
 async function saveExp() {
-  const body={poste:document.getElementById('exp-poste').value,entreprise:document.getElementById('exp-entreprise').value,lieu:document.getElementById('exp-lieu').value,secteur:document.getElementById('exp-secteur').value,date_debut:document.getElementById('exp-date-debut').value,date_fin:document.getElementById('exp-date-fin').value,en_cours:document.getElementById('exp-en-cours').checked,description:document.getElementById('exp-description').value};
+  const body={poste:document.getElementById('exp-poste').value,entreprise:document.getElementById('exp-entreprise').value,lieu:document.getElementById('exp-lieu').value,secteur:document.getElementById('exp-secteur').value,date_debut:document.getElementById('exp-date-debut').value,date_fin:document.getElementById('exp-date-fin').value,en_cours:document.getElementById('exp-en-cours').checked,missions:expMissions};
   const {ok,data}=await ajax(editingExpId?`/candidat/profil/experiences/${editingExpId}`:'/candidat/profil/experiences',editingExpId?'PUT':'POST',body);
-  if(!ok){showMsg('exp-msg',data.errors?Object.values(data.errors).flat().join('<br>'):(data.message??'Erreur.'),true);return;}
+  if(!ok){showToast(data.errors?Object.values(data.errors).flat().join(' — '):(data.message??'Erreur.'),true);return;}
+  sessionStorage.setItem('_toast', JSON.stringify({msg: editingExpId ? 'Expérience mise à jour !' : 'Expérience ajoutée !', err: false}));
   closeModal('modal-exp'); location.reload();
 }
 
 // Formations
 function openFormModal() {
-  editingFormId=null;
+  editingFormId=null; formActivites=[];
   document.getElementById('modal-form-title').textContent='Ajouter une formation';
-  ['form-diplome','form-etablissement','form-domaine','form-date-debut','form-date-fin','form-description'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['form-diplome','form-etablissement','form-domaine','form-date-debut','form-date-fin','form-activite-input'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('form-en-cours').checked=false; toggleDateFin('form');
+  renderBulletList('form-activites-list', formActivites, 'removeFormActivite');
   openModal('modal-form');
 }
 function editForm(id, d) {
-  editingFormId=id;
+  editingFormId=id; formActivites=d.activites??[];
   document.getElementById('modal-form-title').textContent='Modifier la formation';
   document.getElementById('form-diplome').value=d.diplome;
   document.getElementById('form-etablissement').value=d.etablissement;
@@ -661,41 +811,78 @@ function editForm(id, d) {
   document.getElementById('form-date-debut').value=d.date_debut?.substring(0,10)??'';
   document.getElementById('form-date-fin').value=d.date_fin?.substring(0,10)??'';
   document.getElementById('form-en-cours').checked=!!d.en_cours;
-  document.getElementById('form-description').value=d.description??'';
+  document.getElementById('form-activite-input').value='';
+  renderBulletList('form-activites-list', formActivites, 'removeFormActivite');
   toggleDateFin('form'); openModal('modal-form');
 }
 async function saveForm() {
-  const body={diplome:document.getElementById('form-diplome').value,etablissement:document.getElementById('form-etablissement').value,domaine:document.getElementById('form-domaine').value,date_debut:document.getElementById('form-date-debut').value,date_fin:document.getElementById('form-date-fin').value,en_cours:document.getElementById('form-en-cours').checked,description:document.getElementById('form-description').value};
+  const body={diplome:document.getElementById('form-diplome').value,etablissement:document.getElementById('form-etablissement').value,domaine:document.getElementById('form-domaine').value,date_debut:document.getElementById('form-date-debut').value,date_fin:document.getElementById('form-date-fin').value,en_cours:document.getElementById('form-en-cours').checked,activites:formActivites};
   const {ok,data}=await ajax(editingFormId?`/candidat/profil/formations/${editingFormId}`:'/candidat/profil/formations',editingFormId?'PUT':'POST',body);
-  if(!ok){showMsg('form-msg',data.errors?Object.values(data.errors).flat().join('<br>'):(data.message??'Erreur.'),true);return;}
+  if(!ok){showToast(data.errors?Object.values(data.errors).flat().join(' — '):(data.message??'Erreur.'),true);return;}
+  sessionStorage.setItem('_toast', JSON.stringify({msg: editingFormId ? 'Formation mise à jour !' : 'Formation ajoutée !', err: false}));
   closeModal('modal-form'); location.reload();
 }
 
 // Compétences
 async function saveComp() {
   const {ok,data}=await ajax('/candidat/profil/competences','POST',{nom:document.getElementById('comp-nom').value,niveau:document.getElementById('comp-niveau').value});
-  if(!ok){showMsg('comp-msg',data.message??'Erreur.',true);return;}
+  if(!ok){showToast(data.message??'Erreur.',true);return;}
   const c=data.competence; const empty=document.getElementById('comp-empty'); if(empty)empty.remove();
   const chip=document.createElement('span'); chip.className=`cp-chip cp-chip--${c.niveau}`; chip.id=`comp-item-${c.id}`;
   chip.innerHTML=`${c.nom}<button class="cp-chip__del" onclick="deleteItem('competences',${c.id},'comp-item-${c.id}')" title="Supprimer"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>`;
   document.getElementById('comp-list').appendChild(chip);
-  document.getElementById('comp-nom').value=''; showMsg('comp-msg','Compétence ajoutée !');
+  document.getElementById('comp-nom').value=''; showToast('Compétence ajoutée !');
 }
 
 // Langues
 const niveauxLabels={A1:'A1 — Débutant',A2:'A2 — Élémentaire',B1:'B1 — Intermédiaire',B2:'B2 — Intermédiaire supérieur',C1:'C1 — Avancé',C2:'C2 — Maîtrise',natif:'Langue natale'};
 async function saveLang() {
   const {ok,data}=await ajax('/candidat/profil/langues','POST',{langue:document.getElementById('lang-langue').value,niveau:document.getElementById('lang-niveau').value});
-  if(!ok){showMsg('lang-msg',data.message??'Erreur.',true);return;}
+  if(!ok){showToast(data.message??'Erreur.',true);return;}
   const l=data.langue; const empty=document.getElementById('lang-empty'); if(empty)empty.remove();
   const row=document.createElement('div'); row.className='cp-langue'; row.id=`lang-item-${l.id}`;
   row.innerHTML=`<div class="cp-langue__left"><div class="cp-langue__flag"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div><div class="cp-langue__nom">${l.langue}</div><div class="cp-langue__niveau">${niveauxLabels[l.niveau]??l.niveau}</div></div></div><button class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" onclick="deleteItem('langues',${l.id},'lang-item-${l.id}')" title="Supprimer"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
   document.getElementById('lang-list').appendChild(row);
-  document.getElementById('lang-langue').value=''; showMsg('lang-msg','Langue ajoutée !');
+  document.getElementById('lang-langue').value=''; showToast('Langue ajoutée !');
 }
 
-@if($errors->any()) openModal('modal-infos'); @endif
-@if(session('success')) setTimeout(()=>{ const f=document.getElementById('flash-success'); if(f){f.style.transition='opacity .5s';f.style.opacity='0';} },3500); @endif
+// Messages après reload
+const _pt = sessionStorage.getItem('_toast');
+if(_pt) { const {msg,err} = JSON.parse(_pt); sessionStorage.removeItem('_toast'); showToast(msg, err); }
+const _flash = document.getElementById('flash-data');
+if(_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
+@if($errors->any())
+  openModal('modal-infos');
+  showToast({{ Js::from(implode(' — ', $errors->all())) }}, true);
+@endif
 </script>
-<style>@media(max-width:960px){.cp-grid{grid-template-columns:1fr!important}}</style>
+<style>
+@media(max-width:960px){.cp-grid{grid-template-columns:1fr!important}}
+.cp-timeline__bullets{margin:6px 0 0 0;padding:0;list-style:none}
+.cp-timeline__bullets li{position:relative;padding-left:14px;font-size:13px;color:#475569;line-height:1.5;margin-bottom:3px}
+.cp-timeline__bullets li::before{content:"•";position:absolute;left:0;color:#94a3b8}
+
+/* Checklist complétion */
+.cp-completion__checklist{margin-top:12px;border-top:1px solid #e8ecf0;padding-top:12px}
+.cp-completion__checklist-title{font-size:12px;font-weight:600;color:#f59e0b;display:flex;align-items:center;gap:5px;margin-bottom:10px}
+.cp-checklist-grid{display:flex;flex-direction:column;gap:6px}
+.cp-check-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;transition:background .15s}
+.cp-check-item--miss{background:#fffbeb;border:1px solid #fde68a;cursor:pointer}
+.cp-check-item--miss:hover{background:#fef3c7}
+.cp-check-item--done{background:#f0fdf4;border:1px solid #bbf7d0;cursor:default}
+.cp-check-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-check-icon--miss{background:#fef3c7;color:#d97706}
+.cp-check-icon--done{background:#dcfce7;color:#16a34a}
+.cp-check-body{flex:1;min-width:0}
+.cp-check-label{font-size:13px;font-weight:600;color:#1e293b}
+.cp-check-hint{font-size:11.5px;color:#64748b;margin-top:1px}
+.cp-check-pts{font-size:12px;font-weight:700;flex-shrink:0;white-space:nowrap}
+.cp-check-item--miss .cp-check-pts{color:#d97706}
+.cp-check-pts--done{color:#16a34a}
+.cp-checklist-done{margin-top:8px}
+.cp-checklist-done summary{font-size:12px;color:#94a3b8;cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:4px}
+.cp-checklist-done summary::before{content:"▶";font-size:9px;transition:transform .2s}
+.cp-checklist-done[open] summary::before{transform:rotate(90deg)}
+
+</style>
 @endsection

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CompetenceCandidat extends Model
 {
+    use HasFactory;
+
     protected $table = 'competences_candidat';
 
     protected $fillable = ['candidat_id', 'nom', 'niveau'];

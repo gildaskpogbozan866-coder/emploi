@@ -18,7 +18,8 @@ class FormationController extends Controller
             'date_debut'    => 'required|date|before_or_equal:today',
             'date_fin'      => 'nullable|date|after_or_equal:date_debut',
             'en_cours'      => 'boolean',
-            'description'   => 'nullable|string|max:2000',
+            'activites'     => 'nullable|array|max:20',
+            'activites.*'   => 'nullable|string|max:500',
         ]);
 
         $data['candidat_id'] = Auth::id();
@@ -26,10 +27,11 @@ class FormationController extends Controller
         if ($data['en_cours']) {
             $data['date_fin'] = null;
         }
+        $data['activites'] = array_values(array_filter($data['activites'] ?? [], fn($a) => trim($a ?? '') !== ''));
 
         $formation = Formation::create($data);
 
-        return response()->json(['success' => true, 'formation' => $formation]);
+        return response()->json(['success' => true, 'formation' => $formation], 201);
     }
 
     public function update(Request $request, Formation $formation)
@@ -43,13 +45,15 @@ class FormationController extends Controller
             'date_debut'    => 'required|date|before_or_equal:today',
             'date_fin'      => 'nullable|date|after_or_equal:date_debut',
             'en_cours'      => 'boolean',
-            'description'   => 'nullable|string|max:2000',
+            'activites'     => 'nullable|array|max:20',
+            'activites.*'   => 'nullable|string|max:500',
         ]);
 
         $data['en_cours'] = $request->boolean('en_cours');
         if ($data['en_cours']) {
             $data['date_fin'] = null;
         }
+        $data['activites'] = array_values(array_filter($data['activites'] ?? [], fn($a) => trim($a ?? '') !== ''));
 
         $formation->update($data);
 

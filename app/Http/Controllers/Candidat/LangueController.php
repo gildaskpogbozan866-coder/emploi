@@ -36,7 +36,7 @@ class LangueController extends Controller
             'niveau'      => $data['niveau'],
         ]);
 
-        return response()->json(['success' => true, 'langue' => $langue]);
+        return response()->json(['success' => true, 'langue' => $langue], 201);
     }
 
     public function destroy(LangueCandidat $langue)
