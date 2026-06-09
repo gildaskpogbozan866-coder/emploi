@@ -14,6 +14,10 @@ use App\Http\Controllers\Candidat\DashboardController as CandidatDashboard;
 use App\Http\Controllers\Candidat\CandidatureController;
 use App\Http\Controllers\Candidat\CVController;
 use App\Http\Controllers\Candidat\ProfilController as CandidatProfil;
+use App\Http\Controllers\Candidat\ExperienceController;
+use App\Http\Controllers\Candidat\FormationController;
+use App\Http\Controllers\Candidat\CompetenceController;
+use App\Http\Controllers\Candidat\LangueController;
 use App\Http\Controllers\Candidat\AlerteController;
 use App\Http\Controllers\Candidat\MessageController as CandidatMessage;
 use App\Http\Controllers\Candidat\AbonnementController as CandidatAbonnement;
@@ -126,16 +130,27 @@ Route::prefix('auth')->name('auth.')->group(function () {
 // ════════════════════════════════════════════════════════
 Route::middleware('auth')->group(function () {
     Route::get('/email/verifier', function () {
+        $user = auth()->user();
+        if ($user->hasVerifiedEmail()) {
+            return match ($user->role) {
+                'admin'     => redirect()->route('admin.dashboard'),
+                'recruteur' => redirect()->route('recruteur.dashboard'),
+                'talent'    => redirect()->route('talent.dashboard'),
+                default     => redirect()->route('candidat.dashboard'),
+            };
+        }
         return view('auth.verify-email');
     })->name('verification.notice');
 
     Route::get('/email/verifier/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         $user = $request->user();
-        if ($user->role === 'recruteur') {
-            return redirect()->route('recruteur.verification');
-        }
-        return redirect()->route('auth.compte-confirme');
+        return match ($user->role) {
+            'admin'     => redirect()->route('admin.dashboard'),
+            'recruteur' => redirect()->route('recruteur.verification'),
+            'talent'    => redirect()->route('talent.dashboard'),
+            default     => redirect()->route('candidat.dashboard'),
+        };
     })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/renvoyer', function (Illuminate\Http\Request $request) {
@@ -195,8 +210,27 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::post('/notifications/marquer',  [NotificationController::class, 'marquerLues'])->name('notifications.lues');
     Route::get('/profil',                  [CandidatProfil::class, 'edit'])->name('profil');
     Route::put('/profil',                  [CandidatProfil::class, 'update'])->name('profil.update');
+    Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
     Route::get('/parametres',              [CandidatProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',              [CandidatProfil::class, 'updateParametres'])->name('parametres.update');
+
+    // Expériences (AJAX)
+    Route::post('/profil/experiences',              [ExperienceController::class, 'store'])->name('profil.experiences.store');
+    Route::put('/profil/experiences/{experience}',  [ExperienceController::class, 'update'])->name('profil.experiences.update');
+    Route::delete('/profil/experiences/{experience}',[ExperienceController::class, 'destroy'])->name('profil.experiences.destroy');
+
+    // Formations (AJAX)
+    Route::post('/profil/formations',              [FormationController::class, 'store'])->name('profil.formations.store');
+    Route::put('/profil/formations/{formation}',   [FormationController::class, 'update'])->name('profil.formations.update');
+    Route::delete('/profil/formations/{formation}',[FormationController::class, 'destroy'])->name('profil.formations.destroy');
+
+    // Compétences (AJAX)
+    Route::post('/profil/competences',               [CompetenceController::class, 'store'])->name('profil.competences.store');
+    Route::delete('/profil/competences/{competence}',[CompetenceController::class, 'destroy'])->name('profil.competences.destroy');
+
+    // Langues (AJAX)
+    Route::post('/profil/langues',           [LangueController::class, 'store'])->name('profil.langues.store');
+    Route::delete('/profil/langues/{langue}',[LangueController::class, 'destroy'])->name('profil.langues.destroy');
 });
 
 // ════════════════════════════════════════════════════════

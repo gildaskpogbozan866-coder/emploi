@@ -48,7 +48,7 @@
           </td>
           <td style="color:#94a3b8;font-size:12px">{{ $s->created_at->format('d/m/Y') }}</td>
           <td>
-            <a href="{{ route('admin.signalements.detail', $s) }}" class="adm-btn adm-btn--outline adm-btn--sm">Traiter →</a>
+            <a href="{{ route('admin.signalements.detail', $s) }}" class="adm-btn adm-btn--outline adm-btn--sm">Traiter <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
           </td>
         </tr>
         @empty

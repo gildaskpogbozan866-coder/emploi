@@ -8,7 +8,7 @@
 @section('content')
 <div class="cand-page-header">
   <div class="cand-page-header__left">
-    <a href="{{ route('candidat.messagerie') }}" style="color:#185FA5;text-decoration:none;font-size:13px">← Messagerie</a>
+    <a href="{{ route('candidat.messagerie') }}" style="color:#185FA5;text-decoration:none;font-size:13px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Messagerie</a>
     <h1 class="cand-page-header__title" style="margin-top:8px">{{ $autre->nom_complet }}</h1>
     <p class="cand-page-header__sub">{{ $autre->entreprise ?? ucfirst($autre->role) }}</p>
   </div>

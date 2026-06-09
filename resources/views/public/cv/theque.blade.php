@@ -44,7 +44,7 @@
               </label>
             @endforeach
             @if(request('pays'))
-              <a href="{{ route('cv.public.theque', request('q') ? ['q' => request('q')] : []) }}" class="cvt-filter-reset">✕ Effacer</a>
+              <a href="{{ route('cv.public.theque', request('q') ? ['q' => request('q')] : []) }}" class="cvt-filter-reset"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline-block;vertical-align:-1px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Effacer</a>
             @endif
           </div>
         </div>

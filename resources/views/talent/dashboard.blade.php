@@ -35,7 +35,7 @@
 @section('content')
 <div class="dash-content">
   <div class="dash-content__header">
-    <h1 class="dash-content__title">Bonjour, {{ auth()->user()->prenom }} 👋</h1>
+    <h1 class="dash-content__title">Bonjour, {{ auth()->user()->prenom }}</h1>
   </div>
 
   <div class="dash-stats">

@@ -22,9 +22,9 @@
       <h2 class="auth-panel__title">Changez votre<br><span>mot de passe</span>.</h2>
       <p class="auth-panel__desc">Utilisez un mot de passe long et unique que vous n'utilisez nulle part ailleurs.</p>
       <div class="auth-panel__perks">
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Minimum 8 caractères</div>
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Mélangez lettres, chiffres et symboles</div>
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Ne réutilisez pas un ancien mot de passe</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Minimum 8 caractères</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Mélangez lettres, chiffres et symboles</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Ne réutilisez pas un ancien mot de passe</div>
       </div>
     </div>
     <div class="auth-panel__footer">© {{ date('Y') }} Emploi Bouge Bénin</div>

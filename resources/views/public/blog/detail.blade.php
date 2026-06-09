@@ -10,7 +10,7 @@
 <article class="section" style="padding-top:40px">
   <div class="container" style="max-width:820px">
 
-    <a href="{{ route('blog.list') }}" style="display:inline-flex;align-items:center;gap:6px;color:#185FA5;font-size:.9rem;margin-bottom:28px;text-decoration:none">← Retour au blog</a>
+    <a href="{{ route('blog.list') }}" style="display:inline-flex;align-items:center;gap:6px;color:#185FA5;font-size:.9rem;margin-bottom:28px;text-decoration:none"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour au blog</a>
 
     <header class="article-detail-header">
       @if($article->categorie)
@@ -40,8 +40,8 @@
 
     <footer style="margin-top:48px;padding-top:24px;border-top:1px solid #e2e8f0">
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="{{ route('blog.list') }}" class="btn btn--outline">← Tous les articles</a>
-        <a href="{{ route('service.list') }}" class="btn btn--yellow">Nos services →</a>
+        <a href="{{ route('blog.list') }}" class="btn btn--outline"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Tous les articles</a>
+        <a href="{{ route('service.list') }}" class="btn btn--yellow">Nos services <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </div>
     </footer>
 

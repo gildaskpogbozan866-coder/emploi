@@ -8,7 +8,7 @@
 @section('content')
 <div class="rec-topbar">
   <div class="rec-topbar__left" style="display:flex;align-items:center;gap:14px">
-    <a href="{{ route('recruteur.messagerie') }}" class="rec-btn rec-btn--outline rec-btn--sm">← Retour</a>
+    <a href="{{ route('recruteur.messagerie') }}" class="rec-btn rec-btn--outline rec-btn--sm"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour</a>
     <div style="width:42px;height:42px;border-radius:50%;background:rgba(55,138,221,0.12);display:flex;align-items:center;justify-content:center;font-weight:800;color:#185FA5">
       {{ strtoupper(substr($autre->prenom ?? '?', 0, 1)) }}
     </div>

@@ -22,9 +22,9 @@
       <h2 class="auth-panel__title">Votre dossier<br>est entre de <span>bonnes mains</span>.</h2>
       <p class="auth-panel__desc">Notre équipe examine votre dossier dans les meilleurs délais. Vous recevrez une réponse par e-mail sous 24–48h ouvrables.</p>
       <div class="auth-panel__perks">
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Dossier reçu et enregistré</div>
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Examen sous 24–48h ouvrables</div>
-        <div class="auth-panel__perk"><span class="auth-panel__perk-icon">✓</span> Notification par e-mail dès validation</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Dossier reçu et enregistré</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Examen sous 24–48h ouvrables</div>
+        <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Notification par e-mail dès validation</div>
       </div>
     </div>
     <div class="auth-panel__footer">© {{ date('Y') }} Emploi Bouge Bénin</div>

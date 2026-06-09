@@ -63,7 +63,7 @@
             <p class="cv-card__proof-text"><strong>+500 candidats</strong> ont décroché un entretien grâce à nous</p>
           </div>
           <a href="{{ route('service.commande', 'cv-professionnel') }}" class="cv-card__btn-primary">
-            Je veux mon CV professionnel →
+            Je veux mon CV professionnel <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
 
@@ -78,7 +78,7 @@
           </div>
           <p class="cv-card__guarantee">Satisfaction garantie<br>1 révision offerte</p>
           <a href="{{ route('service.commande', 'cv-professionnel') }}" class="cv-card__right-cta">
-            Commander maintenant →
+            Commander maintenant <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
 
@@ -95,7 +95,7 @@
           </div>
           <h3 class="svc-item__title">Offres d'emploi ciblées</h3>
           <p class="svc-item__text">Accédez à des centaines d'offres vérifiées et mises à jour quotidiennement, adaptées au marché africain et international.</p>
-          <a href="{{ route('offre.list') }}" class="svc-item__link">Explorer les offres →</a>
+          <a href="{{ route('offre.list') }}" class="svc-item__link">Explorer les offres <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>
 
         <div class="svc-item">
@@ -106,7 +106,7 @@
           </div>
           <h3 class="svc-item__title">Coaching CV &amp; entretien</h3>
           <p class="svc-item__text">Nos experts vous accompagnent pour rédiger un CV percutant et vous préparer aux entretiens d'embauche avec confiance.</p>
-          <a href="{{ route('service.commande', 'coaching-entretien') }}" class="svc-item__link">Réserver une session →</a>
+          <a href="{{ route('service.commande', 'coaching-entretien') }}" class="svc-item__link">Réserver une session <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>
 
         <div class="svc-item">
@@ -117,7 +117,7 @@
           </div>
           <h3 class="svc-item__title">Réseau professionnel</h3>
           <p class="svc-item__text">Intégrez notre communauté WhatsApp et échangez avec des professionnels, recruteurs et candidats à travers le continent.</p>
-          <a href="https://whatsapp.com/channel/0029VbCGlUo5q08ZH1bnm11F" target="_blank" rel="noopener" class="svc-item__link">Rejoindre la communauté →</a>
+          <a href="https://whatsapp.com/channel/0029VbCGlUo5q08ZH1bnm11F" target="_blank" rel="noopener" class="svc-item__link">Rejoindre la communauté <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>
 
         {{-- Services dynamiques BDD (hors cv-professionnel déjà affiché) --}}
@@ -131,7 +131,7 @@
           <h3 class="svc-item__title">{{ $service->nom }}</h3>
           <p class="svc-item__text">{{ $service->description }}</p>
           <a href="{{ route('service.commande', $service) }}" class="svc-item__link">
-            Commander — {{ number_format($service->prix, 0, ',', ' ') }} {{ $service->devise }} →
+            Commander — {{ number_format($service->prix, 0, ',', ' ') }} {{ $service->devise }} <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
         @endforeach

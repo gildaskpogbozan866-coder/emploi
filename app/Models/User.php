@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\CandidatProfil;
+use App\Models\Experience;
+use App\Models\Formation;
+use App\Models\CompetenceCandidat;
+use App\Models\LangueCandidat;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -129,5 +134,59 @@ class User extends Authenticatable implements MustVerifyEmail
     public function recruteurVerification()
     {
         return $this->hasOne(RecruteurVerification::class);
+    }
+
+    // ── Relations profil candidat ───────────────────────────
+    public function candidatProfil()
+    {
+        return $this->hasOne(CandidatProfil::class);
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class, 'candidat_id')
+                    ->orderByDesc('en_cours')
+                    ->orderByDesc('date_debut');
+    }
+
+    public function formations()
+    {
+        return $this->hasMany(Formation::class, 'candidat_id')
+                    ->orderByDesc('en_cours')
+                    ->orderByDesc('date_debut');
+    }
+
+    public function competences()
+    {
+        return $this->hasMany(CompetenceCandidat::class, 'candidat_id');
+    }
+
+    public function langues()
+    {
+        return $this->hasMany(LangueCandidat::class, 'candidat_id');
+    }
+
+    public function getProfilCompletionAttribute(): int
+    {
+        $score = 0;
+        if ($this->avatar)                                      $score += 10;
+        if ($this->candidatProfil?->titre_professionnel)        $score += 10;
+        if ($this->candidatProfil?->bio)                        $score += 10;
+        if ($this->candidatProfil?->disponibilite)              $score += 5;
+        if ($this->candidatProfil?->types_contrat)              $score += 5;
+        if ($this->candidatProfil?->ville)                      $score += 5;
+        if ($this->relationLoaded('experiences')
+            ? $this->experiences->count() > 0
+            : $this->experiences()->exists())                   $score += 25;
+        if ($this->relationLoaded('formations')
+            ? $this->formations->count() > 0
+            : $this->formations()->exists())                    $score += 15;
+        if ($this->relationLoaded('competences')
+            ? $this->competences->count() >= 3
+            : $this->competences()->count() >= 3)               $score += 10;
+        if ($this->relationLoaded('langues')
+            ? $this->langues->count() > 0
+            : $this->langues()->exists())                       $score += 5;
+        return $score;
     }
 }

@@ -79,7 +79,11 @@
           <button type="submit"
                   title="{{ $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
                   style="padding:5px 8px;background:{{ $isFavori ? '#fef9c3' : '#f1f5f9' }};border:1.5px solid {{ $isFavori ? '#fde68a' : '#e2e8f0' }};border-radius:6px;cursor:pointer;font-size:14px;line-height:1">
-            {{ $isFavori ? '★' : '☆' }}
+            @if($isFavori)
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            @else
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            @endif
           </button>
         </form>
         {{-- Contacter --}}
@@ -87,7 +91,7 @@
           <a href="mailto:{{ $cv->candidat->email }}" class="rec-btn rec-btn--primary rec-btn--sm">Contacter</a>
         @else
           <a href="{{ route('recruteur.abonnement') }}" class="rec-btn rec-btn--outline rec-btn--sm" title="Fonctionnalité Premium">
-            🔒 Premium
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Premium
           </a>
         @endif
       </div>

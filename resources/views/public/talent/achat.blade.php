@@ -6,7 +6,7 @@
   <div style="max-width:680px;margin:0 auto">
     <div style="margin-bottom:20px">
       <a href="{{ route('talent.public.detail', $profil) }}" style="color:#185FA5;text-decoration:none;font-size:13.5px">
-        ← Retour au profil
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour au profil
       </a>
     </div>
 

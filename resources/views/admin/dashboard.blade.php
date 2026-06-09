@@ -90,7 +90,7 @@
   <div class="flash flash--warning" style="margin-bottom:24px">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     <span>{{ $stats['signalements'] }} signalement(s) en attente de traitement.
-      <a href="{{ route('admin.signalements.list') }}" style="font-weight:700;margin-left:6px;color:inherit">Traiter →</a>
+      <a href="{{ route('admin.signalements.list') }}" style="font-weight:700;margin-left:6px;color:inherit">Traiter <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </span>
   </div>
 @endif
@@ -101,7 +101,7 @@
   <div class="adm-card">
     <div class="adm-card__header">
       <h2>Derniers inscrits</h2>
-      <a href="{{ route('admin.utilisateurs.candidats') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout →</a>
+      <a href="{{ route('admin.utilisateurs.candidats') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
     <div class="adm-table-wrap">
       <table class="adm-table">
@@ -123,7 +123,7 @@
   <div class="adm-card">
     <div class="adm-card__header">
       <h2>Dernières offres</h2>
-      <a href="{{ route('admin.offres.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout →</a>
+      <a href="{{ route('admin.offres.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
     <div class="adm-table-wrap">
       <table class="adm-table">
@@ -148,7 +148,7 @@
   <div class="adm-card">
     <div class="adm-card__header">
       <h2>Dernières commandes</h2>
-      <a href="{{ route('admin.commandes.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout →</a>
+      <a href="{{ route('admin.commandes.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
     <div class="adm-table-wrap">
       <table class="adm-table">
@@ -170,12 +170,12 @@
   <div class="adm-card">
     <div class="adm-card__header">
       <h2>Signalements en attente</h2>
-      <a href="{{ route('admin.signalements.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout →</a>
+      <a href="{{ route('admin.signalements.list') }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir tout <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
     @if($derniers_signalements->isEmpty())
       <div class="adm-empty" style="padding:24px 22px">
         <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        <p style="font-size:13.5px;color:#64748b">Aucun signalement en attente ✓</p>
+        <p style="font-size:13.5px;color:#64748b">Aucun signalement en attente</p>
       </div>
     @else
       <div class="adm-table-wrap">

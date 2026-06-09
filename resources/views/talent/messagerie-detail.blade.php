@@ -18,7 +18,7 @@
 @section('content')
 <div class="dash-content">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-    <a href="{{ route('talent.messagerie') }}" style="color:#185FA5;text-decoration:none;font-size:13px">← Retour</a>
+    <a href="{{ route('talent.messagerie') }}" style="color:#185FA5;text-decoration:none;font-size:13px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour</a>
     <div style="width:42px;height:42px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-weight:800;color:#065f46">
       {{ strtoupper(substr($autre->prenom ?? '?', 0, 1)) }}
     </div>

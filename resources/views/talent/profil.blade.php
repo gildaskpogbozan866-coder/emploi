@@ -57,7 +57,7 @@
       <h3 style="font-size:1.1rem;font-weight:700;color:#042C53;margin:0 0 8px">Aucun profil créé</h3>
       <p style="color:#64748b;font-size:13.5px;margin:0 0 20px">Créez votre profil Talent pour être visible par les recruteurs et décrocher des opportunités.</p>
       <a href="{{ route('talent.profil.create') }}" style="padding:11px 24px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none">
-        ✦ Créer mon profil Talent
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:-2px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Créer mon profil Talent
       </a>
     </div>
   @else

@@ -7,7 +7,7 @@
   <div class="dash-content__header">
     <div style="display:flex;align-items:center;gap:12px">
       <a href="{{ route('admin.verifications.list') }}" style="color:#6b7280;text-decoration:none;font-size:.88rem">
-        ← Retour à la liste
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour à la liste
       </a>
     </div>
     <h1 class="dash-content__title" style="margin-top:8px">

@@ -9,7 +9,7 @@
 <section class="section" style="padding-top:40px">
   <div class="container">
     <a href="{{ route('offre.list') }}" style="display:inline-flex;align-items:center;gap:6px;color:#185FA5;font-size:.9rem;margin-bottom:24px;text-decoration:none">
-      ← Retour aux offres
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour aux offres
     </a>
 
     <div class="offre-detail-layout">
@@ -102,7 +102,7 @@
           <form method="POST" action="{{ route('candidat.offres-sauvegardees.toggle', $offre) }}" style="margin-top:12px">
             @csrf
             <button type="submit" class="btn btn--outline" style="width:100%">
-              ♡ Sauvegarder l'offre
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Sauvegarder l'offre
             </button>
           </form>
           @endauth

@@ -44,7 +44,11 @@
     <div>
       <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $abonnement && $abonnement->plan === 'premium' ? 'rgba(255,255,255,.55)' : '#94a3b8' }};margin:0 0 6px">Plan actuel</p>
       <h2 style="font-size:1.8rem;font-weight:800;margin:0;color:{{ $abonnement && $abonnement->plan === 'premium' ? '#fff' : '#042C53' }}">
-        {{ $abonnement && $abonnement->plan === 'premium' ? '★ Premium' : 'Gratuit' }}
+        @if($abonnement && $abonnement->plan === 'premium')
+          <svg width="16" height="16" fill="#F5C842" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-2px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Premium
+        @else
+          Gratuit
+        @endif
       </h2>
       @if($abonnement && $abonnement->expire_le)
         <p style="font-size:13px;margin:6px 0 0;color:{{ $abonnement && $abonnement->plan === 'premium' ? 'rgba(255,255,255,.7)' : '#64748b' }}">Expire le {{ $abonnement->expire_le->format('d/m/Y') }}</p>
@@ -73,7 +77,7 @@
       <ul style="list-style:none;padding:0;margin:0 0 20px;display:flex;flex-direction:column;gap:8px">
         @foreach($plan['features'] as $f)
           <li style="font-size:13.5px;color:#475569;display:flex;align-items:flex-start;gap:8px">
-            <span style="color:#38A169;font-weight:700;flex-shrink:0;margin-top:1px">✓</span> {{ $f }}
+            <span style="color:#38A169;flex-shrink:0;margin-top:1px;display:flex"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> {{ $f }}
           </li>
         @endforeach
       </ul>
@@ -82,11 +86,15 @@
         @csrf
         <input type="hidden" name="plan" value="{{ $key }}">
         <button type="submit" style="width:100%;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13.5px;cursor:pointer;border:{{ $key === 'premium' ? 'none' : '1.5px solid #cbd5e0' }};background:{{ $key === 'premium' ? '#F5C842' : 'transparent' }};color:{{ $key === 'premium' ? '#042C53' : '#475569' }}">
-          {{ $key === 'premium' ? '★ Passer au Premium' : 'Rester sur le gratuit' }}
+          @if($key === 'premium')
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Passer au Premium
+          @else
+            Rester sur le gratuit
+          @endif
         </button>
       </form>
       @else
-        <button disabled style="width:100%;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13.5px;background:#185FA5;color:#fff;border:none;opacity:.65">Plan actuel ✓</button>
+        <button disabled style="width:100%;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13.5px;background:#185FA5;color:#fff;border:none;opacity:.65">Plan actuel <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-1px"><polyline points="20 6 9 17 4 12"/></svg></button>
       @endif
     </div>
     @endforeach

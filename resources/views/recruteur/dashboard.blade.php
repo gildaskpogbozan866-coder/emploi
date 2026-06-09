@@ -8,7 +8,7 @@
 @section('content')
 <div class="rec-topbar">
   <div class="rec-topbar__left">
-    <h1>Bonjour, {{ auth()->user()->prenom }} 👋</h1>
+    <h1>Bonjour, {{ auth()->user()->prenom }}</h1>
     <p>Vue d'ensemble de votre activité de recrutement</p>
   </div>
   <div class="rec-topbar__actions">

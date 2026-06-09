@@ -8,7 +8,7 @@
 @section('content')
 <div class="cand-page-header">
   <div class="cand-page-header__left">
-    <h1 class="cand-page-header__title">Bonjour, {{ auth()->user()->prenom }} 👋</h1>
+    <h1 class="cand-page-header__title">Bonjour, {{ auth()->user()->prenom }}</h1>
     <p class="cand-page-header__sub">Voici un résumé de votre activité sur la plateforme.</p>
   </div>
   <div class="cand-page-header__actions">
@@ -62,6 +62,31 @@
   </div>
 </div>
 
+{{-- Actions rapides --}}
+<div class="cand-card">
+  <div class="cand-card__head">
+    <h2 class="cand-card__title">Actions rapides</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+    <a href="{{ route('offre.list') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Chercher des offres
+    </a>
+    <a href="{{ route('cv.public.depot') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Déposer un CV
+    </a>
+    <a href="{{ route('candidat.alertes') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Créer une alerte emploi
+    </a>
+    <a href="{{ route('candidat.profil') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Compléter mon profil
+    </a>
+  </div>
+</div>
+
 {{-- Dernières candidatures --}}
 <div class="cand-card">
   <div class="cand-card__head">
@@ -69,7 +94,7 @@
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Dernières candidatures
     </h2>
-    <a href="{{ route('candidat.candidatures') }}" class="cand-btn cand-btn--outline cand-btn--sm">Voir tout →</a>
+    <a href="{{ route('candidat.candidatures') }}" class="cand-btn cand-btn--outline cand-btn--sm">Voir tout <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
   </div>
 
   @if($dernieres_candidatures->isEmpty())
@@ -118,30 +143,5 @@
       </table>
     </div>
   @endif
-</div>
-
-{{-- Actions rapides --}}
-<div class="cand-card">
-  <div class="cand-card__head">
-    <h2 class="cand-card__title">Actions rapides</h2>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
-    <a href="{{ route('offre.list') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Chercher des offres
-    </a>
-    <a href="{{ route('cv.public.depot') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Déposer un CV
-    </a>
-    <a href="{{ route('candidat.alertes') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Créer une alerte emploi
-    </a>
-    <a href="{{ route('candidat.profil') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#378ADD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Compléter mon profil
-    </a>
-  </div>
 </div>
 @endsection

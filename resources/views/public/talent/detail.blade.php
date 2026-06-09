@@ -6,7 +6,7 @@
   <div style="max-width:820px;margin:0 auto">
     <div style="margin-bottom:20px">
       <a href="{{ route('talent.public.list') }}" style="color:#185FA5;text-decoration:none;font-size:13.5px">
-        ← Retour aux profils Talents
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour aux profils Talents
       </a>
     </div>
 
@@ -81,12 +81,12 @@
           <div style="display:flex;gap:12px;flex-wrap:wrap">
             @if($profil->user->email)
               <a href="mailto:{{ $profil->user->email }}" style="padding:9px 18px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13.5px;text-decoration:none">
-                ✉ {{ $profil->user->email }}
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> {{ $profil->user->email }}
               </a>
             @endif
             @if($profil->user->tel)
               <a href="tel:{{ $profil->user->tel }}" style="padding:9px 18px;background:#f1f5f9;color:#374151;border-radius:8px;font-weight:700;font-size:13.5px;text-decoration:none">
-                📞 {{ $profil->user->tel }}
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L7.91 8.76A16 16 0 0 0 12 12a16 16 0 0 0 3.24 1.91l1.91-1.91a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 24 14.21v2.71Z"/></svg> {{ $profil->user->tel }}
               </a>
             @endif
           </div>

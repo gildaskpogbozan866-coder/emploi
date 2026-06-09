@@ -3,10 +3,14 @@
    Partagé par : talent · candidat · recruteur · admin
 ═══════════════════════════════════════════════ */
 
-/* ── Reset body (annule le padding-top:80px de style.css) ── */
+/* ── Reset (annule style.css — overflow-x:hidden sur html casse position:sticky) ── */
+html {
+  overflow-x: visible;
+}
 body {
   padding-top: 0 !important;
   margin: 0;
+  overflow-x: hidden;
 }
 
 :root {

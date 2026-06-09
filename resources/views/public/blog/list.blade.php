@@ -35,7 +35,7 @@
             @if($article->image)
               <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->titre }}" class="card__img" loading="lazy" />
             @else
-              <div style="background:#EEF4FF;height:200px;display:flex;align-items:center;justify-content:center;color:#185FA5;font-size:2rem">✍</div>
+              <div style="background:#EEF4FF;height:200px;display:flex;align-items:center;justify-content:center;color:#185FA5"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
             @endif
           </a>
           <div class="article-card__body">

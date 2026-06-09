@@ -27,7 +27,7 @@
         <p style="font-weight:{{ $notif->lu ? '500' : '700' }};color:#042C53;margin:0 0 3px;font-size:14px">{{ $notif->titre }}</p>
         <p style="font-size:13px;color:#475569;margin:0;line-height:1.5">{{ $notif->contenu }}</p>
         @if($notif->lien)
-          <a href="{{ $notif->lien }}" class="cand-btn cand-btn--outline cand-btn--sm" style="margin-top:8px;display:inline-flex">Voir →</a>
+          <a href="{{ $notif->lien }}" class="cand-btn cand-btn--outline cand-btn--sm" style="margin-top:8px;display:inline-flex">Voir <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         @endif
       </div>
       <span style="font-size:11.5px;color:#94a3b8;white-space:nowrap;flex-shrink:0">{{ $notif->created_at->diffForHumans() }}</span>

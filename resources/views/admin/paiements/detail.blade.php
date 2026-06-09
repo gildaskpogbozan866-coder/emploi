@@ -4,7 +4,7 @@
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
-    <a href="{{ route('admin.paiements.list') }}" class="adm-btn adm-btn--outline adm-btn--sm" style="margin-bottom:8px">← Retour</a>
+    <a href="{{ route('admin.paiements.list') }}" class="adm-btn adm-btn--outline adm-btn--sm" style="margin-bottom:8px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour</a>
     <h1>Paiement #{{ $paiement->reference }}</h1>
     <p>Créé le {{ $paiement->created_at->format('d/m/Y à H:i') }}</p>
   </div>
