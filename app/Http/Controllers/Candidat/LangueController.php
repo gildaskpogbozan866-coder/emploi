@@ -3,27 +3,25 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Candidat\LangueRequest;
 use App\Models\LangueCandidat;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LangueController extends Controller
 {
-    public function store(Request $request)
+    public function store(LangueRequest $request)
     {
-        $data = $request->validate([
-            'langue' => 'required|string|max:80',
-            'niveau' => 'required|in:A1,A2,B1,B2,C1,C2,natif',
-        ]);
+        $data = $request->all();
+      
 
-        // Limite : 10 langues max
         if (Auth::user()->langues()->count() >= 10) {
             return response()->json(['message' => 'Maximum 10 langues atteint.'], 422);
         }
 
         // Pas de doublon
         $existe = Auth::user()->langues()
-            ->whereRaw('LOWER(langue) = ?', [strtolower($data['langue'])])
+            ->whereRaw('langue_id = ?', [$data['langue_id']])
+            ->whereRaw('niveau_id = ?', [$data['niveau_id']])
             ->exists();
 
         if ($existe) {
@@ -32,11 +30,20 @@ class LangueController extends Controller
 
         $langue = LangueCandidat::create([
             'candidat_id' => Auth::id(),
-            'langue'      => $data['langue'],
-            'niveau'      => $data['niveau'],
+            'langue_id'   => $data['langue_id'],
+            'niveau_id'   => $data['niveau_id'],
         ]);
 
-        return response()->json(['success' => true, 'langue' => $langue], 201);
+        $langue->load('langue', 'niveau');
+
+        return response()->json([
+            'success' => true,
+            'langue'  => [
+                'id'     => $langue->id,
+                'langue' => $langue->langue->nom,
+                'niveau' => $langue->niveau->code,
+            ],
+        ], 201);
     }
 
     public function destroy(LangueCandidat $langue)

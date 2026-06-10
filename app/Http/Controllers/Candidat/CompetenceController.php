@@ -3,40 +3,44 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Candidat\CompetenceRequest;
 use App\Models\CompetenceCandidat;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CompetenceController extends Controller
 {
-    public function store(Request $request)
+    public function store(CompetenceRequest $request)
     {
-        $data = $request->validate([
-            'nom'    => 'required|string|max:100',
-            'niveau' => 'required|in:debutant,intermediaire,avance,expert',
-        ]);
+        $user = Auth::user();
 
-        // Limite : 30 compétences max par candidat
-        if (Auth::user()->competences()->count() >= 30) {
+        if ($user->competences()->count() >= 30) {
             return response()->json(['message' => 'Maximum 30 compétences atteint.'], 422);
         }
 
-        // Pas de doublon (insensible à la casse)
-        $existe = Auth::user()->competences()
-            ->whereRaw('LOWER(nom) = ?', [strtolower($data['nom'])])
+        $existe = CompetenceCandidat::where('candidat_id', $user->id)
+            ->where('competence_id', $request->competence_id)
             ->exists();
 
         if ($existe) {
-            return response()->json(['message' => 'Cette compétence existe déjà.'], 422);
+            return response()->json(['message' => 'Cette compétence est déjà dans votre profil.'], 422);
         }
 
-        $competence = CompetenceCandidat::create([
-            'candidat_id' => Auth::id(),
-            'nom'         => $data['nom'],
-            'niveau'      => $data['niveau'],
+        $pivot = CompetenceCandidat::create([
+            'candidat_id'      => $user->id,
+            'competence_id'    => $request->competence_id,
+            'annees_experience' => $request->annees_experience,
         ]);
 
-        return response()->json(['success' => true, 'competence' => $competence], 201);
+        $pivot->load('competence');
+
+        return response()->json([
+            'success'    => true,
+            'competence' => [
+                'id'               => $pivot->id,
+                'nom'              => $pivot->competence->nom,
+                'annees_experience' => $pivot->annees_experience,
+            ],
+        ], 201);
     }
 
     public function destroy(CompetenceCandidat $competence)

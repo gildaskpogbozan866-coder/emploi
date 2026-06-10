@@ -186,7 +186,7 @@
                     'action' => "openModal('modal-infos')",
                 ],
                 [
-                    'done' => $user->typesContrats->isNotEmpty(),
+                    'done' => !empty($profil?->types_contrat),
                     'label' => 'Types de contrat',
                     'hint' => 'CDI, CDD, Freelance… indiquez vos préférences',
                     'pts' => 5,
@@ -475,12 +475,9 @@
                 </div>
                 <div class="cp-section__body">
                     <div class="cp-chips" id="comp-list">
-                        @forelse($user->competences as $comp)
-                            <span class="cp-chip" id="comp-item-{{ $comp->id }}">
+                        {{-- @forelse($user->competences as $comp)
+                            <span class="cp-chip cp-chip--{{ $comp->niveau }}" id="comp-item-{{ $comp->id }}">
                                 {{ $comp->nom }}
-                                @if ($comp->pivot->annees_experience)
-                                    <small style="opacity:.65;margin-left:3px">{{ $comp->pivot->annees_experience }} an(s)</small>
-                                @endif
                                 <button class="cp-chip__del"
                                     onclick="deleteItem('competences',{{ $comp->id }},'comp-item-{{ $comp->id }}')"
                                     title="Supprimer">
@@ -492,9 +489,10 @@
                             </span>
                         @empty
                             <div class="cand-empty" id="comp-empty" style="padding:30px 0 10px;width:100%">
-                                <div class="cand-empty__text" style="margin:0">Ajoutez vos compétences techniques et soft skills.</div>
+                                <div class="cand-empty__text" style="margin:0">Ajoutez vos compétences techniques et soft
+                                    skills.</div>
                             </div>
-                        @endforelse
+                        @endforelse --}}
                     </div>
                 </div>
             </div>
@@ -621,65 +619,11 @@
                                 </div>
                             </div>
                         </div>
-                        @if ($user->typesContrats->isNotEmpty())
-                            <div style="margin-top:10px">
-                                <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Contrats</div>
-                                <div class="cp-contrats">
-                                    @foreach ($user->typesContrats as $tc)
-                                        <span class="cp-contrat-tag">{{ $tc->libelle }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                        @if ($user->secteursActivite->isNotEmpty())
-                            <div style="margin-top:10px">
-                                <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Secteurs</div>
-                                <div class="cp-contrats">
-                                    @foreach ($user->secteursActivite as $s)
-                                        <span class="cp-contrat-tag">{{ $s->libelle }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                        @if ($user->metiers->isNotEmpty())
-                            <div style="margin-top:10px">
-                                <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Métiers ciblés</div>
-                                <div class="cp-contrats">
-                                    @foreach ($user->metiers as $m)
-                                        <span class="cp-contrat-tag">{{ $m->nom }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                        @php
-                            $niveauEtudeLabel = $user->niveauEtude?->niveauEtude?->libelle;
-                            $niveauExpLabel   = $user->niveauExperience?->niveauExperience?->libelle;
-                        @endphp
-                        @if ($niveauEtudeLabel || $niveauExpLabel)
-                            <div class="cp-prefs" style="margin-top:12px">
-                                @if ($niveauEtudeLabel)
-                                    <div class="cp-pref">
-                                        <div class="cp-pref__icon">
-                                            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                                            </svg>
-                                        </div>
-                                        <div class="cp-pref__label">Étude</div>
-                                        <div class="cp-pref__val" style="font-size:11px">{{ $niveauEtudeLabel }}</div>
-                                    </div>
-                                @endif
-                                @if ($niveauExpLabel)
-                                    <div class="cp-pref">
-                                        <div class="cp-pref__icon">
-                                            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                                <rect x="2" y="7" width="20" height="14" rx="2" />
-                                                <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-                                            </svg>
-                                        </div>
-                                        <div class="cp-pref__label">Expér.</div>
-                                        <div class="cp-pref__val" style="font-size:11px">{{ $niveauExpLabel }}</div>
-                                    </div>
-                                @endif
+                        @if ($profil->types_contrat)
+                            <div class="cp-contrats">
+                                @foreach ($profil->types_contrat as $type)
+                                    <span class="cp-contrat-tag">{{ $libelles['types_contrat'][$type] ?? $type }}</span>
+                                @endforeach
                             </div>
                         @endif
                     @else
@@ -770,78 +714,16 @@
                             </select>
                         </div>
                     </div>
-                    @php
-                        $selectedContrats = collect(old('types_contrat_ids', $user->typesContrats->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                        $selectedSecteurs = collect(old('secteurs_ids', $user->secteursActivite->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                        $selectedMetiers  = collect(old('metiers_ids', $user->metiers->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                    @endphp
-
                     <div class="cand-form-group">
                         <label class="cand-form-label">Types de contrat souhaités</label>
-                        <select name="types_contrat_ids[]" multiple class="cand-form-select"
-                            style="height:140px;padding:4px">
-                            @foreach ($typesContrats as $tc)
-                                <option value="{{ $tc->id }}"
-                                    {{ $selectedContrats->contains($tc->id) ? 'selected' : '' }}>
-                                    {{ $tc->libelle }}
-                                </option>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+                            @foreach ($libelles['types_contrat'] as $val => $lab)
+                                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                                    <input type="checkbox" name="types_contrat[]" value="{{ $val }}"
+                                        {{ in_array($val, old('types_contrat', $profil?->types_contrat ?? [])) ? 'checked' : '' }}>
+                                    {{ $lab }}
+                                </label>
                             @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Secteurs d'activité ciblés</label>
-                        <select name="secteurs_ids[]" multiple class="cand-form-select"
-                            style="height:160px;padding:4px">
-                            @foreach ($secteursActivite as $s)
-                                <option value="{{ $s->id }}"
-                                    {{ $selectedSecteurs->contains($s->id) ? 'selected' : '' }}>
-                                    {{ $s->libelle }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Métiers ciblés</label>
-                        <select name="metiers_ids[]" multiple class="cand-form-select"
-                            style="height:140px;padding:4px">
-                            @foreach ($metiers as $m)
-                                <option value="{{ $m->id }}"
-                                    {{ $selectedMetiers->contains($m->id) ? 'selected' : '' }}>
-                                    {{ $m->nom }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Niveau d'étude</label>
-                            <select name="niveau_etude_id" class="cand-form-select">
-                                <option value="">— Non défini —</option>
-                                @foreach ($niveauxEtude as $ne)
-                                    <option value="{{ $ne->id }}"
-                                        {{ old('niveau_etude_id', $user->niveauEtude?->niveau_etude_id) == $ne->id ? 'selected' : '' }}>
-                                        {{ $ne->libelle }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Niveau d'expérience global</label>
-                            <select name="niveau_experience_id" class="cand-form-select">
-                                <option value="">— Non défini —</option>
-                                @foreach ($niveauxExperience as $nex)
-                                    <option value="{{ $nex->id }}"
-                                        {{ old('niveau_experience_id', $user->niveauExperience?->niveau_experience_id) == $nex->id ? 'selected' : '' }}>
-                                        {{ $nex->libelle }}
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
                     </div>
                     <div class="cand-form-grid">
@@ -1008,20 +890,17 @@
                     </svg></button>
             </div>
             <div class="cp-modal__body">
+                <div class="cand-form-group"><label class="cand-form-label">Compétence <span
+                            class="req">*</span></label><input type="text" id="comp-nom" class="cand-form-input"
+                        placeholder="ex: JavaScript, Comptabilité..."></div>
                 <div class="cand-form-group">
-                    <label class="cand-form-label">Compétence <span class="req">*</span></label>
-                    <select id="comp-competence-id" class="cand-form-select">
-                        <option value="">— Choisir une compétence —</option>
-                        @foreach ($competences as $comp)
-                            <option value="{{ $comp->id }}">{{ $comp->nom }}</option>
-                        @endforeach
+                    <label class="cand-form-label">Niveau</label>
+                    <select id="comp-niveau" class="cand-form-select">
+                        <option value="debutant">Débutant</option>
+                        <option value="intermediaire" selected>Intermédiaire</option>
+                        <option value="avance">Avancé</option>
+                        <option value="expert">Expert</option>
                     </select>
-                </div>
-                <div class="cand-form-group">
-                    <label class="cand-form-label">Années d'expérience</label>
-                    <input type="number" id="comp-annees" class="cand-form-input" min="0" max="50"
-                        placeholder="ex: 3">
-                    <div class="cand-form-hint">Laisser vide si non précisé</div>
                 </div>
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
@@ -1357,18 +1236,12 @@
 
         // Compétences
         async function saveComp() {
-            const competenceId = document.getElementById('comp-competence-id').value;
-            if (!competenceId) {
-                showToast('Veuillez sélectionner une compétence.', true);
-                return;
-            }
-            const annees = document.getElementById('comp-annees').value;
             const {
                 ok,
                 data
             } = await ajax('/candidat/profil/competences', 'POST', {
-                competence_id: competenceId,
-                annees_experience: annees !== '' ? parseInt(annees) : null,
+                nom: document.getElementById('comp-nom').value,
+                niveau: document.getElementById('comp-niveau').value
             });
             if (!ok) {
                 showToast(data.message ?? 'Erreur.', true);
@@ -1378,16 +1251,12 @@
             const empty = document.getElementById('comp-empty');
             if (empty) empty.remove();
             const chip = document.createElement('span');
-            chip.className = 'cp-chip';
+            chip.className = `cp-chip cp-chip--${c.niveau}`;
             chip.id = `comp-item-${c.id}`;
-            const anneesHtml = c.annees_experience
-                ? `<small style="opacity:.65;margin-left:3px">${c.annees_experience} an(s)</small>`
-                : '';
             chip.innerHTML =
-                `${c.nom}${anneesHtml}<button class="cp-chip__del" onclick="deleteItem('competences',${c.id},'comp-item-${c.id}')" title="Supprimer"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>`;
+                `${c.nom}<button class="cp-chip__del" onclick="deleteItem('competences',${c.id},'comp-item-${c.id}')" title="Supprimer"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>`;
             document.getElementById('comp-list').appendChild(chip);
-            document.getElementById('comp-competence-id').value = '';
-            document.getElementById('comp-annees').value = '';
+            document.getElementById('comp-nom').value = '';
             showToast('Compétence ajoutée !');
         }
 

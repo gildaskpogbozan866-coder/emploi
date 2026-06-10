@@ -136,6 +136,29 @@
         <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
           <a href="{{ route('admin.parametres') }}">Paramètres</a>
         </li>
+        <li class="adm-nav__section">Référentiels RH</li>
+        @php
+          $refRoutes = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*'];
+          $refActif  = request()->routeIs(...$refRoutes);
+        @endphp
+        <li class="adm-nav__item">
+          <details {{ $refActif ? 'open' : '' }} style="width:100%">
+            <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:0;font-size:13.5px;font-weight:500;color:inherit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="20" cy="6" r="2" fill="currentColor"/><circle cx="20" cy="12" r="2" fill="currentColor"/><circle cx="20" cy="18" r="2" fill="currentColor"/></svg>
+              Référentiels
+            </summary>
+            <ul style="list-style:none;padding:4px 0 0 22px;margin:4px 0 0">
+              <li style="margin:2px 0"><a href="{{ route('admin.competences.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.competences*') ? '#F5A623' : 'inherit' }}">Compétences</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.metiers.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.metiers*') ? '#F5A623' : 'inherit' }}">Métiers</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.types-contrat.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.types-contrat*') ? '#F5A623' : 'inherit' }}">Types de contrat</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.secteurs-activite.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.secteurs-activite*') ? '#F5A623' : 'inherit' }}">Secteurs d'activité</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.langues.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.langues*') ? '#F5A623' : 'inherit' }}">Langues</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-langue.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-langue*') ? '#F5A623' : 'inherit' }}">Niveaux de langue</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-etude.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-etude*') ? '#F5A623' : 'inherit' }}">Niveaux d'étude</a></li>
+              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-experience.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-experience*') ? '#F5A623' : 'inherit' }}">Niveaux d'expérience</a></li>
+            </ul>
+          </details>
+        </li>
         <li class="adm-nav__section">Sécurité</li>
         <li class="adm-nav__item {{ request()->routeIs('admin.permissions*') ? 'active' : '' }}">
           <a href="{{ route('admin.permissions.index') }}">

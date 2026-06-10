@@ -12,8 +12,14 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Models\CandidatProfil;
 use App\Models\Experience;
 use App\Models\Formation;
-use App\Models\CompetenceCandidat;
+use App\Models\Competence;
+use App\Models\Langue;
 use App\Models\LangueCandidat;
+use App\Models\Metier;
+use App\Models\NiveauEtudeCandidat;
+use App\Models\NiveauExperienceCandidat;
+use App\Models\SecteurActivite;
+use App\Models\TypeContrat;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -158,10 +164,47 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function competences()
     {
-        return $this->hasMany(CompetenceCandidat::class, 'candidat_id');
+        return $this->belongsToMany(Competence::class, 'competence_candidat', 'candidat_id', 'competence_id')
+                    ->withPivot('annees_experience')
+                    ->withTimestamps();
+    }
+
+    public function metiers()
+    {
+        return $this->belongsToMany(Metier::class, 'candidat_metier', 'candidat_id', 'metier_id')
+                    ->withTimestamps();
+    }
+
+    public function niveauEtude()
+    {
+        return $this->hasOne(NiveauEtudeCandidat::class, 'candidat_id');
+    }
+
+    public function niveauExperience()
+    {
+        return $this->hasOne(NiveauExperienceCandidat::class, 'candidat_id');
+    }
+
+    public function typesContrats()
+    {
+        return $this->belongsToMany(TypeContrat::class, 'type_contrat_candidat', 'candidat_id', 'type_contrat_id')
+                    ->withTimestamps();
+    }
+
+    public function secteursActivite()
+    {
+        return $this->belongsToMany(SecteurActivite::class, 'secteur_activite_candidat', 'candidat_id', 'secteur_activite_id')
+                    ->withTimestamps();
     }
 
     public function langues()
+    {
+        return $this->belongsToMany(Langue::class, 'langues_candidat', 'candidat_id', 'langue_id')
+                    ->withPivot('niveau_id')
+                    ->withTimestamps();
+    }
+
+    public function languesCandidats()
     {
         return $this->hasMany(LangueCandidat::class, 'candidat_id');
     }
@@ -173,7 +216,9 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($this->candidatProfil?->titre_professionnel)        $score += 10;
         if ($this->candidatProfil?->bio)                        $score += 10;
         if ($this->candidatProfil?->disponibilite)              $score += 5;
-        if ($this->candidatProfil?->types_contrat)              $score += 5;
+        if ($this->relationLoaded('typesContrats')
+            ? $this->typesContrats->isNotEmpty()
+            : $this->typesContrats()->exists())                  $score += 5;
         if ($this->candidatProfil?->ville)                      $score += 5;
         if ($this->relationLoaded('experiences')
             ? $this->experiences->count() > 0
