@@ -6,9 +6,10 @@
 @endsection
 
 @php
-  $profil     = $user->candidatProfil;
-  $libelles   = App\Models\CandidatProfil::libelles();
-  $completion = $user->profilCompletion;
+  $profil        = $user->candidatProfil;
+  $talentProfil  = $user->talentProfil;
+  $libelles      = App\Models\CandidatProfil::libelles();
+  $completion    = $user->profilCompletion;
 @endphp
 
 @section('sidebar')
@@ -49,6 +50,9 @@
       @if($profil?->titre_professionnel)
         <div class="cp-hero__titre">{{ $profil->titre_professionnel }}</div>
       @endif
+      @if($talentProfil?->specialite)
+        <div class="cp-hero__specialite">{{ $talentProfil->specialite }}</div>
+      @endif
 
       <div class="cp-hero__meta">
         @if($user->pays || $profil?->ville)
@@ -67,6 +71,12 @@
           <span class="cp-hero__meta-item">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
             {{ $libelles['disponibilite'][$profil->disponibilite] ?? '' }}
+          </span>
+        @endif
+        @if($talentProfil?->annees_experience !== null)
+          <span class="cp-hero__meta-item">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            {{ $talentProfil->annees_experience }} an{{ $talentProfil->annees_experience > 1 ? 's' : '' }} d'expérience
           </span>
         @endif
       </div>
@@ -173,7 +183,7 @@
   </div>
 
   {{-- Grille 2 colonnes --}}
-  <div class="cp-grid" style="display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start">
+  <div class="cp-grid cand-2col" style="gap:18px">
     <div>
 
       {{-- Expériences --}}
@@ -282,6 +292,52 @@
               <div class="cand-empty__text">Ajoutez vos diplômes et formations.</div>
             </div>
           @endforelse
+        </div>
+      </div>
+
+      {{-- Attestations & Certificats --}}
+      <div class="cp-section">
+        <div class="cp-section__head">
+          <div class="cp-section__title">
+            <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Attestations & Certificats
+          </div>
+          <button class="cand-btn cand-btn--outline cand-btn--sm" onclick="openModal('modal-att')">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Ajouter
+          </button>
+        </div>
+        <div class="cp-section__body" id="att-list">
+          @if($talentProfil && $talentProfil->attestations->isNotEmpty())
+            @foreach($talentProfil->attestations as $att)
+              <div class="cp-att-item" id="att-item-{{ $att->id }}">
+                <a href="{{ asset('storage/'.$att->fichier) }}" target="_blank" rel="noopener" class="cp-att-link">
+                  <div class="cp-att-icon">
+                    @if(in_array(pathinfo($att->fichier, PATHINFO_EXTENSION), ['jpg','jpeg','png','webp']))
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#38A169" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    @else
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#38A169" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    @endif
+                  </div>
+                  <span class="cp-att-name">{{ $att->nom }}</span>
+                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                <form method="POST" action="{{ route('talent.attestations.delete', $att->id) }}"
+                      onsubmit="return confirm('Supprimer cette attestation ?')"
+                      style="flex-shrink:0">
+                  @csrf @method('DELETE')
+                  <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" title="Supprimer">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </form>
+              </div>
+            @endforeach
+          @else
+            <div class="cand-empty" style="padding:24px 0 10px">
+              <div class="cand-empty__icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+              <div class="cand-empty__text" style="margin:0">Ajoutez vos certificats, diplômes scannés ou attestations.</div>
+            </div>
+          @endif
         </div>
       </div>
 
@@ -408,6 +464,57 @@
     </div>
   </div>
 
+  {{-- Photos de travaux (pleine largeur) --}}
+  <div class="cp-section" style="margin-top:18px">
+    <div class="cp-section__head">
+      <div class="cp-section__title">
+        <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Photos de travaux / Portfolio
+      </div>
+      @if(!$talentProfil || $talentProfil->travaux->count() < 8)
+        <button class="cand-btn cand-btn--outline cand-btn--sm" onclick="openModal('modal-travaux')">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Ajouter
+        </button>
+      @endif
+    </div>
+    <div class="cp-section__body">
+      @if($talentProfil && $talentProfil->travaux->isNotEmpty())
+        <div class="cp-travaux-grid">
+          @foreach($talentProfil->travaux as $t)
+            <div class="cp-travail-item" id="travail-item-{{ $t->id }}">
+              <div class="cp-travail-img" onclick="openLightbox('{{ asset('storage/'.$t->photo) }}')">
+                <img src="{{ asset('storage/'.$t->photo) }}" alt="{{ $t->description ?? '' }}">
+              </div>
+              @if($t->description)
+                <p class="cp-travail-desc">{{ $t->description }}</p>
+              @endif
+              <form method="POST" action="{{ route('talent.profil.travaux.delete', $t->id) }}"
+                    onsubmit="return confirm('Supprimer cette photo ?')"
+                    class="cp-travail-del">
+                @csrf @method('DELETE')
+                <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" title="Supprimer">
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </form>
+            </div>
+          @endforeach
+        </div>
+      @else
+        <div class="cand-empty" style="padding:28px 0 12px">
+          <div class="cand-empty__icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="cand-empty__title">Aucune photo ajoutée</div>
+          <div class="cand-empty__text">Partagez des photos de vos réalisations pour illustrer votre expertise.</div>
+        </div>
+      @endif
+    </div>
+  </div>
+
+  {{-- Lightbox --}}
+  <div id="lbOverlay" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out">
+    <img id="lbImg" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+  </div>
+
   {{-- ═══════════ MODALES ═══════════ --}}
 
   {{-- Modale Infos perso --}}
@@ -435,6 +542,20 @@
             <input type="text" name="titre_professionnel" class="cand-form-input"
                    placeholder="ex: Développeur Full Stack, Comptable..."
                    value="{{ old('titre_professionnel', $profil?->titre_professionnel) }}">
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Spécialité / Domaine d'expertise</label>
+              <input type="text" name="specialite" class="cand-form-input"
+                     placeholder="ex: React, Fiscalité, Génie civil..."
+                     value="{{ old('specialite', $talentProfil?->specialite) }}">
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Années d'expérience</label>
+              <input type="number" name="annees_experience" class="cand-form-input" min="0" max="50"
+                     placeholder="ex: 3"
+                     value="{{ old('annees_experience', $talentProfil?->annees_experience) }}">
+            </div>
           </div>
           <div class="cand-form-group">
             <label class="cand-form-label">Résumé / Bio</label>
@@ -656,6 +777,64 @@
     </div>
   </div>
 
+  {{-- Modale Attestation --}}
+  <div class="cp-modal-overlay" id="modal-att">
+    <div class="cp-modal" style="max-width:460px">
+      <div class="cp-modal__head">
+        <div class="cp-modal__title">Ajouter une attestation / certificat</div>
+        <button class="cp-modal__close" onclick="closeModal('modal-att')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="cp-modal__body">
+        <form method="POST" action="{{ route('talent.attestations.store') }}" enctype="multipart/form-data">
+          @csrf
+          <div class="cand-form-group">
+            <label class="cand-form-label">Intitulé <span class="req">*</span></label>
+            <input type="text" name="nom" class="cand-form-input" placeholder="ex: Certificat JavaScript, Attestation de travail...">
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Fichier <span class="req">*</span></label>
+            <input type="file" name="fichier" class="cand-form-input" accept=".pdf,.jpg,.jpeg,.png,.webp" style="padding:7px">
+            <div class="cand-form-hint">PDF, JPG, PNG ou WebP — max 5 Mo</div>
+          </div>
+          <div class="cp-modal__actions">
+            <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-att')">Annuler</button>
+            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{-- Modale Photos de travaux --}}
+  <div class="cp-modal-overlay" id="modal-travaux">
+    <div class="cp-modal" style="max-width:480px">
+      <div class="cp-modal__head">
+        <div class="cp-modal__title">Ajouter des photos de travaux</div>
+        <button class="cp-modal__close" onclick="closeModal('modal-travaux')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="cp-modal__body">
+        <form method="POST" action="{{ route('talent.profil.travaux.store') }}" enctype="multipart/form-data">
+          @csrf
+          <div class="cand-form-group">
+            <label class="cand-form-label">Photos <span class="req">*</span></label>
+            <input type="file" name="photos[]" class="cand-form-input" accept="image/jpeg,image/png,image/webp"
+                   multiple style="padding:7px">
+            <div class="cand-form-hint">JPG, PNG ou WebP — max 3 Mo par photo — max 8 photos au total</div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Description (optionnelle)</label>
+            <input type="text" name="descriptions[0]" class="cand-form-input"
+                   placeholder="ex: Application mobile de gestion RH...">
+          </div>
+          <div class="cp-modal__actions">
+            <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-travaux')">Annuler</button>
+            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 @endsection
 
 @section('scripts')
@@ -663,6 +842,16 @@
 const CSRF = '{{ csrf_token() }}';
 let editingExpId = null, editingFormId = null;
 let expMissions = [], formActivites = [];
+
+function openLightbox(src) {
+  const lb = document.getElementById('lbOverlay');
+  document.getElementById('lbImg').src = src;
+  lb.style.display = 'flex';
+}
+function closeLightbox() {
+  document.getElementById('lbOverlay').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
 
 function renderBulletList(containerId, items, removeFn) {
   const el = document.getElementById(containerId);
@@ -857,6 +1046,24 @@ if(_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
 @endif
 </script>
 <style>
+/* Spécialité hero */
+.cp-hero__specialite{font-size:13px;color:#64748b;margin-top:2px}
+
+/* Attestations */
+.cp-att-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f0f2f5}
+.cp-att-item:last-child{border-bottom:none}
+.cp-att-link{display:flex;align-items:center;gap:10px;flex:1;text-decoration:none;min-width:0;padding:2px 8px 2px 0}
+.cp-att-icon{width:30px;height:30px;background:#f0fdf4;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-att-name{font-size:13.5px;font-weight:600;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Photos de travaux */
+.cp-travaux-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.cp-travail-item{border-radius:9px;overflow:hidden;border:1px solid #e2e8f0;position:relative}
+.cp-travail-img{cursor:pointer}
+.cp-travail-img img{width:100%;height:120px;object-fit:cover;display:block}
+.cp-travail-desc{font-size:12px;color:#64748b;margin:0;padding:6px 8px 6px;line-height:1.4}
+.cp-travail-del{position:absolute;top:6px;right:6px}
+
 @media(max-width:960px){.cp-grid{grid-template-columns:1fr!important}}
 .cp-timeline__bullets{margin:6px 0 0 0;padding:0;list-style:none}
 .cp-timeline__bullets li{position:relative;padding-left:14px;font-size:13px;color:#475569;line-height:1.5;margin-bottom:3px}

@@ -65,11 +65,11 @@ class ProfilControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_page_profil_inaccessible_au_talent(): void
+    public function test_page_profil_inaccessible_au_admin(): void
     {
-        $talent = $this->creerAutreRole('talent');
+        $admin = $this->creerAutreRole('admin');
 
-        $this->actingAs($talent)
+        $this->actingAs($admin)
             ->get(route('candidat.profil'))
             ->assertForbidden();
     }

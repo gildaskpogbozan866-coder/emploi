@@ -418,31 +418,127 @@
 .cand-table tr:last-child td { border-bottom: none; }
 .cand-table tr:hover td { background: #fafbfd; }
 
+/* ── Sidebar logo (talent) ── */
+.cand-sidebar__logo {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 14px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  transition: background 0.18s;
+}
+.cand-sidebar__logo:hover { background: rgba(255,255,255,0.04); }
+.cand-sidebar__logo span {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.cand-sidebar__logo small {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: rgba(255,255,255,0.40);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  margin-top: 2px;
+}
+
+/* ── Close button (mobile drawer only, hidden on desktop) ── */
+.cand-sidebar__close {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.80);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.18s;
+  padding: 0;
+}
+.cand-sidebar__close:hover { background: rgba(255,255,255,0.18); color: #fff; }
+
+/* ── Talent variant (vert foncé) ── */
+.cand-sidebar--talent { background: #072b16; }
+.cand-sidebar--talent .cand-sidebar__avatar {
+  background: linear-gradient(135deg, #1a6640, #38A169);
+  box-shadow: 0 0 0 2px rgba(56,161,105,0.35);
+}
+.cand-sidebar--talent .cand-nav__item.active {
+  background: rgba(56,161,105,0.18);
+  color: #fff;
+  border-right-color: #38A169;
+}
+.cand-sidebar--talent .cand-sidebar__badge {
+  background: rgba(56,161,105,0.22);
+  color: #9ae6b4;
+}
+.cand-sidebar--talent .cand-sidebar__badge--free {
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.65);
+}
+
+/* ── Overlay backdrop (mobile drawer) ── */
+.cand-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4,44,83,0.50);
+  z-index: 490;
+  cursor: pointer;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+.cand-overlay.active { display: block; }
+
+/* ── Grille 2 colonnes responsive ── */
+.cand-2col {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 18px;
+  align-items: start;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
   .cand-stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
+  /* Sidebar = drawer depuis la gauche */
   .cand-sidebar {
-    width: 220px;
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    box-shadow: none;
   }
-  .cand-main { padding: 22px 20px 60px; }
-}
-@media (max-width: 768px) {
-  .cand-wrap { flex-direction: column; }
-  .cand-sidebar {
-    width: 100%;
-    position: static;
-    height: auto;
+  .cand-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 8px 0 36px rgba(0,0,0,0.30);
   }
-  .cand-sidebar-toggle { display: flex; }
-  .cand-nav { display: none; }
-  .cand-nav.open { display: block; }
-  .cand-main { padding: 20px 14px 56px; }
+  .cand-sidebar-toggle { display: none; }
+  .cand-sidebar__close { display: flex; }
+  .cand-nav { display: flex !important; flex-direction: column; }
+  .cand-main { padding: 22px 16px 60px; }
   .cand-stats { grid-template-columns: repeat(2, 1fr); }
   .cand-form-grid { grid-template-columns: 1fr; }
   .cand-page-header { flex-direction: column; align-items: flex-start; }
+  .cand-2col { grid-template-columns: 1fr; }
+  .cand-2col > *:last-child { position: static !important; top: auto !important; }
 }
-@media (max-width: 400px) {
+@media (max-width: 480px) {
+  .cand-main { padding: 16px 12px 56px; }
   .cand-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cand-card { padding: 16px; }
 }

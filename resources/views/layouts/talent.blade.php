@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'Espace Recruteur') — Emploi Bouge Bénin</title>
+  <title>@yield('title', 'Espace Talent') — Emploi Bouge Bénin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
-  <link rel="stylesheet" href="{{ asset('css/recruteur/recruteur.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/candidat/candidat.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
   @yield('css')
@@ -13,10 +15,10 @@
 </head>
 <body>
 
-  <header class="dash-header dash-header--recruteur">
+  <header class="dash-header dash-header--talent">
     <div class="dash-header__inner">
       <div class="dash-header__left">
-        <button class="dash-header__burger" id="recBurger" aria-label="Menu">
+        <button class="dash-header__burger" id="talentBurger" aria-label="Menu">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
@@ -43,15 +45,15 @@
     </div>
   </header>
 
-  <div class="rec-wrap">
-    <div class="rec-overlay" id="recOverlay"></div>
-    <aside class="rec-sidebar" id="recSidebar">
-      <button class="rec-sidebar__close" id="recClose" aria-label="Fermer le menu">
+  <div class="cand-wrap">
+    <div class="cand-overlay" id="talentOverlay"></div>
+    <aside class="cand-sidebar cand-sidebar--talent" id="talentSidebar">
+      <button class="cand-sidebar__close" id="talentClose" aria-label="Fermer le menu">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-      @yield('sidebar')
+      @include('talent._sidebar')
     </aside>
-    <main class="rec-main">
+    <main class="cand-main">
       @include('components.flash')
       @yield('content')
     </main>
@@ -59,22 +61,23 @@
 
   <script>
     (function() {
-      const burger   = document.getElementById('recBurger');
-      const sidebar  = document.getElementById('recSidebar');
-      const overlay  = document.getElementById('recOverlay');
-      const closeBtn = document.getElementById('recClose');
+      const burger  = document.getElementById('talentBurger');
+      const sidebar = document.getElementById('talentSidebar');
+      const overlay = document.getElementById('talentOverlay');
+      const closeBtn = document.getElementById('talentClose');
       function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
       function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
       burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
       closeBtn?.addEventListener('click', closeSidebar);
       overlay?.addEventListener('click', closeSidebar);
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
-      sidebar?.querySelectorAll('a').forEach(link => {
+      sidebar?.querySelectorAll('.cand-nav__item').forEach(link => {
         link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
       });
     })();
   </script>
   @include('partials._form-guard')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @yield('scripts')
 </body>
 </html>

@@ -32,6 +32,9 @@ use App\Http\Controllers\Recruteur\StatistiqueController as RecruteurStat;
 use App\Http\Controllers\Recruteur\ProfilController as RecruteurProfil;
 use App\Http\Controllers\Talent\DashboardController as TalentDashboard;
 use App\Http\Controllers\Talent\ProfilController as TalentProfilCtrl;
+use App\Http\Controllers\Talent\ExperienceController as TalentExpCtrl;
+use App\Http\Controllers\Talent\FormationController as TalentFormCtrl;
+use App\Http\Controllers\Talent\AttestationController as TalentAttCtrl;
 use App\Http\Controllers\Talent\MessageController as TalentMessage;
 use App\Http\Controllers\Talent\AbonnementController as TalentAbonnement;
 use App\Http\Controllers\Talent\ParametreController as TalentParametre;
@@ -135,7 +138,7 @@ Route::middleware('auth')->group(function () {
             return match ($user->role) {
                 'admin'     => redirect()->route('admin.dashboard'),
                 'recruteur' => redirect()->route('recruteur.dashboard'),
-                'talent'    => redirect()->route('talent.dashboard'),
+                'talent'    => redirect()->route('candidat.dashboard'),
                 default     => redirect()->route('candidat.dashboard'),
             };
         }
@@ -297,16 +300,25 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 // ════════════════════════════════════════════════════════
 //  ESPACE TALENT — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:'.Role::TALENT])->group(function () {
+Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
     Route::get('/tableau-de-bord', [TalentDashboard::class, 'index'])->name('dashboard');
 
     // Profil talent — nécessite create-profil-talent
     Route::middleware('permission:'.Permission::CREATE_PROFIL_TALENT)->group(function () {
-        Route::get('/mon-profil',          [TalentProfilCtrl::class, 'show'])->name('profil');
-        Route::get('/mon-profil/creer',    [TalentProfilCtrl::class, 'create'])->name('profil.create');
-        Route::post('/mon-profil',         [TalentProfilCtrl::class, 'store'])->name('profil.store');
-        Route::get('/mon-profil/modifier', [TalentProfilCtrl::class, 'edit'])->name('profil.edit');
-        Route::put('/mon-profil',          [TalentProfilCtrl::class, 'update'])->name('profil.update');
+        Route::get('/mon-profil',               [TalentProfilCtrl::class, 'show'])->name('profil');
+        Route::get('/mon-profil/creer',         [TalentProfilCtrl::class, 'create'])->name('profil.create');
+        Route::post('/mon-profil',              [TalentProfilCtrl::class, 'store'])->name('profil.store');
+        Route::get('/mon-profil/modifier',      [TalentProfilCtrl::class, 'edit'])->name('profil.edit');
+        Route::put('/mon-profil',               [TalentProfilCtrl::class, 'update'])->name('profil.update');
+        Route::delete('/mon-profil/photo',                   [TalentProfilCtrl::class, 'deletePhoto'])->name('profil.photo.delete');
+        Route::post('/mon-profil/travaux',                  [TalentProfilCtrl::class, 'storeTravail'])->name('profil.travaux.store');
+        Route::delete('/mon-profil/travaux/{travail}',      [TalentProfilCtrl::class, 'deleteTravail'])->name('profil.travaux.delete');
+        Route::post('/experiences',                         [TalentExpCtrl::class, 'store'])->name('experiences.store');
+        Route::delete('/experiences/{experience}',          [TalentExpCtrl::class, 'destroy'])->name('experiences.delete');
+        Route::post('/formations',                          [TalentFormCtrl::class, 'store'])->name('formations.store');
+        Route::delete('/formations/{formation}',            [TalentFormCtrl::class, 'destroy'])->name('formations.delete');
+        Route::post('/attestations',                        [TalentAttCtrl::class, 'store'])->name('attestations.store');
+        Route::delete('/attestations/{attestation}',        [TalentAttCtrl::class, 'destroy'])->name('attestations.delete');
     });
 
     // Messagerie — nécessite view-messages-talent

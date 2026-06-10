@@ -124,14 +124,13 @@ class AuthTest extends TestCase
         $this->assertEquals('TechBénin SARL', $user->entreprise);
     }
 
-    public function test_inscription_talent_assigne_role_talent(): void
+    public function test_inscription_talent_role_refuse(): void
     {
         $payload = $this->payloadInscription('talent', ['metier' => 'Développeur Web']);
-        $this->post(route('auth.inscription.store'), $payload);
+        $this->post(route('auth.inscription.store'), $payload)
+            ->assertSessionHasErrors('role');
 
-        $user = User::where('email', 'jean@test.com')->first();
-        $this->assertTrue($user->hasRole('talent'));
-        $this->assertEquals('Développeur Web', $user->metier);
+        $this->assertNull(User::where('email', 'jean@test.com')->first());
     }
 
     public function test_inscription_email_deja_utilise_retourne_erreur(): void
@@ -208,14 +207,14 @@ class AuthTest extends TestCase
         ])->assertRedirect(route('recruteur.dashboard'));
     }
 
-    public function test_connexion_talent_redirige_vers_dashboard_talent(): void
+    public function test_connexion_talent_redirige_vers_dashboard_candidat(): void
     {
-        $user = $this->creerUser('talent');
+        $user = $this->creerUser('candidat');
 
         $this->post(route('auth.connexion.store'), [
             'email'    => $user->email,
             'password' => 'password123',
-        ])->assertRedirect(route('talent.dashboard'));
+        ])->assertRedirect(route('candidat.dashboard'));
     }
 
     public function test_connexion_mot_de_passe_incorrect(): void

@@ -11,10 +11,6 @@
   </div>
 </div>
 
-<button class="cand-sidebar-toggle" onclick="document.getElementById('candNav').classList.toggle('open')">
-  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-  Navigation
-</button>
 
 <nav class="cand-nav" id="candNav">
   <div class="cand-nav__section">Principal</div>
@@ -104,6 +100,7 @@
     </svg>
     Mon profil
   </a>
+
 
   <a href="{{ route('candidat.parametres') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.parametres*') ? 'active' : '' }}">

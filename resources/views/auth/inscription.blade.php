@@ -19,7 +19,7 @@
     </a>
     <div class="auth-panel__body">
       <div class="auth-panel__tag">Inscription gratuite</div>
-      <h2 class="auth-panel__title">Rejoignez des<br>milliers de <span>talents</span>.</h2>
+      <h2 class="auth-panel__title">Rejoignez des<br>milliers de <span>candidats</span>.</h2>
       <p class="auth-panel__desc">Créez votre compte en 2 minutes et accédez à toutes les opportunités d'emploi.</p>
       <div class="auth-panel__perks">
         <div class="auth-panel__perk"><span class="auth-panel__perk-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Accès à toutes les offres vérifiées</div>
@@ -57,19 +57,12 @@
               <div class="role-card__label">Candidat</div>
               <div class="role-card__desc">Je cherche un emploi</div>
             </button>
-            <button type="button" data-role="talent" class="role-card {{ old('role') === 'talent' ? 'selected' : '' }}" onclick="selectRole('talent')">
-              <div class="role-card__icon">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-              </div>
-              <div class="role-card__label">Profil / Talent</div>
-              <div class="role-card__desc">Je valorise mes compétences</div>
-            </button>
             <button type="button" data-role="recruteur" class="role-card {{ old('role') === 'recruteur' ? 'selected' : '' }}" onclick="selectRole('recruteur')">
               <div class="role-card__icon">
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
               </div>
               <div class="role-card__label">Recruteur</div>
-              <div class="role-card__desc">Je recrute des talents</div>
+              <div class="role-card__desc">Je recrute des candidats</div>
             </button>
           </div>
           <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'candidat') }}" />
@@ -126,11 +119,6 @@
           </select>
         </div>
 
-        <div class="aform__field" id="metierField" style="{{ old('role') === 'talent' ? '' : 'display:none' }}">
-          <label class="aform__label" for="metier">Votre métier / spécialité</label>
-          <input class="aform__input" type="text" id="metier" name="metier" value="{{ old('metier') }}" placeholder="Ex : Développeur Web, Comptable…" />
-        </div>
-
         <div class="aform__field" id="entrepriseField" style="{{ old('role') === 'recruteur' ? '' : 'display:none' }}">
           <label class="aform__label" for="entreprise">Nom de l'entreprise</label>
           <input class="aform__input" type="text" id="entreprise" name="entreprise" value="{{ old('entreprise') }}" placeholder="Ex : TechBénin SARL" />
@@ -159,7 +147,6 @@ function selectRole(role) {
   document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
   document.querySelector('.role-card[data-role="' + role + '"]')?.classList.add('selected');
   document.getElementById('roleInput').value = role;
-  document.getElementById('metierField').style.display    = role === 'talent'    ? '' : 'none';
   document.getElementById('entrepriseField').style.display = role === 'recruteur' ? '' : 'none';
 }
 </script>

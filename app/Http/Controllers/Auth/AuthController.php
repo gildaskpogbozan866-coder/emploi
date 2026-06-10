@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\IncriptionRequest;
 use App\Models\User;
+use Spatie\Permission\Models\Role as SpatieRole;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,6 +96,7 @@ class AuthController extends Controller
             'metier'     => $request->metier,
         ]);
 
+        SpatieRole::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         $user->assignRole($role);
 
         Auth::login($user, remember: true);
@@ -192,7 +194,6 @@ class AuthController extends Controller
         return match ($user->role) {
             'admin'     => redirect()->route('admin.dashboard'),
             'recruteur' => redirect()->route('recruteur.dashboard'),
-            'talent'    => redirect()->route('talent.dashboard'),
             default     => redirect()->route('candidat.dashboard'),
         };
     }

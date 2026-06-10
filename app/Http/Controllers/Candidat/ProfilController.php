@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use App\Models\CandidatProfil;
+use App\Models\TalentProfil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,8 @@ class ProfilController extends Controller
             'formations',
             'competences',
             'langues',
+            'talentProfil.attestations',
+            'talentProfil.travaux',
         ]);
 
         return view('candidat.profil', compact('user'));
@@ -45,6 +48,8 @@ class ProfilController extends Controller
             'remote'             => 'nullable|in:non,partiel,total',
             'linkedin'           => 'nullable|url|max:500',
             'portfolio'          => 'nullable|url|max:500',
+            'specialite'         => 'nullable|string|max:200',
+            'annees_experience'  => 'nullable|integer|min:0|max:50',
         ]);
 
         // Avatar
@@ -79,6 +84,27 @@ class ProfilController extends Controller
                 'portfolio'           => $request->portfolio,
             ]
         );
+
+        // Champs pro (spécialité, années d'expérience) → TalentProfil
+        if ($request->filled('specialite') || $request->has('annees_experience')) {
+            $existing = TalentProfil::where('user_id', $user->id)->first();
+            if ($existing) {
+                $talentUpdate = [];
+                if ($request->has('specialite'))        $talentUpdate['specialite']        = $request->specialite;
+                if ($request->has('annees_experience')) $talentUpdate['annees_experience'] = $request->annees_experience;
+                $existing->update($talentUpdate);
+            } else {
+                TalentProfil::create([
+                    'user_id'          => $user->id,
+                    'metier'           => '',
+                    'pays'             => $user->pays ?? '',
+                    'plan'             => 'gratuit',
+                    'visible'          => true,
+                    'specialite'       => $request->specialite,
+                    'annees_experience'=> $request->annees_experience,
+                ]);
+            }
+        }
 
         return redirect()->route('candidat.profil')->with('success', 'Profil mis à jour avec succès.');
     }

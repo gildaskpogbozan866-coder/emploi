@@ -17,7 +17,7 @@
   <header class="dash-header dash-header--admin">
     <div class="dash-header__inner">
       <div class="dash-header__left">
-        <button class="dash-header__burger" onclick="document.getElementById('admSidebar').classList.toggle('open')" aria-label="Menu">
+        <button class="dash-header__burger" id="admBurger" aria-label="Menu">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
@@ -25,8 +25,6 @@
         <a href="{{ route('home') }}" class="dash-header__logo">
           <img src="{{ asset('images/Logo.png') }}" alt="Emploi Bouge Bénin">
         </a>
-        <div class="dash-header__divider"></div>
-        <span class="dash-header__space">Administration</span>
       </div>
       <div class="dash-header__right">
         <div class="dash-header__user">
@@ -47,7 +45,11 @@
   </header>
 
   <div class="adm-wrap">
+    <div class="adm-overlay" id="admOverlay"></div>
     <aside class="adm-sidebar" id="admSidebar">
+      <button class="adm-sidebar__close" id="admClose" aria-label="Fermer le menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       <a href="{{ route('home') }}" class="adm-sidebar__logo">
         <span>Emploi Bouge</span><small>Bénin · Administration</small>
       </a>
@@ -152,6 +154,23 @@
     </main>
   </div>
 
+  <script>
+    (function() {
+      const burger   = document.getElementById('admBurger');
+      const sidebar  = document.getElementById('admSidebar');
+      const overlay  = document.getElementById('admOverlay');
+      const closeBtn = document.getElementById('admClose');
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+      closeBtn?.addEventListener('click', closeSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+      sidebar?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
+      });
+    })();
+  </script>
   @include('partials._form-guard')
   @yield('scripts')
 </body>

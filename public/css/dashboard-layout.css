@@ -262,15 +262,17 @@ body {
    AJUSTEMENTS LAYOUT SIDEBARS
 ════════════════════════════════════════ */
 
-/* Recruteur et admin — sticky + fixed (desktop et mobile) */
-.rec-sidebar {
-  top: var(--dash-h);
-  height: calc(100vh - var(--dash-h));
-  min-height: 0;
-}
-.adm-sidebar {
-  top: var(--dash-h);
-  height: calc(100vh - var(--dash-h));
+/* Recruteur et admin — sticky (desktop uniquement) */
+@media (min-width: 901px) {
+  .rec-sidebar {
+    top: var(--dash-h);
+    height: calc(100vh - var(--dash-h));
+    min-height: 0;
+  }
+  .adm-sidebar {
+    top: var(--dash-h);
+    height: calc(100vh - var(--dash-h));
+  }
 }
 .rec-wrap,
 .adm-wrap {
@@ -286,11 +288,14 @@ body {
   .tld-wrap { min-height: calc(100vh - var(--dash-h)); }
 }
 
-/* Candidat — desktop uniquement (mobile : static dans candidat.css) */
-@media (min-width: 769px) {
+/* Candidat — desktop (≥ 901px) : sidebar sticky dans le flux */
+@media (min-width: 901px) {
   .cand-sidebar {
+    position: sticky;
     top: var(--dash-h);
     height: calc(100vh - var(--dash-h));
+    width: 256px;
+    transform: none !important;
   }
   .cand-wrap { min-height: calc(100vh - var(--dash-h)); }
 }
@@ -365,7 +370,7 @@ body {
 /* ════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .dash-header__burger   { display: flex; }
   .dash-header__username { display: none; }
   .dash-header__space    { display: none; }

@@ -63,7 +63,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool     { return $this->hasRole('admin'); }
     public function isCandidat(): bool  { return $this->hasRole('candidat'); }
     public function isRecruteur(): bool { return $this->hasRole('recruteur'); }
-    public function isTalent(): bool    { return $this->hasRole('talent'); }
+    /** Vrai si le candidat a renseigné un profil pro (ex-talent). */
+    public function isTalent(): bool    { return $this->talentProfil()->exists(); }
 
     // ── Relations métier ────────────────────────────────────
     public function offres()
