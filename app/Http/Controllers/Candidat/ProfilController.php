@@ -23,6 +23,7 @@ class ProfilController extends Controller
 {
     public function edit()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user()->load([
             // Profil de base
             'candidatProfil',
@@ -92,6 +93,7 @@ class ProfilController extends Controller
     // ── Infos personnelles + préférences ──────────────────
     public function update(ProfilRequest $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // ── Avatar ────────────────────────────────────────────
@@ -160,6 +162,7 @@ class ProfilController extends Controller
     // ── Suppression d'avatar ──────────────────────────────
     public function deleteAvatar()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
