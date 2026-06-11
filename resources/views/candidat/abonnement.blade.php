@@ -6,6 +6,14 @@
 @endsection
 
 @section('content')
+
+@if(session('info'))
+  <div style="display:flex;align-items:center;gap:10px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:20px">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p style="margin:0;font-size:13px;color:#1e40af">{{ session('info') }}</p>
+  </div>
+@endif
+
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">Mon abonnement</h1>

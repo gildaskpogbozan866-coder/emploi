@@ -71,10 +71,9 @@ class TypeContratsController extends Controller
     {
         try {
             $typeContrat->delete();
-            return redirect()->route('admin.types-contrat.index')->with('success', 'Type de contrat supprimé.');
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.types-contrat.index')
-                ->with('error', 'Impossible de supprimer : ce type de contrat est utilisé par des candidats.');
+            return response()->json(['success' => false, 'message' => 'Impossible de supprimer : ce type de contrat est utilisé par des candidats.'], 422);
         }
     }
 }

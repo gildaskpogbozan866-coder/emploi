@@ -17,7 +17,7 @@
   <header class="dash-header dash-header--admin">
     <div class="dash-header__inner">
       <div class="dash-header__left">
-        <button class="dash-header__burger" onclick="document.getElementById('admSidebar').classList.toggle('open')" aria-label="Menu">
+        <button class="dash-header__burger" id="admBurger" aria-label="Menu">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
@@ -25,8 +25,6 @@
         <a href="{{ route('home') }}" class="dash-header__logo">
           <img src="{{ asset('images/Logo.png') }}" alt="Emploi Bouge Bénin">
         </a>
-        <div class="dash-header__divider"></div>
-        <span class="dash-header__space">Administration</span>
       </div>
       <div class="dash-header__right">
         <div class="dash-header__user">
@@ -47,7 +45,11 @@
   </header>
 
   <div class="adm-wrap">
+    <div class="adm-overlay" id="admOverlay"></div>
     <aside class="adm-sidebar" id="admSidebar">
+      <button class="adm-sidebar__close" id="admClose" aria-label="Fermer le menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       <a href="{{ route('home') }}" class="adm-sidebar__logo">
         <span>Emploi Bouge</span><small>Bénin · Administration</small>
       </a>
@@ -98,10 +100,10 @@
             Offres d'emploi
           </a>
         </li>
-        <li class="adm-nav__item {{ request()->routeIs('admin.cvs*') ? 'active' : '' }}">
+        <li class="adm-nav__item {{ request()->routeIs('admin.cvs*') || request()->routeIs('admin.documents*') ? 'active' : '' }}">
           <a href="{{ route('admin.cvs.list') }}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-            CVs
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            CVs & Documents
           </a>
         </li>
         <li class="adm-nav__item {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
@@ -133,29 +135,33 @@
         <li class="adm-nav__item {{ request()->routeIs('admin.statistiques*') ? 'active' : '' }}">
           <a href="{{ route('admin.statistiques') }}">Statistiques</a>
         </li>
-        <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
-          <a href="{{ route('admin.parametres') }}">Paramètres</a>
-        </li>
-        <li class="adm-nav__section">Référentiels RH</li>
+        <li class="adm-nav__section">Configuration</li>
         @php
           $refRoutes = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*'];
           $refActif  = request()->routeIs(...$refRoutes);
         @endphp
-        <li class="adm-nav__item">
-          <details {{ $refActif ? 'open' : '' }} style="width:100%">
-            <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:0;font-size:13.5px;font-weight:500;color:inherit">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="20" cy="6" r="2" fill="currentColor"/><circle cx="20" cy="12" r="2" fill="currentColor"/><circle cx="20" cy="18" r="2" fill="currentColor"/></svg>
-              Référentiels
+        <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
+          <a href="{{ route('admin.parametres') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Paramètres
+          </a>
+        </li>
+        <li class="adm-nav__item {{ $refActif ? 'active' : '' }}">
+          <details {{ $refActif ? 'open' : '' }}>
+            <summary>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Référentiels RH
+              <svg class="adm-nav__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </summary>
-            <ul style="list-style:none;padding:4px 0 0 22px;margin:4px 0 0">
-              <li style="margin:2px 0"><a href="{{ route('admin.competences.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.competences*') ? '#F5A623' : 'inherit' }}">Compétences</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.metiers.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.metiers*') ? '#F5A623' : 'inherit' }}">Métiers</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.types-contrat.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.types-contrat*') ? '#F5A623' : 'inherit' }}">Types de contrat</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.secteurs-activite.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.secteurs-activite*') ? '#F5A623' : 'inherit' }}">Secteurs d'activité</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.langues.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.langues*') ? '#F5A623' : 'inherit' }}">Langues</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-langue.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-langue*') ? '#F5A623' : 'inherit' }}">Niveaux de langue</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-etude.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-etude*') ? '#F5A623' : 'inherit' }}">Niveaux d'étude</a></li>
-              <li style="margin:2px 0"><a href="{{ route('admin.niveaux-experience.index') }}" style="font-size:12.5px;color:{{ request()->routeIs('admin.niveaux-experience*') ? '#F5A623' : 'inherit' }}">Niveaux d'expérience</a></li>
+            <ul class="adm-nav__sub">
+              <li><a href="{{ route('admin.competences.index') }}" class="{{ request()->routeIs('admin.competences*') ? 'active' : '' }}">Compétences</a></li>
+              <li><a href="{{ route('admin.metiers.index') }}" class="{{ request()->routeIs('admin.metiers*') ? 'active' : '' }}">Métiers</a></li>
+              <li><a href="{{ route('admin.types-contrat.index') }}" class="{{ request()->routeIs('admin.types-contrat*') ? 'active' : '' }}">Types de contrat</a></li>
+              <li><a href="{{ route('admin.secteurs-activite.index') }}" class="{{ request()->routeIs('admin.secteurs-activite*') ? 'active' : '' }}">Secteurs d'activité</a></li>
+              <li><a href="{{ route('admin.langues.index') }}" class="{{ request()->routeIs('admin.langues*') ? 'active' : '' }}">Langues</a></li>
+              <li><a href="{{ route('admin.niveaux-langue.index') }}" class="{{ request()->routeIs('admin.niveaux-langue*') ? 'active' : '' }}">Niveaux de langue</a></li>
+              <li><a href="{{ route('admin.niveaux-etude.index') }}" class="{{ request()->routeIs('admin.niveaux-etude*') ? 'active' : '' }}">Niveaux d'étude</a></li>
+              <li><a href="{{ route('admin.niveaux-experience.index') }}" class="{{ request()->routeIs('admin.niveaux-experience*') ? 'active' : '' }}">Niveaux d'expérience</a></li>
             </ul>
           </details>
         </li>
@@ -170,12 +176,30 @@
     </aside>
 
     <main class="adm-main">
-      @include('components.flash')
       @yield('content')
     </main>
   </div>
 
+  <script>
+    (function() {
+      const burger   = document.getElementById('admBurger');
+      const sidebar  = document.getElementById('admSidebar');
+      const overlay  = document.getElementById('admOverlay');
+      const closeBtn = document.getElementById('admClose');
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+      closeBtn?.addEventListener('click', closeSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+      sidebar?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
+      });
+    })();
+  </script>
   @include('partials._form-guard')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  @include('components.flash-swal')
   @yield('scripts')
 </body>
 </html>

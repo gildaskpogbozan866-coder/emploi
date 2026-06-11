@@ -90,16 +90,16 @@ class Permission
             self::SAVE_OFFRE,
             self::CREATE_ALERTE,
             self::MANAGE_ABONNEMENT_CAN,
+            // Tous les candidats peuvent gérer un profil pro (ex-talent)
+            self::CREATE_PROFIL_TALENT,
+            self::VIEW_MESSAGES_TALENT,
+            self::MANAGE_ABONNEMENT_TAL,
         ];
     }
 
     public static function talentPermissions(): array
     {
-        return [
-            self::CREATE_PROFIL_TALENT,
-            self::VIEW_MESSAGES_TALENT,
-            self::MANAGE_ABONNEMENT_TAL,
-        ];
+        return self::candidatPermissions();
     }
 
     public static function all(): array

@@ -69,10 +69,9 @@ class LanguesController extends Controller
     {
         try {
             $langue->delete();
-            return redirect()->route('admin.langues.index')->with('success', 'Langue supprimée.');
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.langues.index')
-                ->with('error', 'Impossible de supprimer : cette langue est utilisée par des candidats.');
+            return response()->json(['success' => false, 'message' => 'Impossible de supprimer : cette langue est utilisée par des candidats.'], 422);
         }
     }
 }

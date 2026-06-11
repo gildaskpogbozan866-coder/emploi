@@ -8,32 +8,29 @@
     <p class="dash-content__sub">Dossiers soumis par les entreprises pour validation de leur compte.</p>
   </div>
 
-  @if(session('success'))
-    <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#065f46;margin-bottom:20px">
-      {{ session('success') }}
-    </div>
-  @endif
-
-  {{-- Compteurs par statut --}}
-  @php
-    $enAttente = $verifications->where('statut', 'en_attente')->count();
-    $approuves = $verifications->where('statut', 'approuve')->count();
-    $rejetes   = $verifications->where('statut', 'rejete')->count();
-  @endphp
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+  {{-- Compteurs globaux (indépendants des filtres) --}}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;text-align:center">
-      <div style="font-size:1.6rem;font-weight:700;color:#d97706">{{ $verifications->total() > 0 ? $verifications->where('statut','en_attente')->count() : 0 }}</div>
+      <div style="font-size:1.6rem;font-weight:700;color:#d97706">{{ $counts['en_attente'] }}</div>
       <div style="font-size:.82rem;color:#92400e;margin-top:4px">En attente</div>
     </div>
     <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:16px;text-align:center">
-      <div style="font-size:1.6rem;font-weight:700;color:#059669">{{ $verifications->where('statut','approuve')->count() }}</div>
+      <div style="font-size:1.6rem;font-weight:700;color:#059669">{{ $counts['approuve'] }}</div>
       <div style="font-size:.82rem;color:#065f46;margin-top:4px">Approuvés</div>
     </div>
     <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:16px;text-align:center">
-      <div style="font-size:1.6rem;font-weight:700;color:#dc2626">{{ $verifications->where('statut','rejete')->count() }}</div>
+      <div style="font-size:1.6rem;font-weight:700;color:#dc2626">{{ $counts['rejete'] }}</div>
       <div style="font-size:.82rem;color:#7f1d1d;margin-top:4px">Rejetés</div>
     </div>
   </div>
+
+  @include('partials._search-bar', [
+    'route'       => 'admin.verifications.list',
+    'placeholder' => 'Nom, entreprise ou email…',
+    'filters'     => [
+      ['name' => 'statut', 'label' => 'Tous les statuts', 'options' => ['en_attente' => 'En attente', 'approuve' => 'Approuvé', 'rejete' => 'Rejeté']],
+    ],
+  ])
 
   <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden">
     <table style="width:100%;border-collapse:collapse;font-size:.88rem">

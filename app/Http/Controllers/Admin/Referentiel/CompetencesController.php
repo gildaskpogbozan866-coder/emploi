@@ -72,10 +72,9 @@ class CompetencesController extends Controller
     {
         try {
             $competence->delete();
-            return redirect()->route('admin.competences.index')->with('success', 'Compétence supprimée.');
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.competences.index')
-                ->with('error', 'Impossible de supprimer : cette compétence est utilisée par des candidats.');
+            return response()->json(['success' => false, 'message' => 'Impossible de supprimer : cette compétence est utilisée par des candidats.'], 422);
         }
     }
 }

@@ -16,6 +16,15 @@
 </div>
 
 <div class="adm-card">
+  <div style="padding:16px 22px 0">
+    @include('partials._search-bar', [
+      'route'       => 'admin.blog.list',
+      'placeholder' => 'Rechercher un article…',
+      'filters'     => [
+        ['name' => 'statut', 'label' => 'Tous les statuts', 'options' => ['publie' => 'Publié', 'brouillon' => 'Brouillon', 'archive' => 'Archivé']],
+      ],
+    ])
+  </div>
   <div class="adm-table-wrap">
     <table class="adm-table">
       <thead>
@@ -44,7 +53,7 @@
           <td>
             <div class="actions">
               <a href="{{ route('admin.blog.edit', $article) }}" class="adm-btn adm-btn--outline adm-btn--sm">Modifier</a>
-              <form method="POST" action="{{ route('admin.blog.destroy', $article) }}" onsubmit="return confirm('Supprimer cet article ?')">
+              <form method="POST" action="{{ route('admin.blog.destroy', $article) }}" data-confirm="Supprimer cet article ?" data-confirm-btn="Supprimer">
                 @csrf @method('DELETE')
                 <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
               </form>

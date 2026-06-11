@@ -71,10 +71,9 @@ class SecteursActiviteController extends Controller
     {
         try {
             $secteurActivite->delete();
-            return redirect()->route('admin.secteurs-activite.index')->with('success', "Secteur d'activité supprimé.");
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.secteurs-activite.index')
-                ->with('error', "Impossible de supprimer : ce secteur est utilisé par des candidats.");
+            return response()->json(['success' => false, 'message' => "Impossible de supprimer : ce secteur est utilisé par des candidats."], 422);
         }
     }
 }

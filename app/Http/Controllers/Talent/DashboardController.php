@@ -13,9 +13,9 @@ class DashboardController extends Controller
         $profil = $user->talentProfil;
 
         $stats = [
-            'profil_cree'  => $profil ? 1 : 0,
-            'vues_profil'  => $profil?->vues ?? 0,
-            'plan'         => $profil?->plan ?? 'gratuit',
+            'vues_profil' => $profil?->vues ?? 0,
+            'completion'  => $profil?->profil_completion ?? 0,
+            'plan'        => $profil?->plan ?? 'gratuit',
         ];
 
         return view('talent.dashboard', compact('user', 'profil', 'stats'));

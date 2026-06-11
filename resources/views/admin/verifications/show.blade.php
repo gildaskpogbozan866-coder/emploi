@@ -16,12 +16,6 @@
     <p class="dash-content__sub">{{ $verification->user->entreprise }} — {{ $verification->user->email }}</p>
   </div>
 
-  @if(session('success'))
-    <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#065f46;margin-bottom:20px">
-      {{ session('success') }}
-    </div>
-  @endif
-
   <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
 
     {{-- Colonne principale : documents --}}
@@ -116,11 +110,11 @@
 
       {{-- Bouton Approuver --}}
       @if($verification->statut !== 'approuve')
-        <form method="POST" action="{{ route('admin.verifications.approuver', $verification) }}" style="margin-bottom:12px">
+        <form method="POST" action="{{ route('admin.verifications.approuver', $verification) }}" style="margin-bottom:12px"
+              data-confirm="Confirmer l'approbation du compte recruteur ?" data-confirm-btn="Approuver" data-confirm-color="#059669">
           @csrf
           @method('PATCH')
           <button type="submit"
-                  onclick="return confirm('Confirmer l\'approbation du compte recruteur ?')"
                   style="width:100%;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:10px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer">
             Approuver le compte
           </button>
@@ -131,7 +125,8 @@
       @if($verification->statut !== 'rejete')
         <div style="background:#fff;border-radius:12px;border:1px solid #fca5a5;padding:20px">
           <h3 style="font-size:.88rem;font-weight:700;color:#dc2626;margin:0 0 12px">Rejeter le dossier</h3>
-          <form method="POST" action="{{ route('admin.verifications.rejeter', $verification) }}">
+          <form method="POST" action="{{ route('admin.verifications.rejeter', $verification) }}"
+                data-confirm="Confirmer le rejet de ce dossier ?" data-confirm-btn="Rejeter" data-confirm-color="#dc2626">
             @csrf
             @method('PATCH')
             <div style="margin-bottom:12px">
@@ -147,7 +142,6 @@
               @enderror
             </div>
             <button type="submit"
-                    onclick="return confirm('Confirmer le rejet de ce dossier ?')"
                     style="width:100%;background:#dc2626;color:#fff;border:none;border-radius:8px;padding:10px;font-size:.88rem;font-weight:600;cursor:pointer">
               Rejeter le dossier
             </button>

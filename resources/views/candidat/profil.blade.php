@@ -6,9 +6,9 @@
 @endsection
 
 @php
-    $profil = $user->candidatProfil;
-    $libelles = App\Models\CandidatProfil::libelles();
-    $completion = $user->profilCompletion;
+  $profil   = $user->candidatProfil;
+  $libelles = App\Models\CandidatProfil::libelles();
+  $completion    = $user->profilCompletion;
 @endphp
 
 @section('sidebar')
@@ -46,44 +46,40 @@
                 </label>
             </div>
 
-            <div class="cp-hero__name">{{ $user->nomComplet }}</div>
-            @if ($profil?->titre_professionnel)
-                <div class="cp-hero__titre">{{ $profil->titre_professionnel }}</div>
-            @endif
+      <div class="cp-hero__name">{{ $user->nomComplet }}</div>
+      @if($profil?->titre_professionnel)
+        <div class="cp-hero__titre">{{ $profil->titre_professionnel }}</div>
+      @endif
+      @if($profil?->specialite)
+        <div class="cp-hero__specialite">{{ $profil->specialite }}</div>
+      @endif
 
-            <div class="cp-hero__meta">
-                @if ($user->pays || $profil?->ville)
-                    <span class="cp-hero__meta-item">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <circle cx="12" cy="11" r="3" />
-                        </svg>
-                        {{ collect([$profil?->ville, $user->pays])->filter()->join(', ') }}
-                    </span>
-                @endif
-                @if ($user->tel)
-                    <span class="cp-hero__meta-item">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        {{ $user->tel }}
-                    </span>
-                @endif
-                @if ($profil?->disponibilite)
-                    <span class="cp-hero__meta-item">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18" />
-                        </svg>
-                        {{ $libelles['disponibilite'][$profil->disponibilite] ?? '' }}
-                    </span>
-                @endif
-            </div>
+      <div class="cp-hero__meta">
+        @if($user->pays || $profil?->ville)
+          <span class="cp-hero__meta-item">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+            {{ collect([$profil?->ville, $user->pays])->filter()->join(', ') }}
+          </span>
+        @endif
+        @if($user->tel)
+          <span class="cp-hero__meta-item">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            {{ $user->tel }}
+          </span>
+        @endif
+        @if($profil?->disponibilite)
+          <span class="cp-hero__meta-item">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
+            {{ $libelles['disponibilite'][$profil->disponibilite] ?? '' }}
+          </span>
+        @endif
+        @if($profil?->annees_experience !== null)
+          <span class="cp-hero__meta-item">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            {{ $profil->annees_experience }} an{{ $profil->annees_experience > 1 ? 's' : '' }} d'expérience
+          </span>
+        @endif
+      </div>
 
             @if ($profil?->bio)
                 <p class="cp-hero__bio">{{ $profil->bio }}</p>
@@ -274,9 +270,9 @@
         @endif
     </div>
 
-    {{-- Grille 2 colonnes --}}
-    <div class="cp-grid" style="display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start">
-        <div>
+  {{-- Grille 2 colonnes --}}
+  <div class="cp-grid cand-2col" style="gap:18px">
+    <div>
 
             {{-- Expériences --}}
             <div class="cp-section">
@@ -449,7 +445,54 @@
                 </div>
             </div>
 
+      {{-- Photos de travaux / Portfolio --}}
+      <div class="cp-section">
+        <div class="cp-section__head">
+          <div class="cp-section__title">
+            <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Photos de travaux / Portfolio
+          </div>
+          @if($user->realisations->count() < 8)
+            <button class="cand-btn cand-btn--outline cand-btn--sm" onclick="openModal('modal-travaux')">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Ajouter
+            </button>
+          @endif
         </div>
+        <div class="cp-section__body">
+          @if($user->realisations->isNotEmpty())
+            <div class="cp-travaux-grid">
+              @foreach($user->realisations as $t)
+                <div class="cp-travail-item" id="travail-item-{{ $t->id }}">
+                  <div class="cp-travail-img" onclick="openLightbox('{{ asset('storage/'.$t->photo) }}')">
+                    <img src="{{ asset('storage/'.$t->photo) }}" alt="{{ $t->description ?? '' }}">
+                  </div>
+                  @if($t->description)
+                    <p class="cp-travail-desc">{{ $t->description }}</p>
+                  @endif
+                  <form method="POST" action="{{ route('candidat.realisations.delete', $t->id) }}"
+                        data-confirm="Supprimer cette photo ?" data-confirm-btn="Supprimer"
+                        class="cp-travail-del">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" title="Supprimer">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                  </form>
+                </div>
+              @endforeach
+            </div>
+          @else
+            <div class="cand-empty" style="padding:28px 0 12px">
+              <div class="cand-empty__icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="cand-empty__title">Aucune photo ajoutée</div>
+              <div class="cand-empty__text">Partagez des photos de vos réalisations pour illustrer votre expertise.</div>
+            </div>
+          @endif
+        </div>
+      </div>
+
+
+    </div>
 
         {{-- Colonne droite --}}
         <div>
@@ -688,202 +731,141 @@
                 </div>
             </div>
 
-        </div>
     </div>
+  </div>
+
+
+  {{-- Lightbox --}}
+  <div id="lbOverlay" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out">
+    <img id="lbImg" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+  </div>
 
     {{-- ═══════════ MODALES ═══════════ --}}
 
-    {{-- Modale Infos perso --}}
-    <div class="cp-modal-overlay" id="modal-infos">
-        <div class="cp-modal">
-            <div class="cp-modal__head">
-                <div class="cp-modal__title">Informations & préférences</div>
-                <button class="cp-modal__close" onclick="closeModal('modal-infos')"><svg width="14" height="14"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg></button>
+  {{-- Modale Infos perso --}}
+  <div class="cp-modal-overlay" id="modal-infos">
+    <div class="cp-modal">
+      <div class="cp-modal__head">
+        <div class="cp-modal__title">Informations & préférences</div>
+        <button class="cp-modal__close" onclick="closeModal('modal-infos')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="cp-modal__body">
+        <form method="POST" action="{{ route('candidat.profil.update') }}" enctype="multipart/form-data">
+          @csrf @method('PUT')
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Prénom <span class="req">*</span></label>
+              <input type="text" name="prenom" class="cand-form-input" value="{{ old('prenom', $user->prenom) }}" required>
             </div>
-            <div class="cp-modal__body">
-                <form method="POST" action="{{ route('candidat.profil.update') }}" enctype="multipart/form-data">
-                    @csrf @method('PUT')
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Prénom <span class="req">*</span></label>
-                            <input type="text" name="prenom" class="cand-form-input"
-                                value="{{ old('prenom', $user->prenom) }}" required>
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Nom <span class="req">*</span></label>
-                            <input type="text" name="nom" class="cand-form-input"
-                                value="{{ old('nom', $user->nom) }}" required>
-                        </div>
-                    </div>
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Titre professionnel</label>
-                        <input type="text" name="titre_professionnel" class="cand-form-input"
-                            placeholder="ex: Développeur Full Stack, Comptable..."
-                            value="{{ old('titre_professionnel', $profil?->titre_professionnel) }}">
-                    </div>
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Résumé / Bio</label>
-                        <textarea name="bio" class="cand-form-textarea" rows="3"
-                            placeholder="Décrivez votre parcours et vos ambitions...">{{ old('bio', $profil?->bio) }}</textarea>
-                        <div class="cand-form-hint">Max 1000 caractères</div>
-                    </div>
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Téléphone</label>
-                            <input type="text" name="tel" class="cand-form-input"
-                                value="{{ old('tel', $user->tel) }}">
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Ville</label>
-                            <input type="text" name="ville" class="cand-form-input"
-                                value="{{ old('ville', $profil?->ville) }}">
-                        </div>
-                    </div>
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Pays</label>
-                        <input type="text" name="pays" class="cand-form-input"
-                            value="{{ old('pays', $user->pays) }}">
-                    </div>
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Disponibilité</label>
-                            <select name="disponibilite" class="cand-form-select">
-                                <option value="">Non définie</option>
-                                @foreach ($libelles['disponibilite'] as $val => $lab)
-                                    <option value="{{ $val }}"
-                                        {{ old('disponibilite', $profil?->disponibilite) === $val ? 'selected' : '' }}>
-                                        {{ $lab }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Télétravail</label>
-                            <select name="remote" class="cand-form-select">
-                                @foreach ($libelles['remote'] as $val => $lab)
-                                    <option value="{{ $val }}"
-                                        {{ old('remote', $profil?->remote ?? 'non') === $val ? 'selected' : '' }}>
-                                        {{ $lab }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    @php
-                        $selectedContrats = collect(old('types_contrat_ids', $user->typesContrats->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                        $selectedSecteurs = collect(old('secteurs_ids', $user->secteursActivite->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                        $selectedMetiers  = collect(old('metiers_ids', $user->metiers->pluck('id')->toArray()))->map(fn($v) => (int) $v);
-                    @endphp
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Types de contrat souhaités</label>
-                        <select name="types_contrat_ids[]" multiple class="cand-form-select"
-                            style="height:140px;padding:4px">
-                            @foreach ($typesContrats as $tc)
-                                <option value="{{ $tc->id }}"
-                                    {{ $selectedContrats->contains($tc->id) ? 'selected' : '' }}>
-                                    {{ $tc->libelle }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Secteurs d'activité ciblés</label>
-                        <select name="secteurs_ids[]" multiple class="cand-form-select"
-                            style="height:160px;padding:4px">
-                            @foreach ($secteursActivite as $s)
-                                <option value="{{ $s->id }}"
-                                    {{ $selectedSecteurs->contains($s->id) ? 'selected' : '' }}>
-                                    {{ $s->libelle }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Métiers ciblés</label>
-                        <select name="metiers_ids[]" multiple class="cand-form-select"
-                            style="height:140px;padding:4px">
-                            @foreach ($metiers as $m)
-                                <option value="{{ $m->id }}"
-                                    {{ $selectedMetiers->contains($m->id) ? 'selected' : '' }}>
-                                    {{ $m->nom }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="cand-form-hint">Maintenez Ctrl (ou ⌘) pour sélectionner plusieurs</div>
-                    </div>
-
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Niveau d'étude</label>
-                            <select name="niveau_etude_id" class="cand-form-select">
-                                <option value="">— Non défini —</option>
-                                @foreach ($niveauxEtude as $ne)
-                                    <option value="{{ $ne->id }}"
-                                        {{ old('niveau_etude_id', $user->niveauEtude?->niveau_etude_id) == $ne->id ? 'selected' : '' }}>
-                                        {{ $ne->libelle }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Niveau d'expérience global</label>
-                            <select name="niveau_experience_id" class="cand-form-select">
-                                <option value="">— Non défini —</option>
-                                @foreach ($niveauxExperience as $nex)
-                                    <option value="{{ $nex->id }}"
-                                        {{ old('niveau_experience_id', $user->niveauExperience?->niveau_experience_id) == $nex->id ? 'selected' : '' }}>
-                                        {{ $nex->libelle }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Salaire min (FCFA/mois)</label>
-                            <input type="number" name="salaire_min" class="cand-form-input" min="0"
-                                value="{{ old('salaire_min', $profil?->salaire_min) }}">
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Salaire max (FCFA/mois)</label>
-                            <input type="number" name="salaire_max" class="cand-form-input" min="0"
-                                value="{{ old('salaire_max', $profil?->salaire_max) }}">
-                        </div>
-                    </div>
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">LinkedIn</label>
-                            <input type="url" name="linkedin" class="cand-form-input"
-                                placeholder="https://linkedin.com/in/..."
-                                value="{{ old('linkedin', $profil?->linkedin) }}">
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Portfolio / Site web</label>
-                            <input type="url" name="portfolio" class="cand-form-input" placeholder="https://..."
-                                value="{{ old('portfolio', $profil?->portfolio) }}">
-                        </div>
-                    </div>
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Photo de profil</label>
-                        <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp"
-                            class="cand-form-input" style="padding:7px">
-                        <div class="cand-form-hint">JPG, PNG ou WebP — max 2 Mo</div>
-                    </div>
-                    <div class="cp-modal__actions">
-                        <button type="button" class="cand-btn cand-btn--outline"
-                            onclick="closeModal('modal-infos')">Annuler</button>
-                        <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
-                    </div>
-                </form>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Nom <span class="req">*</span></label>
+              <input type="text" name="nom" class="cand-form-input" value="{{ old('nom', $user->nom) }}" required>
             </div>
-        </div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Titre professionnel</label>
+            <input type="text" name="titre_professionnel" class="cand-form-input"
+                   placeholder="ex: Développeur Full Stack, Comptable..."
+                   value="{{ old('titre_professionnel', $profil?->titre_professionnel) }}">
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Spécialité / Domaine d'expertise</label>
+              <input type="text" name="specialite" class="cand-form-input"
+                     placeholder="ex: React, Fiscalité, Génie civil..."
+                     value="{{ old('specialite', $profil?->specialite) }}">
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Années d'expérience</label>
+              <input type="number" name="annees_experience" class="cand-form-input" min="0" max="50"
+                     placeholder="ex: 3"
+                     value="{{ old('annees_experience', $profil?->annees_experience) }}">
+            </div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Résumé / Bio</label>
+            <textarea name="bio" class="cand-form-textarea" rows="3"
+                      placeholder="Décrivez votre parcours et vos ambitions...">{{ old('bio', $profil?->bio) }}</textarea>
+            <div class="cand-form-hint">Max 1000 caractères</div>
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Téléphone</label>
+              <input type="text" name="tel" class="cand-form-input" value="{{ old('tel', $user->tel) }}">
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Ville</label>
+              <input type="text" name="ville" class="cand-form-input" value="{{ old('ville', $profil?->ville) }}">
+            </div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Pays</label>
+            <input type="text" name="pays" class="cand-form-input" value="{{ old('pays', $user->pays) }}">
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Disponibilité</label>
+              <select name="disponibilite" class="cand-form-select">
+                <option value="">Non définie</option>
+                @foreach($libelles['disponibilite'] as $val => $lab)
+                  <option value="{{ $val }}" {{ old('disponibilite', $profil?->disponibilite) === $val ? 'selected' : '' }}>{{ $lab }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Télétravail</label>
+              <select name="remote" class="cand-form-select">
+                @foreach($libelles['remote'] as $val => $lab)
+                  <option value="{{ $val }}" {{ old('remote', $profil?->remote ?? 'non') === $val ? 'selected' : '' }}>{{ $lab }}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Types de contrat souhaités</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+              @foreach($typesContrats as $tc)
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                  <input type="checkbox" name="types_contrat_ids[]" value="{{ $tc->id }}"
+                         {{ in_array($tc->id, old('types_contrat_ids', $user->typesContrats->pluck('id')->toArray())) ? 'checked' : '' }}>
+                  {{ $tc->libelle }}
+                </label>
+              @endforeach
+            </div>
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Salaire min (FCFA/mois)</label>
+              <input type="number" name="salaire_min" class="cand-form-input" min="0" value="{{ old('salaire_min', $profil?->salaire_min) }}">
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Salaire max (FCFA/mois)</label>
+              <input type="number" name="salaire_max" class="cand-form-input" min="0" value="{{ old('salaire_max', $profil?->salaire_max) }}">
+            </div>
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">LinkedIn</label>
+              <input type="url" name="linkedin" class="cand-form-input" placeholder="https://linkedin.com/in/..." value="{{ old('linkedin', $profil?->linkedin) }}">
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Portfolio / Site web</label>
+              <input type="url" name="portfolio" class="cand-form-input" placeholder="https://..." value="{{ old('portfolio', $profil?->portfolio) }}">
+            </div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Photo de profil</label>
+            <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="cand-form-input" style="padding:7px">
+            <div class="cand-form-hint">JPG, PNG ou WebP — max 2 Mo</div>
+          </div>
+          <div class="cp-modal__actions">
+            <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-infos')">Annuler</button>
+            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
     {{-- Modale Expérience --}}
     <div class="cp-modal-overlay" id="modal-exp">
@@ -1032,52 +1014,88 @@
         </div>
     </div>
 
-    {{-- Modale Langue --}}
-    <div class="cp-modal-overlay" id="modal-lang">
-        <div class="cp-modal" style="max-width:420px">
-            <div class="cp-modal__head">
-                <div class="cp-modal__title">Ajouter une langue</div>
-                <button class="cp-modal__close" onclick="closeModal('modal-lang')"><svg width="14" height="14"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg></button>
-            </div>
-            <div class="cp-modal__body">
-                <div class="cand-form-group">
-                    <label class="cand-form-label" for="lang-langue">Langue <span class="req">*</span></label>
-
-                    <select id="lang-langue" class="cand-form-select" name="langue_id">
-                        @foreach ($langues as $langue)
-                            <option value="{{ $langue->id }}">{{ $langue->nom }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="cand-form-group">
-                    <label class="cand-form-label" for="lang-niveau">Niveau</label>
-                    <select id="lang-niveau" class="cand-form-select" name="niveau_id">
-                        @foreach ($niveauxLangue as $niveau)
-                            <option value="{{ $niveau->id }}">{{ $niveau->code }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="cp-modal__actions">
-                    <button type="button" class="cand-btn cand-btn--outline"
-                        onclick="closeModal('modal-lang')">Annuler</button>
-                    <button type="button" class="cand-btn cand-btn--primary" onclick="saveLang()">Ajouter</button>
-                </div>
-            </div>
+  {{-- Modale Langue --}}
+  <div class="cp-modal-overlay" id="modal-lang">
+    <div class="cp-modal" style="max-width:420px">
+      <div class="cp-modal__head">
+        <div class="cp-modal__title">Ajouter une langue</div>
+        <button class="cp-modal__close" onclick="closeModal('modal-lang')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="cp-modal__body">
+        <div class="cand-form-group">
+          <label class="cand-form-label">Langue <span class="req">*</span></label>
+          <select id="lang-langue" class="cand-form-select">
+            <option value="">-- Choisir une langue --</option>
+            @foreach($langues as $l)
+              <option value="{{ $l->id }}">{{ $l->nom }}</option>
+            @endforeach
+          </select>
         </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Niveau <span class="req">*</span></label>
+          <select id="lang-niveau" class="cand-form-select">
+            <option value="">-- Choisir un niveau --</option>
+            @foreach($niveauxLangue as $nl)
+              <option value="{{ $nl->id }}">{{ $nl->code }} — {{ $nl->libelle }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="cp-modal__actions">
+          <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-lang')">Annuler</button>
+          <button type="button" id="btn-save-lang" class="cand-btn cand-btn--primary" onclick="saveLang()">Ajouter</button>
+        </div>
+      </div>
     </div>
+  </div>
+
+
+  {{-- Modale Photos de travaux --}}
+  <div class="cp-modal-overlay" id="modal-travaux">
+    <div class="cp-modal" style="max-width:480px">
+      <div class="cp-modal__head">
+        <div class="cp-modal__title">Ajouter des photos de travaux</div>
+        <button class="cp-modal__close" onclick="closeModal('modal-travaux')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="cp-modal__body">
+        <form method="POST" action="{{ route('candidat.realisations.store') }}" enctype="multipart/form-data">
+          @csrf
+          <div class="cand-form-group">
+            <label class="cand-form-label">Photos <span class="req">*</span></label>
+            <input type="file" name="photos[]" class="cand-form-input" accept="image/jpeg,image/png,image/webp"
+                   multiple style="padding:7px">
+            <div class="cand-form-hint">JPG, PNG ou WebP — max 3 Mo par photo — max 8 photos au total</div>
+          </div>
+          <div class="cand-form-group">
+            <label class="cand-form-label">Description (optionnelle)</label>
+            <input type="text" name="descriptions[0]" class="cand-form-input"
+                   placeholder="ex: Application mobile de gestion RH...">
+          </div>
+          <div class="cp-modal__actions">
+            <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-travaux')">Annuler</button>
+            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
 @endsection
 
 @section('scripts')
-    <script>
-        const CSRF = '{{ csrf_token() }}';
-        let editingExpId = null,
-            editingFormId = null;
-        let expMissions = [],
-            formActivites = [];
+<script>
+const CSRF = '{{ csrf_token() }}';
+let editingExpId = null, editingFormId = null;
+let expMissions = [], formActivites = [];
+
+function openLightbox(src) {
+  const lb = document.getElementById('lbOverlay');
+  document.getElementById('lbImg').src = src;
+  lb.style.display = 'flex';
+}
+function closeLightbox() {
+  document.getElementById('lbOverlay').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
 
         function renderBulletList(containerId, items, removeFn) {
             const el = document.getElementById(containerId);
@@ -1392,16 +1410,10 @@
         }
 
         // Langues
-        const niveauxLabels = {
-            A1: 'A1 — Débutant',
-            A2: 'A2 — Élémentaire',
-            B1: 'B1 — Intermédiaire',
-            B2: 'B2 — Intermédiaire supérieur',
-            C1: 'C1 — Avancé',
-            C2: 'C2 — Maîtrise',
-            natif: 'Langue natale'
-        };
         async function saveLang() {
+            const btn = document.getElementById('btn-save-lang');
+            if (btn.disabled) return;
+            btn.disabled = true;
             const {
                 ok,
                 data
@@ -1409,68 +1421,67 @@
                 langue_id: document.getElementById('lang-langue').value,
                 niveau_id: document.getElementById('lang-niveau').value
             });
+            btn.disabled = false;
             if (!ok) {
                 showToast(data.message ?? 'Erreur.', true);
                 return;
             }
-            const l = data.langue;
-            const empty = document.getElementById('lang-empty');
-            if (empty) empty.remove();
-            const row = document.createElement('div');
-            row.className = 'cp-langue';
-            row.id = `lang-item-${l.id}`;
-            row.innerHTML =
-                `<div class="cp-langue__left"><div class="cp-langue__flag"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div><div class="cp-langue__nom">${l.langue}</div><div class="cp-langue__niveau">${niveauxLabels[l.niveau]??l.niveau}</div></div></div><button class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" onclick="deleteItem('langues',${l.id},'lang-item-${l.id}')" title="Supprimer"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
-            document.getElementById('lang-list').appendChild(row);
-            document.getElementById('lang-langue').value = '';
-            showToast('Langue ajoutée !');
-        }
-
-        // Messages après reload
-        const _pt = sessionStorage.getItem('_toast');
-        if (_pt) {
-            const {
-                msg,
-                err
-            } = JSON.parse(_pt);
-            sessionStorage.removeItem('_toast');
-            showToast(msg, err);
-        }
-        const _flash = document.getElementById('flash-data');
-        if (_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
-        @if ($errors->any())
-            openModal('modal-infos');
-            showToast({{ Js::from(implode(' — ', $errors->all())) }}, true);
-        @endif
-    </script>
-    <style>
-        @media(max-width:960px) {
-            .cp-grid {
-                grid-template-columns: 1fr !important
+            try {
+                const l = data.langue;
+                const empty = document.getElementById('lang-empty');
+                if (empty) empty.remove();
+                const row = document.createElement('div');
+                row.className = 'cp-langue';
+                row.id = `lang-item-${l.id}`;
+                row.innerHTML =
+                    `<div class="cp-langue__left"><div class="cp-langue__flag"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div><div class="cp-langue__nom">${l.langue}</div><div class="cp-langue__niveau">${l.niveau}</div></div></div><button class="cand-btn cand-btn--danger cand-btn--sm cand-btn--icon-only" onclick="deleteItem('langues',${l.id},'lang-item-${l.id}')" title="Supprimer"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
+                document.getElementById('lang-list').appendChild(row);
+                const langSelect = document.getElementById('lang-langue');
+                const addedOption = langSelect.querySelector(`option[value="${l.langue_id}"]`);
+                if (addedOption) addedOption.remove();
+                langSelect.value = '';
+                document.getElementById('lang-niveau').value = '';
+                showToast('Langue ajoutée !');
+                closeModal('modal-lang');
+            } catch(e) {
+                showToast('Langue ajoutée ! (rechargez la page)', false);
+                console.error('saveLang UI error:', e);
             }
         }
 
-        .cp-timeline__bullets {
-            margin: 6px 0 0 0;
-            padding: 0;
-            list-style: none
-        }
+// Messages après reload
+const _pt = sessionStorage.getItem('_toast');
+if(_pt) { const {msg,err} = JSON.parse(_pt); sessionStorage.removeItem('_toast'); showToast(msg, err); }
+const _flash = document.getElementById('flash-data');
+if(_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
+@if($errors->any())
+  openModal('modal-infos');
+  showToast({{ Js::from(implode(' — ', $errors->all())) }}, true);
+@endif
+</script>
+<style>
+/* Spécialité hero */
+.cp-hero__specialite{font-size:13px;color:#64748b;margin-top:2px}
 
-        .cp-timeline__bullets li {
-            position: relative;
-            padding-left: 14px;
-            font-size: 13px;
-            color: #475569;
-            line-height: 1.5;
-            margin-bottom: 3px
-        }
+/* Attestations */
+.cp-att-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f0f2f5}
+.cp-att-item:last-child{border-bottom:none}
+.cp-att-link{display:flex;align-items:center;gap:10px;flex:1;text-decoration:none;min-width:0;padding:2px 8px 2px 0}
+.cp-att-icon{width:30px;height:30px;background:#f0fdf4;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-att-name{font-size:13.5px;font-weight:600;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-        .cp-timeline__bullets li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #94a3b8
-        }
+/* Photos de travaux */
+.cp-travaux-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.cp-travail-item{border-radius:9px;overflow:hidden;border:1px solid #e2e8f0;position:relative}
+.cp-travail-img{cursor:pointer}
+.cp-travail-img img{width:100%;height:120px;object-fit:cover;display:block}
+.cp-travail-desc{font-size:12px;color:#64748b;margin:0;padding:6px 8px 6px;line-height:1.4}
+.cp-travail-del{position:absolute;top:6px;right:6px}
+
+@media(max-width:960px){.cp-grid{grid-template-columns:1fr!important}}
+.cp-timeline__bullets{margin:6px 0 0 0;padding:0;list-style:none}
+.cp-timeline__bullets li{position:relative;padding-left:14px;font-size:13px;color:#475569;line-height:1.5;margin-bottom:3px}
+.cp-timeline__bullets li::before{content:"•";position:absolute;left:0;color:#94a3b8}
 
         /* Checklist complétion */
         .cp-completion__checklist {

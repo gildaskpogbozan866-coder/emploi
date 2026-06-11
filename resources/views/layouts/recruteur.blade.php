@@ -24,8 +24,6 @@
         <a href="{{ route('home') }}" class="dash-header__logo">
           <img src="{{ asset('images/Logo.png') }}" alt="Emploi Bouge Bénin">
         </a>
-        <div class="dash-header__divider"></div>
-        <span class="dash-header__space">Espace Recruteur</span>
       </div>
       <div class="dash-header__right">
         <div class="dash-header__user">
@@ -46,35 +44,38 @@
   </header>
 
   <div class="rec-wrap">
+    <div class="rec-overlay" id="recOverlay"></div>
     <aside class="rec-sidebar" id="recSidebar">
+      <button class="rec-sidebar__close" id="recClose" aria-label="Fermer le menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       @yield('sidebar')
     </aside>
     <main class="rec-main">
-      @include('components.flash')
       @yield('content')
     </main>
   </div>
 
-  <div id="recOverlay" style="display:none;position:fixed;inset:0;background:rgba(4,44,83,0.45);z-index:150"></div>
-
   <script>
-    const recBurger  = document.getElementById('recBurger');
-    const recSidebar = document.getElementById('recSidebar');
-    const recOverlay = document.getElementById('recOverlay');
-    if (recBurger) {
-      recBurger.addEventListener('click', () => {
-        recSidebar.classList.toggle('open');
-        recOverlay.style.display = recSidebar.classList.contains('open') ? 'block' : 'none';
+    (function() {
+      const burger   = document.getElementById('recBurger');
+      const sidebar  = document.getElementById('recSidebar');
+      const overlay  = document.getElementById('recOverlay');
+      const closeBtn = document.getElementById('recClose');
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+      closeBtn?.addEventListener('click', closeSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+      sidebar?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
       });
-    }
-    if (recOverlay) {
-      recOverlay.addEventListener('click', () => {
-        recSidebar.classList.remove('open');
-        recOverlay.style.display = 'none';
-      });
-    }
+    })();
   </script>
   @include('partials._form-guard')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  @include('components.flash-swal')
   @yield('scripts')
 </body>
 </html>

@@ -73,10 +73,9 @@ class NiveauxEtudeController extends Controller
     {
         try {
             $niveauEtude->delete();
-            return redirect()->route('admin.niveaux-etude.index')->with('success', "Niveau d'étude supprimé.");
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.niveaux-etude.index')
-                ->with('error', "Impossible de supprimer : ce niveau est utilisé par des candidats.");
+            return response()->json(['success' => false, 'message' => "Impossible de supprimer : ce niveau est utilisé par des candidats."], 422);
         }
     }
 }

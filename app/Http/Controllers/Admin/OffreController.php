@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Offre;
+use App\Services\AlerteService;
 use Illuminate\Http\Request;
 
 class OffreController extends Controller
@@ -29,14 +30,22 @@ class OffreController extends Controller
 
     public function show(Offre $offre)
     {
-        $offre->load(['recruteur', 'candidatures.candidat']);
+        $offre->load(['recruteur', 'candidatures.candidat', 'competences']);
         return view('admin.offres.detail', compact('offre'));
     }
 
     public function updateStatut(Request $request, Offre $offre)
     {
         $request->validate(['statut' => 'required|in:en_attente,active,expiree,suspendue']);
+
+        $ancienStatut = $offre->statut;
         $offre->update(['statut' => $request->statut]);
+
+        if ($ancienStatut !== 'active' && $request->statut === 'active') {
+            $offre->load('competences');
+            app(AlerteService::class)->notifierImmediat($offre);
+        }
+
         return back()->with('success', 'Statut de l\'offre mis à jour.');
     }
 

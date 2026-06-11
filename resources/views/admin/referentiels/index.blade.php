@@ -5,7 +5,7 @@
 <div class="adm-topbar">
   <div class="adm-topbar__left">
     <h1>{{ $label }}</h1>
-    <p>{{ $items->count() }} entrée{{ $items->count() > 1 ? 's' : '' }}</p>
+    <p id="ref-count">{{ $items->count() }} entrée{{ $items->count() > 1 ? 's' : '' }}</p>
   </div>
   <div class="adm-topbar__actions">
     <a href="{{ route($routeCreate) }}" class="adm-btn adm-btn--yellow">
@@ -14,13 +14,6 @@
     </a>
   </div>
 </div>
-
-@if(session('success'))
-  <div class="adm-alert adm-alert--success" style="margin-bottom:16px">{{ session('success') }}</div>
-@endif
-@if(session('error'))
-  <div class="adm-alert adm-alert--danger" style="margin-bottom:16px">{{ session('error') }}</div>
-@endif
 
 <div class="adm-card">
   <div class="adm-table-wrap">
@@ -41,7 +34,7 @@
       </thead>
       <tbody>
         @forelse($items as $item)
-        <tr>
+        <tr id="ref-row-{{ $item->id }}">
           @if($hasCode)
             <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:12px">{{ $item->code }}</code></td>
             <td style="font-weight:600">{{ $item->libelle }}</td>
@@ -56,11 +49,12 @@
           <td>
             <div class="actions">
               <a href="{{ route($routeEdit, $item) }}" class="adm-btn adm-btn--outline adm-btn--sm">Modifier</a>
-              <form method="POST" action="{{ route($routeDestroy, $item) }}"
-                    onsubmit="return confirm('Supprimer ce(tte) {{ $singular }} ?')">
-                @csrf @method('DELETE')
-                <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
-              </form>
+              <button type="button" class="adm-btn adm-btn--danger adm-btn--sm js-delete-ref"
+                      data-url="{{ route($routeDestroy, $item) }}"
+                      data-row="ref-row-{{ $item->id }}"
+                      data-singular="{{ $singular }}">
+                Supprimer
+              </button>
             </div>
           </td>
         </tr>
@@ -79,4 +73,56 @@
     </table>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+const CSRF = document.querySelector('meta[name=csrf-token]').content;
+
+document.addEventListener('click', async function (e) {
+    const btn = e.target.closest('.js-delete-ref');
+    if (!btn) return;
+
+    const url      = btn.dataset.url;
+    const rowId    = btn.dataset.row;
+    const singular = btn.dataset.singular;
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'Supprimer ce(tte) ' + singular + ' ?',
+        text: 'Cette action est irréversible.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true,
+        focusCancel: true,
+    });
+    if (!isConfirmed) return;
+
+    const r = await fetch(url, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+    });
+    const data = await r.json().catch(() => ({}));
+
+    if (r.ok) {
+        const row = document.getElementById(rowId);
+        row.style.transition = 'opacity .3s';
+        row.style.opacity = '0';
+        setTimeout(() => {
+            row.remove();
+            const el = document.getElementById('ref-count');
+            if (el) {
+                const n = Math.max(0, (parseInt(el.textContent) || 1) - 1);
+                el.textContent = n + ' entrée' + (n > 1 ? 's' : '');
+            }
+        }, 300);
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Supprimé avec succès', showConfirmButton: false, timer: 2500, timerProgressBar: true });
+    } else {
+        Swal.fire({ icon: 'error', title: 'Impossible de supprimer', text: data.message ?? 'Cet élément est peut-être utilisé ailleurs.', confirmButtonColor: '#ef4444' });
+    }
+});
+</script>
 @endsection

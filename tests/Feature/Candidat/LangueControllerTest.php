@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Candidat;
 
+use App\Models\Langue;
 use App\Models\LangueCandidat;
+use App\Models\NiveauLangue;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,16 +29,28 @@ class LangueControllerTest extends TestCase
         return $user;
     }
 
+    private function creerLangue(string $nom = 'Français'): Langue
+    {
+        return Langue::create(['nom' => $nom]);
+    }
+
+    private function creerNiveau(string $code = 'B2', int $ordre = 4): NiveauLangue
+    {
+        return NiveauLangue::create(['code' => $code, 'libelle' => 'Niveau ' . $code, 'ordre' => $ordre]);
+    }
+
     // ── Ajout ─────────────────────────────────────────────
 
     public function test_ajout_langue_valide(): void
     {
         $candidat = $this->creerCandidat();
+        $langue   = $this->creerLangue('Français');
+        $niveau   = $this->creerNiveau('C2', 6);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Français',
-                'niveau' => 'C2',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
             ])
             ->assertCreated()
             ->assertJsonPath('success', true)
@@ -44,19 +58,21 @@ class LangueControllerTest extends TestCase
 
         $this->assertDatabaseHas('langues_candidat', [
             'candidat_id' => $candidat->id,
-            'langue'      => 'Français',
-            'niveau'      => 'C2',
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveau->id,
         ]);
     }
 
     public function test_ajout_niveau_natif(): void
     {
         $candidat = $this->creerCandidat();
+        $langue   = $this->creerLangue('Fon');
+        $niveau   = $this->creerNiveau('natif', 7);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Fon',
-                'niveau' => 'natif',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
             ])
             ->assertCreated();
     }
@@ -64,14 +80,33 @@ class LangueControllerTest extends TestCase
     public function test_ajout_lie_au_candidat_connecte(): void
     {
         $candidat = $this->creerCandidat();
+        $langue   = $this->creerLangue('Anglais');
+        $niveau   = $this->creerNiveau('B2', 4);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Anglais',
-                'niveau' => 'B2',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
             ]);
 
         $this->assertDatabaseHas('langues_candidat', ['candidat_id' => $candidat->id]);
+    }
+
+    public function test_json_retourne_nom_et_code_niveau(): void
+    {
+        $candidat = $this->creerCandidat();
+        $langue   = $this->creerLangue('Espagnol');
+        $niveau   = $this->creerNiveau('B1', 3);
+
+        $response = $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.langues.store'), [
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
+            ])
+            ->assertCreated();
+
+        $this->assertEquals('Espagnol', $response->json('langue.langue'));
+        $this->assertEquals('B1', $response->json('langue.niveau'));
     }
 
     // ── Limite et doublons ────────────────────────────────
@@ -79,19 +114,23 @@ class LangueControllerTest extends TestCase
     public function test_limite_10_langues_atteinte(): void
     {
         $candidat = $this->creerCandidat();
-        $langues  = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'];
+        $niveau   = $this->creerNiveau('A1', 1);
 
-        foreach ($langues as $l) {
-            LangueCandidat::factory()->create([
+        for ($i = 0; $i < 10; $i++) {
+            $l = Langue::create(['nom' => 'Langue' . $i]);
+            LangueCandidat::create([
                 'candidat_id' => $candidat->id,
-                'langue'      => $l,
+                'langue_id'   => $l->id,
+                'niveau_id'   => $niveau->id,
             ]);
         }
 
+        $extra = Langue::create(['nom' => 'LangueExtra']);
+
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'L11',
-                'niveau' => 'A1',
+                'langue_id' => $extra->id,
+                'niveau_id' => $niveau->id,
             ])
             ->assertStatus(422)
             ->assertJsonPath('message', 'Maximum 10 langues atteint.');
@@ -100,92 +139,118 @@ class LangueControllerTest extends TestCase
     public function test_doublon_exact_refuse(): void
     {
         $candidat = $this->creerCandidat();
-        LangueCandidat::factory()->create([
+        $langue   = $this->creerLangue('Anglais');
+        $niveau   = $this->creerNiveau('C1', 5);
+
+        LangueCandidat::create([
             'candidat_id' => $candidat->id,
-            'langue'      => 'Anglais',
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveau->id,
         ]);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Anglais',
-                'niveau' => 'C1',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
             ])
             ->assertStatus(422)
             ->assertJsonPath('message', 'Cette langue existe déjà.');
     }
 
-    public function test_doublon_insensible_a_la_casse(): void
+    public function test_meme_langue_niveau_different_aussi_refuse(): void
     {
         $candidat = $this->creerCandidat();
-        LangueCandidat::factory()->create([
+        $langue   = $this->creerLangue('Portugais');
+        $niveauB1 = $this->creerNiveau('B1', 3);
+        $niveauC1 = NiveauLangue::create(['code' => 'C1', 'libelle' => 'Avancé', 'ordre' => 5]);
+
+        LangueCandidat::create([
             'candidat_id' => $candidat->id,
-            'langue'      => 'Anglais',
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveauB1->id,
         ]);
 
+        // Même langue, niveau différent → doublon (un candidat ne peut avoir une langue qu'une fois)
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'anglais',
-                'niveau' => 'B1',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveauC1->id,
             ])
-            ->assertStatus(422);
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Cette langue existe déjà.');
     }
 
     public function test_meme_langue_pour_deux_candidats_differents(): void
     {
         $candidat1 = $this->creerCandidat();
         $candidat2 = $this->creerCandidat();
+        $langue    = $this->creerLangue('Espagnol');
+        $niveau    = $this->creerNiveau('B2', 4);
 
-        LangueCandidat::factory()->create([
+        LangueCandidat::create([
             'candidat_id' => $candidat1->id,
-            'langue'      => 'Espagnol',
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveau->id,
         ]);
 
         $this->actingAs($candidat2)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Espagnol',
-                'niveau' => 'B2',
+                'langue_id' => $langue->id,
+                'niveau_id' => $niveau->id,
             ])
             ->assertCreated();
     }
 
     // ── Validation ────────────────────────────────────────
 
-    public function test_validation_langue_requise(): void
+    public function test_validation_langue_id_requis(): void
     {
         $candidat = $this->creerCandidat();
+        $niveau   = $this->creerNiveau('B2', 4);
 
         $this->actingAs($candidat)
-            ->postJson(route('candidat.profil.langues.store'), ['niveau' => 'B2'])
+            ->postJson(route('candidat.profil.langues.store'), ['niveau_id' => $niveau->id])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('langue');
+            ->assertJsonValidationErrors('langue_id');
     }
 
-    public function test_validation_niveau_cefr_invalide(): void
+    public function test_validation_niveau_id_requis(): void
     {
         $candidat = $this->creerCandidat();
+        $langue   = $this->creerLangue('Anglais');
+
+        $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.langues.store'), ['langue_id' => $langue->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('niveau_id');
+    }
+
+    public function test_validation_langue_id_inexistant(): void
+    {
+        $candidat = $this->creerCandidat();
+        $niveau   = $this->creerNiveau('B2', 4);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.langues.store'), [
-                'langue' => 'Anglais',
-                'niveau' => 'D1',
+                'langue_id' => 9999,
+                'niveau_id' => $niveau->id,
             ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('niveau');
+            ->assertJsonValidationErrors('langue_id');
     }
 
-    public function test_validation_tous_niveaux_cefr_valides(): void
+    public function test_validation_niveau_id_inexistant(): void
     {
         $candidat = $this->creerCandidat();
-        $niveaux  = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'natif'];
+        $langue   = $this->creerLangue('Anglais');
 
-        foreach ($niveaux as $i => $niveau) {
-            $this->actingAs($candidat)
-                ->postJson(route('candidat.profil.langues.store'), [
-                    'langue' => 'Langue ' . $i,
-                    'niveau' => $niveau,
-                ])
-                ->assertCreated();
-        }
+        $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.langues.store'), [
+                'langue_id' => $langue->id,
+                'niveau_id' => 9999,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('niveau_id');
     }
 
     // ── Suppression ───────────────────────────────────────
@@ -193,35 +258,53 @@ class LangueControllerTest extends TestCase
     public function test_suppression_langue_proprietaire(): void
     {
         $candidat = $this->creerCandidat();
-        $langue   = LangueCandidat::factory()->create(['candidat_id' => $candidat->id]);
+        $langue   = $this->creerLangue('Allemand');
+        $niveau   = $this->creerNiveau('A2', 2);
+
+        $lc = LangueCandidat::create([
+            'candidat_id' => $candidat->id,
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveau->id,
+        ]);
 
         $this->actingAs($candidat)
-            ->deleteJson(route('candidat.profil.langues.destroy', $langue))
+            ->deleteJson(route('candidat.profil.langues.destroy', $lc))
             ->assertOk()
             ->assertJsonPath('success', true);
 
-        $this->assertDatabaseMissing('langues_candidat', ['id' => $langue->id]);
+        $this->assertDatabaseMissing('langues_candidat', ['id' => $lc->id]);
     }
 
     public function test_suppression_refusee_pour_autre_candidat(): void
     {
         $proprietaire = $this->creerCandidat();
         $autre        = $this->creerCandidat();
-        $langue       = LangueCandidat::factory()->create(['candidat_id' => $proprietaire->id]);
+        $langue       = $this->creerLangue('Italien');
+        $niveau       = $this->creerNiveau('B2', 4);
+
+        $lc = LangueCandidat::create([
+            'candidat_id' => $proprietaire->id,
+            'langue_id'   => $langue->id,
+            'niveau_id'   => $niveau->id,
+        ]);
 
         $this->actingAs($autre)
-            ->deleteJson(route('candidat.profil.langues.destroy', $langue))
+            ->deleteJson(route('candidat.profil.langues.destroy', $lc))
             ->assertForbidden();
 
-        $this->assertDatabaseHas('langues_candidat', ['id' => $langue->id]);
+        $this->assertDatabaseHas('langues_candidat', ['id' => $lc->id]);
     }
 
     // ── Accès ─────────────────────────────────────────────
 
     public function test_ajout_bloque_si_non_connecte(): void
     {
+        $langue = $this->creerLangue('Français');
+        $niveau = $this->creerNiveau('C2', 6);
+
         $this->postJson(route('candidat.profil.langues.store'), [
-            'langue' => 'Français', 'niveau' => 'C2',
+            'langue_id' => $langue->id,
+            'niveau_id' => $niveau->id,
         ])->assertUnauthorized();
     }
 }

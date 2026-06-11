@@ -36,6 +36,8 @@ class ProfilRequest extends FormRequest
             'salaire_max'         => 'nullable|integer|min:0|max:10000000|gte:salaire_min',
             'linkedin'            => 'nullable|url|max:500',
             'portfolio'           => 'nullable|url|max:500',
+            'specialite'          => 'nullable|string|max:200',
+            'annees_experience'   => 'nullable|integer|min:0|max:50',
 
             // ── Préférences normalisées ────────────────────────────
             'types_contrat_ids'   => 'nullable|array',

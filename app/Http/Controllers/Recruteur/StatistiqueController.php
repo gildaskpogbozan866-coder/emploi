@@ -16,7 +16,7 @@ class StatistiqueController extends Controller
         $stats = [
             'offres_total'       => $user->offres()->count(),
             'offres_actives'     => $user->offres()->where('statut', 'active')->count(),
-            'offres_expirees'    => $user->offres()->where('statut', 'expiree')->count(),
+            'offres_expirees'    => $user->offres()->whereIn('statut', ['expiree', 'clos'])->count(),
             'candidatures_total' => Candidature::whereIn('offre_id', $offresIds)->count(),
             'nouvelles_candid'   => Candidature::whereIn('offre_id', $offresIds)->where('statut', 'envoyee')->count(),
             'retenues'           => Candidature::whereIn('offre_id', $offresIds)->where('statut', 'retenue')->count(),

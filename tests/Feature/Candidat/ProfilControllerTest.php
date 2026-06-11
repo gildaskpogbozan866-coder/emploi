@@ -3,6 +3,7 @@
 namespace Tests\Feature\Candidat;
 
 use App\Models\CandidatProfil;
+use App\Models\TypeContrat;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -65,11 +66,11 @@ class ProfilControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_page_profil_inaccessible_au_talent(): void
+    public function test_page_profil_inaccessible_au_admin(): void
     {
-        $talent = $this->creerAutreRole('talent');
+        $admin = $this->creerAutreRole('admin');
 
-        $this->actingAs($talent)
+        $this->actingAs($admin)
             ->get(route('candidat.profil'))
             ->assertForbidden();
     }
@@ -142,20 +143,74 @@ class ProfilControllerTest extends TestCase
         $this->assertDatabaseCount('candidat_profils', 1);
     }
 
-    public function test_mise_a_jour_types_contrat_en_json(): void
+    public function test_mise_a_jour_types_contrat_par_pivot(): void
+    {
+        $candidat = $this->creerCandidat();
+        $tc1 = TypeContrat::create(['code' => 'cdi', 'libelle' => 'CDI']);
+        $tc2 = TypeContrat::create(['code' => 'freelance', 'libelle' => 'Freelance']);
+
+        $this->actingAs($candidat)
+            ->put(route('candidat.profil.update'), [
+                'prenom'            => $candidat->prenom,
+                'nom'               => $candidat->nom,
+                'types_contrat_ids' => [$tc1->id, $tc2->id],
+            ])
+            ->assertRedirect(route('candidat.profil'));
+
+        $this->assertDatabaseHas('type_contrat_candidat', [
+            'candidat_id'    => $candidat->id,
+            'type_contrat_id' => $tc1->id,
+        ]);
+        $this->assertDatabaseHas('type_contrat_candidat', [
+            'candidat_id'    => $candidat->id,
+            'type_contrat_id' => $tc2->id,
+        ]);
+    }
+
+    public function test_mise_a_jour_specialite_et_annees_experience(): void
     {
         $candidat = $this->creerCandidat();
 
         $this->actingAs($candidat)
             ->put(route('candidat.profil.update'), [
-                'prenom'        => $candidat->prenom,
-                'nom'           => $candidat->nom,
-                'types_contrat' => ['cdi', 'freelance'],
-            ]);
+                'prenom'             => $candidat->prenom,
+                'nom'                => $candidat->nom,
+                'specialite'         => 'Développement backend',
+                'annees_experience'  => 5,
+            ])
+            ->assertRedirect(route('candidat.profil'));
 
-        $profil = CandidatProfil::where('user_id', $candidat->id)->first();
-        $this->assertContains('cdi', $profil->types_contrat);
-        $this->assertContains('freelance', $profil->types_contrat);
+        $this->assertDatabaseHas('candidat_profils', [
+            'user_id'           => $candidat->id,
+            'specialite'        => 'Développement backend',
+            'annees_experience' => 5,
+        ]);
+    }
+
+    public function test_validation_specialite_trop_longue(): void
+    {
+        $candidat = $this->creerCandidat();
+
+        $this->actingAs($candidat)
+            ->put(route('candidat.profil.update'), [
+                'prenom'     => 'Kofi',
+                'nom'        => 'Mensah',
+                'specialite' => str_repeat('x', 201),
+            ])
+            ->assertSessionHasErrors('specialite');
+    }
+
+    public function test_validation_annees_experience_negatif(): void
+    {
+        $candidat = $this->creerCandidat();
+
+        $this->actingAs($candidat)
+            ->put(route('candidat.profil.update'), [
+                'prenom'            => 'Kofi',
+                'nom'               => 'Mensah',
+                'annees_experience' => -1,
+            ])
+            ->assertSessionHasErrors('annees_experience');
     }
 
     // ── Validation ────────────────────────────────────────

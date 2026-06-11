@@ -73,10 +73,9 @@ class NiveauxLangueController extends Controller
     {
         try {
             $niveauLangue->delete();
-            return redirect()->route('admin.niveaux-langue.index')->with('success', 'Niveau de langue supprimé.');
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.niveaux-langue.index')
-                ->with('error', 'Impossible de supprimer : ce niveau est utilisé par des candidats.');
+            return response()->json(['success' => false, 'message' => 'Impossible de supprimer : ce niveau est utilisé par des candidats.'], 422);
         }
     }
 }

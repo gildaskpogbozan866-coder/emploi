@@ -1,18 +1,7 @@
-@extends('layouts.dashboard')
+﻿@extends('layouts.candidat')
 @section('title', 'Conversation — Talent')
-@section('space-label', 'Espace Talent')
-
 @section('sidebar')
-<a href="{{ route('home') }}" class="dash-sidebar__logo">
-  <span>Emploi Bouge</span><small>Bénin · Talent</small>
-</a>
-<ul class="dash-nav">
-  <li class="dash-nav__item"><a href="{{ route('talent.dashboard') }}">Tableau de bord</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.profil') }}">Mon profil</a></li>
-  <li class="dash-nav__item active"><a href="{{ route('talent.messagerie') }}">Messagerie</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.abonnement') }}">Abonnement Premium</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.parametres') }}">Paramètres</a></li>
-</ul>
+@include('candidat._sidebar')
 @endsection
 
 @section('content')

@@ -10,13 +10,19 @@ use Illuminate\Support\Facades\Auth;
 
 class CandidatureController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $candidatures = Auth::user()
-            ->candidatures()
-            ->with('offre.recruteur')
-            ->latest()
-            ->paginate(15);
+        $query = Auth::user()->candidatures()->with('offre.recruteur')->latest();
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->whereHas('offre', fn($sq) => $sq->where('titre', 'like', "%$q%")->orWhere('entreprise', 'like', "%$q%"));
+        }
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $candidatures = $query->paginate(15)->withQueryString();
 
         return view('candidat.candidatures', compact('candidatures'));
     }
@@ -28,13 +34,19 @@ class CandidatureController extends Controller
         return view('candidat.candidature-detail', compact('candidature'));
     }
 
-    public function offresSauvegardees()
+    public function offresSauvegardees(Request $request)
     {
-        $offres = Auth::user()
-            ->offresSauvegardees()
-            ->with('recruteur')
-            ->latest()
-            ->paginate(15);
+        $query = Auth::user()->offresSauvegardees()->with('recruteur')->latest();
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(fn($sq) => $sq->where('titre', 'like', "%$q%")->orWhere('entreprise', 'like', "%$q%"));
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $offres = $query->paginate(15)->withQueryString();
 
         return view('candidat.offres-sauvegardees', compact('offres'));
     }

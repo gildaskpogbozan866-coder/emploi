@@ -74,10 +74,9 @@ class MetiersController extends Controller
     {
         try {
             $metier->delete();
-            return redirect()->route('admin.metiers.index')->with('success', 'Métier supprimé.');
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.metiers.index')
-                ->with('error', 'Impossible de supprimer : ce métier est utilisé par des candidats.');
+            return response()->json(['success' => false, 'message' => 'Impossible de supprimer : ce métier est utilisé par des candidats.'], 422);
         }
     }
 }

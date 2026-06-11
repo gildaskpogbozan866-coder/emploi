@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MetiersSeeder::class);
         $this->call(CompetencesSeeder::class);
         $this->call(MetierCompetenceSeeder::class);
+        $this->call(TypeDocumentSeeder::class);
 
         // ── ÉTAPE 2 : Utilisateurs ────────────────────────────
         $admin = User::create([
@@ -98,13 +99,13 @@ class DatabaseSeeder extends Seeder
             'nom'               => 'Diarra',
             'email'             => 'moussa.diarra@gmail.com',
             'password'          => Hash::make('password'),
-            'role'              => Role::TALENT,
+            'role'              => Role::CANDIDAT,
             'metier'            => 'Développeur Web Full Stack',
             'pays'              => 'Mali',
             'actif'             => true,
             'email_verified_at' => now(),
         ]);
-        $talent1->assignRole(Role::TALENT);
+        $talent1->assignRole(Role::CANDIDAT);
 
         // ── ÉTAPE 3 : Données métier ─────────────────────────
         TalentProfil::create([

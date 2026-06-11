@@ -26,8 +26,6 @@
         <a href="{{ route('home') }}" class="dash-header__logo">
           <img src="{{ asset('images/Logo.png') }}" alt="Emploi Bouge Bénin">
         </a>
-        <div class="dash-header__divider"></div>
-        <span class="dash-header__space">Espace Candidat</span>
       </div>
       <div class="dash-header__right">
         <div class="dash-header__user">
@@ -48,27 +46,38 @@
   </header>
 
   <div class="cand-wrap">
+    <div class="cand-overlay" id="candOverlay"></div>
     <aside class="cand-sidebar" id="candSidebar">
+      <button class="cand-sidebar__close" id="candClose" aria-label="Fermer le menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       @yield('sidebar')
     </aside>
     <main class="cand-main">
-      @include('components.flash')
       @yield('content')
     </main>
   </div>
 
   <script>
-    const candBurger = document.getElementById('candBurger');
-    const candNav    = document.getElementById('candNav');
-    if (candBurger && candNav) {
-      candBurger.addEventListener('click', () => candNav.classList.toggle('open'));
-    }
-    document.querySelectorAll('.cand-sidebar-toggle').forEach(btn => {
-      btn.addEventListener('click', () => { if (candNav) candNav.classList.toggle('open'); });
-    });
+    (function() {
+      const burger  = document.getElementById('candBurger');
+      const sidebar = document.getElementById('candSidebar');
+      const overlay = document.getElementById('candOverlay');
+      const closeBtn = document.getElementById('candClose');
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+      closeBtn?.addEventListener('click', closeSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+      sidebar?.querySelectorAll('.cand-nav__item').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
+      });
+    })();
   </script>
   @include('partials._form-guard')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  @include('components.flash-swal')
   @yield('scripts')
 </body>
 </html>

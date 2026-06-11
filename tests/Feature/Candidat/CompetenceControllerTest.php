@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Candidat;
 
+use App\Models\Competence;
 use App\Models\CompetenceCandidat;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -27,40 +28,66 @@ class CompetenceControllerTest extends TestCase
         return $user;
     }
 
+    private function creerCompetence(string $nom = 'Laravel'): Competence
+    {
+        return Competence::create([
+            'nom'  => $nom,
+            'slug' => \Illuminate\Support\Str::slug($nom),
+        ]);
+    }
+
     // ── Ajout ─────────────────────────────────────────────
 
     public function test_ajout_competence_valide(): void
     {
-        $candidat = $this->creerCandidat();
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('Laravel');
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'Laravel',
-                'niveau' => 'avance',
+                'competence_id' => $competence->id,
             ])
             ->assertCreated()
             ->assertJsonPath('success', true)
-            ->assertJsonStructure(['success', 'competence' => ['id', 'nom', 'niveau']]);
+            ->assertJsonStructure(['success', 'competence' => ['id', 'nom', 'annees_experience']]);
 
-        $this->assertDatabaseHas('competences_candidat', [
-            'candidat_id' => $candidat->id,
-            'nom'         => 'Laravel',
-            'niveau'      => 'avance',
+        $this->assertDatabaseHas('competence_candidat', [
+            'candidat_id'  => $candidat->id,
+            'competence_id' => $competence->id,
+        ]);
+    }
+
+    public function test_ajout_avec_annees_experience(): void
+    {
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('PHP');
+
+        $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.competences.store'), [
+                'competence_id'    => $competence->id,
+                'annees_experience' => 3,
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('competence_candidat', [
+            'candidat_id'      => $candidat->id,
+            'competence_id'    => $competence->id,
+            'annees_experience' => 3,
         ]);
     }
 
     public function test_ajout_lie_au_candidat_connecte(): void
     {
-        $candidat = $this->creerCandidat();
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('Python');
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'Python',
-                'niveau' => 'intermediaire',
+                'competence_id' => $competence->id,
             ]);
 
-        $comp = CompetenceCandidat::first();
-        $this->assertEquals($candidat->id, $comp->candidat_id);
+        $pivot = CompetenceCandidat::where('competence_id', $competence->id)->first();
+        $this->assertEquals($candidat->id, $pivot->candidat_id);
     }
 
     // ── Limite et doublons ────────────────────────────────
@@ -69,12 +96,19 @@ class CompetenceControllerTest extends TestCase
     {
         $candidat = $this->creerCandidat();
 
-        CompetenceCandidat::factory()->count(30)->create(['candidat_id' => $candidat->id]);
+        for ($i = 0; $i < 30; $i++) {
+            $comp = Competence::create(['nom' => 'Comp' . $i, 'slug' => 'comp-' . $i]);
+            CompetenceCandidat::create([
+                'candidat_id'  => $candidat->id,
+                'competence_id' => $comp->id,
+            ]);
+        }
+
+        $nouvelle = $this->creerCompetence('NouvelleComp');
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'Nouvelle compétence',
-                'niveau' => 'debutant',
+                'competence_id' => $nouvelle->id,
             ])
             ->assertStatus(422)
             ->assertJsonPath('message', 'Maximum 30 compétences atteint.');
@@ -82,129 +116,138 @@ class CompetenceControllerTest extends TestCase
 
     public function test_doublon_exact_refuse(): void
     {
-        $candidat = $this->creerCandidat();
-        CompetenceCandidat::factory()->create([
-            'candidat_id' => $candidat->id,
-            'nom'         => 'Laravel',
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('Laravel');
+
+        CompetenceCandidat::create([
+            'candidat_id'  => $candidat->id,
+            'competence_id' => $competence->id,
         ]);
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'Laravel',
-                'niveau' => 'expert',
+                'competence_id' => $competence->id,
             ])
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Cette compétence existe déjà.');
-    }
-
-    public function test_doublon_insensible_a_la_casse(): void
-    {
-        $candidat = $this->creerCandidat();
-        CompetenceCandidat::factory()->create([
-            'candidat_id' => $candidat->id,
-            'nom'         => 'Laravel',
-        ]);
-
-        $this->actingAs($candidat)
-            ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'laravel',
-                'niveau' => 'intermediaire',
-            ])
-            ->assertStatus(422);
+            ->assertJsonPath('message', 'Cette compétence est déjà dans votre profil.');
     }
 
     public function test_meme_competence_pour_deux_candidats_differents(): void
     {
-        $candidat1 = $this->creerCandidat();
-        $candidat2 = $this->creerCandidat();
+        $candidat1  = $this->creerCandidat();
+        $candidat2  = $this->creerCandidat();
+        $competence = $this->creerCompetence('MySQL');
 
-        CompetenceCandidat::factory()->create([
-            'candidat_id' => $candidat1->id,
-            'nom'         => 'MySQL',
+        CompetenceCandidat::create([
+            'candidat_id'  => $candidat1->id,
+            'competence_id' => $competence->id,
         ]);
 
         $this->actingAs($candidat2)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'MySQL',
-                'niveau' => 'avance',
+                'competence_id' => $competence->id,
             ])
             ->assertCreated();
     }
 
     // ── Validation ────────────────────────────────────────
 
-    public function test_validation_nom_requis(): void
+    public function test_validation_competence_id_requis(): void
     {
         $candidat = $this->creerCandidat();
 
         $this->actingAs($candidat)
-            ->postJson(route('candidat.profil.competences.store'), ['niveau' => 'expert'])
+            ->postJson(route('candidat.profil.competences.store'), [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('nom');
+            ->assertJsonValidationErrors('competence_id');
     }
 
-    public function test_validation_niveau_invalide(): void
+    public function test_validation_competence_id_inexistant(): void
     {
         $candidat = $this->creerCandidat();
 
         $this->actingAs($candidat)
             ->postJson(route('candidat.profil.competences.store'), [
-                'nom'    => 'React',
-                'niveau' => 'dieu',
+                'competence_id' => 9999,
             ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('niveau');
+            ->assertJsonValidationErrors('competence_id');
     }
 
-    public function test_validation_niveaux_valides_acceptes(): void
+    public function test_validation_annees_experience_negatif(): void
     {
-        $candidat = $this->creerCandidat();
-        $niveaux  = ['debutant', 'intermediaire', 'avance', 'expert'];
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('React');
 
-        foreach ($niveaux as $i => $niveau) {
-            $this->actingAs($candidat)
-                ->postJson(route('candidat.profil.competences.store'), [
-                    'nom'    => 'Compétence ' . $i,
-                    'niveau' => $niveau,
-                ])
-                ->assertCreated();
-        }
+        $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.competences.store'), [
+                'competence_id'    => $competence->id,
+                'annees_experience' => -1,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('annees_experience');
+    }
+
+    public function test_validation_annees_experience_max_50(): void
+    {
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('Vue');
+
+        $this->actingAs($candidat)
+            ->postJson(route('candidat.profil.competences.store'), [
+                'competence_id'    => $competence->id,
+                'annees_experience' => 51,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('annees_experience');
     }
 
     // ── Suppression ───────────────────────────────────────
 
     public function test_suppression_competence_proprietaire(): void
     {
-        $candidat = $this->creerCandidat();
-        $comp = CompetenceCandidat::factory()->create(['candidat_id' => $candidat->id]);
+        $candidat   = $this->creerCandidat();
+        $competence = $this->creerCompetence('Docker');
+
+        $pivot = CompetenceCandidat::create([
+            'candidat_id'  => $candidat->id,
+            'competence_id' => $competence->id,
+        ]);
 
         $this->actingAs($candidat)
-            ->deleteJson(route('candidat.profil.competences.destroy', $comp))
+            ->deleteJson(route('candidat.profil.competences.destroy', $pivot))
             ->assertOk()
             ->assertJsonPath('success', true);
 
-        $this->assertDatabaseMissing('competences_candidat', ['id' => $comp->id]);
+        $this->assertDatabaseMissing('competence_candidat', ['id' => $pivot->id]);
     }
 
     public function test_suppression_refusee_pour_autre_candidat(): void
     {
         $proprietaire = $this->creerCandidat();
         $autre        = $this->creerCandidat();
-        $comp = CompetenceCandidat::factory()->create(['candidat_id' => $proprietaire->id]);
+        $competence   = $this->creerCompetence('Redis');
+
+        $pivot = CompetenceCandidat::create([
+            'candidat_id'  => $proprietaire->id,
+            'competence_id' => $competence->id,
+        ]);
 
         $this->actingAs($autre)
-            ->deleteJson(route('candidat.profil.competences.destroy', $comp))
+            ->deleteJson(route('candidat.profil.competences.destroy', $pivot))
             ->assertForbidden();
 
-        $this->assertDatabaseHas('competences_candidat', ['id' => $comp->id]);
+        $this->assertDatabaseHas('competence_candidat', ['id' => $pivot->id]);
     }
 
     // ── Accès ─────────────────────────────────────────────
 
     public function test_ajout_bloque_si_non_connecte(): void
     {
+        $competence = $this->creerCompetence('PHP');
+
         $this->postJson(route('candidat.profil.competences.store'), [
-            'nom' => 'PHP', 'niveau' => 'avance',
+            'competence_id' => $competence->id,
         ])->assertUnauthorized();
     }
 }

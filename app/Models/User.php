@@ -20,6 +20,8 @@ use App\Models\NiveauEtudeCandidat;
 use App\Models\NiveauExperienceCandidat;
 use App\Models\SecteurActivite;
 use App\Models\TypeContrat;
+use App\Models\CandidatAttestation;
+use App\Models\CandidatRealisation;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -69,7 +71,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool     { return $this->hasRole('admin'); }
     public function isCandidat(): bool  { return $this->hasRole('candidat'); }
     public function isRecruteur(): bool { return $this->hasRole('recruteur'); }
-    public function isTalent(): bool    { return $this->hasRole('talent'); }
+    /** Vrai si le candidat a renseigné un profil pro (ex-talent). */
+    public function isTalent(): bool    { return $this->talentProfil()->exists(); }
 
     // ── Relations métier ────────────────────────────────────
     public function offres()
@@ -115,6 +118,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function abonnementActif()
     {
         return $this->hasOne(Abonnement::class)->where('statut', 'actif')->latest();
+    }
+
+    public function estPremium(): bool
+    {
+        $ab = $this->abonnementActif()->first();
+        return $ab !== null && $ab->plan === 'premium' && $ab->estActif();
     }
 
     public function alertes()
@@ -207,6 +216,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function languesCandidats()
     {
         return $this->hasMany(LangueCandidat::class, 'candidat_id');
+    }
+
+    public function attestations()
+    {
+        return $this->hasMany(CandidatAttestation::class, 'user_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class)->with('type')->latest();
+    }
+
+    public function realisations()
+    {
+        return $this->hasMany(CandidatRealisation::class, 'user_id')->orderBy('ordre');
     }
 
     public function getProfilCompletionAttribute(): int

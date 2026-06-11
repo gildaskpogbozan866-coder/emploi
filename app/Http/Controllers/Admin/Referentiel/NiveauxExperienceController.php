@@ -73,10 +73,9 @@ class NiveauxExperienceController extends Controller
     {
         try {
             $niveauExperience->delete();
-            return redirect()->route('admin.niveaux-experience.index')->with('success', "Niveau d'expérience supprimé.");
+            return response()->json(['success' => true]);
         } catch (QueryException) {
-            return redirect()->route('admin.niveaux-experience.index')
-                ->with('error', "Impossible de supprimer : ce niveau est utilisé par des candidats.");
+            return response()->json(['success' => false, 'message' => "Impossible de supprimer : ce niveau est utilisé par des candidats."], 422);
         }
     }
 }

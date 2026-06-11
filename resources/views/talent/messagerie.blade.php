@@ -1,25 +1,7 @@
-@extends('layouts.dashboard')
+﻿@extends('layouts.candidat')
 @section('title', 'Messagerie — Talent')
-@section('space-label', 'Espace Talent')
-
 @section('sidebar')
-<a href="{{ route('home') }}" class="dash-sidebar__logo">
-  <span>Emploi Bouge</span><small>Bénin · Talent</small>
-</a>
-<div class="dash-sidebar__user">
-  <div class="dash-sidebar__avatar">{{ auth()->user()->initiale }}</div>
-  <div class="dash-sidebar__info">
-    <div class="dash-sidebar__name">{{ auth()->user()->nom_complet }}</div>
-    <div class="dash-sidebar__role">{{ auth()->user()->metier ?? 'Talent' }}</div>
-  </div>
-</div>
-<ul class="dash-nav">
-  <li class="dash-nav__item"><a href="{{ route('talent.dashboard') }}">Tableau de bord</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.profil') }}">Mon profil</a></li>
-  <li class="dash-nav__item active"><a href="{{ route('talent.messagerie') }}">Messagerie</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.abonnement') }}">Abonnement Premium</a></li>
-  <li class="dash-nav__item"><a href="{{ route('talent.parametres') }}">Paramètres</a></li>
-</ul>
+@include('candidat._sidebar')
 @endsection
 
 @section('content')

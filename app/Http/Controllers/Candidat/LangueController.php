@@ -18,10 +18,9 @@ class LangueController extends Controller
             return response()->json(['message' => 'Maximum 10 langues atteint.'], 422);
         }
 
-        // Pas de doublon
-        $existe = Auth::user()->langues()
-            ->whereRaw('langue_id = ?', [$data['langue_id']])
-            ->whereRaw('niveau_id = ?', [$data['niveau_id']])
+        // Pas de doublon (unicité par langue pour un candidat, indépendant du niveau)
+        $existe = LangueCandidat::where('candidat_id', Auth::id())
+            ->where('langue_id', $data['langue_id'])
             ->exists();
 
         if ($existe) {
@@ -39,9 +38,10 @@ class LangueController extends Controller
         return response()->json([
             'success' => true,
             'langue'  => [
-                'id'     => $langue->id,
-                'langue' => $langue->langue->nom,
-                'niveau' => $langue->niveau->code,
+                'id'        => $langue->id,
+                'langue_id' => $langue->langue_id,
+                'langue'    => $langue->langue->nom,
+                'niveau'    => $langue->niveau->code,
             ],
         ], 201);
     }

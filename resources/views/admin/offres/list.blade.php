@@ -57,7 +57,7 @@
           <td>
             <div class="actions">
               <a href="{{ route('offre.detail', $offre) }}" target="_blank" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
-              <form method="POST" action="{{ route('admin.offres.destroy', $offre) }}" onsubmit="return confirm('Supprimer cette offre ?')">
+              <form method="POST" action="{{ route('admin.offres.destroy', $offre) }}" data-confirm="Supprimer cette offre ?" data-confirm-btn="Supprimer">
                 @csrf @method('DELETE')
                 <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
               </form>

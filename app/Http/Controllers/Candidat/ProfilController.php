@@ -15,6 +15,7 @@ use App\Models\NiveauExperienceCandidat;
 use App\Models\NiveauLangue;
 use App\Models\SecteurActivite;
 use App\Models\TypeContrat;
+use App\Models\TypeDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +24,7 @@ class ProfilController extends Controller
 {
     public function edit()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user()->load([
             // Profil de base
             'candidatProfil',
@@ -46,11 +48,17 @@ class ProfilController extends Controller
             // Langues candidat avec référentiels (affichage liste)
             'languesCandidats.langue',
             'languesCandidats.niveau',
+            // Attestations & réalisations
+            'attestations',
+            'realisations',
+            // Documents typés
+            'documents.type',
         ]);
 
         $languesCandidats = $user->languesCandidats;
 
         // ── Référentiels pour les dropdowns / pickers ──────────
+        $languesDejaAjoutees = $languesCandidats->pluck('langue_id');
         [
             $langues,
             $niveauxLangue,
@@ -61,7 +69,7 @@ class ProfilController extends Controller
             $typesContrats,
             $secteursActivite,
         ] = [
-            Langue::orderBy('nom')->get(),
+            Langue::orderBy('nom')->whereNotIn('id', $languesDejaAjoutees)->get(),
             NiveauLangue::orderBy('ordre')->get(),
             Competence::orderBy('nom')->get(),
             Metier::orderBy('nom')->get(),
@@ -70,6 +78,8 @@ class ProfilController extends Controller
             TypeContrat::orderBy('libelle')->get(),
             SecteurActivite::orderBy('libelle')->get(),
         ];
+
+        $typesDocuments = TypeDocument::actif()->get();
 
         return view('candidat.profil', compact(
             'user',
@@ -82,12 +92,14 @@ class ProfilController extends Controller
             'niveauxExperience',
             'typesContrats',
             'secteursActivite',
+            'typesDocuments',
         ));
     }
 
     // ── Infos personnelles + préférences ──────────────────
     public function update(ProfilRequest $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // ── Avatar ────────────────────────────────────────────
@@ -120,6 +132,8 @@ class ProfilController extends Controller
                 'remote'              => $request->remote ?? 'non',
                 'linkedin'            => $request->linkedin,
                 'portfolio'           => $request->portfolio,
+                'specialite'          => $request->specialite,
+                'annees_experience'   => $request->annees_experience,
             ]
         );
 
@@ -138,7 +152,7 @@ class ProfilController extends Controller
             NiveauEtudeCandidat::where('candidat_id', $user->id)->delete();
         }
 
-        // ── Niveau d'expérience (scalaire, 1 seul par candidat)
+        // ── Niveau d'expérience (scalaire, 1 seul par candidat) ─
         if ($request->filled('niveau_experience_id')) {
             NiveauExperienceCandidat::updateOrCreate(
                 ['candidat_id'         => $user->id],
@@ -154,6 +168,7 @@ class ProfilController extends Controller
     // ── Suppression d'avatar ──────────────────────────────
     public function deleteAvatar()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);

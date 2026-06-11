@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\IncriptionRequest;
 use App\Models\User;
+use Spatie\Permission\Models\Role as SpatieRole;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return $this->redirectDashboard(Auth::user());
+        return redirect()->intended($this->dashboardUrl(Auth::user()));
     }
 
     // ── Inscription ───────────────────────────────────────
@@ -95,6 +96,7 @@ class AuthController extends Controller
             'metier'     => $request->metier,
         ]);
 
+        SpatieRole::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         $user->assignRole($role);
 
         Auth::login($user, remember: true);
@@ -187,13 +189,17 @@ class AuthController extends Controller
     }
 
     // ── Helpers ───────────────────────────────────────────
-    private function redirectDashboard(User $user)
+    private function dashboardUrl(User $user): string
     {
         return match ($user->role) {
-            'admin'     => redirect()->route('admin.dashboard'),
-            'recruteur' => redirect()->route('recruteur.dashboard'),
-            'talent'    => redirect()->route('talent.dashboard'),
-            default     => redirect()->route('candidat.dashboard'),
+            'admin'     => route('admin.dashboard'),
+            'recruteur' => route('recruteur.dashboard'),
+            default     => route('candidat.dashboard'),
         };
+    }
+
+    private function redirectDashboard(User $user)
+    {
+        return redirect($this->dashboardUrl($user));
     }
 }
