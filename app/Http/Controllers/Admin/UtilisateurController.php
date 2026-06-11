@@ -8,9 +8,24 @@ use Illuminate\Http\Request;
 
 class UtilisateurController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(20);
+        $query = User::latest();
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(fn($sq) => $sq->where('prenom', 'like', "%$q%")
+                ->orWhere('nom', 'like', "%$q%")
+                ->orWhere('email', 'like', "%$q%"));
+        }
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+        if ($request->filled('statut')) {
+            $query->where('actif', $request->statut === 'actif');
+        }
+
+        $users = $query->paginate(20)->withQueryString();
         return view('admin.utilisateurs.list', compact('users'));
     }
 

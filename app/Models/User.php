@@ -120,6 +120,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Abonnement::class)->where('statut', 'actif')->latest();
     }
 
+    public function estPremium(): bool
+    {
+        $ab = $this->abonnementActif()->first();
+        return $ab !== null && $ab->plan === 'premium' && $ab->estActif();
+    }
+
     public function alertes()
     {
         return $this->hasMany(Alerte::class);
@@ -215,6 +221,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function attestations()
     {
         return $this->hasMany(CandidatAttestation::class, 'user_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class)->with('type')->latest();
     }
 
     public function realisations()

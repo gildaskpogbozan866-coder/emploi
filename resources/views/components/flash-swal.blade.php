@@ -12,6 +12,32 @@
     $autresErreurs = collect($errors->toArray())->except($clesIgnorees)->flatten()->all();
 @endphp
 
+{{-- Confirmation SweetAlert2 pour tous les formulaires avec data-confirm --}}
+<script>
+document.addEventListener('submit', function(e) {
+    var form = e.target;
+    var msg = form.dataset.confirm;
+    if (!msg) return;
+    e.preventDefault();
+    Swal.fire({
+        title: 'Confirmation',
+        text: msg,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: form.dataset.confirmColor || '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: form.dataset.confirmBtn || 'Confirmer',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            form.removeAttribute('data-confirm');
+            form.submit();
+        }
+    });
+});
+</script>
+
 @if($flashSuccess || $flashError || $flashWarning || $flashInfo || $sessionError || !empty($autresErreurs))
 <script>
 document.addEventListener('DOMContentLoaded', function () {

@@ -60,17 +60,8 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:36px">
       <h1 style="font-size:1.4rem;font-weight:800;color:#042C53;margin:0 0 6px">Envoyer ma candidature</h1>
       <p style="color:#64748b;font-size:13.5px;margin:0 0 28px;line-height:1.55">
-        Le message de motivation et le CV sont optionnels mais fortement recommandés pour maximiser vos chances.
+        Ajoutez un message de motivation et/ou un CV pour maximiser vos chances.
       </p>
-
-      @if($errors->any())
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;margin-bottom:22px">
-          <p style="font-weight:700;color:#dc2626;margin:0 0 6px;font-size:13.5px">Veuillez corriger les erreurs :</p>
-          <ul style="margin:0;padding-left:18px;color:#dc2626;font-size:13px">
-            @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-          </ul>
-        </div>
-      @endif
 
       <form method="POST" action="{{ route('offre.postuler.store', $offre) }}" enctype="multipart/form-data">
         @csrf

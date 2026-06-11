@@ -12,7 +12,7 @@ class OffreController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Offre::active()->with('recruteur')->recente();
+        $query = Offre::active()->with(['recruteur', 'competences'])->recente();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -35,30 +35,58 @@ class OffreController extends Controller
             $query->where('secteur', $request->secteur);
         }
 
+        if ($request->filled('competence')) {
+            $query->whereHas('competences', fn($q) => $q->where('slug', $request->competence));
+        }
+
         $offres = $query->paginate(12)->withQueryString();
 
-        return view('public.offre.list', compact('offres'));
+        $competences = \App\Models\Competence::orderBy('nom')->get();
+
+        return view('public.offre.list', compact('offres', 'competences'));
     }
 
     public function detail(Offre $offre)
     {
-        $offre->increment('vues');
-        $offre->load('recruteur');
-        $aPostule = false;
-
-        if (Auth::check()) {
-            $aPostule = Candidature::where('offre_id', $offre->id)
-                ->where('candidat_id', Auth::id())
-                ->exists();
+        // Une seule vue par session ; le recruteur propriétaire ne compte pas
+        $sessionKey = 'vu_offre_' . $offre->id;
+        if (!session()->has($sessionKey) && Auth::id() !== $offre->recruteur_id) {
+            $offre->increment('vues');
+            session()->put($sessionKey, true);
         }
 
-        return view('public.offre.detail', compact('offre', 'aPostule'));
+        $offre->load(['recruteur', 'competences']);
+        $aPostule      = false;
+        $estSauvegarde = false;
+
+        if (Auth::check()) {
+            $aPostule      = Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists();
+            $estSauvegarde = Auth::user()->offresSauvegardees()->where('offre_id', $offre->id)->exists();
+        }
+
+        $competenceIds = $offre->competences->pluck('id');
+        $similaires = Offre::active()
+            ->with('recruteur')
+            ->where('id', '!=', $offre->id)
+            ->where(function ($q) use ($offre, $competenceIds) {
+                $q->where('secteur', $offre->secteur)
+                  ->orWhere('type', $offre->type)
+                  ->orWhere('localisation', 'like', '%' . explode(',', $offre->localisation)[0] . '%');
+                if ($competenceIds->isNotEmpty()) {
+                    $q->orWhereHas('competences', fn($sq) => $sq->whereIn('competences.id', $competenceIds));
+                }
+            })
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return view('public.offre.detail', compact('offre', 'aPostule', 'estSauvegarde', 'similaires'));
     }
 
     public function postuler(Offre $offre)
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.connexion');
+            return redirect()->guest(route('auth.connexion'));
         }
 
         $aPostule = Candidature::where('offre_id', $offre->id)

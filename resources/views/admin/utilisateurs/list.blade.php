@@ -14,6 +14,16 @@
 </div>
 
 <div class="adm-card">
+  <div style="padding:16px 22px 0">
+    @include('partials._search-bar', [
+      'route'       => 'admin.utilisateurs.list',
+      'placeholder' => 'Nom, prénom ou email…',
+      'filters'     => [
+        ['name' => 'role',   'label' => 'Tous les rôles',   'options' => ['candidat' => 'Candidat', 'recruteur' => 'Recruteur', 'admin' => 'Admin']],
+        ['name' => 'statut', 'label' => 'Tous les statuts', 'options' => ['actif' => 'Actif', 'suspendu' => 'Suspendu']],
+      ],
+    ])
+  </div>
   <div class="adm-table-wrap">
     <table class="adm-table">
       <thead>

@@ -11,8 +11,8 @@ class Offre extends Model
 
     protected $fillable = [
         'recruteur_id', 'titre', 'entreprise', 'localisation',
-        'type', 'secteur', 'salaire', 'description', 'competences',
-        'exigences', 'date_limite', 'statut', 'premium', 'vues',
+        'type', 'secteur', 'salaire', 'description',
+        'exigences', 'date_limite', 'fichier', 'statut', 'premium', 'vues',
     ];
 
     protected function casts(): array
@@ -31,6 +31,11 @@ class Offre extends Model
     public function candidatures()
     {
         return $this->hasMany(Candidature::class);
+    }
+
+    public function competences()
+    {
+        return $this->belongsToMany(Competence::class, 'offre_competence');
     }
 
     public function sauvegardeursPar()

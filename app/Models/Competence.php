@@ -11,6 +11,11 @@ class Competence extends Model
 
     protected $fillable = ['nom', 'slug'];
 
+    public function offres()
+    {
+        return $this->belongsToMany(Offre::class, 'offre_competence');
+    }
+
     public function metiers()
     {
         return $this->belongsToMany(Metier::class, 'metier_competence')

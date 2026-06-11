@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MetiersSeeder::class);
         $this->call(CompetencesSeeder::class);
         $this->call(MetierCompetenceSeeder::class);
+        $this->call(TypeDocumentSeeder::class);
 
         // ── ÉTAPE 2 : Utilisateurs ────────────────────────────
         $admin = User::create([

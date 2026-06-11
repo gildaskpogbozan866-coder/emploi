@@ -37,7 +37,7 @@
           <span class="cand-badge cand-badge--{{ $alerte->active ? 'green' : 'gray' }}">
             {{ $alerte->active ? 'Active' : 'Désactivée' }}
           </span>
-          <form method="POST" action="{{ route('candidat.alertes.destroy', $alerte) }}" onsubmit="return confirm('Supprimer cette alerte ?')">
+          <form method="POST" action="{{ route('candidat.alertes.destroy', $alerte) }}" data-confirm="Supprimer cette alerte ?" data-confirm-btn="Supprimer">
             @csrf @method('DELETE')
             <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">Supprimer</button>
           </form>

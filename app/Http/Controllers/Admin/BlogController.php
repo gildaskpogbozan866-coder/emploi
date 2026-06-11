@@ -10,9 +10,18 @@ use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::with('auteur')->latest()->paginate(20);
+        $query = Article::with('auteur')->latest();
+
+        if ($request->filled('q')) {
+            $query->where('titre', 'like', '%' . $request->q . '%');
+        }
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $articles = $query->paginate(20)->withQueryString();
         return view('admin.blog.list', compact('articles'));
     }
 

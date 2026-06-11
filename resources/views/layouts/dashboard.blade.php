@@ -55,12 +55,13 @@
 
     {{-- ── CONTENU ── --}}
     <main class="dash-main">
-      @include('components.flash')
       @yield('content')
     </main>
   </div>
 
   @include('partials._form-guard')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  @include('components.flash-swal')
   @yield('scripts')
 </body>
 </html>

@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return $this->redirectDashboard(Auth::user());
+        return redirect()->intended($this->dashboardUrl(Auth::user()));
     }
 
     // ── Inscription ───────────────────────────────────────
@@ -189,12 +189,17 @@ class AuthController extends Controller
     }
 
     // ── Helpers ───────────────────────────────────────────
-    private function redirectDashboard(User $user)
+    private function dashboardUrl(User $user): string
     {
         return match ($user->role) {
-            'admin'     => redirect()->route('admin.dashboard'),
-            'recruteur' => redirect()->route('recruteur.dashboard'),
-            default     => redirect()->route('candidat.dashboard'),
+            'admin'     => route('admin.dashboard'),
+            'recruteur' => route('recruteur.dashboard'),
+            default     => route('candidat.dashboard'),
         };
+    }
+
+    private function redirectDashboard(User $user)
+    {
+        return redirect($this->dashboardUrl($user));
     }
 }

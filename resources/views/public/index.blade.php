@@ -19,10 +19,10 @@
         Le pont entre les <span class="accent">recruteurs</span> et les <span class="accent">talents</span>
       </h1>
       <p class="hero-sub">
-        Les entreprises diffusent leurs offres, et les candidats trouvent des
-        <strong>emplois</strong>, <strong>stages</strong>, <strong>bourses</strong> et
-        <strong>programmes professionnels</strong> fiables en quelques clics.<br>
-        Plateforme intuitive, informations vérifiées, mises à jour régulières.
+        Les recruteurs diffusent leurs annonces, les candidats trouvent
+        <strong>emploi</strong>, <strong>stage</strong>, <strong>bourse</strong>,
+        <strong>freelance</strong> ou mettent en avant leurs <strong>compétences</strong> — peu importe le profil.<br>
+        Informations vérifiées, plateforme intuitive, mises à jour en continu.
       </p>
 
       <div class="hs2-wrap">
@@ -43,7 +43,7 @@
       <div class="hero-actions">
         <a href="{{ route('offre.list') }}" class="btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Explorer nos offres d'emploi
+          Parcourir les offres
         </a>
         <a href="{{ route('cv.public.depot') }}" class="btn-hero-cv">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -51,14 +51,14 @@
         </a>
         <a href="{{ route('offre.publier') }}" class="btn-hero-outline">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          Publiez une annonce
+          Publier une annonce
         </a>
         <a href="{{ route('talent.public.list') }}" class="btn-hero-talents">
           <span class="btn-hero-talents__main">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-            Valoriser mes compétences
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Mettre en avant mes compétences
           </span>
-          <span class="btn-hero-talents__sub">Pour les profils compétents avec ou sans diplôme.</span>
+          <span class="btn-hero-talents__sub">Profil visible par les recruteurs — sans diplôme requis.</span>
         </a>
       </div>
     </div>
@@ -114,24 +114,24 @@
       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       Par où commencer ?
     </span>
-    <h2 class="split-cta-title">Candidat, recruteur ou talent ?</h2>
-    <p class="split-cta-sub">Accédez à la section qui vous correspond et commencez dès maintenant.</p>
+    <h2 class="split-cta-title">Candidat ou recruteur ?</h2>
+    <p class="split-cta-sub">Que vous cherchiez un emploi, un stage, une bourse ou que vous souhaitiez mettre en avant vos compétences — une seule plateforme pour tout.</p>
     <div class="split-cta-btns">
       <a href="{{ route('cv.public.depot') }}" class="split-cta-btn split-cta-btn--candidat">
-        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></span>
-        <span class="split-cta-btn__title">Candidat : Déposez votre CV</span>
-        <span class="split-cta-btn__sub">Visibilité auprès de recruteurs qualifiés</span>
+        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
+        <span class="split-cta-btn__title">Je cherche du travail</span>
+        <span class="split-cta-btn__sub">CDI · CDD · Stage · Bourse · Freelance · Compétences</span>
       </a>
       <a href="{{ route('offre.publier') }}" class="split-cta-btn split-cta-btn--recruteur">
         <span class="split-cta-badge">Recommandé</span>
         <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>
-        <span class="split-cta-btn__title">Recruteur : Publiez une annonce</span>
-        <span class="split-cta-btn__sub">Touchez des milliers de candidats qualifiés</span>
+        <span class="split-cta-btn__title">Je recrute</span>
+        <span class="split-cta-btn__sub">Publiez une annonce, accédez aux CV et profils</span>
       </a>
       <a href="{{ route('talent.public.list') }}" class="split-cta-btn split-cta-btn--talents">
-        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></span>
-        <span class="split-cta-btn__title">Talent : Valorisez vos compétences</span>
-        <span class="split-cta-btn__sub">Visible par des recruteurs, avec ou sans diplôme</span>
+        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></span>
+        <span class="split-cta-btn__title">Mes compétences parlent</span>
+        <span class="split-cta-btn__sub">Profil visible même sans diplôme — soyez trouvé</span>
       </a>
     </div>
   </div>
@@ -252,51 +252,41 @@
       </a>
     </div>
 
-    @php
-      $logoBgs = ['#dbeafe','#fce7f3','#d1fae5','#fef9c3','#ede9fe','#fee2e2','#fef3c7','#dcfce7'];
-    @endphp
-
     <div class="oic-grid">
-      @forelse($offres as $i => $offre)
-        @php
-          $typeKey = strtolower(str_replace(' ','',$offre->type));
-          $letter  = strtoupper(substr($offre->entreprise, 0, 1));
-          $bg      = $logoBgs[$i % count($logoBgs)];
-          $desc    = Str::limit(strip_tags($offre->description), 105);
-        @endphp
-        <div class="oic-card" onclick="window.location='{{ route('offre.detail', $offre) }}'">
-          <div class="oic-card__bar oic-card__bar--{{ $typeKey }}"></div>
-          <div class="oic-card__inner">
-            <div class="oic-card__head">
-              <div class="oic-card__logo" style="background:{{ $bg }}">
-                <span class="oic-card__letter">{{ $letter }}</span>
-              </div>
-              <div class="oic-card__meta">
-                <div class="oic-card__title">{{ $offre->titre }}</div>
-                <div class="oic-card__company">{{ $offre->entreprise }}</div>
-                <div class="oic-card__loc">{{ $offre->localisation }}</div>
-              </div>
+      @forelse($offres as $offre)
+        @php $typeKey = strtolower(str_replace([' ', '-'], '', $offre->type)); @endphp
+        <a href="{{ route('offre.detail', $offre) }}" class="oic-card">
+
+          <div class="oic-card__head">
+            <div class="oic-card__avatar">
+              {{ strtoupper(substr($offre->entreprise, 0, 2)) }}
             </div>
-            <div class="oic-badges">
-              <span class="oic-badge oic-badge--{{ $typeKey }}">{{ $offre->type }}</span>
-              @if($offre->secteur)
-              <span class="oic-badge oic-badge--domain">{{ $offre->secteur }}</span>
-              @endif
-            </div>
-            @if($desc)
-            <div class="oic-card__desc">{{ $desc }}</div>
-            @endif
-            <div class="oic-card__footer">
-              <span class="oic-card__date">{{ $offre->created_at->diffForHumans() }}</span>
-              <a href="{{ route('offre.detail', $offre) }}" class="oic-card__btn">
-                Voir l'offre
-                <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </a>
+            <div class="oic-card__info">
+              <div class="oic-card__title">{{ $offre->titre }}</div>
+              <div class="oic-card__company">{{ $offre->entreprise }}</div>
             </div>
           </div>
-        </div>
+
+          <div class="oic-card__loc">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" stroke-linecap="round"/></svg>
+            {{ $offre->localisation }}
+          </div>
+
+          <div>
+            <span class="oic-badge oic-badge--{{ $typeKey }}">{{ $offre->type }}</span>
+          </div>
+
+          <div class="oic-card__footer">
+            <span class="oic-card__date">{{ $offre->created_at->diffForHumans() }}</span>
+            <span class="oic-card__cta">
+              Voir l'offre
+              <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </span>
+          </div>
+
+        </a>
       @empty
-        <p style="color:#64748b;grid-column:1/-1">Aucune offre publiée pour l'instant.</p>
+        <p style="color:#64748b;padding:32px 0;text-align:center">Aucune offre publiée pour l'instant.</p>
       @endforelse
     </div>
   </div>
@@ -309,9 +299,9 @@
   <div class="container">
     <div class="offres-header">
       <div>
-        <span class="badge badge--yellow">Candidats récents</span>
+        <span class="badge badge--yellow">CV récents</span>
         <h2 class="section-title" style="margin-top:10px">Derniers CV déposés</h2>
-        <p class="section-subtitle">Des profils qualifiés prêts à rejoindre votre équipe.</p>
+        <p class="section-subtitle">Des candidats actifs — emploi, stage, bourse ou freelance.</p>
       </div>
       <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta">
         Accéder aux CV
@@ -380,12 +370,12 @@
   <div class="container">
     <div class="offres-header">
       <div>
-        <span class="badge badge--green">Talents récents</span>
-        <h2 class="section-title" style="margin-top:10px">Profils Talents récents</h2>
-        <p class="section-subtitle">Des compétences vérifiées, disponibles pour votre équipe.</p>
+        <span class="badge badge--yellow">Profils disponibles</span>
+        <h2 class="section-title" style="margin-top:10px">Candidats qui mettent en avant leurs compétences</h2>
+        <p class="section-subtitle">Des profils vérifiés, disponibles — avec ou sans diplôme.</p>
       </div>
       <a href="{{ route('talent.public.list') }}" class="btn btn--blue offres-header__cta">
-        Voir tous les talents
+        Voir tous les profils
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
     </div>

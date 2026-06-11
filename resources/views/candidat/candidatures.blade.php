@@ -20,6 +20,15 @@
 </div>
 
 <div class="cand-card">
+  <div style="padding:16px 20px 0">
+    @include('partials._search-bar', [
+      'route'       => 'candidat.candidatures',
+      'placeholder' => 'Rechercher par poste ou entreprise…',
+      'filters'     => [
+        ['name' => 'statut', 'label' => 'Tous les statuts', 'options' => ['envoyee' => 'Envoyée', 'vue' => 'Vue', 'retenue' => 'Retenue', 'entretien' => 'Entretien', 'refusee' => 'Refusée']],
+      ],
+    ])
+  </div>
   <div class="cand-table-wrap">
     <table class="cand-table">
       <thead>

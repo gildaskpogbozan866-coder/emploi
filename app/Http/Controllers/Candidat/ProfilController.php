@@ -15,6 +15,7 @@ use App\Models\NiveauExperienceCandidat;
 use App\Models\NiveauLangue;
 use App\Models\SecteurActivite;
 use App\Models\TypeContrat;
+use App\Models\TypeDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +51,8 @@ class ProfilController extends Controller
             // Attestations & réalisations
             'attestations',
             'realisations',
+            // Documents typés
+            'documents.type',
         ]);
 
         $languesCandidats = $user->languesCandidats;
@@ -76,6 +79,8 @@ class ProfilController extends Controller
             SecteurActivite::orderBy('libelle')->get(),
         ];
 
+        $typesDocuments = TypeDocument::actif()->get();
+
         return view('candidat.profil', compact(
             'user',
             'languesCandidats',
@@ -87,6 +92,7 @@ class ProfilController extends Controller
             'niveauxExperience',
             'typesContrats',
             'secteursActivite',
+            'typesDocuments',
         ));
     }
 

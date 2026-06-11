@@ -17,8 +17,8 @@ use App\Http\Controllers\Candidat\ProfilController as CandidatProfil;
 use App\Http\Controllers\Candidat\ExperienceController;
 use App\Http\Controllers\Candidat\FormationController;
 use App\Http\Controllers\Candidat\CompetenceController;
-use App\Http\Controllers\Candidat\AttestationController as CandidatAttCtrl;
 use App\Http\Controllers\Candidat\RealisationController as CandidatRealisationCtrl;
+use App\Http\Controllers\Candidat\DocumentController as CandidatDocumentCtrl;
 use App\Http\Controllers\Candidat\LangueController;
 use App\Http\Controllers\Candidat\AlerteController;
 use App\Http\Controllers\Candidat\MessageController as CandidatMessage;
@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UtilisateurController;
 use App\Http\Controllers\Admin\OffreController as AdminOffre;
 use App\Http\Controllers\Admin\CVController as AdminCV;
+use App\Http\Controllers\Admin\DocumentController as AdminDocument;
 use App\Http\Controllers\Admin\BlogController as AdminBlog;
 use App\Http\Controllers\Admin\ServiceController as AdminService;
 use App\Http\Controllers\Admin\PaiementController as AdminPaiement;
@@ -245,13 +246,15 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::post('/profil/langues',           [LangueController::class, 'store'])->name('profil.langues.store');
     Route::delete('/profil/langues/{langue}',[LangueController::class, 'destroy'])->name('profil.langues.destroy');
 
-    // Attestations
-    Route::post('/profil/attestations',                    [CandidatAttCtrl::class, 'store'])->name('attestations.store');
-    Route::delete('/profil/attestations/{attestation}',    [CandidatAttCtrl::class, 'destroy'])->name('attestations.delete');
-
     // Réalisations (portfolio photos)
     Route::post('/profil/realisations',                    [CandidatRealisationCtrl::class, 'store'])->name('realisations.store');
     Route::delete('/profil/realisations/{realisation}',    [CandidatRealisationCtrl::class, 'destroy'])->name('realisations.delete');
+
+    // Documents (CV, diplômes, attestations…)
+    Route::post('/profil/documents',                [CandidatDocumentCtrl::class, 'store'])->name('documents.store');
+    Route::get('/profil/documents/{document}/edit', [CandidatDocumentCtrl::class, 'edit'])->name('documents.edit');
+    Route::put('/profil/documents/{document}',      [CandidatDocumentCtrl::class, 'update'])->name('documents.update');
+    Route::delete('/profil/documents/{document}',   [CandidatDocumentCtrl::class, 'destroy'])->name('documents.destroy');
 });
 
 // ════════════════════════════════════════════════════════
@@ -272,12 +275,15 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 
     // Publication d'offres — nécessite publish-offre
     Route::middleware('permission:'.Permission::PUBLISH_OFFRE)->group(function () {
-        Route::get('/mes-offres',                     [RecruteurOffre::class, 'index'])->name('offres');
-        Route::get('/mes-offres/creer',               [RecruteurOffre::class, 'create'])->name('offres.create');
-        Route::post('/mes-offres',                    [RecruteurOffre::class, 'store'])->name('offres.store');
-        Route::get('/mes-offres/{offre}/modifier',    [RecruteurOffre::class, 'edit'])->name('offres.edit');
-        Route::put('/mes-offres/{offre}',             [RecruteurOffre::class, 'update'])->name('offres.update');
-        Route::delete('/mes-offres/{offre}',          [RecruteurOffre::class, 'destroy'])->name('offres.destroy');
+        Route::get('/mes-offres',                          [RecruteurOffre::class, 'index'])->name('offres');
+        Route::get('/mes-offres/creer',                    [RecruteurOffre::class, 'create'])->name('offres.create');
+        Route::post('/mes-offres',                         [RecruteurOffre::class, 'store'])->name('offres.store');
+        Route::get('/mes-offres/{offre}/modifier',         [RecruteurOffre::class, 'edit'])->name('offres.edit');
+        Route::put('/mes-offres/{offre}',                  [RecruteurOffre::class, 'update'])->name('offres.update');
+        Route::delete('/mes-offres/{offre}',               [RecruteurOffre::class, 'destroy'])->name('offres.destroy');
+        Route::patch('/mes-offres/{offre}/cloturer',       [RecruteurOffre::class, 'cloturer'])->name('offres.cloturer');
+        Route::post('/mes-offres/{offre}/dupliquer',       [RecruteurOffre::class, 'dupliquer'])->name('offres.dupliquer');
+        Route::get('/mes-offres/{offre}/statistiques',     [RecruteurOffre::class, 'stats'])->name('offres.stats');
     });
 
     // Candidatures — nécessite view-candidatures
@@ -391,11 +397,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         Route::delete('/{offre}',          [AdminOffre::class, 'destroy'])->name('destroy');
     });
 
-    // Gestion CVs
-    Route::middleware('permission:'.Permission::MANAGE_CVS)->prefix('cvs')->name('cvs.')->group(function () {
-        Route::get('/',        [AdminCV::class, 'index'])->name('list');
-        Route::get('/{cv}',    [AdminCV::class, 'show'])->name('detail');
-        Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
+    // Gestion CVs & Documents
+    Route::middleware('permission:'.Permission::MANAGE_CVS)->group(function () {
+        Route::prefix('cvs')->name('cvs.')->group(function () {
+            Route::get('/',        [AdminCV::class, 'index'])->name('list');
+            Route::get('/{cv}',    [AdminCV::class, 'show'])->name('detail');
+            Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
+        });
+        Route::prefix('documents')->name('documents.')->group(function () {
+            Route::get('/{document}',   [AdminDocument::class, 'show'])->name('detail');
+            Route::delete('/{document}',[AdminDocument::class, 'destroy'])->name('destroy');
+        });
     });
 
     // Gestion blog

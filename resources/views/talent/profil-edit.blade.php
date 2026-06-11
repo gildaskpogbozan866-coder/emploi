@@ -229,7 +229,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:14px">
           <img src="{{ asset('storage/'.$profil->photo) }}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0">
-          <form method="POST" action="{{ route('talent.profil.photo.delete') }}" onsubmit="return confirm('Supprimer la photo ?')">
+          <form method="POST" action="{{ route('talent.profil.photo.delete') }}" data-confirm="Supprimer la photo ?" data-confirm-btn="Supprimer">
             @csrf @method('DELETE')
             <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">Supprimer la photo</button>
           </form>
@@ -257,7 +257,7 @@
             <p style="font-size:12px;color:#94a3b8;margin:0 0 3px">{{ $exp->periode }}</p>
             @if($exp->description)<p style="font-size:13px;color:#374151;margin:0;line-height:1.5">{{ $exp->description }}</p>@endif
           </div>
-          <form method="POST" action="{{ route('talent.experiences.delete', $exp) }}" onsubmit="return confirm('Supprimer ?')">
+          <form method="POST" action="{{ route('talent.experiences.delete', $exp) }}" data-confirm="Confirmer la suppression ?" data-confirm-btn="Supprimer">
             @csrf @method('DELETE')
             <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">Supprimer</button>
           </form>
@@ -329,7 +329,7 @@
             @if($form->annee_obtention)<p style="font-size:12px;color:#94a3b8;margin:0 0 3px">{{ $form->annee_obtention }}</p>@endif
             @if($form->description)<p style="font-size:13px;color:#374151;margin:0;line-height:1.5">{{ $form->description }}</p>@endif
           </div>
-          <form method="POST" action="{{ route('talent.formations.delete', $form) }}" onsubmit="return confirm('Supprimer ?')">
+          <form method="POST" action="{{ route('talent.formations.delete', $form) }}" data-confirm="Confirmer la suppression ?" data-confirm-btn="Supprimer">
             @csrf @method('DELETE')
             <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">Supprimer</button>
           </form>
@@ -397,7 +397,7 @@
               <p style="font-size:13.5px;font-weight:600;color:#374151;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $att->nom }}</p>
             </div>
             <a href="{{ asset('storage/'.$att->fichier) }}" target="_blank" class="cand-btn cand-btn--outline cand-btn--sm">Voir</a>
-            <form method="POST" action="{{ route('talent.attestations.delete', $att) }}" onsubmit="return confirm('Supprimer ?')">
+            <form method="POST" action="{{ route('talent.attestations.delete', $att) }}" data-confirm="Confirmer la suppression ?" data-confirm-btn="Supprimer">
               @csrf @method('DELETE')
               <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">×</button>
             </form>
@@ -453,7 +453,7 @@
               <p style="font-size:11.5px;color:#64748b;margin:0;padding:5px 8px;line-height:1.4">{{ $t->description }}</p>
             @endif
             <form method="POST" action="{{ route('talent.profil.travaux.delete', $t) }}"
-                  onsubmit="return confirm('Supprimer cette photo ?')"
+                  data-confirm="Supprimer cette photo ?" data-confirm-btn="Supprimer"
                   style="position:absolute;top:5px;right:5px">
               @csrf @method('DELETE')
               <button type="submit" style="width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.55);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;line-height:1">×</button>

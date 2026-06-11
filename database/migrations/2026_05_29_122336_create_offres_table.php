@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('competences')->nullable();
             $table->text('exigences')->nullable();
             $table->date('date_limite')->nullable();
-            $table->enum('statut', ['en_attente', 'active', 'expiree', 'suspendue'])->default('en_attente');
+            $table->enum('statut', ['en_attente', 'active', 'expiree', 'suspendue', 'brouillon', 'clos'])->default('en_attente');
             $table->boolean('premium')->default(false);
             $table->integer('vues')->default(0);
             $table->timestamps();

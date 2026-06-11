@@ -16,6 +16,14 @@
   </div>
 </div>
 
+@include('partials._search-bar', [
+  'route'       => 'candidat.offres-sauvegardees',
+  'placeholder' => 'Rechercher par titre ou entreprise…',
+  'filters'     => [
+    ['name' => 'type', 'label' => 'Tous les types', 'options' => array_combine(['CDI','CDD','Stage','Bourse','Freelance','Temps partiel'],['CDI','CDD','Stage','Bourse','Freelance','Temps partiel'])],
+  ],
+])
+
 @forelse($offres as $offre)
   <div class="cand-card" style="margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
     <div style="flex:1;min-width:0">

@@ -10,6 +10,7 @@ use App\Models\CV;
 use App\Models\Commande;
 use App\Models\Article;
 use App\Models\Paiement;
+use App\Models\Document;
 use App\Models\Signalement;
 
 class DashboardController extends Controller
@@ -23,6 +24,7 @@ class DashboardController extends Controller
             'offres'      => Offre::count(),
             'offres_actives' => Offre::where('statut', 'active')->count(),
             'cvs'         => CV::count(),
+            'documents'   => Document::count(),
             'candidatures'=> Candidature::count(),
             'commandes'   => Commande::count(),
             'paiements'   => Paiement::where('statut', 'confirme')->sum('montant'),

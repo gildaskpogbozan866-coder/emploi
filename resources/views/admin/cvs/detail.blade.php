@@ -9,7 +9,7 @@
     <p>{{ $cv->titre_poste }} · Déposé le {{ $cv->created_at->format('d/m/Y') }}</p>
   </div>
   <div>
-    <form method="POST" action="{{ route('admin.cvs.destroy', $cv) }}" onsubmit="return confirm('Supprimer définitivement ce CV ?')">
+    <form method="POST" action="{{ route('admin.cvs.destroy', $cv) }}" data-confirm="Supprimer définitivement ce CV ?" data-confirm-btn="Supprimer">
       @csrf @method('DELETE')
       <button type="submit" class="adm-btn adm-btn--danger">Supprimer</button>
     </form>
