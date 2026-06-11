@@ -10,16 +10,10 @@ class CandidatProfil extends Model
     use HasFactory;
     protected $fillable = [
         'user_id', 'titre_professionnel', 'bio', 'ville',
-        'disponibilite', 'types_contrat', 'salaire_min', 'salaire_max',
+        'disponibilite', 'salaire_min', 'salaire_max',
         'remote', 'linkedin', 'portfolio',
+        'specialite', 'annees_experience',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'types_contrat' => 'array',
-        ];
-    }
 
     public function user()
     {
@@ -40,13 +34,6 @@ class CandidatProfil extends Model
                 'non'     => 'Présentiel',
                 'partiel' => 'Hybride',
                 'total'   => 'Full remote',
-            ],
-            'types_contrat' => [
-                'cdi'        => 'CDI',
-                'cdd'        => 'CDD',
-                'freelance'  => 'Freelance',
-                'stage'      => 'Stage',
-                'alternance' => 'Alternance',
             ],
         ];
     }

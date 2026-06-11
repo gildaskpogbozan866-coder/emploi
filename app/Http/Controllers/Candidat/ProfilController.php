@@ -3,8 +3,18 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Candidat\ProfilRequest;
 use App\Models\CandidatProfil;
-use App\Models\TalentProfil;
+use App\Models\Competence;
+use App\Models\Langue;
+use App\Models\Metier;
+use App\Models\NiveauEtude;
+use App\Models\NiveauEtudeCandidat;
+use App\Models\NiveauExperience;
+use App\Models\NiveauExperienceCandidat;
+use App\Models\NiveauLangue;
+use App\Models\SecteurActivite;
+use App\Models\TypeContrat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -14,45 +24,77 @@ class ProfilController extends Controller
     public function edit()
     {
         $user = Auth::user()->load([
+            // Profil de base
             'candidatProfil',
+            // Parcours (timeline)
             'experiences',
             'formations',
+            // Compétences (pivot avec annees_experience)
             'competences',
+            // Métiers ciblés
+            'metiers',
+            // Niveau d'étude actuel (HasOne → BelongsTo)
+            'niveauEtude.niveauEtude',
+            // Niveau d'expérience global (HasOne → BelongsTo)
+            'niveauExperience.niveauExperience',
+            // Types de contrats souhaités
+            'typesContrats',
+            // Secteurs d'activité ciblés
+            'secteursActivite',
+            // Langues (pour profilCompletion)
             'langues',
-            'talentProfil.attestations',
-            'talentProfil.travaux',
+            // Langues candidat avec référentiels (affichage liste)
+            'languesCandidats.langue',
+            'languesCandidats.niveau',
+            // Attestations & réalisations
+            'attestations',
+            'realisations',
         ]);
 
-        return view('candidat.profil', compact('user'));
+        $languesCandidats = $user->languesCandidats;
+
+        // ── Référentiels pour les dropdowns / pickers ──────────
+        $languesDejaAjoutees = $languesCandidats->pluck('langue_id');
+        [
+            $langues,
+            $niveauxLangue,
+            $competences,
+            $metiers,
+            $niveauxEtude,
+            $niveauxExperience,
+            $typesContrats,
+            $secteursActivite,
+        ] = [
+            Langue::orderBy('nom')->whereNotIn('id', $languesDejaAjoutees)->get(),
+            NiveauLangue::orderBy('ordre')->get(),
+            Competence::orderBy('nom')->get(),
+            Metier::orderBy('nom')->get(),
+            NiveauEtude::orderBy('ordre')->get(),
+            NiveauExperience::orderBy('ordre')->get(),
+            TypeContrat::orderBy('libelle')->get(),
+            SecteurActivite::orderBy('libelle')->get(),
+        ];
+
+        return view('candidat.profil', compact(
+            'user',
+            'languesCandidats',
+            'langues',
+            'niveauxLangue',
+            'competences',
+            'metiers',
+            'niveauxEtude',
+            'niveauxExperience',
+            'typesContrats',
+            'secteursActivite',
+        ));
     }
 
     // ── Infos personnelles + préférences ──────────────────
-    public function update(Request $request)
+    public function update(ProfilRequest $request)
     {
         $user = Auth::user();
 
-        $request->validate([
-            'prenom'             => 'required|string|max:100',
-            'nom'                => 'required|string|max:100',
-            'tel'                => 'nullable|string|max:20',
-            'pays'               => 'nullable|string|max:100',
-            'avatar'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'titre_professionnel'=> 'nullable|string|max:200',
-            'bio'                => 'nullable|string|max:1000',
-            'ville'              => 'nullable|string|max:100',
-            'disponibilite'      => 'nullable|in:immediatement,1_mois,2_mois,3_mois,plus_3_mois',
-            'types_contrat'      => 'nullable|array',
-            'types_contrat.*'    => 'in:cdi,cdd,freelance,stage,alternance',
-            'salaire_min'        => 'nullable|integer|min:0|max:10000000',
-            'salaire_max'        => 'nullable|integer|min:0|max:10000000|gte:salaire_min',
-            'remote'             => 'nullable|in:non,partiel,total',
-            'linkedin'           => 'nullable|url|max:500',
-            'portfolio'          => 'nullable|url|max:500',
-            'specialite'         => 'nullable|string|max:200',
-            'annees_experience'  => 'nullable|integer|min:0|max:50',
-        ]);
-
-        // Avatar
+        // ── Avatar ────────────────────────────────────────────
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
@@ -60,6 +102,7 @@ class ProfilController extends Controller
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
+        // ── Identité ──────────────────────────────────────────
         $user->update([
             'prenom' => $request->prenom,
             'nom'    => $request->nom,
@@ -68,7 +111,7 @@ class ProfilController extends Controller
             'avatar' => $user->avatar,
         ]);
 
-        // Upsert profil étendu
+        // ── Profil étendu ─────────────────────────────────────
         CandidatProfil::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -76,34 +119,39 @@ class ProfilController extends Controller
                 'bio'                 => $request->bio,
                 'ville'               => $request->ville,
                 'disponibilite'       => $request->disponibilite,
-                'types_contrat'       => $request->types_contrat ?? [],
                 'salaire_min'         => $request->salaire_min,
                 'salaire_max'         => $request->salaire_max,
                 'remote'              => $request->remote ?? 'non',
                 'linkedin'            => $request->linkedin,
                 'portfolio'           => $request->portfolio,
+                'specialite'          => $request->specialite,
+                'annees_experience'   => $request->annees_experience,
             ]
         );
 
-        // Champs pro (spécialité, années d'expérience) → TalentProfil
-        if ($request->filled('specialite') || $request->has('annees_experience')) {
-            $existing = TalentProfil::where('user_id', $user->id)->first();
-            if ($existing) {
-                $talentUpdate = [];
-                if ($request->has('specialite'))        $talentUpdate['specialite']        = $request->specialite;
-                if ($request->has('annees_experience')) $talentUpdate['annees_experience'] = $request->annees_experience;
-                $existing->update($talentUpdate);
-            } else {
-                TalentProfil::create([
-                    'user_id'          => $user->id,
-                    'metier'           => '',
-                    'pays'             => $user->pays ?? '',
-                    'plan'             => 'gratuit',
-                    'visible'          => true,
-                    'specialite'       => $request->specialite,
-                    'annees_experience'=> $request->annees_experience,
-                ]);
-            }
+        // ── Pivots many-to-many (sync remplace tout) ──────────
+        $user->typesContrats()->sync($request->input('types_contrat_ids', []));
+        $user->secteursActivite()->sync($request->input('secteurs_ids', []));
+        $user->metiers()->sync($request->input('metiers_ids', []));
+
+        // ── Niveau d'étude (scalaire, 1 seul par candidat) ───
+        if ($request->filled('niveau_etude_id')) {
+            NiveauEtudeCandidat::updateOrCreate(
+                ['candidat_id'    => $user->id],
+                ['niveau_etude_id' => $request->niveau_etude_id]
+            );
+        } else {
+            NiveauEtudeCandidat::where('candidat_id', $user->id)->delete();
+        }
+
+        // ── Niveau d'expérience (scalaire, 1 seul par candidat) ─
+        if ($request->filled('niveau_experience_id')) {
+            NiveauExperienceCandidat::updateOrCreate(
+                ['candidat_id'         => $user->id],
+                ['niveau_experience_id' => $request->niveau_experience_id]
+            );
+        } else {
+            NiveauExperienceCandidat::where('candidat_id', $user->id)->delete();
         }
 
         return redirect()->route('candidat.profil')->with('success', 'Profil mis à jour avec succès.');

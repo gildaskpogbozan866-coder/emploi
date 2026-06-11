@@ -17,6 +17,8 @@ use App\Http\Controllers\Candidat\ProfilController as CandidatProfil;
 use App\Http\Controllers\Candidat\ExperienceController;
 use App\Http\Controllers\Candidat\FormationController;
 use App\Http\Controllers\Candidat\CompetenceController;
+use App\Http\Controllers\Candidat\AttestationController as CandidatAttCtrl;
+use App\Http\Controllers\Candidat\RealisationController as CandidatRealisationCtrl;
 use App\Http\Controllers\Candidat\LangueController;
 use App\Http\Controllers\Candidat\AlerteController;
 use App\Http\Controllers\Candidat\MessageController as CandidatMessage;
@@ -52,6 +54,14 @@ use App\Http\Controllers\Admin\StatistiqueController as AdminStat;
 use App\Http\Controllers\Admin\ParametreController as AdminParametre;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\VerificationRecruteurController;
+use App\Http\Controllers\Admin\Referentiel\CompetencesController as AdminCompetences;
+use App\Http\Controllers\Admin\Referentiel\MetiersController as AdminMetiers;
+use App\Http\Controllers\Admin\Referentiel\TypeContratsController as AdminTypeContrats;
+use App\Http\Controllers\Admin\Referentiel\SecteursActiviteController as AdminSecteursActivite;
+use App\Http\Controllers\Admin\Referentiel\LanguesController as AdminLangues;
+use App\Http\Controllers\Admin\Referentiel\NiveauxLangueController as AdminNiveauxLangue;
+use App\Http\Controllers\Admin\Referentiel\NiveauxEtudeController as AdminNiveauxEtude;
+use App\Http\Controllers\Admin\Referentiel\NiveauxExperienceController as AdminNiveauxExperience;
 use App\Http\Controllers\Recruteur\VerificationController as RecruteurVerifCtrl;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -234,6 +244,14 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     // Langues (AJAX)
     Route::post('/profil/langues',           [LangueController::class, 'store'])->name('profil.langues.store');
     Route::delete('/profil/langues/{langue}',[LangueController::class, 'destroy'])->name('profil.langues.destroy');
+
+    // Attestations
+    Route::post('/profil/attestations',                    [CandidatAttCtrl::class, 'store'])->name('attestations.store');
+    Route::delete('/profil/attestations/{attestation}',    [CandidatAttCtrl::class, 'destroy'])->name('attestations.delete');
+
+    // Réalisations (portfolio photos)
+    Route::post('/profil/realisations',                    [CandidatRealisationCtrl::class, 'store'])->name('realisations.store');
+    Route::delete('/profil/realisations/{realisation}',    [CandidatRealisationCtrl::class, 'destroy'])->name('realisations.delete');
 });
 
 // ════════════════════════════════════════════════════════
@@ -436,6 +454,83 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->group(function () {
         Route::get('/parametres',  [AdminParametre::class, 'index'])->name('parametres');
         Route::put('/parametres',  [AdminParametre::class, 'update'])->name('parametres.update');
+    });
+
+    // Référentiels RH (compétences, métiers, contrats, secteurs, langues, niveaux)
+    Route::middleware('permission:'.Permission::MANAGE_REFERENTIELS)->group(function () {
+
+        Route::prefix('competences')->name('competences.')->group(function () {
+            Route::get('/',                      [AdminCompetences::class, 'index'])->name('index');
+            Route::get('/creer',                 [AdminCompetences::class, 'create'])->name('create');
+            Route::post('/',                     [AdminCompetences::class, 'store'])->name('store');
+            Route::get('/{competence}/modifier', [AdminCompetences::class, 'edit'])->name('edit');
+            Route::put('/{competence}',          [AdminCompetences::class, 'update'])->name('update');
+            Route::delete('/{competence}',       [AdminCompetences::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('metiers')->name('metiers.')->group(function () {
+            Route::get('/',                  [AdminMetiers::class, 'index'])->name('index');
+            Route::get('/creer',             [AdminMetiers::class, 'create'])->name('create');
+            Route::post('/',                 [AdminMetiers::class, 'store'])->name('store');
+            Route::get('/{metier}/modifier', [AdminMetiers::class, 'edit'])->name('edit');
+            Route::put('/{metier}',          [AdminMetiers::class, 'update'])->name('update');
+            Route::delete('/{metier}',       [AdminMetiers::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('types-contrat')->name('types-contrat.')->group(function () {
+            Route::get('/',                       [AdminTypeContrats::class, 'index'])->name('index');
+            Route::get('/creer',                  [AdminTypeContrats::class, 'create'])->name('create');
+            Route::post('/',                      [AdminTypeContrats::class, 'store'])->name('store');
+            Route::get('/{typeContrat}/modifier', [AdminTypeContrats::class, 'edit'])->name('edit');
+            Route::put('/{typeContrat}',          [AdminTypeContrats::class, 'update'])->name('update');
+            Route::delete('/{typeContrat}',       [AdminTypeContrats::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('secteurs-activite')->name('secteurs-activite.')->group(function () {
+            Route::get('/',                           [AdminSecteursActivite::class, 'index'])->name('index');
+            Route::get('/creer',                      [AdminSecteursActivite::class, 'create'])->name('create');
+            Route::post('/',                          [AdminSecteursActivite::class, 'store'])->name('store');
+            Route::get('/{secteurActivite}/modifier', [AdminSecteursActivite::class, 'edit'])->name('edit');
+            Route::put('/{secteurActivite}',          [AdminSecteursActivite::class, 'update'])->name('update');
+            Route::delete('/{secteurActivite}',       [AdminSecteursActivite::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('langues')->name('langues.')->group(function () {
+            Route::get('/',                   [AdminLangues::class, 'index'])->name('index');
+            Route::get('/creer',              [AdminLangues::class, 'create'])->name('create');
+            Route::post('/',                  [AdminLangues::class, 'store'])->name('store');
+            Route::get('/{langue}/modifier',  [AdminLangues::class, 'edit'])->name('edit');
+            Route::put('/{langue}',           [AdminLangues::class, 'update'])->name('update');
+            Route::delete('/{langue}',        [AdminLangues::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('niveaux-langue')->name('niveaux-langue.')->group(function () {
+            Route::get('/',                        [AdminNiveauxLangue::class, 'index'])->name('index');
+            Route::get('/creer',                   [AdminNiveauxLangue::class, 'create'])->name('create');
+            Route::post('/',                       [AdminNiveauxLangue::class, 'store'])->name('store');
+            Route::get('/{niveauLangue}/modifier', [AdminNiveauxLangue::class, 'edit'])->name('edit');
+            Route::put('/{niveauLangue}',          [AdminNiveauxLangue::class, 'update'])->name('update');
+            Route::delete('/{niveauLangue}',       [AdminNiveauxLangue::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('niveaux-etude')->name('niveaux-etude.')->group(function () {
+            Route::get('/',                       [AdminNiveauxEtude::class, 'index'])->name('index');
+            Route::get('/creer',                  [AdminNiveauxEtude::class, 'create'])->name('create');
+            Route::post('/',                      [AdminNiveauxEtude::class, 'store'])->name('store');
+            Route::get('/{niveauEtude}/modifier', [AdminNiveauxEtude::class, 'edit'])->name('edit');
+            Route::put('/{niveauEtude}',          [AdminNiveauxEtude::class, 'update'])->name('update');
+            Route::delete('/{niveauEtude}',       [AdminNiveauxEtude::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('niveaux-experience')->name('niveaux-experience.')->group(function () {
+            Route::get('/',                           [AdminNiveauxExperience::class, 'index'])->name('index');
+            Route::get('/creer',                      [AdminNiveauxExperience::class, 'create'])->name('create');
+            Route::post('/',                          [AdminNiveauxExperience::class, 'store'])->name('store');
+            Route::get('/{niveauExperience}/modifier',[AdminNiveauxExperience::class, 'edit'])->name('edit');
+            Route::put('/{niveauExperience}',         [AdminNiveauxExperience::class, 'update'])->name('update');
+            Route::delete('/{niveauExperience}',      [AdminNiveauxExperience::class, 'destroy'])->name('destroy');
+        });
+
     });
 
     // Gestion des rôles et permissions (super admin uniquement)

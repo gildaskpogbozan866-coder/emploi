@@ -16,12 +16,6 @@
     <p class="dash-content__sub">{{ $verification->user->entreprise }} — {{ $verification->user->email }}</p>
   </div>
 
-  @if(session('success'))
-    <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#065f46;margin-bottom:20px">
-      {{ session('success') }}
-    </div>
-  @endif
-
   <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
 
     {{-- Colonne principale : documents --}}

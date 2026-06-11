@@ -135,8 +135,35 @@
         <li class="adm-nav__item {{ request()->routeIs('admin.statistiques*') ? 'active' : '' }}">
           <a href="{{ route('admin.statistiques') }}">Statistiques</a>
         </li>
+        <li class="adm-nav__section">Configuration</li>
+        @php
+          $refRoutes = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*'];
+          $refActif  = request()->routeIs(...$refRoutes);
+        @endphp
         <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
-          <a href="{{ route('admin.parametres') }}">Paramètres</a>
+          <a href="{{ route('admin.parametres') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Paramètres
+          </a>
+        </li>
+        <li class="adm-nav__item {{ $refActif ? 'active' : '' }}">
+          <details {{ $refActif ? 'open' : '' }}>
+            <summary>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Référentiels RH
+              <svg class="adm-nav__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <ul class="adm-nav__sub">
+              <li><a href="{{ route('admin.competences.index') }}" class="{{ request()->routeIs('admin.competences*') ? 'active' : '' }}">Compétences</a></li>
+              <li><a href="{{ route('admin.metiers.index') }}" class="{{ request()->routeIs('admin.metiers*') ? 'active' : '' }}">Métiers</a></li>
+              <li><a href="{{ route('admin.types-contrat.index') }}" class="{{ request()->routeIs('admin.types-contrat*') ? 'active' : '' }}">Types de contrat</a></li>
+              <li><a href="{{ route('admin.secteurs-activite.index') }}" class="{{ request()->routeIs('admin.secteurs-activite*') ? 'active' : '' }}">Secteurs d'activité</a></li>
+              <li><a href="{{ route('admin.langues.index') }}" class="{{ request()->routeIs('admin.langues*') ? 'active' : '' }}">Langues</a></li>
+              <li><a href="{{ route('admin.niveaux-langue.index') }}" class="{{ request()->routeIs('admin.niveaux-langue*') ? 'active' : '' }}">Niveaux de langue</a></li>
+              <li><a href="{{ route('admin.niveaux-etude.index') }}" class="{{ request()->routeIs('admin.niveaux-etude*') ? 'active' : '' }}">Niveaux d'étude</a></li>
+              <li><a href="{{ route('admin.niveaux-experience.index') }}" class="{{ request()->routeIs('admin.niveaux-experience*') ? 'active' : '' }}">Niveaux d'expérience</a></li>
+            </ul>
+          </details>
         </li>
         <li class="adm-nav__section">Sécurité</li>
         <li class="adm-nav__item {{ request()->routeIs('admin.permissions*') ? 'active' : '' }}">
@@ -149,7 +176,6 @@
     </aside>
 
     <main class="adm-main">
-      @include('components.flash')
       @yield('content')
     </main>
   </div>
@@ -172,6 +198,8 @@
     })();
   </script>
   @include('partials._form-guard')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  @include('components.flash-swal')
   @yield('scripts')
 </body>
 </html>

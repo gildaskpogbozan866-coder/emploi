@@ -17,6 +17,7 @@ class Permission
     const MANAGE_MESSAGERIE     = 'manage-messagerie';
     const MANAGE_SIGNALEMENTS   = 'manage-signalements';
     const MANAGE_PARAMETRES     = 'manage-parametres';
+    const MANAGE_REFERENTIELS   = 'manage-referentiels';
     const VIEW_STATISTIQUES     = 'view-statistiques';
 
     // ── RECRUTEUR ──────────────────────────────────────────
@@ -54,6 +55,7 @@ class Permission
             self::MANAGE_MESSAGERIE,
             self::MANAGE_SIGNALEMENTS,
             self::MANAGE_PARAMETRES,
+            self::MANAGE_REFERENTIELS,
             self::VIEW_STATISTIQUES,
             // + toutes les permissions des autres rôles
             self::PUBLISH_OFFRE,

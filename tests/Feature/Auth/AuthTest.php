@@ -281,7 +281,7 @@ class AuthTest extends TestCase
             ['id' => $user->id, 'hash' => sha1($user->email)]
         );
 
-        $this->actingAs($user)->get($url)->assertRedirect(route('auth.compte-confirme'));
+        $this->actingAs($user)->get($url)->assertRedirect(route('candidat.dashboard'));
 
         $this->assertNotNull($user->fresh()->email_verified_at);
     }

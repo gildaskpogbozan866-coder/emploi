@@ -113,6 +113,52 @@ body { font-family: var(--font-body); background: var(--gris-bg); color: var(--b
 }
 .adm-nav__divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
 
+/* ── Nav référentiels dropdown ── */
+.adm-nav__item details { width: 100%; }
+.adm-nav__item details summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.72);
+  cursor: pointer;
+  list-style: none;
+  border-radius: 7px;
+  transition: background .15s, color .15s;
+  position: relative;
+}
+.adm-nav__item details summary::-webkit-details-marker { display: none; }
+.adm-nav__item details summary:hover { background: var(--sidebar-hover); color: #fff; }
+.adm-nav__item.active details summary { background: rgba(55,138,221,0.18); color: #fff; }
+.adm-nav__item.active details summary::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  background: var(--jaune);
+  border-radius: 0 3px 3px 0;
+}
+.adm-nav__chevron { margin-left: auto; transition: transform .2s; flex-shrink: 0; }
+details[open] .adm-nav__chevron { transform: rotate(180deg); }
+.adm-nav__sub {
+  list-style: none;
+  padding: 4px 0 4px 26px;
+  margin: 2px 0 4px;
+}
+.adm-nav__sub li a {
+  display: block;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.58);
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.adm-nav__sub li a:hover { background: var(--sidebar-hover); color: #fff; }
+.adm-nav__sub li a.active { color: var(--jaune); font-weight: 600; }
+
 /* ── Main ── */
 .adm-main { flex: 1; min-width: 0; padding: 24px 28px 40px; }
 

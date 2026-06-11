@@ -19,6 +19,17 @@ class DatabaseSeeder extends Seeder
         // ── ÉTAPE 1 : Rôles & Permissions (Spatie) ──────────
         $this->call(RolesAndPermissionsSeeder::class);
 
+        // ── ÉTAPE 1b : Référentiels métier ───────────────────
+        $this->call(NiveauxLangueSeeder::class);
+        $this->call(LanguesSeeder::class);
+        $this->call(NiveauxEtudesSeeder::class);
+        $this->call(NiveauxExperienceSeeder::class);
+        $this->call(TypeContratsSeeder::class);
+        $this->call(SecteursActiviteSeeder::class);
+        $this->call(MetiersSeeder::class);
+        $this->call(CompetencesSeeder::class);
+        $this->call(MetierCompetenceSeeder::class);
+
         // ── ÉTAPE 2 : Utilisateurs ────────────────────────────
         $admin = User::create([
             'prenom'            => 'Super',
@@ -87,13 +98,13 @@ class DatabaseSeeder extends Seeder
             'nom'               => 'Diarra',
             'email'             => 'moussa.diarra@gmail.com',
             'password'          => Hash::make('password'),
-            'role'              => Role::TALENT,
+            'role'              => Role::CANDIDAT,
             'metier'            => 'Développeur Web Full Stack',
             'pays'              => 'Mali',
             'actif'             => true,
             'email_verified_at' => now(),
         ]);
-        $talent1->assignRole(Role::TALENT);
+        $talent1->assignRole(Role::CANDIDAT);
 
         // ── ÉTAPE 3 : Données métier ─────────────────────────
         TalentProfil::create([

@@ -8,12 +8,6 @@
     <p class="dash-content__sub">Dossiers soumis par les entreprises pour validation de leur compte.</p>
   </div>
 
-  @if(session('success'))
-    <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#065f46;margin-bottom:20px">
-      {{ session('success') }}
-    </div>
-  @endif
-
   {{-- Compteurs par statut --}}
   @php
     $enAttente = $verifications->where('statut', 'en_attente')->count();

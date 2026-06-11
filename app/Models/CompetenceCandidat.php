@@ -2,29 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CompetenceCandidat extends Model
 {
-    use HasFactory;
+    protected $table = 'competence_candidat';
 
-    protected $table = 'competences_candidat';
-
-    protected $fillable = ['candidat_id', 'nom', 'niveau'];
+    protected $fillable = ['candidat_id', 'competence_id', 'annees_experience'];
 
     public function candidat()
     {
         return $this->belongsTo(User::class, 'candidat_id');
     }
 
-    public static function niveauxLibelles(): array
+    public function competence()
     {
-        return [
-            'debutant'      => 'Débutant',
-            'intermediaire' => 'Intermédiaire',
-            'avance'        => 'Avancé',
-            'expert'        => 'Expert',
-        ];
+        return $this->belongsTo(Competence::class);
     }
 }
