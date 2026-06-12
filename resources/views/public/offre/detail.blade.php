@@ -1,9 +1,50 @@
 @extends('layouts.app')
-@section('title', $offre->titre . ' — ' . $offre->entreprise)
+@section('title', $offre->titre . ' — ' . $offre->entreprise . ' | Emploi Bouge Bénin')
+@section('description', Str::limit(strip_tags($offre->description ?? ''), 160))
+@section('canonical', route('offre.detail', $offre))
 @section('og_type', 'article')
 @section('og_title', $offre->titre . ' — ' . $offre->entreprise)
 @section('og_description', Str::limit(strip_tags($offre->description ?? ''), 160))
 @section('og_url', route('offre.detail', $offre))
+
+@section('jsonld')
+@php
+$jsonld = [
+    '@@context'      => 'https://schema.org/',
+    '@@type'         => 'JobPosting',
+    'title'          => $offre->titre,
+    'description'    => strip_tags($offre->description ?? ''),
+    'datePosted'     => $offre->created_at->toDateString(),
+    'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre->type ?? 'OTHER')),
+    'hiringOrganization' => [
+        '@@type' => 'Organization',
+        'name'   => $offre->entreprise,
+        'sameAs' => route('home'),
+    ],
+    'jobLocation' => [
+        '@@type' => 'Place',
+        'address' => [
+            '@@type'          => 'PostalAddress',
+            'addressLocality' => $offre->localisation ?? 'Bénin',
+            'addressCountry'  => 'BJ',
+        ],
+    ],
+];
+if ($offre->date_limite) {
+    $jsonld['validThrough'] = \Carbon\Carbon::parse($offre->date_limite)->toIso8601String();
+}
+if ($offre->salaire) {
+    $jsonld['baseSalary'] = [
+        '@@type'    => 'MonetaryAmount',
+        'currency'  => 'XOF',
+        'value'     => ['@@type' => 'QuantitativeValue', 'value' => $offre->salaire, 'unitText' => 'MONTH'],
+    ];
+}
+// Replace @@-escaped keys with @ for valid JSON-LD
+$jsonOutput = str_replace('"@@', '"@', json_encode($jsonld, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+@endphp
+<script type="application/ld+json">{!! $jsonOutput !!}</script>
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/offre/detail-offre.css') }}">
@@ -27,7 +68,7 @@
             <p class="offre-detail-company">{{ $offre->entreprise }}</p>
             <div class="offre-detail-tags">
               <span class="tag tag--type">{{ $offre->type }}</span>
-              @if($offre->secteur)<span class="tag">{{ $offre->secteur }}</span>@endif
+              @foreach((array)$offre->secteur as $s)<span class="tag">{{ $s }}</span>@endforeach
               <span class="tag">
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                 {{ $offre->localisation }}

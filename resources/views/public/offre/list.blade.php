@@ -134,7 +134,7 @@
                   {{ $offre->localisation }}
                 </span>
                 @if($offre->secteur)
-                  <span class="ol-badge ol-badge--secteur">{{ $offre->secteur }}</span>
+                  <span class="ol-badge ol-badge--secteur">{{ is_array($offre->secteur) ? implode(', ', $offre->secteur) : $offre->secteur }}</span>
                 @endif
               </div>
             </div>

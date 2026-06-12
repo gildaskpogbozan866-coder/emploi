@@ -12,8 +12,9 @@ class Paiement extends Model
 
     protected $fillable = [
         'user_id', 'subscription_id', 'reference', 'transaction_reference',
-        'montant', 'devise', 'type', 'payable_id', 'payable_type',
+        'montant', 'devise', 'type', 'credits_cv', 'payable_id', 'payable_type',
         'methode', 'statut', 'notes', 'paid_at',
+        'gateway', 'gateway_transaction_id', 'gateway_status', 'gateway_fees',
     ];
 
     protected function casts(): array

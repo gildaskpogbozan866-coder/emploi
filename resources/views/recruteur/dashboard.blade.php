@@ -54,6 +54,38 @@
   </div>
 </div>
 
+{{-- Bloc CVthèque crédits --}}
+<div class="rec-card" style="margin-bottom:20px;border-color:{{ $cvStats['credits_restants'] > 0 ? '#bae6fd' : '#fde68a' }};background:{{ $cvStats['credits_restants'] > 0 ? '#f0f9ff' : '#fffbeb' }}">
+  <div class="rec-card__body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <div style="width:46px;height:46px;border-radius:12px;background:{{ $cvStats['credits_restants'] > 0 ? '#0284c7' : '#d97706' }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    </div>
+    <div style="flex:1">
+      <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 6px">CVthèque — Crédits</p>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div>
+          <span style="font-size:1.6rem;font-weight:800;color:{{ $cvStats['credits_restants'] > 0 ? '#0284c7' : '#d97706' }}">{{ $cvStats['credits_restants'] }}</span>
+          <span style="font-size:12px;color:#64748b;margin-left:4px">crédit{{ $cvStats['credits_restants'] > 1 ? 's' : '' }} restant{{ $cvStats['credits_restants'] > 1 ? 's' : '' }}</span>
+        </div>
+        <div>
+          <span style="font-size:1.6rem;font-weight:800;color:#042C53">{{ $cvStats['cvs_telecharges'] }}</span>
+          <span style="font-size:12px;color:#64748b;margin-left:4px">CV{{ $cvStats['cvs_telecharges'] > 1 ? 's' : '' }} téléchargé{{ $cvStats['cvs_telecharges'] > 1 ? 's' : '' }}</span>
+        </div>
+        <div>
+          <span style="font-size:1.6rem;font-weight:800;color:#042C53">{{ $cvStats['credits_total'] }}</span>
+          <span style="font-size:12px;color:#64748b;margin-left:4px">crédit{{ $cvStats['credits_total'] > 1 ? 's' : '' }} achetés au total</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:160px">
+      <a href="{{ route('recruteur.cvtheque') }}" class="rec-btn rec-btn--primary rec-btn--sm" style="text-align:center;justify-content:center">Parcourir la CVthèque</a>
+      <a href="{{ route('recruteur.cv-credits.index') }}" class="rec-btn rec-btn--outline rec-btn--sm" style="text-align:center;justify-content:center">
+        {{ $cvStats['credits_restants'] > 0 ? 'Acheter plus de crédits' : '⚠ Acheter des crédits' }}
+      </a>
+    </div>
+  </div>
+</div>
+
 {{-- Dernières offres --}}
 <div class="rec-card">
   <div class="rec-card__head">

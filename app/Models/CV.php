@@ -14,7 +14,7 @@ class CV extends Model
     protected $fillable = [
         'candidat_id', 'titre_poste', 'pays', 'ville', 'competences',
         'experience', 'formation', 'langues', 'fichier_path',
-        'photo', 'plan', 'visible', 'vues',
+        'photo', 'plan', 'visible', 'vues', 'disponibilite', 'resume', 'secteur',
     ];
 
     protected function casts(): array

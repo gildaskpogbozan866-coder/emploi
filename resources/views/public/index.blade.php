@@ -45,21 +45,18 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           Parcourir les offres
         </a>
-        <a href="{{ route('cv.public.depot') }}" class="btn-hero-cv">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          Déposer mon CV
-        </a>
-        <a href="{{ route('offre.publier') }}" class="btn-hero-outline">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          Publier une annonce
-        </a>
-        <a href="{{ route('talent.public.list') }}" class="btn-hero-talents">
-          <span class="btn-hero-talents__main">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            Mettre en avant mes compétences
-          </span>
-          <span class="btn-hero-talents__sub">Profil visible par les recruteurs — sans diplôme requis.</span>
-        </a>
+        @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+          <a href="{{ route('cv.public.depot') }}" class="btn-hero-cv">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            Déposer mon CV
+          </a>
+        @endif
+        @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
+          <a href="{{ route('offre.publier') }}" class="btn-hero-outline">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Publier une annonce
+          </a>
+        @endif
       </div>
     </div>
 
@@ -117,22 +114,21 @@
     <h2 class="split-cta-title">Candidat ou recruteur ?</h2>
     <p class="split-cta-sub">Que vous cherchiez un emploi, un stage, une bourse ou que vous souhaitiez mettre en avant vos compétences — une seule plateforme pour tout.</p>
     <div class="split-cta-btns">
-      <a href="{{ route('cv.public.depot') }}" class="split-cta-btn split-cta-btn--candidat">
-        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
-        <span class="split-cta-btn__title">Je cherche du travail</span>
-        <span class="split-cta-btn__sub">CDI · CDD · Stage · Bourse · Freelance · Compétences</span>
-      </a>
-      <a href="{{ route('offre.publier') }}" class="split-cta-btn split-cta-btn--recruteur">
-        <span class="split-cta-badge">Recommandé</span>
-        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>
-        <span class="split-cta-btn__title">Je recrute</span>
-        <span class="split-cta-btn__sub">Publiez une annonce, accédez aux CV et profils</span>
-      </a>
-      <a href="{{ route('talent.public.list') }}" class="split-cta-btn split-cta-btn--talents">
-        <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></span>
-        <span class="split-cta-btn__title">Mes compétences parlent</span>
-        <span class="split-cta-btn__sub">Profil visible même sans diplôme — soyez trouvé</span>
-      </a>
+      @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+        <a href="{{ route('cv.public.depot') }}" class="split-cta-btn split-cta-btn--candidat">
+          <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
+          <span class="split-cta-btn__title">Je cherche du travail</span>
+          <span class="split-cta-btn__sub">CDI · CDD · Stage · Bourse · Freelance · Compétences</span>
+        </a>
+      @endif
+      @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
+        <a href="{{ route('offre.publier') }}" class="split-cta-btn split-cta-btn--recruteur">
+          <span class="split-cta-badge">Recommandé</span>
+          <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>
+          <span class="split-cta-btn__title">Je recrute</span>
+          <span class="split-cta-btn__sub">Publiez une annonce, accédez aux CV et profils</span>
+        </a>
+      @endif
     </div>
   </div>
 </section>
@@ -359,66 +355,6 @@
         </div>
       </div>
       @endforeach
-    </div>
-  </div>
-</section>
-
-{{-- ═══════════════════════════════════════════
-     PROFILS TALENTS
-═══════════════════════════════════════════ --}}
-<section class="talent-idx-section">
-  <div class="container">
-    <div class="offres-header">
-      <div>
-        <span class="badge badge--yellow">Profils disponibles</span>
-        <h2 class="section-title" style="margin-top:10px">Candidats qui mettent en avant leurs compétences</h2>
-        <p class="section-subtitle">Des profils vérifiés, disponibles — avec ou sans diplôme.</p>
-      </div>
-      <a href="{{ route('talent.public.list') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
-        Voir tous les profils
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-      </a>
-    </div>
-
-    @php $talentBgs = ['#d1fae5','#fce7f3','#fef9c3','#ede9fe','#dbeafe','#dcfce7']; @endphp
-
-    <div class="talent-idx-grid" id="talentIdxGrid">
-      @foreach($talents as $k => $profil)
-      <div class="tix-card" onclick="window.location='{{ route('talent.public.detail', $profil) }}'">
-        <div class="tix-card__top">
-          <div class="tix-card__avatar" style="background:{{ $talentBgs[$k % count($talentBgs)] }}">
-            <span class="tix-card__avatar-init">{{ strtoupper(substr($profil->user->prenom ?? 'T', 0, 1)) }}. {{ strtoupper(substr($profil->user->nom ?? '', 0, 1)) }}.</span>
-          </div>
-          <div class="tix-card__info">
-            <div class="tix-card__competence">{{ $profil->metier }}</div>
-            <div class="tix-card__meta">
-              {{ $profil->experience ?? 'Expérimenté' }}
-              @if($profil->ville) · {{ $profil->ville }} @endif
-            </div>
-            <div class="tix-card__meta tix-card__meta--dispo">Disponible</div>
-            @if($profil->plan === 'premium')
-            <span class="tix-badge tix-badge--recommande">Profil Premium ★</span>
-            @else
-            <span class="tix-badge tix-badge--verifie">Profil vérifié</span>
-            @endif
-          </div>
-        </div>
-        <div class="tix-card__bottom">
-          <span class="tix-card__num">Talent n°{{ str_pad($profil->id, 6, '0', STR_PAD_LEFT) }}</span>
-          <a href="{{ route('talent.public.detail', $profil) }}" class="tix-card__link">
-            Voir le profil
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          </a>
-        </div>
-      </div>
-      @endforeach
-    </div>
-
-    <div style="text-align:center;margin-top:28px">
-      <a href="{{ route('talent.public.list') }}" class="btn btn--yellow">
-        Accéder aux coordonnées des talents
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-      </a>
     </div>
   </div>
 </section>

@@ -23,7 +23,7 @@
   <div class="adm-table-wrap">
     <table class="adm-table">
       <thead>
-        <tr><th>Participant 1</th><th>Participant 2</th><th>Dernier message</th><th>Date</th></tr>
+        <tr><th>Participant 1</th><th>Participant 2</th><th>Dernier message</th><th>Date</th><th></th></tr>
       </thead>
       <tbody>
         @forelse($conversations as $conv)
@@ -39,13 +39,19 @@
           <td style="max-width:300px">
             @if($conv->dernierMessage)
               <p style="color:#374151;font-size:13px;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                {{ Str::limit($conv->dernierMessage->contenu, 80) }}
+                {{ Str::limit($conv->dernierMessage->contenu ?? '📎 Pièce jointe', 80) }}
               </p>
             @else
               <span style="color:#94a3b8;font-size:13px">—</span>
             @endif
           </td>
           <td style="color:#94a3b8;font-size:12px">{{ $conv->dernier_message_at?->format('d/m/Y H:i') ?? '—' }}</td>
+          <td>
+            <a href="{{ route('admin.messagerie.show', $conv) }}"
+               style="font-size:12.5px;font-weight:600;color:#185FA5;text-decoration:none;white-space:nowrap">
+              Voir →
+            </a>
+          </td>
         </tr>
         @empty
         <tr>

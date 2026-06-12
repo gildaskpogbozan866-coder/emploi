@@ -24,7 +24,6 @@
             <a href="{{ match(auth()->user()->role) {
               'admin'     => route('admin.dashboard'),
               'recruteur' => route('recruteur.dashboard'),
-              'talent'    => route('talent.dashboard'),
               default     => route('candidat.dashboard')
             } }}" class="nav__btn-outline" style="display:flex;align-items:center;gap:6px;padding:8px 14px">
               <span style="width:22px;height:22px;border-radius:50%;background:#042C53;color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center">{{ auth()->user()->initiale }}</span>
@@ -62,7 +61,6 @@
         <a href="{{ match(auth()->user()->role) {
           'admin'     => route('admin.dashboard'),
           'recruteur' => route('recruteur.dashboard'),
-          'talent'    => route('talent.dashboard'),
           default     => route('candidat.dashboard')
         } }}" class="nav__btn-filled" style="text-align:center;display:block">Mon espace</a>
         <form method="POST" action="{{ route('auth.deconnecter') }}">

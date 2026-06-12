@@ -3,18 +3,41 @@
   <small>Bénin · Recruteur</small>
 </a>
 
+@php
+  $abActif = auth()->user()->abonnementActif()->with('plan')->first();
+  $estPremiumRec = $abActif && !($abActif->plan?->is_free ?? true);
+@endphp
 <div class="rec-sidebar__user">
   <div class="rec-sidebar__avatar">{{ auth()->user()->initiale }}</div>
   <div class="rec-sidebar__info">
     <div class="rec-sidebar__name">{{ auth()->user()->nom_complet }}</div>
     <div class="rec-sidebar__role">{{ auth()->user()->entreprise ?? 'Recruteur' }}</div>
-    @if(auth()->user()->premium)
-      <span class="rec-sidebar__badge">Premium <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+    @if($estPremiumRec)
+      <span class="rec-sidebar__badge">
+        {{ $abActif->plan->name }}
+        <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px;margin-left:2px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+    @elseif($abActif && $abActif->plan?->is_free)
+      <span class="rec-sidebar__badge rec-sidebar__badge--free">{{ $abActif->plan->name }}</span>
     @else
-      <span class="rec-sidebar__badge rec-sidebar__badge--free">Gratuit</span>
+      <span class="rec-sidebar__badge rec-sidebar__badge--free">Sans abonnement</span>
     @endif
   </div>
 </div>
+
+@if($estPremiumRec && $abActif->ends_at)
+  <div style="margin:0 14px 10px;padding:9px 13px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);border-radius:8px">
+    <p style="font-size:11px;color:rgba(255,255,255,0.6);margin:0 0 2px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Plan actif jusqu'au</p>
+    <p style="font-size:12.5px;color:#F5C842;font-weight:700;margin:0">{{ $abActif->ends_at->format('d/m/Y') }}
+      <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.55)"> — {{ $abActif->ends_at->diffForHumans() }}</span>
+    </p>
+  </div>
+@elseif(!$abActif)
+  <a href="{{ route('recruteur.abonnement.plans') }}" style="display:block;margin:0 14px 10px;padding:9px 13px;background:rgba(245,200,66,0.1);border:1px dashed rgba(245,200,66,0.4);border-radius:8px;text-decoration:none">
+    <p style="font-size:11px;color:rgba(255,255,255,0.55);margin:0 0 2px">Aucun abonnement actif</p>
+    <p style="font-size:12px;color:#F5C842;font-weight:700;margin:0">Voir les plans →</p>
+  </a>
+@endif
 
 <ul class="rec-nav">
   <li class="rec-nav__section">Tableau de bord</li>
@@ -70,11 +93,14 @@
   </li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.messagerie*') ? 'active' : '' }}">
-    <a href="{{ route('recruteur.messagerie') }}">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <a href="{{ route('recruteur.messagerie') }}" style="display:flex;align-items:center;gap:10px">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
-      Messagerie
+      <span style="flex:1">Messagerie</span>
+      @if(!empty($messagesNonLus) && $messagesNonLus > 0)
+        <span style="background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;line-height:1.6">{{ $messagesNonLus }}</span>
+      @endif
     </a>
   </li>
 

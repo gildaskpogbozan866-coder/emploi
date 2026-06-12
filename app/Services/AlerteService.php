@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Alerte;
 use App\Models\Notification;
 use App\Models\Offre;
+use App\Notifications\AlerteOffreNotification;
 
 class AlerteService
 {
@@ -57,7 +58,7 @@ class AlerteService
             ->chunkById(100, function ($alertes) use ($offre) {
                 foreach ($alertes as $alerte) {
                     if ($this->matcheOffre($alerte, $offre)) {
-                        $this->creerNotification($alerte->user_id, $offre, $alerte->nom);
+                        $this->creerNotification($alerte, $offre);
                     }
                 }
             });
@@ -86,7 +87,7 @@ class AlerteService
                 foreach ($alertes as $alerte) {
                     foreach ($offres as $offre) {
                         if ($this->matcheOffre($alerte, $offre)) {
-                            $created = $this->creerNotification($alerte->user_id, $offre, $alerte->nom);
+                            $created = $this->creerNotification($alerte, $offre);
                             if ($created) $count++;
                         }
                     }
@@ -96,12 +97,12 @@ class AlerteService
         return $count;
     }
 
-    private function creerNotification(int $userId, Offre $offre, string $nomAlerte): bool
+    private function creerNotification(Alerte $alerte, Offre $offre): bool
     {
         $lien = route('offre.detail', $offre);
 
         // Evite les doublons pour la même offre et le même candidat
-        $existe = Notification::where('user_id', $userId)
+        $existe = Notification::where('user_id', $alerte->user_id)
             ->where('type', 'alerte')
             ->where('lien', $lien)
             ->exists();
@@ -109,14 +110,19 @@ class AlerteService
         if ($existe) return false;
 
         Notification::create([
-            'user_id' => $userId,
+            'user_id' => $alerte->user_id,
             'type'    => 'alerte',
             'titre'   => 'Nouvelle offre : '.$offre->titre,
             'contenu' => $offre->entreprise.' · '.$offre->localisation.' · '.$offre->type
-                         .' — correspond à votre alerte « '.$nomAlerte.' »',
+                         .' — correspond à votre alerte « '.$alerte->nom.' »',
             'lien'    => $lien,
             'lu'      => false,
         ]);
+
+        // Email au candidat (queued)
+        if ($alerte->relationLoaded('user') && $alerte->user) {
+            $alerte->user->notify(new AlerteOffreNotification($offre, $alerte->nom));
+        }
 
         return true;
     }

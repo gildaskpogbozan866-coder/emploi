@@ -21,7 +21,8 @@ class CVController extends Controller
             $q = $request->q;
             $query->where(function ($sq) use ($q) {
                 $sq->where('titre_poste', 'like', "%$q%")
-                   ->orWhere('competences', 'like', "%$q%");
+                   ->orWhere('competences', 'like', "%$q%")
+                   ->orWhere('secteur', 'like', "%$q%");
             });
         }
 
@@ -29,8 +30,30 @@ class CVController extends Controller
             $query->where('pays', $request->pays);
         }
 
+        if ($request->filled('disponibilite')) {
+            $query->where('disponibilite', $request->disponibilite);
+        }
+
+        if ($request->filled('secteur')) {
+            $query->where('secteur', 'like', '%'.$request->secteur.'%');
+        }
+
         $cvs = $query->paginate(12)->withQueryString();
         return view('public.cv.theque', compact('cvs'));
+    }
+
+    public function detail(CV $cv)
+    {
+        if (!$cv->visible) {
+            abort(404);
+        }
+
+        $cv->load('candidat');
+
+        $user = Auth::user();
+        $canSeePersonalInfo = $user && $user->hasRole('recruteur') && $user->cv_credits > 0;
+
+        return view('public.cv.detail', compact('cv', 'canSeePersonalInfo'));
     }
 
     public function tarif()
@@ -42,6 +65,14 @@ class CVController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion')->with('redirect_after', route('cv.public.depot'));
+        }
+
+        if (!Auth::user()->hasRole('candidat')) {
+            return redirect()->route(match(Auth::user()->role) {
+                'recruteur' => 'recruteur.dashboard',
+                'admin'     => 'admin.dashboard',
+                default     => 'home',
+            })->with('error', 'Seuls les candidats peuvent déposer un CV. Créez un compte candidat pour accéder à cette fonctionnalité.');
         }
 
         $user  = Auth::user();
@@ -62,6 +93,14 @@ class CVController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion');
+        }
+
+        if (!Auth::user()->hasRole('candidat')) {
+            return redirect()->route(match(Auth::user()->role) {
+                'recruteur' => 'recruteur.dashboard',
+                'admin'     => 'admin.dashboard',
+                default     => 'home',
+            })->with('error', 'Seuls les candidats peuvent déposer un CV. Créez un compte candidat pour accéder à cette fonctionnalité.');
         }
 
         $user  = Auth::user();
@@ -177,6 +216,16 @@ class CVController extends Controller
         $cv->update($data);
 
         return redirect()->route('candidat.cvs')->with('success', 'CV mis à jour.');
+    }
+
+    public function toggleVisibilite(CV $cv)
+    {
+        $this->authorize('update', $cv);
+        $cv->update(['visible' => !$cv->visible]);
+        $msg = $cv->visible
+            ? 'Votre CV est maintenant visible dans la CVthèque.'
+            : 'Votre CV est masqué de la CVthèque.';
+        return back()->with('success', $msg);
     }
 
     public function destroy(CV $cv)

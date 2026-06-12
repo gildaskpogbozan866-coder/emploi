@@ -91,7 +91,18 @@
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
-        <span style="font-size:11px;color:#94a3b8">{{ $cv->created_at->format('d/m/Y') }} · {{ $cv->vues }} vue{{ $cv->vues > 1 ? 's' : '' }}</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;color:#94a3b8">{{ $cv->created_at->format('d/m/Y') }} · {{ $cv->vues }} vue{{ $cv->vues > 1 ? 's' : '' }}</span>
+          <form method="POST" action="{{ route('candidat.cvs.visibilite', $cv) }}" style="margin:0">
+            @csrf @method('PATCH')
+            <button type="submit"
+                    title="{{ $cv->visible ? 'Masquer de la CVthèque' : 'Rendre visible dans la CVthèque' }}"
+                    style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;border:1px solid {{ $cv->visible ? '#bbf7d0' : '#e2e8f0' }};background:{{ $cv->visible ? '#f0fdf4' : '#f8fafc' }};color:{{ $cv->visible ? '#16a34a' : '#94a3b8' }};cursor:pointer;line-height:1.6">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ $cv->visible ? '#16a34a' : '#94a3b8' }};flex-shrink:0"></span>
+              {{ $cv->visible ? 'Visible CVthèque' : 'Masqué' }}
+            </button>
+          </form>
+        </div>
         <div style="display:flex;gap:6px">
           <a href="{{ route('candidat.cvs.edit', $cv) }}" class="cand-btn cand-btn--outline cand-btn--sm">Modifier</a>
           <form method="POST" action="{{ route('candidat.cvs.destroy', $cv) }}" data-confirm="Supprimer ce CV ?" data-confirm-btn="Supprimer">

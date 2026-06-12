@@ -12,7 +12,9 @@
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link active">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs CV</a>
-    <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link">Déposer un CV</a>
+    @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+      <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link">Déposer un CV</a>
+    @endif
   </div>
 </div>
 
@@ -108,10 +110,10 @@
                   @endif
                 </div>
 
-                @if($cv->pays || $cv->ville)
+                @if($cv->pays)
                 <div class="cvt-card__row">
-                  <span class="cvt-card__label">Localisation :</span>
-                  <span class="cvt-card__val">{{ implode(', ', array_filter([$cv->ville, $cv->pays])) }}</span>
+                  <span class="cvt-card__label">Pays :</span>
+                  <span class="cvt-card__val">{{ $cv->pays }}</span>
                 </div>
                 @endif
 
@@ -140,24 +142,10 @@
             </div>
 
             <div class="cvt-card__footer">
-              @auth
-                @if(auth()->user()->hasPermissionTo('view-cvtheque'))
-                  <a href="#" class="cvt-card__btn">
-                    Voir le profil complet
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                  </a>
-                @else
-                  <a href="{{ route('cv.public.tarif') }}" class="cvt-card__btn cvt-card__btn--outline">
-                    Débloquer ce profil
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                  </a>
-                @endif
-              @else
-                <a href="{{ route('auth.connexion') }}" class="cvt-card__btn cvt-card__btn--outline">
-                  Se connecter pour voir
-                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-              @endauth
+              <a href="{{ route('cv.public.detail', $cv) }}" class="cvt-card__btn">
+                Voir ce CV
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
             </div>
           </div>
         </div>

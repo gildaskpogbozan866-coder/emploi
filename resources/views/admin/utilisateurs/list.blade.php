@@ -43,7 +43,6 @@
             <span class="adm-badge adm-badge--{{ match($user->role) {
               'admin'     => 'red',
               'recruteur' => 'violet',
-              'talent'    => 'orange',
               default     => 'blue'
             } }}">{{ ucfirst($user->role) }}</span>
           </td>

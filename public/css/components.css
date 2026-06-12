@@ -237,3 +237,222 @@
 }
 @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; } }
+
+/* ════════════════════════════════════════
+   NOTIFICATION BELL
+════════════════════════════════════════ */
+.notif-bell {
+  position: relative;
+}
+.notif-bell__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  flex-shrink: 0;
+}
+.notif-bell__btn:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.notif-bell__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #ef4444;
+  color: #fff;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 9.5px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+.notif-bell__dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(4,44,83,0.16), 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid #e8edf4;
+}
+.notif-bell__dropdown.open { display: block; }
+.notif-bell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px 10px;
+  border-bottom: 1px solid #f0f2f5;
+}
+.notif-bell__header-title {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  color: #042C53;
+}
+.notif-bell__markall {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 11.5px;
+  color: #378ADD;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.notif-bell__markall:hover { text-decoration: underline; }
+.notif-bell__list { max-height: 320px; overflow-y: auto; }
+.notif-bell__item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 16px;
+  text-decoration: none;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.15s;
+}
+.notif-bell__item:last-child { border-bottom: none; }
+.notif-bell__item:hover { background: #f8fafc; }
+.notif-bell__item--unread { background: rgba(55,138,221,0.04); }
+.notif-bell__item--unread:hover { background: rgba(55,138,221,0.08); }
+.notif-bell__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.notif-bell__dot--active { background: #378ADD; }
+.notif-bell__body { flex: 1; min-width: 0; }
+.notif-bell__titre {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #042C53;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notif-bell__contenu {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 3px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.notif-bell__time {
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 11px;
+  color: #94a3b8;
+}
+.notif-bell__empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 13px;
+  color: #94a3b8;
+}
+.notif-bell__seeall {
+  display: block;
+  text-align: center;
+  padding: 11px 16px;
+  font-family: var(--font-body, 'Jost', sans-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #378ADD;
+  text-decoration: none;
+  border-top: 1px solid #f0f2f5;
+  background: #fafbfc;
+  transition: background 0.15s;
+}
+.notif-bell__seeall:hover { background: #f0f7ff; }
+
+/* ── Messagerie chat ─────────────────────────────────── */
+.msg-wrap { display:flex;flex-direction:column;margin-bottom:2px }
+.msg-wrap--mine  { align-items:flex-end }
+.msg-wrap--their { align-items:flex-start }
+
+.msg-bubble {
+  padding:10px 16px;
+  border-radius:14px;
+  max-width:72%;
+  font-size:13.5px;
+  line-height:1.55;
+  word-break:break-word;
+}
+.msg-bubble--mine  { background:#185FA5;color:#fff;border-bottom-right-radius:4px }
+.msg-bubble--their { background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px }
+
+.msg-img {
+  display:block;max-width:240px;border-radius:10px;
+  margin-top:6px;cursor:zoom-in;
+}
+.msg-file {
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:6px;padding:7px 12px;
+  background:rgba(255,255,255,.18);border-radius:8px;
+  text-decoration:none;font-size:12.5px;font-weight:600;color:inherit;
+}
+.msg-bubble--their .msg-file { background:rgba(0,0,0,.07) }
+.msg-time { font-size:11px;color:#94a3b8;margin:3px 8px 0 }
+
+/* ── Zone saisie messagerie ─────────────────────────── */
+.msg-form { display:flex;flex-direction:column;gap:8px }
+.msg-form__row { display:flex;gap:10px;align-items:flex-end }
+.msg-form__input {
+  flex:1;padding:11px 16px;
+  border:1.5px solid #d1d5db;border-radius:10px;
+  font-size:14px;resize:none;
+  transition:border-color .15s;
+  font-family:inherit;
+}
+.msg-form__input:focus { outline:none;border-color:#378ADD }
+.msg-form__attach-btn {
+  width:42px;height:42px;border:1.5px solid #d1d5db;border-radius:10px;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:border-color .15s;
+}
+.msg-form__attach-btn:hover { border-color:#378ADD }
+.msg-form__preview {
+  display:flex;align-items:center;gap:8px;
+  padding:7px 12px;background:#f0f7ff;border-radius:8px;
+  font-size:13px;color:#185FA5;
+}
+.msg-form__preview-remove {
+  margin-left:auto;background:none;border:none;
+  cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;
+}
+
+/* ── Archive btn ────────────────────────────────────── */
+.msg-archive-btn {
+  background:none;border:none;cursor:pointer;
+  color:#94a3b8;font-size:11.5px;padding:3px 8px;border-radius:6px;
+  transition:color .15s,background .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.msg-archive-btn:hover { color:#e53e3e;background:#fef2f2 }

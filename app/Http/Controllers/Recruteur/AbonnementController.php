@@ -60,17 +60,17 @@ class AbonnementController extends Controller
             'auto_renew' => false,
         ]);
 
-        Paiement::create([
+        $paiement = Paiement::create([
             'user_id'         => Auth::id(),
             'subscription_id' => $abonnement->id,
             'montant'         => $plan->price,
-            'devise'          => $plan->currency,
+            'devise'          => $plan->currency ?? 'XOF',
             'type'            => 'abonnement_recruteur',
-            'methode'         => 'mobile_money',
+            'methode'         => 'en_attente',
             'statut'          => 'en_attente',
+            'gateway'         => 'manuel',
         ]);
 
-        return redirect()->route('recruteur.abonnement')
-            ->with('success', 'Demande envoyée ! Un conseiller vous contactera pour finaliser le paiement.');
+        return redirect()->route('payment.choose', ['paiement' => $paiement->id]);
     }
 }

@@ -53,7 +53,15 @@
                 <p style="font-size:12.5px;color:#374151;margin:0">{{ Str::limit($candidature->cv->competences, 120) }}</p>
               @endif
             </div>
-            <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Profil</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+              <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600">Profil</span>
+              @if($candidature->cv->fichier_path)
+                <a href="{{ asset('storage/' . $candidature->cv->fichier_path) }}" target="_blank" rel="noopener"
+                   style="font-size:12px;font-weight:700;color:#185FA5;text-decoration:none;padding:5px 12px;border:1.5px solid #bfdbfe;border-radius:6px;background:#fff;white-space:nowrap">
+                  Télécharger
+                </a>
+              @endif
+            </div>
           </div>
         @elseif($candidature->cv_path)
           <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
@@ -114,9 +122,13 @@
           <p style="font-weight:700;color:#042C53;margin:0 0 2px">{{ $candidature->candidat->nom_complet }}</p>
           <p style="font-size:12.5px;color:#94a3b8;margin:0">{{ $candidature->candidat->pays ?? '—' }}</p>
         </div>
-        <a href="{{ route('recruteur.messagerie') }}" class="rec-btn rec-btn--outline" style="width:100%;justify-content:center">
-          Envoyer un message
-        </a>
+        <form method="POST" action="{{ route('recruteur.messagerie.initier', $candidature->candidat) }}">
+          @csrf
+          <button type="submit" class="rec-btn rec-btn--outline" style="width:100%;justify-content:center">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Envoyer un message
+          </button>
+        </form>
       </div>
     </div>
   </div>

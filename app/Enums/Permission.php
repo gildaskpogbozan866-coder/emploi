@@ -8,7 +8,6 @@ class Permission
     const MANAGE_USERS          = 'manage-users';
     const MANAGE_OFFRES         = 'manage-offres';
     const MANAGE_CVS            = 'manage-cvs';
-    const MANAGE_TALENTS        = 'manage-talents';
     const MANAGE_BLOG           = 'manage-blog';
     const MANAGE_SERVICES       = 'manage-services';
     const MANAGE_COMMANDES      = 'manage-commandes';
@@ -34,11 +33,6 @@ class Permission
     const CREATE_ALERTE         = 'create-alerte';
     const MANAGE_ABONNEMENT_CAN = 'manage-abonnement-candidat';
 
-    // ── TALENT ─────────────────────────────────────────────
-    const CREATE_PROFIL_TALENT  = 'create-profil-talent';
-    const VIEW_MESSAGES_TALENT  = 'view-messages-talent';
-    const MANAGE_ABONNEMENT_TAL = 'manage-abonnement-talent';
-
     // ── Regroupements par rôle ─────────────────────────────
     public static function adminPermissions(): array
     {
@@ -46,7 +40,6 @@ class Permission
             self::MANAGE_USERS,
             self::MANAGE_OFFRES,
             self::MANAGE_CVS,
-            self::MANAGE_TALENTS,
             self::MANAGE_BLOG,
             self::MANAGE_SERVICES,
             self::MANAGE_COMMANDES,
@@ -66,8 +59,6 @@ class Permission
             self::APPLY_OFFRE,
             self::SAVE_OFFRE,
             self::CREATE_ALERTE,
-            self::CREATE_PROFIL_TALENT,
-            self::VIEW_MESSAGES_TALENT,
         ];
     }
 
@@ -90,16 +81,7 @@ class Permission
             self::SAVE_OFFRE,
             self::CREATE_ALERTE,
             self::MANAGE_ABONNEMENT_CAN,
-            // Tous les candidats peuvent gérer un profil pro (ex-talent)
-            self::CREATE_PROFIL_TALENT,
-            self::VIEW_MESSAGES_TALENT,
-            self::MANAGE_ABONNEMENT_TAL,
         ];
-    }
-
-    public static function talentPermissions(): array
-    {
-        return self::candidatPermissions();
     }
 
     public static function all(): array
@@ -108,7 +90,6 @@ class Permission
             self::adminPermissions(),
             self::recruteurPermissions(),
             self::candidatPermissions(),
-            self::talentPermissions(),
         ));
     }
 }

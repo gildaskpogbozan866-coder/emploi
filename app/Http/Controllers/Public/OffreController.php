@@ -7,6 +7,7 @@ use App\Models\CV;
 use App\Models\Candidature;
 use App\Models\Notification;
 use App\Models\Offre;
+use App\Notifications\CandidatureRecueNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -91,6 +92,15 @@ class OffreController extends Controller
             return redirect()->guest(route('auth.connexion'));
         }
 
+        if (!Auth::user()->hasRole('candidat')) {
+            $dashboard = match (Auth::user()->role) {
+                'recruteur' => route('recruteur.dashboard'),
+                'admin'     => route('admin.dashboard'),
+                default     => route('home'),
+            };
+            return redirect($dashboard)->with('error', 'Seuls les candidats peuvent postuler à une offre.');
+        }
+
         $aPostule = Candidature::where('offre_id', $offre->id)
             ->where('candidat_id', Auth::id())
             ->exists();
@@ -104,6 +114,10 @@ class OffreController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion');
+        }
+
+        if (!Auth::user()->hasRole('candidat')) {
+            return redirect()->route('home')->with('error', 'Seuls les candidats peuvent postuler à une offre.');
         }
 
         if (Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists()) {
@@ -137,8 +151,9 @@ class OffreController extends Controller
             'cv_path'            => $cvPath,
         ]);
 
-        // Notifier le recruteur de la nouvelle candidature
         $candidat = Auth::user();
+
+        // Notification in-app au recruteur
         Notification::create([
             'user_id' => $offre->recruteur_id,
             'type'    => 'candidature',
@@ -146,6 +161,9 @@ class OffreController extends Controller
             'contenu' => $candidat->nom_complet . ' a postulé pour « ' . $offre->titre . ' ».',
             'lien'    => route('recruteur.candidatures.show', $candidature),
         ]);
+
+        // Email de confirmation au candidat
+        $candidat->notify(new CandidatureRecueNotification($offre));
 
         return redirect()->route('offre.candidature-succes', $offre);
     }
@@ -158,13 +176,34 @@ class OffreController extends Controller
     public function publier()
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.connexion');
+            return redirect()->route('auth.connexion')->with('redirect_after', route('offre.publier'));
         }
+
+        if (!Auth::user()->hasRole('recruteur')) {
+            return redirect()->route(match(Auth::user()->role) {
+                'candidat' => 'candidat.dashboard',
+                'admin'    => 'admin.dashboard',
+                default    => 'home',
+            })->with('error', 'Seuls les recruteurs peuvent publier des offres. Connectez-vous avec un compte recruteur.');
+        }
+
         return view('public.offre.publier');
     }
 
     public function storerOffre(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('auth.connexion');
+        }
+
+        if (!Auth::user()->hasRole('recruteur')) {
+            return redirect()->route(match(Auth::user()->role) {
+                'candidat' => 'candidat.dashboard',
+                'admin'    => 'admin.dashboard',
+                default    => 'home',
+            })->with('error', 'Seuls les recruteurs peuvent publier des offres. Connectez-vous avec un compte recruteur.');
+        }
+
         $request->validate([
             'titre'       => 'required|string|max:200',
             'entreprise'  => 'required|string|max:200',

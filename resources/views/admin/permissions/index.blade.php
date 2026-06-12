@@ -118,7 +118,7 @@
                 <form method="POST" action="{{ route('admin.permissions.user.role', $user) }}" style="display:flex;gap:6px;align-items:center">
                   @csrf @method('PUT')
                   <select name="role" class="adm-select" style="padding:5px 8px;font-size:12.5px">
-                    @foreach(['admin','recruteur','candidat','talent'] as $r)
+                    @foreach(['admin','recruteur','candidat'] as $r)
                       <option value="{{ $r }}" {{ $user->role === $r ? 'selected' : '' }}>{{ ucfirst($r) }}</option>
                     @endforeach
                   </select>

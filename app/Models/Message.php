@@ -10,7 +10,7 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'conversation_id', 'expediteur_id', 'contenu', 'fichier', 'lu',
+        'conversation_id', 'expediteur_id', 'contenu', 'fichier', 'mime_type', 'lu',
     ];
 
     protected function casts(): array

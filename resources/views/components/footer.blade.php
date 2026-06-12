@@ -33,11 +33,14 @@
         <ul class="footer__nav-list">
           <li><a href="{{ route('offre.list') }}">Offres d'emploi</a></li>
           <li><a href="{{ route('cv.public.theque') }}">CVthèque</a></li>
-          <li><a href="{{ route('talent.public.list') }}">Profilthèque Talents</a></li>
           <li><a href="{{ route('service.list') }}">Services</a></li>
           <li><a href="{{ route('blog.list') }}">Blog &amp; Conseils</a></li>
-          <li><a href="{{ route('cv.public.depot') }}">Déposer mon CV</a></li>
-          <li><a href="{{ route('offre.publier') }}">Publier une offre</a></li>
+          @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+            <li><a href="{{ route('cv.public.depot') }}">Déposer mon CV</a></li>
+          @endif
+          @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
+            <li><a href="{{ route('offre.publier') }}">Publier une offre</a></li>
+          @endif
         </ul>
       </div>
 

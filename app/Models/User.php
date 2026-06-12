@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\CandidatProfil;
+use App\Models\CvDownload;
 use App\Models\Experience;
 use App\Models\Formation;
 use App\Models\Competence;
@@ -71,8 +72,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool     { return $this->hasRole('admin'); }
     public function isCandidat(): bool  { return $this->hasRole('candidat'); }
     public function isRecruteur(): bool { return $this->hasRole('recruteur'); }
-    /** Vrai si le candidat a renseigné un profil pro (ex-talent). */
-    public function isTalent(): bool    { return $this->talentProfil()->exists(); }
 
     // ── Relations métier ────────────────────────────────────
     public function offres()
@@ -88,11 +87,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function cvs()
     {
         return $this->hasMany(CV::class, 'candidat_id');
-    }
-
-    public function talentProfil()
-    {
-        return $this->hasOne(TalentProfil::class);
     }
 
     public function commandes()
@@ -144,6 +138,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function cvsFavoris()
     {
         return $this->belongsToMany(CV::class, 'cv_favoris', 'user_id', 'cv_id');
+    }
+
+    public function cvDownloads()
+    {
+        return $this->hasMany(CvDownload::class, 'recruteur_id');
+    }
+
+    public function deductCvCredit(): bool
+    {
+        if ($this->cv_credits <= 0) {
+            return false;
+        }
+        $this->decrement('cv_credits');
+        return true;
     }
 
     public function recruteurVerification()
