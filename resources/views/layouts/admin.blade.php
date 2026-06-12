@@ -123,7 +123,10 @@
           <a href="{{ route('admin.paiements.list') }}">Paiements</a>
         </li>
         <li class="adm-nav__item {{ request()->routeIs('admin.abonnements*') ? 'active' : '' }}">
-          <a href="{{ route('admin.abonnements') }}">Abonnements</a>
+          <a href="{{ route('admin.abonnements') }}">Abonnements souscrits</a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}">
+          <a href="{{ route('admin.plans.list') }}">Plans d'abonnement</a>
         </li>
         <li class="adm-nav__section">Modération</li>
         <li class="adm-nav__item {{ request()->routeIs('admin.messagerie*') ? 'active' : '' }}">

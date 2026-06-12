@@ -6,107 +6,140 @@
 @endsection
 
 @section('content')
-
-@if(session('info'))
-  <div style="display:flex;align-items:center;gap:10px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:20px">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <p style="margin:0;font-size:13px;color:#1e40af">{{ session('info') }}</p>
-  </div>
-@endif
-
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">Mon abonnement</h1>
-    <p class="cand-page-header__sub">Gérez votre plan et accédez à plus de fonctionnalités</p>
+    <p class="cand-page-header__sub">Historique et plan actif de votre compte</p>
   </div>
+  <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow">
+    + Choisir un plan
+  </a>
 </div>
 
-{{-- Plan actuel --}}
-<div style="background:{{ $abonnement && $abonnement->plan === 'premium' ? 'linear-gradient(135deg,#021e3a 0%,#185FA5 100%)' : '#fff' }};border:1px solid {{ $abonnement && $abonnement->plan === 'premium' ? 'transparent' : '#e2e6ed' }};border-radius:14px;padding:26px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+@if(session('success'))
+<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:10px;align-items:center">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+  <p style="color:#16a34a;font-size:13.5px;font-weight:600;margin:0">{{ session('success') }}</p>
+</div>
+@endif
+
+{{-- Plan actif --}}
+@if($abonnement)
+<div style="background:linear-gradient(135deg,#021e3a 0%,#185FA5 100%);border-radius:14px;padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
   <div>
-    <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $abonnement && $abonnement->plan === 'premium' ? 'rgba(255,255,255,.6)' : '#94a3b8' }};margin:0 0 6px">Plan actuel</p>
-    <h2 style="font-size:1.8rem;font-weight:800;margin:0;color:{{ $abonnement && $abonnement->plan === 'premium' ? '#fff' : '#042C53' }}">
-      @if($abonnement && $abonnement->plan === 'premium')
-        <svg width="16" height="16" fill="#F5C842" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-2px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Premium
-      @else
-        Gratuit
-      @endif
-    </h2>
-    @if($abonnement && $abonnement->expire_le)
-      <p style="font-size:13px;margin:6px 0 0;color:{{ $abonnement && $abonnement->plan === 'premium' ? 'rgba(255,255,255,.7)' : '#64748b' }}">Expire le {{ $abonnement->expire_le->format('d/m/Y') }}</p>
-    @endif
-  </div>
-  @if($abonnement && $abonnement->plan === 'premium')
-    <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:14px 20px;text-align:center">
-      <p style="font-size:1.5rem;font-weight:800;margin:0;color:#fff">5 000 FCFA</p>
-      <p style="font-size:12px;margin:2px 0 0;color:rgba(255,255,255,.65)">/ 30 jours</p>
-    </div>
-  @endif
-</div>
-
-{{-- Plans --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:28px">
-  @foreach($plans as $key => $plan)
-  <div style="background:#fff;border:2px solid {{ ($abonnement && $abonnement->plan === $key) ? '#185FA5' : '#e2e6ed' }};border-radius:14px;padding:24px;position:relative">
-    @if($key === 'premium')
-      <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:11px;font-weight:800;padding:3px 16px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">Recommandé</div>
-    @endif
-    <h3 style="font-size:1.1rem;font-weight:700;color:#042C53;margin:0 0 6px">{{ $plan['label'] }}</h3>
-    <p style="font-size:1.5rem;font-weight:800;color:{{ $key === 'premium' ? '#185FA5' : '#94a3b8' }};margin:0 0 4px">
-      {{ $plan['prix'] > 0 ? number_format($plan['prix'],0,',',' ').' FCFA' : 'Gratuit' }}
-    </p>
-    @if($plan['prix'] > 0)<p style="font-size:12px;color:#94a3b8;margin:0 0 16px">par mois</p>@else<p style="margin:0 0 16px"></p>@endif
-    <ul style="list-style:none;padding:0;margin:0 0 20px;display:flex;flex-direction:column;gap:8px">
-      @foreach($plan['features'] as $f)
-        <li style="font-size:13.5px;color:#475569;display:flex;align-items:flex-start;gap:8px">
-          <span style="color:#38A169;flex-shrink:0;margin-top:1px;display:flex"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> {{ $f }}
-        </li>
-      @endforeach
-    </ul>
-    @if(!($abonnement && $abonnement->plan === $key))
-    <form method="POST" action="{{ route('candidat.abonnement.store') }}">
-      @csrf
-      <input type="hidden" name="plan" value="{{ $key }}">
-      <input type="hidden" name="methode" value="mobile_money">
-      <button type="submit" class="cand-btn {{ $key === 'premium' ? 'cand-btn--yellow' : 'cand-btn--outline' }}" style="width:100%;justify-content:center">
-        @if($key === 'premium')
-          <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Passer au Premium
-        @else
-          Rester sur le gratuit
-        @endif
-      </button>
-    </form>
+    <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin:0 0 5px">Plan actif</p>
+    <h2 style="font-size:1.7rem;font-weight:800;margin:0;color:#fff">{{ $abonnement->plan?->name ?? '—' }}</h2>
+    @if($abonnement->ends_at)
+      <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.65)">
+        Expire le {{ $abonnement->ends_at->format('d/m/Y') }}
+        <span style="color:rgba(255,255,255,.4)"> — {{ $abonnement->ends_at->diffForHumans() }}</span>
+      </p>
     @else
-      <button disabled class="cand-btn cand-btn--primary" style="width:100%;justify-content:center;opacity:.6">Plan actuel <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-1px"><polyline points="20 6 9 17 4 12"/></svg></button>
+      <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.55)">Sans limite de durée</p>
     @endif
   </div>
-  @endforeach
+  <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:14px 22px;text-align:right">
+    @if($abonnement->plan?->is_free)
+      <p style="font-size:1.4rem;font-weight:800;color:#86efac;margin:0">Gratuit</p>
+    @else
+      <p style="font-size:1.4rem;font-weight:800;color:#F5C842;margin:0">
+        {{ number_format($abonnement->plan->price, 0, ',', ' ') }} {{ $abonnement->plan->currency }}
+      </p>
+      @if($abonnement->plan->duration_days)
+        <p style="font-size:12px;color:rgba(255,255,255,.55);margin:2px 0 0">/ {{ $abonnement->plan->duration_days }} jours</p>
+      @endif
+    @endif
+  </div>
 </div>
+@else
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px 22px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:12px">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <p style="font-size:13.5px;color:#92400e;margin:0;font-weight:600">
+      Vous n'avez pas d'abonnement actif. Souscrivez pour accéder à toutes les fonctionnalités.
+    </p>
+  </div>
+  <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow" style="white-space:nowrap">
+    Voir les plans →
+  </a>
+</div>
+@endif
 
 {{-- Historique --}}
-@if($historique->isNotEmpty())
-<div class="cand-card">
-  <div class="cand-card__head">
-    <h2 class="cand-card__title">Historique des abonnements</h2>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden">
+  <div style="padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+    <h3 style="font-size:14px;font-weight:700;color:#042C53;margin:0">Historique des abonnements</h3>
+    <span style="font-size:12px;color:#94a3b8">{{ $abonnements->count() }} abonnement{{ $abonnements->count() > 1 ? 's' : '' }}</span>
   </div>
-  <div class="cand-table-wrap">
-    <table class="cand-table">
+
+  @if($abonnements->isEmpty())
+    <div style="padding:40px;text-align:center;color:#94a3b8">
+      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px;display:block"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <p style="margin:0;font-size:13.5px">Aucun abonnement pour le moment.</p>
+    </div>
+  @else
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px">
       <thead>
-        <tr><th>Plan</th><th>Prix</th><th>Début</th><th>Expiration</th><th>Statut</th></tr>
+        <tr style="background:#f8fafc">
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Plan</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Prix</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Début</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Expiration</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Statut</th>
+        </tr>
       </thead>
       <tbody>
-        @foreach($historique as $ab)
-        <tr>
-          <td style="font-weight:600">{{ ucfirst($ab->plan) }}</td>
-          <td>{{ $ab->prix > 0 ? number_format($ab->prix,0,',',' ').' FCFA' : 'Gratuit' }}</td>
-          <td style="color:#6b7a8d">{{ $ab->debut_le?->format('d/m/Y') ?? '—' }}</td>
-          <td style="color:#6b7a8d">{{ $ab->expire_le?->format('d/m/Y') ?? 'Illimité' }}</td>
-          <td><span class="cand-badge cand-badge--{{ $ab->statut === 'actif' ? 'green' : 'gray' }}">{{ ucfirst($ab->statut) }}</span></td>
+        @foreach($abonnements as $ab)
+        <tr style="border-bottom:1px solid #f1f5f9;{{ $ab->status === 'active' ? 'background:#f0fdf4' : '' }}">
+          <td style="padding:13px 18px">
+            <span style="font-weight:{{ $ab->status === 'active' ? '700' : '500' }};color:#042C53">
+              {{ $ab->plan?->name ?? '—' }}
+            </span>
+            @if($ab->status === 'active')
+              <span style="margin-left:6px;font-size:11px;background:#dcfce7;color:#16a34a;font-weight:700;padding:2px 7px;border-radius:20px">actif</span>
+            @endif
+          </td>
+          <td style="padding:13px 18px;color:#374151">
+            @if($ab->plan?->is_free)
+              <span style="color:#16a34a;font-weight:600">Gratuit</span>
+            @elseif($ab->plan)
+              {{ number_format($ab->plan->price, 0, ',', ' ') }} {{ $ab->plan->currency }}
+            @else
+              —
+            @endif
+          </td>
+          <td style="padding:13px 18px;color:#64748b">
+            {{ $ab->starts_at?->format('d/m/Y') ?? '—' }}
+          </td>
+          <td style="padding:13px 18px;color:#64748b">
+            @if($ab->ends_at === null)
+              <span style="color:#94a3b8">Illimité</span>
+            @elseif($ab->ends_at->isPast())
+              <span style="color:#ef4444">{{ $ab->ends_at->format('d/m/Y') }}</span>
+            @else
+              {{ $ab->ends_at->format('d/m/Y') }}
+            @endif
+          </td>
+          <td style="padding:13px 18px">
+            @php
+              $badge = match($ab->status) {
+                'active'    => ['bg' => '#dcfce7', 'color' => '#16a34a', 'label' => 'Actif'],
+                'expired'   => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => 'Expiré'],
+                'cancelled' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'Annulé'],
+                default     => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => $ab->status],
+              };
+            @endphp
+            <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:{{ $badge['bg'] }};color:{{ $badge['color'] }}">
+              {{ $badge['label'] }}
+            </span>
+          </td>
         </tr>
         @endforeach
       </tbody>
     </table>
   </div>
+  @endif
 </div>
-@endif
+
 @endsection

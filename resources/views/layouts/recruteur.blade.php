@@ -52,6 +52,12 @@
       @yield('sidebar')
     </aside>
     <main class="rec-main">
+      @if(session('error'))
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:10px;align-items:center">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#dc2626" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style="color:#dc2626;font-size:13.5px;font-weight:600;margin:0">{{ session('error') }}</p>
+        </div>
+      @endif
       @yield('content')
     </main>
   </div>

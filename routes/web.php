@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\BlogController as AdminBlog;
 use App\Http\Controllers\Admin\ServiceController as AdminService;
 use App\Http\Controllers\Admin\PaiementController as AdminPaiement;
 use App\Http\Controllers\Admin\AbonnementController as AdminAbonnement;
+use App\Http\Controllers\Admin\PlanController as AdminPlan;
 use App\Http\Controllers\Admin\MessageController as AdminMessage;
 use App\Http\Controllers\Admin\SignalementController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStat;
@@ -211,8 +212,9 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // Abonnement — nécessite manage-abonnement-candidat
     Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_CAN)->group(function () {
-        Route::get('/abonnement',  [CandidatAbonnement::class, 'index'])->name('abonnement');
-        Route::post('/abonnement', [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
+        Route::get('/abonnement',        [CandidatAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans',  [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::post('/abonnement',       [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
         Route::get('/historique-paiements', [CandidatAbonnement::class, 'historique'])->name('paiements');
     });
 
@@ -281,7 +283,8 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
         Route::get('/mes-offres/{offre}/modifier',         [RecruteurOffre::class, 'edit'])->name('offres.edit');
         Route::put('/mes-offres/{offre}',                  [RecruteurOffre::class, 'update'])->name('offres.update');
         Route::delete('/mes-offres/{offre}',               [RecruteurOffre::class, 'destroy'])->name('offres.destroy');
-        Route::patch('/mes-offres/{offre}/cloturer',       [RecruteurOffre::class, 'cloturer'])->name('offres.cloturer');
+        Route::patch('/mes-offres/{offre}/cloturer',        [RecruteurOffre::class, 'cloturer'])->name('offres.cloturer');
+        Route::patch('/mes-offres/{offre}/mettre-en-avant',[RecruteurOffre::class, 'mettreEnAvant'])->name('offres.mettre-en-avant');
         Route::post('/mes-offres/{offre}/dupliquer',       [RecruteurOffre::class, 'dupliquer'])->name('offres.dupliquer');
         Route::get('/mes-offres/{offre}/statistiques',     [RecruteurOffre::class, 'stats'])->name('offres.stats');
     });
@@ -308,8 +311,9 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 
     // Abonnement recruteur
     Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_REC)->group(function () {
-        Route::get('/abonnement',  [RecruteurAbonnement::class, 'index'])->name('abonnement');
-        Route::post('/abonnement', [RecruteurAbonnement::class, 'souscrire'])->name('abonnement.store');
+        Route::get('/abonnement',       [RecruteurAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans', [RecruteurAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::post('/abonnement',      [RecruteurAbonnement::class, 'souscrire'])->name('abonnement.store');
     });
 
     Route::get('/statistiques',  [RecruteurStat::class, 'index'])->name('statistiques');
@@ -443,9 +447,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         Route::patch('/{paiement}/statut', [AdminPaiement::class, 'updateStatut'])->name('statut');
     });
 
-    // Abonnements
-    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENTS)
-        ->get('/abonnements', [AdminAbonnement::class, 'index'])->name('abonnements');
+    // Abonnements & Plans
+    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENTS)->group(function () {
+        Route::get('/abonnements', [AdminAbonnement::class, 'index'])->name('abonnements');
+
+        Route::prefix('plans')->name('plans.')->group(function () {
+            Route::get('/',                [AdminPlan::class, 'index'])->name('list');
+            Route::get('/creer',           [AdminPlan::class, 'create'])->name('create');
+            Route::post('/',               [AdminPlan::class, 'store'])->name('store');
+            Route::get('/{plan}/modifier', [AdminPlan::class, 'edit'])->name('edit');
+            Route::put('/{plan}',          [AdminPlan::class, 'update'])->name('update');
+            Route::patch('/{plan}/toggle', [AdminPlan::class, 'toggle'])->name('toggle');
+            Route::delete('/{plan}',       [AdminPlan::class, 'destroy'])->name('destroy');
+        });
+    });
 
     // Messagerie admin
     Route::middleware('permission:'.Permission::MANAGE_MESSAGERIE)

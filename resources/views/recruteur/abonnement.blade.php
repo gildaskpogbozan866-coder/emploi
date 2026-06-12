@@ -1,5 +1,5 @@
 @extends('layouts.recruteur')
-@section('title', 'Mon abonnement recruteur')
+@section('title', 'Mes abonnements')
 
 @section('sidebar')
 @include('recruteur._sidebar')
@@ -8,142 +8,138 @@
 @section('content')
 <div class="rec-topbar">
   <div class="rec-topbar__left">
-    <h1>Mon abonnement</h1>
-    <p>Choisissez le plan adapté à vos besoins de recrutement</p>
+    <h1>Mes abonnements</h1>
+    <p>Historique et plan actif de votre compte recruteur</p>
   </div>
+  <a href="{{ route('recruteur.abonnement.plans') }}" class="rec-btn rec-btn--yellow">
+    + Faire un abonnement
+  </a>
 </div>
 
-{{-- Plan actuel --}}
-@if($abonnement)
-<div style="background:linear-gradient(135deg,#021e3a 0%,#185FA5 100%);border-radius:14px;padding:24px 28px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
-  <div>
-    <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin:0 0 5px">Plan actuel</p>
-    <h2 style="font-size:1.7rem;font-weight:800;margin:0;color:#fff">
-      {{ $abonnement->plan === 'premium_30' ? 'Premium' : 'Illimité' }}
-    </h2>
-    @if($abonnement->expire_le)
-      <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.65)">
-        Expire le {{ $abonnement->expire_le->format('d/m/Y') }}
-      </p>
-    @endif
-  </div>
-  <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:14px 22px;text-align:right">
-    <p style="font-size:1.4rem;font-weight:800;color:#F5C842;margin:0">{{ number_format($abonnement->prix,0,',',' ') }} FCFA</p>
-    <p style="font-size:12px;color:rgba(255,255,255,.55);margin:2px 0 0">/ mois</p>
-  </div>
-</div>
-@else
-<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px 22px;margin-bottom:28px;display:flex;align-items:center;gap:12px">
-  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-  <p style="font-size:13.5px;color:#92400e;margin:0;font-weight:600">
-    Vous n'avez pas encore d'abonnement actif. Souscrivez ci-dessous pour commencer à publier vos annonces.
-  </p>
+@if(session('success'))
+<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:10px;align-items:center">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+  <p style="color:#16a34a;font-size:13.5px;font-weight:600;margin:0">{{ session('success') }}</p>
 </div>
 @endif
 
-{{-- Cartes plans --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px">
-
-  @foreach($plans as $key => $plan)
-  @php $isActif = $abonnement && $abonnement->plan === $key; @endphp
-
-  <div style="background:#fff;border:2px solid {{ $isActif ? '#185FA5' : '#e2e8f0' }};border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;
-    {{ $plan['badge'] ? 'box-shadow:0 4px 28px rgba(24,95,165,.15)' : '' }}">
-
-    {{-- Badge --}}
-    @if($plan['badge'])
-      <div style="background:#F5C842;color:#042C53;font-size:11.5px;font-weight:800;text-align:center;padding:8px;letter-spacing:.04em">
-        ★ {{ $plan['badge'] }}
-      </div>
-    @endif
-
-    {{-- En-tête --}}
-    <div style="padding:24px 24px 18px">
-      <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:6px">
-        {{ $plan['sous_label'] }}
-      </div>
-      <h3 style="font-size:1.5rem;font-weight:800;color:#042C53;margin:0 0 10px">{{ $plan['label'] }}</h3>
-      <p style="font-size:13.5px;color:#64748b;line-height:1.55;margin:0 0 20px">{{ $plan['description'] }}</p>
-
-      <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px">
-        <span style="font-size:2.4rem;font-weight:800;color:#042C53">{{ number_format($plan['prix'],0,',',' ') }}</span>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#185FA5;line-height:1">FCFA</div>
-          <div style="font-size:12px;color:#94a3b8;line-height:1">/ mois</div>
-        </div>
-      </div>
-
-      @if(!$isActif)
-      <form method="POST" action="{{ route('recruteur.abonnement.store') }}" style="margin-top:16px">
-        @csrf
-        <input type="hidden" name="plan" value="{{ $key }}">
-        <button type="submit" class="rec-btn rec-btn--yellow" style="width:100%;justify-content:center;font-size:14px;padding:12px">
-          S'abonner — 1 mois
-        </button>
-      </form>
-      @else
-        <div style="margin-top:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:11px;text-align:center">
-          <span style="font-weight:700;color:#16a34a;font-size:14px">✓ Plan actuel</span>
-        </div>
-      @endif
-    </div>
-
-    <div style="height:1px;background:#f1f5f9;margin:0 24px"></div>
-
-    {{-- Features incluses --}}
-    <div style="padding:20px 24px;flex:1">
-      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#374151;margin:0 0 14px">
-        Ce qui est inclus
+{{-- Plan actif --}}
+@if($abonnement)
+<div style="background:linear-gradient(135deg,#021e3a 0%,#185FA5 100%);border-radius:14px;padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <div>
+    <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin:0 0 5px">Plan actif</p>
+    <h2 style="font-size:1.7rem;font-weight:800;margin:0;color:#fff">{{ $abonnement->plan?->name ?? '—' }}</h2>
+    @if($abonnement->ends_at)
+      <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.65)">
+        Expire le {{ $abonnement->ends_at->format('d/m/Y') }}
+        <span style="color:rgba(255,255,255,.4)"> — {{ $abonnement->ends_at->diffForHumans() }}</span>
       </p>
-      <ul style="list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:9px">
-        @foreach($plan['features'] as $f)
-          <li style="font-size:13.5px;color:#374151;display:flex;align-items:flex-start;gap:10px">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $f }}
-          </li>
-        @endforeach
-      </ul>
-
-      @if(!empty($plan['options']))
-      <div style="border-top:1px dashed #e2e8f0;padding-top:14px">
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px">
-          @foreach($plan['options'] as $opt)
-            <li style="font-size:13px;color:#64748b;display:flex;align-items:flex-start;gap:10px">
-              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              {{ $opt }} <span style="font-size:11px;color:#94a3b8;font-weight:600">(Option)</span>
-            </li>
-          @endforeach
-        </ul>
-      </div>
+    @else
+      <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.55)">Sans limite de durée</p>
+    @endif
+  </div>
+  <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:14px 22px;text-align:right">
+    @if($abonnement->plan?->is_free)
+      <p style="font-size:1.4rem;font-weight:800;color:#86efac;margin:0">Gratuit</p>
+    @else
+      <p style="font-size:1.4rem;font-weight:800;color:#F5C842;margin:0">
+        {{ number_format($abonnement->plan->price, 0, ',', ' ') }} {{ $abonnement->plan->currency }}
+      </p>
+      @if($abonnement->plan->duration_days)
+        <p style="font-size:12px;color:rgba(255,255,255,.55);margin:2px 0 0">/ {{ $abonnement->plan->duration_days }} jours</p>
       @endif
-    </div>
-
+    @endif
   </div>
-  @endforeach
-
 </div>
-
-{{-- Comment ça marche --}}
-<div style="margin-top:28px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:22px 26px">
-  <h4 style="font-size:14px;font-weight:700;color:#042C53;margin:0 0 12px">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg>
-    Comment ça marche ?
-  </h4>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
-    @foreach([
-      ['1', 'Choisissez votre plan', 'Sélectionnez Premium ou Illimité selon vos besoins.'],
-      ['2', 'Paiement Mobile Money', 'Un conseiller vous contacte pour finaliser le paiement (MTN, Moov, Wave).'],
-      ['3', 'Activé immédiatement', 'Dès confirmation, publiez vos annonces et accédez à tous les outils.'],
-    ] as [$n, $titre, $desc])
-    <div style="display:flex;gap:12px;align-items:flex-start">
-      <div style="width:28px;height:28px;border-radius:50%;background:#185FA5;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ $n }}</div>
-      <div>
-        <p style="font-weight:700;color:#042C53;font-size:13.5px;margin:0 0 4px">{{ $titre }}</p>
-        <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.55">{{ $desc }}</p>
-      </div>
-    </div>
-    @endforeach
+@else
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px 22px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:12px">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <p style="font-size:13.5px;color:#92400e;margin:0;font-weight:600">
+      Vous n'avez pas d'abonnement actif. Souscrivez pour publier vos annonces.
+    </p>
   </div>
+  <a href="{{ route('recruteur.abonnement.plans') }}" class="rec-btn rec-btn--yellow" style="white-space:nowrap">
+    Voir les plans →
+  </a>
+</div>
+@endif
+
+{{-- Historique --}}
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden">
+  <div style="padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+    <h3 style="font-size:14px;font-weight:700;color:#042C53;margin:0">Historique des abonnements</h3>
+    <span style="font-size:12px;color:#94a3b8">{{ $abonnements->count() }} abonnement{{ $abonnements->count() > 1 ? 's' : '' }}</span>
+  </div>
+
+  @if($abonnements->isEmpty())
+    <div style="padding:40px;text-align:center;color:#94a3b8">
+      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px;display:block"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <p style="margin:0;font-size:13.5px">Aucun abonnement pour le moment.</p>
+    </div>
+  @else
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+      <thead>
+        <tr style="background:#f8fafc">
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Plan</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Prix</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Début</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Expiration</th>
+          <th style="padding:11px 18px;text-align:left;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2e8f0">Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($abonnements as $ab)
+        <tr style="border-bottom:1px solid #f1f5f9;{{ $ab->status === 'active' ? 'background:#f0fdf4' : '' }}">
+          <td style="padding:13px 18px">
+            <span style="font-weight:{{ $ab->status === 'active' ? '700' : '500' }};color:#042C53">
+              {{ $ab->plan?->name ?? '—' }}
+            </span>
+            @if($ab->status === 'active')
+              <span style="margin-left:6px;font-size:11px;background:#dcfce7;color:#16a34a;font-weight:700;padding:2px 7px;border-radius:20px">actif</span>
+            @endif
+          </td>
+          <td style="padding:13px 18px;color:#374151">
+            @if($ab->plan?->is_free)
+              <span style="color:#16a34a;font-weight:600">Gratuit</span>
+            @elseif($ab->plan)
+              {{ number_format($ab->plan->price, 0, ',', ' ') }} {{ $ab->plan->currency }}
+            @else
+              —
+            @endif
+          </td>
+          <td style="padding:13px 18px;color:#64748b">
+            {{ $ab->starts_at?->format('d/m/Y') ?? '—' }}
+          </td>
+          <td style="padding:13px 18px;color:#64748b">
+            @if($ab->ends_at === null)
+              <span style="color:#94a3b8">Illimité</span>
+            @elseif($ab->ends_at->isPast())
+              <span style="color:#ef4444">{{ $ab->ends_at->format('d/m/Y') }}</span>
+            @else
+              {{ $ab->ends_at->format('d/m/Y') }}
+            @endif
+          </td>
+          <td style="padding:13px 18px">
+            @php
+              $badge = match($ab->status) {
+                'active'    => ['bg' => '#dcfce7', 'color' => '#16a34a', 'label' => 'Actif'],
+                'expired'   => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => 'Expiré'],
+                'cancelled' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'Annulé'],
+                default     => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => $ab->status],
+              };
+            @endphp
+            <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:{{ $badge['bg'] }};color:{{ $badge['color'] }}">
+              {{ $badge['label'] }}
+            </span>
+          </td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+  @endif
 </div>
 
 @endsection
