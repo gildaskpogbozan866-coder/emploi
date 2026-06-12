@@ -43,14 +43,21 @@ class CVControllerTest extends TestCase
 
     private function rendreCandidat(User $user): void
     {
+        $plan = \App\Models\Plan::create([
+            'name'          => 'Premium Candidat',
+            'slug'          => 'premium-candidat',
+            'target_type'   => 'candidat',
+            'price'         => 5000,
+            'duration_days' => 30,
+            'is_free'       => false,
+            'is_active'     => true,
+        ]);
         Abonnement::create([
             'user_id'   => $user->id,
-            'plan'      => 'premium',
-            'type'      => 'mensuel',
-            'prix'      => 5000,
-            'statut'    => 'actif',
-            'debut_le'  => now()->subDay(),
-            'expire_le' => now()->addMonth(),
+            'plan_id'   => $plan->id,
+            'starts_at' => now()->subDay(),
+            'ends_at'   => now()->addMonth(),
+            'status'    => 'active',
         ]);
     }
 
