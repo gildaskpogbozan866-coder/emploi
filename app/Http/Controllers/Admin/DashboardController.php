@@ -20,7 +20,6 @@ class DashboardController extends Controller
         $stats = [
             'candidats'   => User::where('role', 'candidat')->count(),
             'recruteurs'  => User::where('role', 'recruteur')->count(),
-            'talents'     => User::where('role', 'talent')->count(),
             'offres'      => Offre::count(),
             'offres_actives' => Offre::where('statut', 'active')->count(),
             'cvs'         => CV::count(),

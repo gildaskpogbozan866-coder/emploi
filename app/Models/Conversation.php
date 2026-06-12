@@ -9,13 +9,24 @@ class Conversation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user1_id', 'user2_id', 'dernier_message_at'];
+    protected $fillable = [
+        'user1_id', 'user2_id', 'dernier_message_at',
+        'archived_by_user1', 'archived_by_user2',
+    ];
 
     protected function casts(): array
     {
         return [
             'dernier_message_at' => 'datetime',
+            'archived_by_user1'  => 'boolean',
+            'archived_by_user2'  => 'boolean',
         ];
+    }
+
+    public function isArchivedFor(int $userId): bool
+    {
+        return ($this->user1_id === $userId && $this->archived_by_user1)
+            || ($this->user2_id === $userId && $this->archived_by_user2);
     }
 
     public function user1()

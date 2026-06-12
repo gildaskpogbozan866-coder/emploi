@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\OffreController;
-use App\Http\Controllers\Public\TalentController;
 use App\Http\Controllers\Public\ServiceController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\ContactController;
@@ -28,18 +27,18 @@ use App\Http\Controllers\Recruteur\DashboardController as RecruteurDashboard;
 use App\Http\Controllers\Recruteur\OffreController as RecruteurOffre;
 use App\Http\Controllers\Recruteur\CandidatureController as RecruteurCandidature;
 use App\Http\Controllers\Recruteur\CvthequeController;
+use App\Http\Controllers\Recruteur\CvCreditsController;
+use App\Http\Controllers\Recruteur\PaiementController as RecruteurPaiement;
+use App\Http\Controllers\Candidat\PaiementController as CandidatPaiement;
+use App\Http\Controllers\Payment\GatewayController;
+use App\Http\Controllers\Payment\CallbackController;
+use App\Http\Controllers\Payment\StatusController;
+use App\Http\Controllers\Payment\WebhookController;
+use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Recruteur\MessageController as RecruteurMessage;
 use App\Http\Controllers\Recruteur\AbonnementController as RecruteurAbonnement;
 use App\Http\Controllers\Recruteur\StatistiqueController as RecruteurStat;
 use App\Http\Controllers\Recruteur\ProfilController as RecruteurProfil;
-use App\Http\Controllers\Talent\DashboardController as TalentDashboard;
-use App\Http\Controllers\Talent\ProfilController as TalentProfilCtrl;
-use App\Http\Controllers\Talent\ExperienceController as TalentExpCtrl;
-use App\Http\Controllers\Talent\FormationController as TalentFormCtrl;
-use App\Http\Controllers\Talent\AttestationController as TalentAttCtrl;
-use App\Http\Controllers\Talent\MessageController as TalentMessage;
-use App\Http\Controllers\Talent\AbonnementController as TalentAbonnement;
-use App\Http\Controllers\Talent\ParametreController as TalentParametre;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UtilisateurController;
 use App\Http\Controllers\Admin\OffreController as AdminOffre;
@@ -55,6 +54,8 @@ use App\Http\Controllers\Admin\SignalementController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStat;
 use App\Http\Controllers\Admin\ParametreController as AdminParametre;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\SeoController as AdminSeo;
+use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Admin\VerificationRecruteurController;
 use App\Http\Controllers\Admin\Referentiel\CompetencesController as AdminCompetences;
 use App\Http\Controllers\Admin\Referentiel\MetiersController as AdminMetiers;
@@ -70,6 +71,12 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 // ════════════════════════════════════════════════════════
 //  PAGES PUBLIQUES
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  SEO — sitemap.xml et robots.txt
+// ════════════════════════════════════════════════════════
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt',  [SitemapController::class, 'robots'])->name('robots');
+
 Route::get('/',          [HomeController::class, 'index'])->name('home');
 Route::get('/a-propos',  [HomeController::class, 'aPropos'])->name('a-propos');
 Route::get('/contact',   [HomeController::class, 'contact'])->name('contact');
@@ -88,20 +95,13 @@ Route::prefix('offres')->name('offre.')->group(function () {
     Route::get('/{offre}/publiee',[OffreController::class, 'offrePublieeSucces'])->name('publiee-succes');
 });
 
-// Talents publics
-Route::prefix('profiltheque')->name('talent.public.')->group(function () {
-    Route::get('/',               [TalentController::class, 'index'])->name('list');
-    Route::get('/tarif',          [TalentController::class, 'tarif'])->name('tarif');
-    Route::get('/achat/{profil}', [TalentController::class, 'achat'])->name('achat');
-    Route::get('/{profil}',       [TalentController::class, 'detail'])->name('detail');
-});
-
 // CVthèque et dépôt CV publics
 Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/',          [CVController::class, 'theque'])->name('theque');
     Route::get('/tarif',     [CVController::class, 'tarif'])->name('tarif');
     Route::get('/deposer',   [CVController::class, 'depot'])->name('depot');
     Route::post('/deposer',  [CVController::class, 'store'])->name('depot.store')->middleware('auth');
+    Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
 // Services
@@ -117,6 +117,27 @@ Route::prefix('services')->name('service.')->group(function () {
 Route::prefix('blog')->name('blog.')->group(function () {
     Route::get('/',          [BlogController::class, 'index'])->name('list');
     Route::get('/{article}', [BlogController::class, 'detail'])->name('detail');
+});
+
+// ════════════════════════════════════════════════════════
+//  PAIEMENT — Webhooks (sans CSRF), Callbacks, Status
+// ════════════════════════════════════════════════════════
+
+// Webhooks (exclus du CSRF dans VerifyCsrfToken)
+Route::prefix('payment/webhook')->name('payment.webhook.')->group(function () {
+    Route::post('/fedapay',  [WebhookController::class, 'fedapay'])->name('fedapay');
+    Route::post('/kkiapay',  [WebhookController::class, 'kkiapay'])->name('kkiapay');
+});
+
+// Callbacks navigateur (requiert auth)
+Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
+    Route::get('/choisir/{paiement}',          [GatewayController::class, 'choose'])->name('choose');
+    Route::post('/lancer/{paiement}',          [GatewayController::class, 'initiate'])->name('initiate');
+    Route::get('/callback/fedapay/{paiement}', [CallbackController::class, 'fedapay'])->name('callback.fedapay');
+    Route::post('/callback/kkiapay',           [CallbackController::class, 'kkiapay'])->name('callback.kkiapay');
+    Route::get('/succes/{paiement}',           [StatusController::class, 'success'])->name('success');
+    Route::get('/echec/{paiement}',            [StatusController::class, 'failed'])->name('failed');
+    Route::get('/en-attente/{paiement}',       [StatusController::class, 'pending'])->name('pending');
 });
 
 // ════════════════════════════════════════════════════════
@@ -150,7 +171,6 @@ Route::middleware('auth')->group(function () {
             return match ($user->role) {
                 'admin'     => redirect()->route('admin.dashboard'),
                 'recruteur' => redirect()->route('recruteur.dashboard'),
-                'talent'    => redirect()->route('candidat.dashboard'),
                 default     => redirect()->route('candidat.dashboard'),
             };
         }
@@ -163,7 +183,6 @@ Route::middleware('auth')->group(function () {
         return match ($user->role) {
             'admin'     => redirect()->route('admin.dashboard'),
             'recruteur' => redirect()->route('recruteur.verification'),
-            'talent'    => redirect()->route('talent.dashboard'),
             default     => redirect()->route('candidat.dashboard'),
         };
     })->middleware('signed')->name('verification.verify');
@@ -185,10 +204,11 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // CVs — nécessite permission deposit-cv
     Route::middleware('permission:'.Permission::DEPOSIT_CV)->group(function () {
-        Route::get('/mes-cvs',               [CVController::class, 'index'])->name('cvs');
-        Route::get('/mes-cvs/modifier/{cv}', [CVController::class, 'edit'])->name('cvs.edit');
-        Route::put('/mes-cvs/{cv}',          [CVController::class, 'update'])->name('cvs.update');
-        Route::delete('/mes-cvs/{cv}',       [CVController::class, 'destroy'])->name('cvs.destroy');
+        Route::get('/mes-cvs',                        [CVController::class, 'index'])->name('cvs');
+        Route::get('/mes-cvs/modifier/{cv}',          [CVController::class, 'edit'])->name('cvs.edit');
+        Route::put('/mes-cvs/{cv}',                   [CVController::class, 'update'])->name('cvs.update');
+        Route::delete('/mes-cvs/{cv}',                [CVController::class, 'destroy'])->name('cvs.destroy');
+        Route::patch('/mes-cvs/{cv}/visibilite',      [CVController::class, 'toggleVisibilite'])->name('cvs.visibilite');
     });
 
     // Candidatures — nécessite apply-offre
@@ -218,12 +238,16 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
         Route::get('/historique-paiements', [CandidatAbonnement::class, 'historique'])->name('paiements');
     });
 
-    // Messagerie, Notifications, Profil (accessibles à tous les candidats authentifiés)
-    Route::get('/messagerie',              [CandidatMessage::class, 'index'])->name('messagerie');
-    Route::get('/messagerie/{conversation}',[CandidatMessage::class, 'show'])->name('messagerie.show');
-    Route::post('/messagerie/{conversation}',[CandidatMessage::class, 'store'])->name('messagerie.store');
-    Route::get('/notifications',           [NotificationController::class, 'index'])->name('notifications');
-    Route::post('/notifications/marquer',  [NotificationController::class, 'marquerLues'])->name('notifications.lues');
+    // Messagerie (accessibles à tous les candidats authentifiés)
+    Route::get('/messagerie',                                      [CandidatMessage::class, 'index'])->name('messagerie');
+    Route::post('/messagerie/initier/{user}',                      [CandidatMessage::class, 'initier'])->name('messagerie.initier');
+    Route::get('/messagerie/{conversation}',                       [CandidatMessage::class, 'show'])->name('messagerie.show');
+    Route::post('/messagerie/{conversation}',                      [CandidatMessage::class, 'store'])->name('messagerie.store');
+    Route::get('/messagerie/{conversation}/rafraichir',            [CandidatMessage::class, 'rafraichir'])->name('messagerie.rafraichir');
+    Route::post('/messagerie/{conversation}/archiver',             [CandidatMessage::class, 'archiver'])->name('messagerie.archiver');
+    Route::get('/notifications',            [NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifications/marquer',   [NotificationController::class, 'marquerLues'])->name('notifications.lues');
+    Route::get('/paiements',               [CandidatPaiement::class, 'index'])->name('paiements');
     Route::get('/profil',                  [CandidatProfil::class, 'edit'])->name('profil');
     Route::put('/profil',                  [CandidatProfil::class, 'update'])->name('profil.update');
     Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
@@ -298,15 +322,28 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 
     // CVthèque — nécessite view-cvtheque
     Route::middleware('permission:'.Permission::VIEW_CVTHEQUE)->group(function () {
-        Route::get('/cvtheque',                [CvthequeController::class, 'index'])->name('cvtheque');
-        Route::post('/cvtheque/{cv}/favoris',  [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
+        Route::get('/cvtheque',                     [CvthequeController::class, 'index'])->name('cvtheque');
+        Route::get('/cvtheque/favoris',             [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
+        Route::get('/cvtheque/{cv}',                [CvthequeController::class, 'show'])->name('cvtheque.show');
+        Route::post('/cvtheque/{cv}/telecharger',   [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
+        Route::post('/cvtheque/{cv}/favoris',       [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
+    });
+
+    // Crédits CVthèque
+    Route::prefix('cv-credits')->name('cv-credits.')->group(function () {
+        Route::get('/',         [CvCreditsController::class, 'index'])->name('index');
+        Route::get('/acheter',  [CvCreditsController::class, 'confirm'])->name('confirm');
+        Route::post('/acheter', [CvCreditsController::class, 'store'])->name('store');
     });
 
     // Contact candidats (messagerie) — nécessite contact-candidats
     Route::middleware('permission:'.Permission::CONTACT_CANDIDATS)->group(function () {
-        Route::get('/messagerie',              [RecruteurMessage::class, 'index'])->name('messagerie');
-        Route::get('/messagerie/{conversation}',[RecruteurMessage::class, 'show'])->name('messagerie.show');
-        Route::post('/messagerie/{conversation}',[RecruteurMessage::class, 'store'])->name('messagerie.store');
+        Route::get('/messagerie',                               [RecruteurMessage::class, 'index'])->name('messagerie');
+        Route::post('/messagerie/initier/{user}',               [RecruteurMessage::class, 'initier'])->name('messagerie.initier');
+        Route::get('/messagerie/{conversation}',                [RecruteurMessage::class, 'show'])->name('messagerie.show');
+        Route::post('/messagerie/{conversation}',               [RecruteurMessage::class, 'store'])->name('messagerie.store');
+        Route::get('/messagerie/{conversation}/rafraichir',     [RecruteurMessage::class, 'rafraichir'])->name('messagerie.rafraichir');
+        Route::post('/messagerie/{conversation}/archiver',      [RecruteurMessage::class, 'archiver'])->name('messagerie.archiver');
     });
 
     // Abonnement recruteur
@@ -316,6 +353,10 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
         Route::post('/abonnement',      [RecruteurAbonnement::class, 'souscrire'])->name('abonnement.store');
     });
 
+    // Historique paiements recruteur
+    Route::get('/paiements',        [RecruteurPaiement::class, 'index'])->name('paiements');
+    Route::get('/paiements/export', [RecruteurPaiement::class, 'export'])->name('paiements.export');
+
     Route::get('/statistiques',  [RecruteurStat::class, 'index'])->name('statistiques');
     Route::get('/profil',        [RecruteurProfil::class, 'edit'])->name('profil');
     Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
@@ -323,47 +364,12 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
 
     }); // fin recruteur.approuve
-});
 
-// ════════════════════════════════════════════════════════
-//  ESPACE TALENT — protégé par rôle + permissions
-// ════════════════════════════════════════════════════════
-Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
-    Route::get('/tableau-de-bord', [TalentDashboard::class, 'index'])->name('dashboard');
-
-    // Profil talent — nécessite create-profil-talent
-    Route::middleware('permission:'.Permission::CREATE_PROFIL_TALENT)->group(function () {
-        Route::get('/mon-profil',               [TalentProfilCtrl::class, 'show'])->name('profil');
-        Route::get('/mon-profil/creer',         [TalentProfilCtrl::class, 'create'])->name('profil.create');
-        Route::post('/mon-profil',              [TalentProfilCtrl::class, 'store'])->name('profil.store');
-        Route::get('/mon-profil/modifier',      [TalentProfilCtrl::class, 'edit'])->name('profil.edit');
-        Route::put('/mon-profil',               [TalentProfilCtrl::class, 'update'])->name('profil.update');
-        Route::delete('/mon-profil/photo',                   [TalentProfilCtrl::class, 'deletePhoto'])->name('profil.photo.delete');
-        Route::post('/mon-profil/travaux',                  [TalentProfilCtrl::class, 'storeTravail'])->name('profil.travaux.store');
-        Route::delete('/mon-profil/travaux/{travail}',      [TalentProfilCtrl::class, 'deleteTravail'])->name('profil.travaux.delete');
-        Route::post('/experiences',                         [TalentExpCtrl::class, 'store'])->name('experiences.store');
-        Route::delete('/experiences/{experience}',          [TalentExpCtrl::class, 'destroy'])->name('experiences.delete');
-        Route::post('/formations',                          [TalentFormCtrl::class, 'store'])->name('formations.store');
-        Route::delete('/formations/{formation}',            [TalentFormCtrl::class, 'destroy'])->name('formations.delete');
-        Route::post('/attestations',                        [TalentAttCtrl::class, 'store'])->name('attestations.store');
-        Route::delete('/attestations/{attestation}',        [TalentAttCtrl::class, 'destroy'])->name('attestations.delete');
-    });
-
-    // Messagerie — nécessite view-messages-talent
-    Route::middleware('permission:'.Permission::VIEW_MESSAGES_TALENT)->group(function () {
-        Route::get('/messagerie',               [TalentMessage::class, 'index'])->name('messagerie');
-        Route::get('/messagerie/{conversation}',[TalentMessage::class, 'show'])->name('messagerie.show');
-        Route::post('/messagerie/{conversation}',[TalentMessage::class, 'store'])->name('messagerie.store');
-    });
-
-    // Abonnement
-    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_TAL)->group(function () {
-        Route::get('/abonnement',  [TalentAbonnement::class, 'index'])->name('abonnement');
-        Route::post('/abonnement', [TalentAbonnement::class, 'souscrire'])->name('abonnement.store');
-    });
-
-    Route::get('/parametres',  [TalentParametre::class, 'index'])->name('parametres');
-    Route::put('/parametres',  [TalentParametre::class, 'update'])->name('parametres.update');
+    // Notifications (accessibles hors approbation)
+    Route::post('/notifications/marquer', function () {
+        auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
+        return back()->with('success', 'Notifications marquées comme lues.');
+    })->name('notifications.lues');
 });
 
 // ════════════════════════════════════════════════════════
@@ -442,9 +448,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
 
     // Paiements
     Route::middleware('permission:'.Permission::MANAGE_PAIEMENTS)->prefix('paiements')->name('paiements.')->group(function () {
-        Route::get('/',           [AdminPaiement::class, 'index'])->name('list');
-        Route::get('/{paiement}', [AdminPaiement::class, 'show'])->name('detail');
+        Route::get('/',              [AdminPaiement::class, 'index'])->name('list');
+        Route::get('/export',        [PaymentSettingsController::class, 'export'])->name('export');
+        Route::get('/{paiement}',    [AdminPaiement::class, 'show'])->name('detail');
         Route::patch('/{paiement}/statut', [AdminPaiement::class, 'updateStatut'])->name('statut');
+    });
+
+    // Configuration des gateways de paiement
+    Route::middleware('permission:'.Permission::MANAGE_PAIEMENTS)->prefix('payment-settings')->name('payment-settings.')->group(function () {
+        Route::get('/',                    [PaymentSettingsController::class, 'index'])->name('index');
+        Route::put('/{gateway}',           [PaymentSettingsController::class, 'update'])->name('update');
     });
 
     // Abonnements & Plans
@@ -463,8 +476,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     });
 
     // Messagerie admin
-    Route::middleware('permission:'.Permission::MANAGE_MESSAGERIE)
-        ->get('/messagerie', [AdminMessage::class, 'index'])->name('messagerie');
+    Route::middleware('permission:'.Permission::MANAGE_MESSAGERIE)->group(function () {
+        Route::get('/messagerie',                   [AdminMessage::class, 'index'])->name('messagerie');
+        Route::get('/messagerie/{conversation}',    [AdminMessage::class, 'show'])->name('messagerie.show');
+    });
 
     // Signalements
     Route::middleware('permission:'.Permission::MANAGE_SIGNALEMENTS)->prefix('signalements')->name('signalements.')->group(function () {
@@ -481,6 +496,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->group(function () {
         Route::get('/parametres',  [AdminParametre::class, 'index'])->name('parametres');
         Route::put('/parametres',  [AdminParametre::class, 'update'])->name('parametres.update');
+
+        // SEO
+        Route::prefix('seo')->name('seo.')->group(function () {
+            Route::get('/',                      [AdminSeo::class, 'index'])->name('index');
+            Route::put('/global',                [AdminSeo::class, 'updateGlobal'])->name('global.update');
+            Route::put('/pages/{seoPage}',       [AdminSeo::class, 'updatePage'])->name('page.update');
+        });
     });
 
     // Référentiels RH (compétences, métiers, contrats, secteurs, langues, niveaux)
@@ -559,6 +581,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         });
 
     });
+
+    // Notifications admin
+    Route::post('/notifications/marquer', function () {
+        auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
+        return back()->with('success', 'Notifications marquées comme lues.');
+    })->name('notifications.lues');
 
     // Gestion des rôles et permissions (super admin uniquement)
     Route::prefix('permissions')->name('permissions.')->group(function () {

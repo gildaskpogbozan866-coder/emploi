@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => route('auth.connexion'));
 
+        // Exclure les webhooks de paiement du CSRF
+        $middleware->validateCsrfTokens(except: [
+            'payment/webhook/*',
+        ]);
+
         $middleware->alias([
             'role'               => \App\Http\Middleware\CheckRole::class,
             'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,

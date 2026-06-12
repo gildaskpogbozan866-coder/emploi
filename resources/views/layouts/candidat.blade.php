@@ -28,6 +28,7 @@
         </a>
       </div>
       <div class="dash-header__right">
+        @include('partials._notification-bell')
         <div class="dash-header__user">
           <div class="dash-header__avatar">{{ auth()->user()->initiale }}</div>
           <span class="dash-header__username">{{ auth()->user()->prenom }}</span>

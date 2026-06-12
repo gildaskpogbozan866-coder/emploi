@@ -1,67 +1,96 @@
 @extends('layouts.app')
-@section('title', 'Tarifs CVthèque — Emploi Bouge Bénin')
+@section('title', 'Packs crédits CVthèque — Emploi Bouge Bénin')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
+@endsection
 
 @section('content')
-<section style="padding:64px 20px;background:#f8fafc;min-height:60vh">
-  <div style="max-width:860px;margin:0 auto">
+
+<div class="cvt-subnav">
+  <div class="cvt-subnav__inner">
+    <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
+    <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link active">Packs crédits</a>
+    @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+      <a href="{{ route('cv.public.depot') }}" class="cvt-subnav__link">Déposer un CV</a>
+    @endif
+  </div>
+</div>
+
+<section style="padding:60px 20px 80px;background:#f8fafc;min-height:70vh">
+  <div style="max-width:880px;margin:0 auto">
+
+    {{-- Titre --}}
     <div style="text-align:center;margin-bottom:48px">
-      <span style="background:#F5C842;color:#042C53;font-size:12px;font-weight:800;padding:4px 16px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em">CVthèque</span>
-      <h1 style="font-size:2.2rem;font-weight:800;color:#042C53;margin:16px 0 12px">Déposez votre CV et soyez visible</h1>
-      <p style="font-size:1.05rem;color:#64748b;max-width:560px;margin:0 auto;line-height:1.65">
-        Accédez à des recruteurs vérifiés et augmentez vos chances d'être recruté avec un CV optimisé.
+      <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <h1 style="font-size:2rem;font-weight:800;color:#042C53;margin:0 0 12px">Packs crédits CVthèque</h1>
+      <p style="font-size:1rem;color:#64748b;max-width:500px;margin:0 auto;line-height:1.65">
+        Chaque crédit vous permet de <strong>débloquer les informations personnelles</strong> d'un candidat et de <strong>télécharger son CV</strong>.<br>
+        Les crédits ne s'expirent pas.
       </p>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:48px">
-      {{-- Plan Gratuit --}}
-      <div style="background:#fff;border:2px solid #e2e8f0;border-radius:18px;padding:32px;display:flex;flex-direction:column">
-        <h3 style="font-size:1.1rem;font-weight:700;color:#042C53;margin:0 0 8px">Plan Gratuit</h3>
-        <p style="font-size:2rem;font-weight:800;color:#94a3b8;margin:0 0 4px">0 FCFA</p>
-        <p style="font-size:12px;color:#94a3b8;margin:0 0 20px">Pour toujours</p>
-        <ul style="list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:10px;flex:1">
-          @foreach(['Dépôt de 1 CV dans la CVthèque','Visible par les recruteurs de base','Candidatures illimitées','Alertes emploi basiques'] as $f)
-            <li style="font-size:13.5px;color:#475569;display:flex;align-items:flex-start;gap:8px">
-              <span style="color:#38A169;font-weight:700;flex-shrink:0">✓</span> {{ $f }}
-            </li>
-          @endforeach
-        </ul>
-        <a href="{{ route('cv.public.depot') }}" style="display:block;text-align:center;padding:11px 20px;border:1.5px solid #cbd5e0;border-radius:8px;font-weight:700;font-size:14px;color:#475569;text-decoration:none">
-          Déposer gratuitement
-        </a>
-      </div>
+    {{-- Info --}}
+    <div style="background:#fff;border:1.5px solid #bae6fd;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;margin-bottom:36px">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p style="font-size:13.5px;color:#0369a1;margin:0">
+        1 crédit = déblocage des infos personnelles + téléchargement d'<strong>1 CV</strong>. Retélécharger le même CV coûte à nouveau 1 crédit.
+      </p>
+    </div>
 
-      {{-- Plan Premium --}}
-      <div style="background:linear-gradient(135deg,#021e3a 0%,#185FA5 100%);border:2px solid transparent;border-radius:18px;padding:32px;display:flex;flex-direction:column;position:relative">
-        <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:11px;font-weight:800;padding:4px 18px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">Recommandé</div>
-        <h3 style="font-size:1.1rem;font-weight:700;color:#fff;margin:0 0 8px">Plan Premium CV</h3>
-        <p style="font-size:2rem;font-weight:800;color:#F5C842;margin:0 0 4px">5 000 FCFA</p>
-        <p style="font-size:12px;color:rgba(255,255,255,.6);margin:0 0 20px">par mois (30 jours)</p>
-        <ul style="list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:10px;flex:1">
-          @foreach(['CV mis en avant dans la CVthèque','Visibilité maximale auprès des recruteurs','Accès CVthèque recruteurs Premium','Candidatures illimitées + alertes prioritaires','Support prioritaire'] as $f)
-            <li style="font-size:13.5px;color:rgba(255,255,255,.85);display:flex;align-items:flex-start;gap:8px">
-              <span style="color:#F5C842;font-weight:700;flex-shrink:0">✓</span> {{ $f }}
-            </li>
-          @endforeach
-        </ul>
+    {{-- Packs --}}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:16px;margin-bottom:40px">
+
+      @php
+      $packs = [
+          ['credits' => 5,  'prix' => '5 000',  'unit' => '1 000 / CV', 'badge' => null,           'dark' => false],
+          ['credits' => 10, 'prix' => '9 000',  'unit' => '900 / CV',   'badge' => null,           'dark' => false],
+          ['credits' => 25, 'prix' => '20 000', 'unit' => '800 / CV',   'badge' => 'Populaire',    'dark' => false],
+          ['credits' => 50, 'prix' => '35 000', 'unit' => '700 / CV',   'badge' => 'Meilleure valeur', 'dark' => true],
+      ];
+      @endphp
+
+      @foreach($packs as $pack)
+      <div style="background:{{ $pack['dark'] ? 'linear-gradient(145deg,#042C53,#185FA5)' : '#fff' }};border:2px solid {{ $pack['dark'] ? 'transparent' : ($pack['badge'] === 'Populaire' ? '#93c5fd' : '#e2e8f0') }};border-radius:16px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative">
+        @if($pack['badge'])
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:10.5px;font-weight:800;padding:3px 14px;border-radius:20px;text-transform:uppercase;white-space:nowrap;letter-spacing:.04em">{{ $pack['badge'] }}</div>
+        @endif
+
+        <p style="font-size:2.6rem;font-weight:900;color:{{ $pack['dark'] ? '#F5C842' : '#042C53' }};margin:0;line-height:1">{{ $pack['credits'] }}</p>
+        <p style="font-size:13px;color:{{ $pack['dark'] ? 'rgba(255,255,255,.65)' : '#94a3b8' }};margin:2px 0 16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">crédits</p>
+
+        <p style="font-size:1.35rem;font-weight:800;color:{{ $pack['dark'] ? '#fff' : '#042C53' }};margin:0 0 4px">{{ $pack['prix'] }} FCFA</p>
+        <p style="font-size:11.5px;color:{{ $pack['dark'] ? 'rgba(255,255,255,.5)' : '#94a3b8' }};margin:0 0 20px">{{ $pack['unit'] }}</p>
+
         @auth
-          <a href="{{ route('candidat.abonnement') }}" style="display:block;text-align:center;padding:11px 20px;background:#F5C842;border-radius:8px;font-weight:800;font-size:14px;color:#042C53;text-decoration:none">
-            ★ Passer au Premium — 5 000 FCFA
-          </a>
+          @if(auth()->user()->hasRole('recruteur'))
+            <a href="{{ route('recruteur.cv-credits.confirm', ['credits' => $pack['credits']]) }}"
+               style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:10px 16px;background:{{ $pack['dark'] ? '#F5C842' : '#185FA5' }};color:{{ $pack['dark'] ? '#042C53' : '#fff' }};border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+              Acheter ce pack
+            </a>
+          @else
+            <p style="font-size:12px;color:{{ $pack['dark'] ? 'rgba(255,255,255,.6)' : '#94a3b8' }};margin:0">Réservé aux recruteurs</p>
+          @endif
         @else
-          <a href="{{ route('auth.inscription') }}" style="display:block;text-align:center;padding:11px 20px;background:#F5C842;border-radius:8px;font-weight:800;font-size:14px;color:#042C53;text-decoration:none">
-            ★ S'inscrire et passer au Premium
+          <a href="{{ route('auth.inscription') }}"
+             style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:10px 16px;background:{{ $pack['dark'] ? '#F5C842' : '#185FA5' }};color:{{ $pack['dark'] ? '#042C53' : '#fff' }};border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+            Créer un compte recruteur
           </a>
         @endauth
       </div>
+      @endforeach
+
     </div>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 28px;text-align:center">
-      <h3 style="font-size:1rem;font-weight:700;color:#042C53;margin:0 0 8px">Vous êtes recruteur ?</h3>
-      <p style="font-size:13.5px;color:#64748b;margin:0 0 16px">Accédez à toute la CVthèque et contactez directement les candidats qualifiés.</p>
-      <a href="{{ route('auth.inscription') }}" style="padding:10px 24px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13.5px;text-decoration:none">
-        Créer un compte recruteur
-      </a>
+    {{-- Paiement --}}
+    <div style="text-align:center">
+      <p style="font-size:13px;color:#94a3b8;margin:0 0 8px">Paiement sécurisé via Mobile Money (MTN, Moov) ou carte bancaire.</p>
+      <p style="font-size:12px;color:#cbd5e1;margin:0">Les crédits sont valables à vie et ne s'expirent jamais.</p>
     </div>
+
   </div>
 </section>
+
 @endsection

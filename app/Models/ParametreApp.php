@@ -17,6 +17,6 @@ class ParametreApp extends Model
 
     public static function set(string $cle, string $valeur): void
     {
-        static::where('cle', $cle)->update(['valeur' => $valeur]);
+        static::updateOrCreate(['cle' => $cle], ['valeur' => $valeur]);
     }
 }

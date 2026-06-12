@@ -239,4 +239,86 @@ class OffrePubliqueTest extends TestCase
         $this->post(route('candidat.offres-sauvegardees.toggle', $offre))
             ->assertRedirect(route('auth.connexion'));
     }
+
+    // ── Publication publique (formulaire /publier) ────────
+
+    public function test_publier_redirige_si_non_connecte(): void
+    {
+        $this->get(route('offre.publier'))
+            ->assertRedirect(route('auth.connexion'));
+    }
+
+    public function test_publier_bloque_un_candidat(): void
+    {
+        $candidat = $this->creerCandidat();
+
+        $this->actingAs($candidat)
+            ->get(route('offre.publier'))
+            ->assertRedirect(route('candidat.dashboard'))
+            ->assertSessionHas('error');
+    }
+
+    public function test_publier_accessible_au_recruteur(): void
+    {
+        $recruteur = $this->creerRecruteur();
+
+        $this->actingAs($recruteur)
+            ->get(route('offre.publier'))
+            ->assertOk()
+            ->assertViewIs('public.offre.publier');
+    }
+
+    public function test_storer_offre_cree_en_attente(): void
+    {
+        $recruteur = $this->creerRecruteur();
+
+        $this->actingAs($recruteur)
+            ->post(route('offre.publier.store'), [
+                'titre'        => 'Développeur PHP',
+                'entreprise'   => 'Acme',
+                'localisation' => 'Cotonou',
+                'type'         => 'CDI',
+                'description'  => str_repeat('Lorem ipsum ', 10),
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('offres', [
+            'recruteur_id' => $recruteur->id,
+            'titre'        => 'Développeur PHP',
+            'statut'       => 'en_attente',
+        ]);
+    }
+
+    public function test_storer_offre_bloque_un_candidat(): void
+    {
+        $candidat = $this->creerCandidat();
+
+        $this->actingAs($candidat)
+            ->post(route('offre.publier.store'), [
+                'titre'        => 'Offre frauduleuse',
+                'entreprise'   => 'Fausse',
+                'localisation' => 'Cotonou',
+                'type'         => 'CDI',
+                'description'  => str_repeat('x', 60),
+            ])
+            ->assertRedirect(route('candidat.dashboard'))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseMissing('offres', ['recruteur_id' => $candidat->id]);
+    }
+
+    public function test_storer_offre_validation_titre_requis(): void
+    {
+        $recruteur = $this->creerRecruteur();
+
+        $this->actingAs($recruteur)
+            ->post(route('offre.publier.store'), [
+                'titre'        => '',
+                'entreprise'   => 'Acme',
+                'localisation' => 'Cotonou',
+                'type'         => 'CDI',
+                'description'  => str_repeat('Lorem ', 20),
+            ])
+            ->assertSessionHasErrors('titre');
+    }
 }

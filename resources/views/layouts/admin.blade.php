@@ -27,6 +27,7 @@
         </a>
       </div>
       <div class="dash-header__right">
+        @include('partials._notification-bell')
         <div class="dash-header__user">
           <div class="dash-header__avatar">{{ auth()->user()->initiale }}</div>
           <span class="dash-header__username">{{ auth()->user()->nom_complet }}</span>
@@ -143,10 +144,16 @@
           $refRoutes = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*'];
           $refActif  = request()->routeIs(...$refRoutes);
         @endphp
-        <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') ? 'active' : '' }}">
+        <li class="adm-nav__item {{ request()->routeIs('admin.parametres*') && !request()->routeIs('admin.seo*') ? 'active' : '' }}">
           <a href="{{ route('admin.parametres') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Paramètres
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.seo*') ? 'active' : '' }}">
+          <a href="{{ route('admin.seo.index') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            SEO &amp; Référencement
           </a>
         </li>
         <li class="adm-nav__item {{ $refActif ? 'active' : '' }}">

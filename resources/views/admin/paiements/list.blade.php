@@ -9,6 +9,16 @@
   </div>
 </div>
 
+@if($stats['count_credits_attente'] > 0)
+<div style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;margin-bottom:20px">
+  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#d97706" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+  <p style="margin:0;font-size:13.5px;color:#92400e;font-weight:600">
+    {{ $stats['count_credits_attente'] }} achat{{ $stats['count_credits_attente'] > 1 ? 's' : '' }} de crédits CVthèque en attente de confirmation.
+    <a href="?categorie=cv_credits&statut=en_attente" style="color:#92400e;text-decoration:underline">Voir</a>
+  </p>
+</div>
+@endif
+
 {{-- Stats --}}
 <div class="adm-stats" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:24px">
   <div class="adm-stat">
@@ -66,8 +76,9 @@
 
     <select name="categorie" class="adm-select">
       <option value="">Toutes catégories</option>
-      <option value="abonnement" {{ request('categorie') === 'abonnement' ? 'selected' : '' }}>Abonnements</option>
-      <option value="service"    {{ request('categorie') === 'service'    ? 'selected' : '' }}>Services / Commandes</option>
+      <option value="abonnement"  {{ request('categorie') === 'abonnement'  ? 'selected' : '' }}>Abonnements</option>
+      <option value="cv_credits"  {{ request('categorie') === 'cv_credits'  ? 'selected' : '' }}>Crédits CVthèque</option>
+      <option value="service"     {{ request('categorie') === 'service'     ? 'selected' : '' }}>Services / Commandes</option>
     </select>
 
     <button type="submit" class="adm-btn adm-btn--primary">Filtrer</button>
@@ -108,12 +119,15 @@
           </td>
 
           <td>
-            @if($paiement->abonnement?->plan)
+            @if($paiement->type === 'cv_credits')
+              <div style="font-weight:700;color:#042C53;font-size:13px">{{ $paiement->credits_cv }} crédit{{ $paiement->credits_cv > 1 ? 's' : '' }}</div>
+              <span class="adm-badge adm-badge--blue" style="font-size:11px;background:#e0f2fe;color:#0369a1">CVthèque</span>
+            @elseif($paiement->abonnement?->plan)
               <div style="font-weight:600;color:#042C53;font-size:13px">{{ $paiement->abonnement->plan->name }}</div>
               <span class="adm-badge adm-badge--blue" style="font-size:11px">Abonnement</span>
             @elseif($paiement->type)
               <span class="adm-badge adm-badge--gray" style="font-size:11px">
-                {{ ucfirst(str_replace(['abonnement_', '_'], ['' , ' '], $paiement->type)) }}
+                {{ ucfirst(str_replace(['abonnement_', '_'], ['', ' '], $paiement->type)) }}
               </span>
             @else
               <span style="color:#cbd5e1">—</span>

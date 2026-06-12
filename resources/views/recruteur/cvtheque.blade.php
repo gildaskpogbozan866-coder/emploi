@@ -11,7 +11,23 @@
     <h1>CVthèque</h1>
     <p>{{ $cvs->total() }} CV{{ $cvs->total() > 1 ? 's' : '' }} disponible{{ $cvs->total() > 1 ? 's' : '' }} sur la plateforme</p>
   </div>
+  <div class="rec-topbar__right" style="display:flex;align-items:center;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:8px 16px">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span style="font-size:13px;color:#0284c7;font-weight:700">{{ $credits }} crédit{{ $credits > 1 ? 's' : '' }}</span>
+    </div>
+    <a href="{{ route('cv.public.tarif') }}" class="rec-btn rec-btn--primary rec-btn--sm">+ Acheter des crédits</a>
+  </div>
 </div>
+
+@if($credits <= 0)
+<div style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;margin-bottom:18px">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#d97706" stroke-width="2" style="flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <p style="margin:0;font-size:13px;color:#92400e">
+    Vous n'avez plus de crédits. <a href="{{ route('cv.public.tarif') }}" style="color:#92400e;font-weight:700;text-decoration:underline">Achetez un pack</a> pour télécharger des CVs.
+  </p>
+</div>
+@endif
 
 {{-- Filtres --}}
 <div class="rec-card" style="margin-bottom:18px">
@@ -21,10 +37,10 @@
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Recherche</label>
         <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" name="q" value="{{ request('q') }}" placeholder="Titre, compétences…" style="border:none;outline:none;font-family:inherit;font-size:13.5px;color:#042C53;background:transparent;width:100%">
+          <input type="text" name="q" value="{{ request('q') }}" placeholder="Titre, compétences, secteur…" style="border:none;outline:none;font-family:inherit;font-size:13.5px;color:#042C53;background:transparent;width:100%">
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:5px;min-width:180px">
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Pays</label>
         <select name="pays" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les pays</option>
@@ -33,8 +49,17 @@
           @endforeach
         </select>
       </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:180px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Disponibilité</label>
+        <select name="disponibilite" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Toutes</option>
+          <option value="en_recherche" {{ request('disponibilite') === 'en_recherche' ? 'selected' : '' }}>En recherche active</option>
+          <option value="ouvert" {{ request('disponibilite') === 'ouvert' ? 'selected' : '' }}>Ouvert aux opportunités</option>
+          <option value="indisponible" {{ request('disponibilite') === 'indisponible' ? 'selected' : '' }}>Non disponible</option>
+        </select>
+      </div>
       <button type="submit" class="rec-btn rec-btn--primary">Rechercher</button>
-      @if(request()->hasAny(['q','pays']))
+      @if(request()->hasAny(['q','pays','disponibilite']))
         <a href="{{ route('recruteur.cvtheque') }}" class="rec-btn rec-btn--outline">Effacer</a>
       @endif
     </form>
@@ -60,16 +85,25 @@
     </div>
 
     <div style="width:100%">
+      @if($cv->disponibilite)
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;background:#f8fafc;border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600;color:#475569">
+        <span style="width:6px;height:6px;border-radius:50%;background:{{ $cv->disponibilite === 'en_recherche' ? '#16a34a' : ($cv->disponibilite === 'ouvert' ? '#d97706' : '#dc2626') }}"></span>
+        {{ ['en_recherche' => 'En recherche', 'ouvert' => 'Ouvert', 'indisponible' => 'Indisponible'][$cv->disponibilite] }}
+      </div>
+      @endif
       <p style="font-size:12.5px;color:#94a3b8;margin:0 0 6px">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}
       </p>
       @if($cv->competences)
-        <p style="font-size:12.5px;color:#475569;margin:0 0 12px;line-height:1.5">{{ Str::limit($cv->competences, 80) }}</p>
+        <p style="font-size:12.5px;color:#475569;margin:0 0 4px;line-height:1.5">{{ Str::limit($cv->competences, 80) }}</p>
+      @endif
+      @if($cv->secteur)
+        <span style="font-size:11px;background:#f0f9ff;color:#0284c7;border-radius:4px;padding:2px 8px;font-weight:600">{{ $cv->secteur }}</span>
       @endif
     </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:8px;border-top:1px solid #f0f2f5;padding-top:12px">
       <span style="font-size:11.5px;color:#94a3b8">{{ $cv->vues }} vue{{ $cv->vues > 1 ? 's' : '' }}</span>
       <div style="display:flex;gap:8px;align-items:center">
         {{-- Bouton favori --}}
@@ -86,14 +120,8 @@
             @endif
           </button>
         </form>
-        {{-- Contacter --}}
-        @if(auth()->user()->premium)
-          <a href="mailto:{{ $cv->candidat->email }}" class="rec-btn rec-btn--primary rec-btn--sm">Contacter</a>
-        @else
-          <a href="{{ route('recruteur.abonnement') }}" class="rec-btn rec-btn--outline rec-btn--sm" title="Fonctionnalité Premium">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Premium
-          </a>
-        @endif
+        {{-- Voir profil --}}
+        <a href="{{ route('recruteur.cvtheque.show', $cv) }}" class="rec-btn rec-btn--primary rec-btn--sm">Voir profil</a>
       </div>
     </div>
   </div>

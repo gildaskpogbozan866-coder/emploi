@@ -26,7 +26,7 @@
       <div style="padding:20px 24px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type de contrat</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->type }}</p></div>
-          <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Secteur</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->secteur ?? '—' }}</p></div>
+          <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Secteur</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->secteur ? (is_array($offre->secteur) ? implode(', ', $offre->secteur) : $offre->secteur) : '—' }}</p></div>
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Localisation</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->localisation }}</p></div>
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Candidatures</p><p style="font-size:1.2rem;font-weight:800;color:#185FA5;margin:0">{{ $offre->candidatures_count }}</p></div>
         </div>

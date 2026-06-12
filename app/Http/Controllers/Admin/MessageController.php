@@ -11,7 +11,7 @@ class MessageController extends Controller
 {
     public function index(Request $request)
     {
-        $conversations = Conversation::with(['user1','user2','dernierMessage'])
+        $conversations = Conversation::with(['user1', 'user2', 'dernierMessage'])
             ->orderByDesc('dernier_message_at')
             ->paginate(20);
 
@@ -21,5 +21,14 @@ class MessageController extends Controller
         ];
 
         return view('admin.messagerie', compact('conversations', 'stats'));
+    }
+
+    public function show(Conversation $conversation)
+    {
+        $messages = $conversation->messages()->with('expediteur')->oldest()->get();
+        $user1    = $conversation->user1;
+        $user2    = $conversation->user2;
+
+        return view('admin.messagerie-detail', compact('conversation', 'messages', 'user1', 'user2'));
     }
 }

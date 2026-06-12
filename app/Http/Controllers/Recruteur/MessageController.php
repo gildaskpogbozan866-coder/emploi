@@ -4,55 +4,98 @@ namespace App\Http\Controllers\Recruteur;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
-use App\Models\Message;
+use App\Models\User;
+use App\Services\MessageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+    public function __construct(private readonly MessageService $service) {}
+
     public function index()
     {
-        $conversations = Conversation::where('user1_id', Auth::id())
-            ->orWhere('user2_id', Auth::id())
-            ->with(['user1', 'user2', 'dernierMessage'])
-            ->orderByDesc('dernier_message_at')
-            ->get();
+        $conversations = $this->service->conversations(Auth::id());
 
         return view('recruteur.messagerie', compact('conversations'));
     }
 
     public function show(Conversation $conversation)
     {
-        abort_if(
-            $conversation->user1_id !== Auth::id() && $conversation->user2_id !== Auth::id(),
-            403
-        );
+        $this->autoriser($conversation);
+
+        $this->service->marquerLus($conversation, Auth::id());
+
         $messages = $conversation->messages()->with('expediteur')->oldest()->get();
         $autre    = $conversation->autreParticipant(Auth::id());
-
-        $conversation->messages()
-            ->where('expediteur_id', '!=', Auth::id())
-            ->where('lu', false)
-            ->update(['lu' => true]);
 
         return view('recruteur.messagerie-detail', compact('conversation', 'messages', 'autre'));
     }
 
     public function store(Request $request, Conversation $conversation)
     {
+        $this->autoriser($conversation);
+
+        $request->validate([
+            'contenu' => 'nullable|string|max:2000',
+            'fichier' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,doc,docx|max:5120',
+        ]);
+
+        abort_if(!$request->filled('contenu') && !$request->hasFile('fichier'), 422);
+
+        $message = $this->service->envoyer(
+            $conversation,
+            Auth::id(),
+            $request->contenu,
+            $request->file('fichier')
+        );
+
+        $this->service->notifier($conversation, $message, Auth::id());
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message->load('expediteur')]);
+        }
+
+        return back()->with('success', 'Message envoyé.');
+    }
+
+    public function initier(User $user)
+    {
+        $conversation = $this->service->initier(Auth::id(), $user->id);
+
+        return redirect()->route('recruteur.messagerie.show', $conversation);
+    }
+
+    public function rafraichir(Request $request, Conversation $conversation)
+    {
+        $this->autoriser($conversation);
+
+        $depuis   = $request->integer('depuis', 0);
+        $messages = $conversation->messages()
+            ->with('expediteur')
+            ->where('id', '>', $depuis)
+            ->oldest()
+            ->get();
+
+        $this->service->marquerLus($conversation, Auth::id());
+
+        return response()->json(['messages' => $messages]);
+    }
+
+    public function archiver(Conversation $conversation)
+    {
+        $this->autoriser($conversation);
+
+        $this->service->archiver($conversation, Auth::id());
+
+        return redirect()->route('recruteur.messagerie')->with('success', 'Conversation archivée.');
+    }
+
+    private function autoriser(Conversation $conversation): void
+    {
         abort_if(
             $conversation->user1_id !== Auth::id() && $conversation->user2_id !== Auth::id(),
             403
         );
-        $request->validate(['contenu' => 'required|string|max:2000']);
-
-        Message::create([
-            'conversation_id' => $conversation->id,
-            'expediteur_id'   => Auth::id(),
-            'contenu'         => $request->contenu,
-        ]);
-        $conversation->update(['dernier_message_at' => now()]);
-
-        return back()->with('success', 'Message envoyé.');
     }
 }

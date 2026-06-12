@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Recruteur;
 
 use App\Http\Controllers\Controller;
+use App\Models\CvDownload;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -30,6 +31,12 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('recruteur.dashboard', compact('user', 'stats', 'dernieres_offres', 'dernieres_candid'));
+        $cvStats = [
+            'credits_restants'   => $user->cv_credits,
+            'cvs_telecharges'    => CvDownload::where('recruteur_id', $user->id)->count(),
+            'credits_total'      => $user->cv_credits + CvDownload::where('recruteur_id', $user->id)->count(),
+        ];
+
+        return view('recruteur.dashboard', compact('user', 'stats', 'dernieres_offres', 'dernieres_candid', 'cvStats'));
     }
 }

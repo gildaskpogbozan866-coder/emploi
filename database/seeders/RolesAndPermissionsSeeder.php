@@ -31,13 +31,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $candidat = SpatieRole::firstOrCreate(['name' => Role::CANDIDAT]);
         $candidat->syncPermissions(Permission::candidatPermissions());
 
-        // Le rôle talent n'est plus assigné aux nouveaux utilisateurs.
-        // On synchronise quand même ses permissions = candidat pour
-        // ne pas casser les comptes existants qui n'auraient pas encore migrés.
-        if ($talent = SpatieRole::find(DB::table('roles')->where('name', Role::TALENT)->value('id'))) {
-            $talent->syncPermissions(Permission::candidatPermissions());
-        }
-
         $this->command->info('✅ Rôles et permissions créés.');
     }
 }

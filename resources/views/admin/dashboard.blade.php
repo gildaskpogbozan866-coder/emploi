@@ -30,15 +30,6 @@
     </div>
   </div>
   <div class="adm-stat">
-    <div class="adm-stat__icon adm-stat__icon--orange">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-    </div>
-    <div>
-      <div class="adm-stat__val">{{ $stats['talents'] }}</div>
-      <div class="adm-stat__label">Talents</div>
-    </div>
-  </div>
-  <div class="adm-stat">
     <div class="adm-stat__icon adm-stat__icon--blue">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
     </div>

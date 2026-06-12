@@ -19,7 +19,22 @@ class AdminSeeder extends Seeder
             [
                 'prenom'            => 'Super',
                 'nom'               => 'Admin',
-                'password'          => Hash::make('Admin@2026'),
+                'password'          => Hash::make('
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                '),
                 'role'              => Role::ADMIN,
                 'pays'              => 'Bénin',
                 'actif'             => true,
