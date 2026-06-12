@@ -43,15 +43,16 @@
         <div class="rec-form-group">
           <label>Type de contrat <span style="color:#e53e3e">*</span></label>
           <select name="type" required>
-            @foreach(['CDI','CDD','Stage','Bourse','Freelance','Temps partiel'] as $t)
-              <option value="{{ $t }}" {{ old('type') === $t ? 'selected' : '' }}>{{ $t }}</option>
+            <option value="">— Choisir —</option>
+            @foreach($typeContrats as $tc)
+              <option value="{{ $tc->code }}" {{ old('type') === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
             @endforeach
           </select>
         </div>
 
         <div class="rec-form-group">
           <label>Secteur d'activité</label>
-          <input type="text" name="secteur" value="{{ old('secteur') }}" placeholder="Informatique, Finance, Commerce…">
+          <x-secteur-select name="secteur" :selected="collect(old('secteur', []))" />
         </div>
         <div class="rec-form-group">
           <label>Rémunération</label>

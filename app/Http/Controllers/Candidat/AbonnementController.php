@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidat;
 use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
 use App\Models\Paiement;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,52 +13,62 @@ class AbonnementController extends Controller
 {
     public function index()
     {
+        $user        = Auth::user();
+        $abonnement  = $user->abonnementActif()->with('plan')->first();
+        $abonnements = $user->abonnements()->with('plan')->latest('starts_at')->get();
+
+        return view('candidat.abonnement', compact('user', 'abonnement', 'abonnements'));
+    }
+
+    public function choisirPlan()
+    {
         $user       = Auth::user();
-        $abonnement = $user->abonnementActif;
-        $historique = $user->abonnements()->latest()->get();
+        $abonnement = $user->abonnementActif()->with('plan')->first();
 
-        $plans = [
-            'gratuit' => ['label' => 'Plan Gratuit', 'prix' => 0,    'features' => ['Dépôt 1 CV', 'Candidature illimitée', 'Alertes basiques']],
-            'premium' => ['label' => 'Plan Premium', 'prix' => 5000, 'features' => ['CV mis en avant', 'Visibilité maximale', 'Support prioritaire', 'Accès CVthèque recruteurs']],
-        ];
+        $plans = Plan::where('is_active', true)
+                     ->whereIn('target_type', ['candidat', 'both'])
+                     ->with('features')
+                     ->orderBy('price')
+                     ->get();
 
-        return view('candidat.abonnement', compact('user', 'abonnement', 'historique', 'plans'));
+        return view('candidat.abonnement-plans', compact('abonnement', 'plans'));
     }
 
     public function souscrire(Request $request)
     {
-        $request->validate(['plan' => 'required|in:gratuit,premium', 'methode' => 'nullable|string']);
+        $request->validate(['plan_id' => 'required|integer|exists:plans,id']);
 
-        Auth::user()->abonnements()->where('statut', 'actif')->update(['statut' => 'annule']);
+        $plan = Plan::where('is_active', true)
+                    ->whereIn('target_type', ['candidat', 'both'])
+                    ->findOrFail($request->plan_id);
+
+        Auth::user()->abonnements()
+            ->where('status', 'active')
+            ->update(['status' => 'cancelled']);
 
         $abonnement = Abonnement::create([
-            'user_id'   => Auth::id(),
-            'plan'      => $request->plan,
-            'type'      => 'cv',
-            'prix'      => $request->plan === 'premium' ? 5000 : 0,
-            'statut'    => 'actif',
-            'debut_le'  => now(),
-            'expire_le' => $request->plan === 'premium' ? now()->addDays(30) : null,
+            'user_id'    => Auth::id(),
+            'plan_id'    => $plan->id,
+            'status'     => 'cancelled',
+            'starts_at'  => now(),
+            'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
+            'auto_renew' => false,
         ]);
 
-        if ($request->plan === 'premium') {
-            Paiement::create([
-                'user_id'      => Auth::id(),
-                'montant'      => 5000,
-                'type'         => 'abonnement_cv',
-                'payable_id'   => $abonnement->id,
-                'payable_type' => Abonnement::class,
-                'methode'      => $request->methode ?? 'mobile_money',
-                'statut'       => 'en_attente',
-            ]);
-        }
-
-        Auth::user()->update(['premium' => $request->plan === 'premium']);
+        Paiement::create([
+            'user_id'         => Auth::id(),
+            'subscription_id' => $abonnement->id,
+            'montant'         => $plan->price,
+            'devise'          => $plan->currency,
+            'type'            => 'abonnement_candidat',
+            'methode'         => 'mobile_money',
+            'statut'          => 'en_attente',
+        ]);
 
         return redirect()->route('candidat.abonnement')
-            ->with('success', $request->plan === 'premium'
-                ? 'Abonnement Premium activé ! Paiement en cours de vérification.'
-                : 'Vous utilisez le plan gratuit.');
+            ->with('success', $plan->is_free
+                ? 'Plan gratuit activé avec succès.'
+                : 'Demande envoyée ! Un conseiller vous contactera pour finaliser le paiement.');
     }
 
     public function historique()

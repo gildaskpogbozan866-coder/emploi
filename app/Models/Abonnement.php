@@ -10,14 +10,15 @@ class Abonnement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'plan', 'type', 'prix', 'statut', 'debut_le', 'expire_le',
+        'user_id', 'plan_id', 'starts_at', 'ends_at', 'status', 'auto_renew',
     ];
 
     protected function casts(): array
     {
         return [
-            'debut_le'  => 'datetime',
-            'expire_le' => 'datetime',
+            'starts_at'  => 'datetime',
+            'ends_at'    => 'datetime',
+            'auto_renew' => 'boolean',
         ];
     }
 
@@ -26,14 +27,25 @@ class Abonnement extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
     public function paiements()
     {
-        return $this->morphMany(Paiement::class, 'payable');
+        return $this->hasMany(Paiement::class, 'subscription_id');
     }
 
     public function estActif(): bool
     {
-        return $this->statut === 'actif'
-            && ($this->expire_le === null || $this->expire_le->isFuture());
+        return $this->status === 'active'
+            && ($this->ends_at === null || $this->ends_at->isFuture());
+    }
+
+    public function scopeActif($query)
+    {
+        return $query->where('status', 'active')
+                     ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()));
     }
 }

@@ -13,13 +13,17 @@ class Offre extends Model
         'recruteur_id', 'titre', 'entreprise', 'localisation',
         'type', 'secteur', 'salaire', 'description',
         'exigences', 'date_limite', 'fichier', 'statut', 'premium', 'vues',
+        'publication_plan_id', 'published_at', 'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'date_limite' => 'date',
-            'premium'     => 'boolean',
+            'date_limite'  => 'date',
+            'premium'      => 'boolean',
+            'published_at' => 'datetime',
+            'expires_at'   => 'datetime',
+            'secteur'      => 'array',
         ];
     }
 
@@ -43,6 +47,11 @@ class Offre extends Model
         return $this->belongsToMany(User::class, 'offres_sauvegardees');
     }
 
+    public function publicationPlan()
+    {
+        return $this->belongsTo(JobPublicationPlan::class, 'publication_plan_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('statut', 'active');
@@ -51,5 +60,11 @@ class Offre extends Model
     public function scopeRecente($query)
     {
         return $query->orderByDesc('created_at');
+    }
+
+    /** Filtre les offres dont la durée de publication n'a pas expiré. */
+    public function scopeNonExpiree($query)
+    {
+        return $query->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()));
     }
 }

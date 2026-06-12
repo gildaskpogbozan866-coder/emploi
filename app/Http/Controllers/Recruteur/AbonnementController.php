@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Recruteur;
 use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
 use App\Models\Paiement;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,93 +14,63 @@ class AbonnementController extends Controller
     public function index()
     {
         $user       = Auth::user();
-        $abonnement = $user->abonnementActif;
+        $abonnement = $user->abonnementActif()->with('plan')->first();
 
-        $plans = [
-            'premium_30' => [
-                'label'       => 'Premium',
-                'sous_label'  => 'Jusqu\'à 10 annonces / mois',
-                'description' => 'Recrutez activement avec 10 annonces Premium, le Matching automatique et tous les outils de gestion professionnels.',
-                'prix'        => 30300,
-                'badge'       => null,
-                'features'    => [
-                    'Publication de 10 annonces',
-                    'Alerte par email des candidatures reçues',
-                    'Accompagnement pendant la diffusion',
-                    'Multidiffusion de votre annonce sur nos différentes pages',
-                    'Envoi aux candidats en veille de la CVthèque',
-                    'Remontée de l\'annonce en tête de liste',
-                    'Filtres de gestion des candidatures',
-                    'Tri automatique par pertinence (Matching)',
-                    'Tableau de synthèse Excel des candidatures',
-                ],
-                'options'     => [
-                    'Réception par email des candidatures',
-                    'Blocage des candidatures non pertinentes',
-                    'Publication en mode anonyme',
-                ],
-            ],
-            'premium_50' => [
-                'label'       => 'Illimité',
-                'sous_label'  => 'Annonces illimitées',
-                'description' => 'Publiez toutes vos annonces Premium en illimité.',
-                'prix'        => 50500,
-                'badge'       => 'Meilleur rapport qualité/prix',
-                'features'    => [
-                    'Publication de vos annonces en illimité',
-                    'Alerte par email des candidatures reçues',
-                    'Accompagnement pendant la diffusion',
-                    'Multidiffusion de votre annonce sur nos différentes pages',
-                    'Envoi aux candidats en veille de la CVthèque',
-                    'Remontée de l\'annonce en tête de liste',
-                    'Filtres de gestion des candidatures',
-                    'Tri automatique par pertinence (Matching)',
-                    'Tableau de synthèse Excel des candidatures',
-                ],
-                'options'     => [
-                    'Réception par email des candidatures',
-                    'Blocage des candidatures non pertinentes',
-                    'Publication en mode anonyme',
-                    'Publication de toutes vos annonces en illimité',
-                ],
-            ],
-        ];
+        $abonnements = $user->abonnements()
+                            ->with('plan')
+                            ->latest('starts_at')
+                            ->get();
 
-        return view('recruteur.abonnement', compact('user', 'abonnement', 'plans'));
+        return view('recruteur.abonnement', compact('user', 'abonnement', 'abonnements'));
+    }
+
+    public function choisirPlan()
+    {
+        $user       = Auth::user();
+        $abonnement = $user->abonnementActif()->with('plan')->first();
+
+        $plans = Plan::where('is_active', true)
+                     ->whereIn('target_type', ['recruteur', 'both'])
+                     ->with('features')
+                     ->orderBy('price')
+                     ->get();
+
+        return view('recruteur.abonnement-plans', compact('abonnement', 'plans'));
     }
 
     public function souscrire(Request $request)
     {
-        $request->validate(['plan' => 'required|in:premium_30,premium_50']);
+        $request->validate(['plan_id' => 'required|integer|exists:plans,id']);
 
-        Auth::user()->abonnements()->where('statut', 'actif')->update(['statut' => 'annule']);
+        $plan = Plan::where('is_active', true)
+                    ->whereIn('target_type', ['recruteur', 'both'])
+                    ->findOrFail($request->plan_id);
 
-        $prix = match($request->plan) {
-            'premium_30' => 30300,
-            'premium_50' => 50500,
-        };
+        // Annuler l'abonnement actif existant
+        Auth::user()->abonnements()
+            ->where('status', 'active')
+            ->update(['status' => 'cancelled']);
 
         $abonnement = Abonnement::create([
-            'user_id'   => Auth::id(),
-            'plan'      => $request->plan,
-            'type'      => 'recruteur',
-            'prix'      => $prix,
-            'statut'    => 'actif',
-            'debut_le'  => now(),
-            'expire_le' => now()->addDays(30),
+            'user_id'    => Auth::id(),
+            'plan_id'    => $plan->id,
+            'status'     => 'cancelled', // activé par l'admin après confirmation du paiement
+            'starts_at'  => now(),
+            'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
+            'auto_renew' => false,
         ]);
 
         Paiement::create([
-            'user_id'      => Auth::id(),
-            'montant'      => $prix,
-            'type'         => 'abonnement_recruteur',
-            'payable_id'   => $abonnement->id,
-            'payable_type' => Abonnement::class,
-            'methode'      => 'mobile_money',
-            'statut'       => 'en_attente',
+            'user_id'         => Auth::id(),
+            'subscription_id' => $abonnement->id,
+            'montant'         => $plan->price,
+            'devise'          => $plan->currency,
+            'type'            => 'abonnement_recruteur',
+            'methode'         => 'mobile_money',
+            'statut'          => 'en_attente',
         ]);
 
         return redirect()->route('recruteur.abonnement')
-            ->with('success', 'Abonnement souscrit ! Un conseiller vous contacte pour finaliser le paiement.');
+            ->with('success', 'Demande envoyée ! Un conseiller vous contactera pour finaliser le paiement.');
     }
 }
