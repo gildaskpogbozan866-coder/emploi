@@ -289,6 +289,9 @@ class ProfilControllerTest extends TestCase
 
     public function test_upload_avatar_valide(): void
     {
+        if (! function_exists('imagecreatetruecolor')) {
+            $this->markTestSkipped('Extension PHP GD requise pour ce test.');
+        }
         Storage::fake('public');
         $candidat = $this->creerCandidat();
 

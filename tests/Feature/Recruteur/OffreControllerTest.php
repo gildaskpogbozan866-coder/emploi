@@ -22,6 +22,14 @@ class OffreControllerTest extends TestCase
         parent::setUp();
         $this->seed(RolesAndPermissionsSeeder::class);
         Cache::flush();
+        // Les validations 'exists:type_contrats,code' exigent ces enregistrements
+        \App\Models\TypeContrat::insert([
+            ['code' => 'CDI',          'libelle' => 'Contrat à Durée Indéterminée', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'CDD',          'libelle' => 'Contrat à Durée Déterminée',   'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'Stage',        'libelle' => 'Stage',                         'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'Freelance',    'libelle' => 'Freelance',                     'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'Temps partiel','libelle' => 'Temps partiel',                 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 
     // ── Helpers ───────────────────────────────────────────
@@ -34,6 +42,24 @@ class OffreControllerTest extends TestCase
         RecruteurVerification::create([
             'user_id' => $user->id,
             'statut'  => 'approuve',
+        ]);
+        // Abonnement actif sans limite de publications (job_post_limit = null = illimité)
+        $plan = \App\Models\Plan::firstOrCreate(
+            ['slug' => 'recruteur-test'],
+            [
+                'name'        => 'Plan Test Recruteur',
+                'target_type' => 'recruteur',
+                'price'       => 0,
+                'is_free'     => true,
+                'is_active'   => true,
+            ]
+        );
+        \App\Models\Abonnement::create([
+            'user_id'   => $user->id,
+            'plan_id'   => $plan->id,
+            'starts_at' => now()->subDay(),
+            'ends_at'   => now()->addYear(),
+            'status'    => 'active',
         ]);
         return $user;
     }
