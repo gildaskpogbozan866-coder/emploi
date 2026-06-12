@@ -88,7 +88,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 }
 .candidat-strip__name { font-size: 14px; font-weight: 700; color: #0a3d20; }
 .candidat-strip__email { font-size: 12px; color: #5a7a65; margin-top: 2px; }
-.candidat-strip__date { font-size: 12px; color: #94a3b8; }
+.candidat-strip__date { font-size: 12px; color: #64748b; }
 
 .succes-info-strip {
   display: flex; align-items: flex-start; gap: 12px;
@@ -152,7 +152,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 .btn-creer-compte:hover { background: #38A169; transform: translateY(-2px); }
 
 .separator-or {
-  text-align: center; color: #94a3b8; font-size: 12.5px;
+  text-align: center; color: #64748b; font-size: 12.5px;
   margin: 14px 0; position: relative;
 }
 .separator-or::before, .separator-or::after {

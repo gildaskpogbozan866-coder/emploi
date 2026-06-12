@@ -58,7 +58,7 @@
 .cand-sidebar__role {
   font-family: var(--font-body);
   font-size: 10.5px;
-  color: rgba(255,255,255,0.50);
+  color: rgba(255,255,255,0.78);
   margin-top: 2px;
 }
 .cand-sidebar__badge {
@@ -85,7 +85,7 @@
   font-family: var(--font-body);
   font-size: 9.5px;
   font-weight: 700;
-  color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.62);
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -437,7 +437,7 @@
 .cand-sidebar__logo small {
   font-family: var(--font-body);
   font-size: 10px;
-  color: rgba(255,255,255,0.40);
+  color: rgba(255,255,255,0.72);
   text-transform: uppercase;
   letter-spacing: 0.10em;
   margin-top: 2px;

@@ -200,7 +200,7 @@
       color: #475569;
     }
     .tpr-masked {
-      color: #94a3b8;
+      color: #64748b;
       font-style: italic;
       letter-spacing: 0.04em;
       user-select: none;
@@ -317,7 +317,7 @@
     .tpr-val--green { color: #16a34a; font-weight: 600; }
     .tpr-val--blue  { color: #1d4ed8; font-weight: 500; }
     .tpr-val--gold  { color: #854d0e; font-weight: 500; }
-    .tpr-val--muted { color: #94a3b8; font-style: italic; }
+    .tpr-val--muted { color: #64748b; font-style: italic; }
 
     .tpr-description {
       font-family: var(--font-body);
@@ -372,7 +372,7 @@
       opacity: .5;
       background: #f9fafb;
       border-color: #e5e7eb;
-      color: #9ca3af;
+      color: #6b7280;
     }
     .tpr-doc-item--manquant svg { color: #d1d5db; }
 

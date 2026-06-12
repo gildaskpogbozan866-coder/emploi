@@ -172,7 +172,7 @@
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .article-card__stat svg { flex-shrink: 0; }

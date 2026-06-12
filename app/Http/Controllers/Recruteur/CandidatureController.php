@@ -35,7 +35,7 @@ class CandidatureController extends Controller
     public function show(Candidature $candidature)
     {
         abort_if(!Auth::user()->offres()->where('id', $candidature->offre_id)->exists(), 403);
-        $candidature->load(['candidat.cvs', 'offre']);
+        $candidature->load(['candidat', 'offre', 'cv']);
 
         // Marquer comme vue si elle vient d'être ouverte
         if ($candidature->statut === 'envoyee') {

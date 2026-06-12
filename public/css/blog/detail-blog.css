@@ -21,7 +21,7 @@
 .breadcrumb__link:hover { color: #fff; }
 
 .breadcrumb__sep {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.55);
   font-size: 12px;
 }
 
@@ -110,7 +110,7 @@
   display: block;
   font-family: var(--font-body);
   font-size: 12px;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.85);
 }
 
 .article-hero__stats { display: flex; gap: 20px; }
@@ -121,7 +121,7 @@
   gap: 6px;
   font-family: var(--font-body);
   font-size: 13px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.88);
 }
 
 /* ── Image principale ── */
@@ -358,7 +358,7 @@
 .sidebar-article__date {
   font-family: var(--font-body);
   font-size: 11px;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 /* Catégories */

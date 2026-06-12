@@ -42,10 +42,43 @@
 
         @if($candidature->note_recruteur)
           <div style="margin-top:16px;padding:14px 18px;background:{{ $candidature->statut === 'retenue' ? '#f0fdf4' : ($candidature->statut === 'refusee' ? '#fef2f2' : '#f8fafc') }};border-radius:10px;border:1px solid {{ $candidature->statut === 'retenue' ? '#bbf7d0' : ($candidature->statut === 'refusee' ? '#fecaca' : '#e2e8f0') }}">
-            <p style="font-size:12px;font-weight:700;text-transform:uppercase;color:#94a3b8;margin:0 0 6px">Note du recruteur</p>
+            <p style="font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 6px">Note du recruteur</p>
             <p style="font-size:13.5px;color:#374151;margin:0">{{ $candidature->note_recruteur }}</p>
           </div>
         @endif
+
+        {{-- CV joint à la candidature --}}
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid #e2e8f0">
+          <p style="font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 10px">CV joint</p>
+          @if($candidature->cv)
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:10px">
+              <div style="width:36px;height:36px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $candidature->cv->titre_poste }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $candidature->cv->pays }}{{ $candidature->cv->ville ? ' · '.$candidature->cv->ville : '' }}</p>
+              </div>
+              <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Profil</span>
+            </div>
+          @elseif($candidature->cv_path)
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
+              <div style="width:36px;height:36px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#64748b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:600;color:#042C53;margin:0 0 2px;font-size:14px">Fichier CV joint</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ basename($candidature->cv_path) }}</p>
+              </div>
+              <a href="{{ asset('storage/' . $candidature->cv_path) }}" target="_blank"
+                 style="font-size:12.5px;font-weight:600;color:#185FA5;text-decoration:none;white-space:nowrap;flex-shrink:0">
+                Télécharger
+              </a>
+            </div>
+          @else
+            <p style="font-size:13.5px;color:#64748b;font-style:italic;margin:0">Aucun CV joint à cette candidature.</p>
+          @endif
+        </div>
       </div>
     </div>
   </div>

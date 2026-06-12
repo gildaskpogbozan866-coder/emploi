@@ -45,7 +45,7 @@
       color: #fff; line-height: 1.25; margin-bottom: 10px;
     }
     .depotP-hero__title em { font-style: normal; color: #F5C842; }
-    .depotP-hero__sub { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+    .depotP-hero__sub { font-size: 14px; color: rgba(255,255,255,0.88); line-height: 1.6; }
 
     /* ── BANDEAU PRIX ── */
     .depotP-price-bar {
@@ -121,7 +121,7 @@
     .field__pwd-wrap .field__input { padding-right: 42px; }
     .field__pwd-toggle {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: #94a3b8;
+      background: none; border: none; cursor: pointer; color: #64748b;
       display: flex; align-items: center; padding: 4px;
     }
     .field__pwd-toggle:hover { color: #042C53; }
@@ -147,7 +147,7 @@
       font-family: var(--font); font-size: 14px; color: var(--text-main);
       min-width: 100px; flex: 1;
     }
-    .tags-hint { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+    .tags-hint { font-size: 11.5px; color: #64748b; margin-top: 5px; }
 
     /* Upload */
     .upload-zone {
@@ -175,7 +175,7 @@
     .file-preview__meta { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
     .file-preview__remove {
       margin-left: auto; background: none; border: none;
-      cursor: pointer; color: #94a3b8; font-size: 16px; padding: 4px; flex-shrink: 0;
+      cursor: pointer; color: #64748b; font-size: 16px; padding: 4px; flex-shrink: 0;
     }
     .file-preview__remove:hover { color: #042C53; }
 
@@ -217,7 +217,7 @@
     .exp-block { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 10px; }
     .exp-block__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .exp-block__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
-    .exp-remove-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #94a3b8; padding: 2px; }
+    .exp-remove-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #64748b; padding: 2px; }
     .exp-remove-btn:hover { color: #185FA5; }
     .add-entry-btn {
       display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -311,7 +311,7 @@
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .conf-premium-badge__title { font-size: 13.5px; font-weight: 700; color: #fff; }
-    .conf-premium-badge__sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+    .conf-premium-badge__sub { font-size: 12px; color: rgba(255,255,255,0.88); margin-top: 2px; }
     .conf-premium-badge__price {
       margin-left: auto; font-size: 18px; font-weight: 800; color: #F5C842; flex-shrink: 0;
     }

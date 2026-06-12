@@ -52,11 +52,11 @@
 .dash-nav__item a{ display:flex; align-items:center; gap:10px; padding:10px 20px; font-size:.87rem; color:#64748b; text-decoration:none; transition:background .15s,color .15s; }
 .dash-nav__item a:hover, .dash-nav__item.active a { background:#EBF4FD; color:#185FA5; font-weight:600; }
 .dash-sidebar__logo  { display:block; padding:0 20px 16px; font-weight:700; font-size:.9rem; color:#042C53; text-decoration:none; border-bottom:1px solid #f1f5f9; }
-.dash-sidebar__logo small { display:block; font-size:.72rem; color:#94a3b8; font-weight:400; }
+.dash-sidebar__logo small { display:block; font-size:.72rem; color:#64748b; font-weight:400; }
 .dash-sidebar__user  { display:flex; align-items:center; gap:10px; padding:14px 20px; }
 .dash-sidebar__avatar{ width:36px; height:36px; border-radius:50%; background:#042C53; color:#fff; font-weight:700; font-size:.85rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .dash-sidebar__name  { font-size:.85rem; font-weight:600; color:#042C53; }
-.dash-sidebar__role  { font-size:.75rem; color:#94a3b8; }
+.dash-sidebar__role  { font-size:.75rem; color:#64748b; }
 .dash-content        { max-width:1100px; }
 .dash-content__header{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:28px; }
 .dash-content__title { font-size:1.5rem; font-weight:700; color:#042C53; margin:0; }
@@ -147,7 +147,7 @@
 .offre-aside-card    { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:22px; position:sticky; top:80px; }
 .offre-aside-info    { margin-top:20px; display:flex; flex-direction:column; gap:10px; }
 .offre-aside-row     { display:flex; justify-content:space-between; font-size:.85rem; }
-.offre-aside-label   { color:#94a3b8; font-weight:500; }
+.offre-aside-label   { color:#64748b; font-weight:500; }
 
 /* ── Offre list ── */
 .offre-layout        { display:grid; grid-template-columns:280px 1fr; gap:28px; }
@@ -164,11 +164,11 @@
 .offre-card__title a { color:inherit; text-decoration:none; }
 .offre-card__title a:hover { color:#185FA5; }
 .offre-card__company { font-size:.87rem; color:#185FA5; font-weight:600; margin:0 0 4px; }
-.offre-card__loc     { font-size:.82rem; color:#94a3b8; margin:0; display:flex; align-items:center; gap:4px; }
+.offre-card__loc     { font-size:.82rem; color:#6b7280; margin:0; display:flex; align-items:center; gap:4px; }
 .offre-card__tags    { margin-left:auto; display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
 .offre-card__desc    { font-size:.87rem; color:#64748b; line-height:1.6; margin-bottom:14px; }
 .offre-card__footer  { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.offre-card__date    { font-size:.78rem; color:#94a3b8; flex:1; }
+.offre-card__date    { font-size:.78rem; color:#6b7280; flex:1; }
 .offre-card__deadline{ font-size:.78rem; color:#e53e3e; }
 .offre-card__btn     { padding:7px 16px; border-radius:8px; font-size:.82rem; font-weight:600; }
 

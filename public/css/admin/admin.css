@@ -75,7 +75,7 @@ body { font-family: var(--font-body); background: var(--gris-bg); color: var(--b
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.62);
   font-weight: 700;
 }
 .adm-nav__item a {
@@ -83,7 +83,7 @@ body { font-family: var(--font-body); background: var(--gris-bg); color: var(--b
   align-items: center;
   gap: 10px;
   padding: 9px 20px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.82);
   text-decoration: none;
   font-size: 0.845rem;
   font-weight: 500;
@@ -151,7 +151,7 @@ details[open] .adm-nav__chevron { transform: rotate(180deg); }
   display: block;
   padding: 5px 10px;
   font-size: 12.5px;
-  color: rgba(255,255,255,0.58);
+  color: rgba(255,255,255,0.80);
   border-radius: 5px;
   text-decoration: none;
   transition: background .15s, color .15s;
@@ -296,7 +296,7 @@ details[open] .adm-nav__chevron { transform: rotate(180deg); }
 .adm-filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
 .adm-search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--gris-border); border-radius: 9px; padding: 8px 14px; flex: 1; max-width: 320px; transition: border-color 0.2s; }
 .adm-search:focus-within { border-color: var(--bleu-clair); }
-.adm-search svg { color: #94a3b8; flex-shrink: 0; }
+.adm-search svg { color: #64748b; flex-shrink: 0; }
 .adm-search input { border: none; outline: none; font-family: var(--font-body); font-size: 0.845rem; color: var(--bleu-fonce); background: transparent; width: 100%; }
 .adm-search input::placeholder { color: #b0bec5; }
 .adm-select { font-family: var(--font-body); font-size: 0.82rem; color: var(--bleu-fonce); background: #fff; border: 1.5px solid var(--gris-border); border-radius: 9px; padding: 8px 12px; outline: none; cursor: pointer; }
