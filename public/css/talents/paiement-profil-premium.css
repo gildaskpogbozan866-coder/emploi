@@ -33,7 +33,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
   line-height: 1.25; margin-bottom: 10px;
 }
 .pay-hero__title em { font-style: normal; color: #F5C842; }
-.pay-hero__sub { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.pay-hero__sub { font-size: 14px; color: rgba(255,255,255,0.88); line-height: 1.6; }
 
 /* ── BODY ── */
 .pay-body {
@@ -165,7 +165,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 }
 .field__input:focus { border-color: #0a3d20; box-shadow: 0 0 0 3px rgba(10,61,32,0.10); }
 .field__input::placeholder { color: #94a3b8; }
-.field-hint { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+.field-hint { font-size: 11.5px; color: #64748b; margin-top: 5px; }
 
 /* ── Notice sécurité ── */
 .pay-secure-notice {
@@ -195,7 +195,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 
 /* ── Legal ── */
 .pay-legal {
-  font-size: 11.5px; color: #94a3b8; line-height: 1.6;
+  font-size: 11.5px; color: #64748b; line-height: 1.6;
   text-align: center; margin-top: 14px;
 }
 .pay-legal a { color: #38A169; text-decoration: none; }

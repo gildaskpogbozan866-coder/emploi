@@ -40,16 +40,16 @@
       gap: 8px;
       font-family: var(--font-body);
       font-size: 13px;
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.82);
       margin-bottom: 24px;
     }
     .detail-hero__breadcrumb a {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.82);
       text-decoration: none;
       transition: color 0.2s;
     }
     .detail-hero__breadcrumb a:hover { color: var(--jaune); }
-    .detail-hero__breadcrumb span { color: rgba(255,255,255,0.25); }
+    .detail-hero__breadcrumb span { color: rgba(255,255,255,0.55); }
     .detail-hero__tag {
       display: inline-flex;
       align-items: center;
@@ -108,7 +108,7 @@
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 500;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.88);
     }
     .detail-hero__actions {
       display: flex;
@@ -303,7 +303,7 @@
     .detail-cta__text {
       font-family: var(--font-body);
       font-size: 15px;
-      color: rgba(255,255,255,0.65);
+      color: rgba(255,255,255,0.88);
       margin: 0 0 32px;
       line-height: 1.65;
     }

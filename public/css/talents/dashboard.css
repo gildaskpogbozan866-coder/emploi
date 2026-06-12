@@ -45,7 +45,7 @@
 }
 .tld-sidebar__role {
   font-family: var(--font-body); font-size: 10.5px;
-  color: rgba(255,255,255,0.50); margin-top: 2px;
+  color: rgba(255,255,255,0.78); margin-top: 2px;
 }
 .tld-sidebar__badge {
   display: inline-block; font-size: 9.5px; font-weight: 700;
@@ -64,7 +64,7 @@
 .tld-nav__section {
   padding: 14px 18px 4px;
   font-family: var(--font-body); font-size: 9.5px; font-weight: 700;
-  color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.62);
   text-transform: uppercase; letter-spacing: 0.12em;
 }
 .tld-nav__item {
@@ -334,10 +334,10 @@
   align-items: center; justify-content: center;
   gap: 5px; border-radius: 10px;
 }
-.tld-stat-lock svg { color: #94a3b8; }
+.tld-stat-lock svg { color: #64748b; }
 .tld-stat-lock span {
   font-family: var(--font-body); font-size: 9.5px; font-weight: 700;
-  color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;
+  color: #64748b; text-transform: uppercase; letter-spacing: 0.08em;
 }
 
 /* ── Section fonctionnalités verrouillées ── */
@@ -346,7 +346,7 @@
 }
 .tld-locked-header__icon {
   width: 38px; height: 38px; border-radius: 10px;
-  background: rgba(148,163,184,0.10); color: #94a3b8;
+  background: rgba(148,163,184,0.10); color: #64748b;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .tld-locked-header__title {
@@ -366,7 +366,7 @@
 }
 .tld-locked-feat__icon {
   width: 30px; height: 30px; border-radius: 7px;
-  background: #f1f5f9; color: #94a3b8;
+  background: #f1f5f9; color: #64748b;
   display: flex; align-items: center; justify-content: center; margin-bottom: 8px;
 }
 .tld-locked-feat__title {
@@ -374,14 +374,14 @@
   color: #1e293b; margin-bottom: 3px;
 }
 .tld-locked-feat__desc {
-  font-family: var(--font-body); font-size: 11px; color: #94a3b8; line-height: 1.5;
+  font-family: var(--font-body); font-size: 11px; color: #6b7280; line-height: 1.5;
 }
 .tld-locked-feat__badge {
   position: absolute; top: 9px; right: 9px;
   background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px;
   padding: 1px 7px;
   font-family: var(--font-body); font-size: 9.5px; font-weight: 700;
-  color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;
+  color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
 }
 
 /* ── Bouton activer le pack ── */

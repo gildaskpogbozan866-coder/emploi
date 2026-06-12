@@ -11,7 +11,7 @@ class Candidature extends Model
 
     protected $fillable = [
         'offre_id', 'candidat_id', 'message_motivation',
-        'cv_path', 'statut', 'note_recruteur',
+        'cv_path', 'cv_id', 'statut', 'note_recruteur',
     ];
 
     public function offre()
@@ -22,5 +22,10 @@ class Candidature extends Model
     public function candidat()
     {
         return $this->belongsTo(User::class, 'candidat_id');
+    }
+
+    public function cv()
+    {
+        return $this->belongsTo(CV::class);
     }
 }

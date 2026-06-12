@@ -368,7 +368,7 @@
 .ol-card__date {
   font-family: var(--font-body);
   font-size: 11.5px;
-  color: #9ca3af;
+  color: #6b7280;
   white-space: nowrap;
 }
 .ol-card__deadline {
@@ -412,7 +412,7 @@
 .ol-empty__sub {
   font-family: var(--font-body);
   font-size: 13.5px;
-  color: #9ca3af;
+  color: #6b7280;
   margin-bottom: 20px;
 }
 .ol-empty__link {

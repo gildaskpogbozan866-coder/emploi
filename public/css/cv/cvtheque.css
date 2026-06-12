@@ -77,7 +77,7 @@
   width: 100%;
 }
 .cvt-filter-search input::placeholder { color: #94a3b8; }
-.cvt-filter-search svg { color: #94a3b8; flex-shrink: 0; }
+.cvt-filter-search svg { color: #64748b; flex-shrink: 0; }
 
 .cvt-filter-item {
   border-bottom: 1px solid rgba(0,0,0,0.08);
@@ -369,7 +369,7 @@
   gap: 5px;
   font-family: var(--font-body);
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 /* Boutons */
@@ -420,7 +420,7 @@
 .cvt-empty__sub {
   font-family: var(--font-body);
   font-size: 13px;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 /* Pagination */

@@ -26,7 +26,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 }
 .tarif-hero__title em { font-style: normal; color: #F5C842; }
 .tarif-hero__sub {
-  font-size: 15px; color: rgba(255,255,255,0.60); line-height: 1.6;
+  font-size: 15px; color: rgba(255,255,255,0.88); line-height: 1.6;
 }
 
 /* ── BODY ── */
@@ -86,16 +86,16 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 }
 .plan-card--featured .plan-card__title { color: #fff; }
 .plan-card__desc { font-size: 13px; color: #5a7a65; line-height: 1.55; }
-.plan-card--featured .plan-card__desc { color: rgba(255,255,255,0.60); }
+.plan-card--featured .plan-card__desc { color: rgba(255,255,255,0.88); }
 
 .plan-card__pricing { margin-bottom: 18px; }
 .plan-price-row { display: flex; align-items: baseline; gap: 4px; }
 .plan-price-amount { font-size: 32px; font-weight: 800; color: #0a3d20; }
 .plan-card--featured .plan-price-amount { color: #F5C842; }
 .plan-price-currency { font-size: 16px; font-weight: 700; color: #5a7a65; }
-.plan-card--featured .plan-price-currency { color: rgba(255,255,255,0.60); }
+.plan-card--featured .plan-price-currency { color: rgba(255,255,255,0.88); }
 .plan-price-duration { font-size: 13px; color: #5a7a65; display: block; margin-top: 2px; }
-.plan-card--featured .plan-price-duration { color: rgba(255,255,255,0.55); }
+.plan-card--featured .plan-price-duration { color: rgba(255,255,255,0.85); }
 
 .plan-card__cta { margin-bottom: 22px; }
 .plan-btn {
@@ -117,9 +117,9 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 .plan-card__features { flex: 1; }
 .features-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
-  color: #94a3b8; margin-bottom: 12px;
+  color: #64748b; margin-bottom: 12px;
 }
-.plan-card--featured .features-label { color: rgba(255,255,255,0.45); }
+.plan-card--featured .features-label { color: rgba(255,255,255,0.82); }
 .feature-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .feature-item {
   display: flex; align-items: flex-start; gap: 8px;
@@ -131,10 +131,10 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
   display: flex; align-items: center; justify-content: center; margin-top: 1px; flex-shrink: 0;
 }
 .feat-icon--on  { background: rgba(56,161,105,0.15); color: #38A169; }
-.feat-icon--off { background: rgba(148,163,184,0.15); color: #94a3b8; }
+.feat-icon--off { background: rgba(148,163,184,0.15); color: #64748b; }
 .plan-card--featured .feat-icon--on { background: rgba(245,200,66,0.18); color: #F5C842; }
-.feature-item--off .feat-text { color: #94a3b8; }
-.plan-card--featured .feature-item--off .feat-text { color: rgba(255,255,255,0.35); }
+.feature-item--off .feat-text { color: #6b7280; }
+.plan-card--featured .feature-item--off .feat-text { color: rgba(255,255,255,0.75); }
 
 .plan-how-link {
   display: flex; align-items: center; gap: 7px; margin-top: 16px;
@@ -143,7 +143,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
   color: #38A169; text-decoration: none; transition: color .15s;
 }
 .plan-how-link:hover { color: #0a3d20; }
-.plan-card--featured .plan-how-link { color: rgba(255,255,255,0.55); }
+.plan-card--featured .plan-how-link { color: rgba(255,255,255,0.88); }
 .plan-card--featured .plan-how-link:hover { color: #F5C842; }
 
 /* ── Packs Profilthèque ── */
@@ -183,7 +183,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 }
 .profil-pack-btn:hover { background: #38A169; }
 .profil-pack-info {
-  display: inline-flex; color: #94a3b8; cursor: default;
+  display: inline-flex; color: #64748b; cursor: default;
 }
 
 /* ── Services inclus ── */
@@ -276,7 +276,7 @@ body { font-family: 'Jost', sans-serif; background: #f4f7f5; }
 .how-list { padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .how-list li { font-size: 13.5px; color: #374151; line-height: 1.55; }
 .how-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid #d1e7d5; }
-.how-footer-text { font-size: 12.5px; color: #94a3b8; margin-bottom: 12px; }
+.how-footer-text { font-size: 12.5px; color: #64748b; margin-bottom: 12px; }
 .how-cta {
   display: inline-flex; align-items: center; gap: 7px;
   background: #0a3d20; color: #F5C842;

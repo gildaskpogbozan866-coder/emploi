@@ -246,7 +246,7 @@
         <h2 class="section-title" style="margin-top:10px">Dernières offres publiées</h2>
         <p class="section-subtitle">Les offres les plus récentes, mises à jour en continu.</p>
       </div>
-      <a href="{{ route('offre.list') }}" class="btn btn--blue offres-header__cta">
+      <a href="{{ route('offre.list') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
         Voir toutes les offres
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
@@ -303,7 +303,7 @@
         <h2 class="section-title" style="margin-top:10px">Derniers CV déposés</h2>
         <p class="section-subtitle">Des candidats actifs — emploi, stage, bourse ou freelance.</p>
       </div>
-      <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta">
+      <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
         Accéder aux CV
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
@@ -374,7 +374,7 @@
         <h2 class="section-title" style="margin-top:10px">Candidats qui mettent en avant leurs compétences</h2>
         <p class="section-subtitle">Des profils vérifiés, disponibles — avec ou sans diplôme.</p>
       </div>
-      <a href="{{ route('talent.public.list') }}" class="btn btn--blue offres-header__cta">
+      <a href="{{ route('talent.public.list') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
         Voir tous les profils
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
@@ -516,7 +516,7 @@
     </div>
 
     <div class="articles-cta">
-      <a href="{{ route('blog.list') }}" class="btn btn--outline-blue">
+      <a href="{{ route('blog.list') }}" class="btn btn--outline-blue" style="color: #F5C842;">
         Voir tous les articles
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </a>

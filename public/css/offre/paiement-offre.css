@@ -53,12 +53,12 @@
     .step-dot {
       width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25);
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.4);
+      font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.65);
       background: transparent; transition: all .2s;
     }
     .step-item.done .step-dot { background: #F5C842; border-color: #F5C842; color: #042C53; }
     .step-item.active .step-dot { background: #fff; border-color: #fff; color: #042C53; }
-    .step-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: .06em; }
+    .step-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.70); text-transform: uppercase; letter-spacing: .06em; }
     .step-item.done .step-label, .step-item.active .step-label { color: rgba(255,255,255,0.85); }
 
     /* ── LAYOUT ── */
@@ -189,7 +189,7 @@
       transition: border-color .2s, box-shadow .2s;
     }
     .field__input:focus { border-color: var(--blue-mid); background: #fff; box-shadow: 0 0 0 3px rgba(55,138,221,0.12); }
-    .field__hint { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+    .field__hint { font-size: 11.5px; color: #64748b; margin-top: 5px; }
 
     /* ── BOUTON PAYER ── */
     .pay-btn {

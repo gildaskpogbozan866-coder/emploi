@@ -18,7 +18,7 @@
   color: #fff; line-height: 1.25; margin-bottom: 10px;
 }
 .depot-hero__title em { font-style: normal; color: #F5C842; }
-.depot-hero__sub { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.depot-hero__sub { font-size: 14px; color: rgba(255,255,255,0.88); line-height: 1.6; }
 
 /* ── BODY ── */
 .depot-body { max-width: 720px; margin: 0 auto; padding: 36px 24px 72px; }
@@ -130,7 +130,7 @@
 .file-preview__meta { font-size: 11px; color: #64748b; margin-top: 2px; }
 .file-preview__remove {
   margin-left: auto; background: none; border: none;
-  cursor: pointer; color: #94a3b8; font-size: 16px; padding: 4px; flex-shrink: 0;
+  cursor: pointer; color: #64748b; font-size: 16px; padding: 4px; flex-shrink: 0;
 }
 .file-preview__remove:hover { color: #e53e3e; }
 

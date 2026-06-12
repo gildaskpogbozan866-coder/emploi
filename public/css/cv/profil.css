@@ -196,7 +196,7 @@
       flex-shrink: 0;
     }
     .pr-contact__val {
-      color: #94a3b8;
+      color: #64748b;
       font-style: italic;
       letter-spacing: 0.04em;
     }
@@ -263,7 +263,7 @@
     .pr-val { color: #444; }
     .pr-val--green { color: #16a34a; font-weight: 500; }
     .pr-val--link  { color: #378ADD; }
-    .pr-val--muted { color: #94a3b8; font-style: italic; }
+    .pr-val--muted { color: #64748b; font-style: italic; }
 
     .pr-bullet {
       font-family: var(--font-body);

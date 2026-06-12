@@ -82,7 +82,7 @@
       border-color: var(--blue-mid); background: #fff;
       box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
     }
-    .field__hint { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+    .field__hint { font-size: 11.5px; color: #64748b; margin-top: 5px; }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     /* ── CHECKBOX GROUP (expérience / études) ── */
@@ -173,7 +173,7 @@
     .chip-option.selected::before {
       content: '✓'; font-size: 11px; font-weight: 800; color: var(--blue-mid);
     }
-    .chip-limit-note { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
+    .chip-limit-note { font-size: 11.5px; color: #64748b; margin-top: 5px; }
 
     /* ── TAG INPUT (compétences) ── */
     .tag-field {
@@ -249,12 +249,12 @@
       color: var(--text-main); outline: none;
     }
     .wysiwyg-body:empty::before {
-      content: attr(data-placeholder); color: #94a3b8; pointer-events: none;
+      content: attr(data-placeholder); color: #64748b; pointer-events: none;
     }
     .wysiwyg-body h2 { font-size: 16px; font-weight: 700; color: var(--blue-dark); margin-bottom: 8px; }
     .wysiwyg-body ul { padding-left: 20px; }
     .wysiwyg-body li { margin-bottom: 4px; }
-    .wysiwyg-counter { font-size: 11.5px; color: #94a3b8; text-align: right; padding: 6px 12px 8px; background: #f8faff; border-top: 1px solid var(--border); }
+    .wysiwyg-counter { font-size: 11.5px; color: #64748b; text-align: right; padding: 6px 12px 8px; background: #f8faff; border-top: 1px solid var(--border); }
 
     /* ── NOTIFICATION TOGGLE ── */
     .notif-row {
@@ -328,7 +328,7 @@
     .po-progress-bar { height: 7px; background: #e2e8f0; border-radius: 20px; overflow: hidden; }
     .po-progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue-mid), var(--blue-light)); border-radius: 20px; width: 0%; transition: width .4s ease; }
     .po-progress-steps { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
-    .po-progress-step { display: flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 500; color: #94a3b8; }
+    .po-progress-step { display: flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 500; color: #64748b; }
     .po-progress-step.done { color: var(--green); }
     .po-progress-step.done .step-dot { background: var(--green); }
     .po-progress-step.active { color: var(--blue-mid); font-weight: 700; }
@@ -386,7 +386,7 @@
 
     /* ── Champs ajoutés ── */
     .field__opt {
-      font-weight: 400; color: #94a3b8; text-transform: none; letter-spacing: 0; font-size: 11px;
+      font-weight: 400; color: #64748b; text-transform: none; letter-spacing: 0; font-size: 11px;
     }
     .field__textarea {
       resize: vertical; min-height: 80px; line-height: 1.65; font-family: var(--font);
@@ -400,7 +400,7 @@
     .salary-devise {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
       font-family: var(--font); font-size: 12px; font-weight: 700;
-      color: #94a3b8; pointer-events: none;
+      color: #64748b; pointer-events: none;
     }
 
     /* ── Notification cost ── */
@@ -454,9 +454,9 @@
       border-color: var(--blue-light);
       background: #eef4ff;
     }
-    .file-drop__icon { color: #94a3b8; margin-bottom: 4px; }
+    .file-drop__icon { color: #64748b; margin-bottom: 4px; }
     .file-drop__text { font-size: 14px; font-weight: 500; color: var(--text-main); }
-    .file-drop__hint { font-size: 12px; color: #94a3b8; }
+    .file-drop__hint { font-size: 12px; color: #64748b; }
 
     .file-preview {
       display: none;

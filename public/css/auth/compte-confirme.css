@@ -85,7 +85,7 @@
 .auth-panel__footer {
   position: relative; z-index: 1;
   font-family: var(--font-body); font-size: 12px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.80);
 }
 
 /* ── Panneau droit ── */
@@ -168,7 +168,7 @@
 /* ── Label section ── */
 .cc-label {
   font-family: var(--font-body); font-size: 11px; font-weight: 700;
-  color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;
+  color: #64748b; text-transform: uppercase; letter-spacing: 0.08em;
   margin-bottom: 12px;
 }
 
@@ -218,7 +218,7 @@
   font-family: var(--font-body); font-size: 12px;
   color: #64748b; margin-top: 2px;
 }
-.cc-dash-btn > svg:last-child { color: #94a3b8; flex-shrink: 0; }
+.cc-dash-btn > svg:last-child { color: #64748b; flex-shrink: 0; }
 
 /* État actif (rôle de l'utilisateur) */
 .cc-dash-btn--active {

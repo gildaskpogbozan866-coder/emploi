@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Offre;
+use App\Models\CV;
 use App\Models\Candidature;
+use App\Models\Notification;
+use App\Models\Offre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -93,30 +95,57 @@ class OffreController extends Controller
             ->where('candidat_id', Auth::id())
             ->exists();
 
-        return view('public.offre.postuler', compact('offre', 'aPostule'));
+        $cvs = Auth::user()->cvs()->orderByDesc('created_at')->get();
+
+        return view('public.offre.postuler', compact('offre', 'aPostule', 'cvs'));
     }
 
-    // Alias utilisé par la route offre.postuler.store (POST)
     public function storerCandidature(Request $request, Offre $offre)
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion');
         }
 
+        if (Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists()) {
+            return back()->with('error_duplicate', true);
+        }
+
         $request->validate([
             'message_motivation' => 'nullable|string|max:3000',
+            'cv_id'              => 'nullable|integer|exists:cvs,id',
             'cv_file'            => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
+        // S'assurer que le CV sélectionné appartient au candidat
+        $cvId = null;
+        if ($request->filled('cv_id')) {
+            $cv = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
+            $cvId = $cv?->id;
+        }
+
+        // Upload fichier seulement si aucun CV profil sélectionné
         $cvPath = null;
-        if ($request->hasFile('cv_file')) {
+        if (!$cvId && $request->hasFile('cv_file')) {
             $cvPath = $request->file('cv_file')->store('candidatures', 'public');
         }
 
-        Candidature::firstOrCreate(
-            ['offre_id' => $offre->id, 'candidat_id' => Auth::id()],
-            ['message_motivation' => $request->message_motivation, 'cv_path' => $cvPath]
-        );
+        $candidature = Candidature::create([
+            'offre_id'           => $offre->id,
+            'candidat_id'        => Auth::id(),
+            'message_motivation' => $request->message_motivation,
+            'cv_id'              => $cvId,
+            'cv_path'            => $cvPath,
+        ]);
+
+        // Notifier le recruteur de la nouvelle candidature
+        $candidat = Auth::user();
+        Notification::create([
+            'user_id' => $offre->recruteur_id,
+            'type'    => 'candidature',
+            'titre'   => 'Nouvelle candidature reçue',
+            'contenu' => $candidat->nom_complet . ' a postulé pour « ' . $offre->titre . ' ».',
+            'lien'    => route('recruteur.candidatures.show', $candidature),
+        ]);
 
         return redirect()->route('offre.candidature-succes', $offre);
     }
