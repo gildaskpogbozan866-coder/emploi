@@ -105,6 +105,12 @@ class VerificationController extends Controller
 
     public function enAttente()
     {
+        $verification = auth()->user()->recruteurVerification;
+
+        if ($verification?->estApprouve()) {
+            return redirect()->route('recruteur.dashboard');
+        }
+
         return view('recruteur.verification.en-attente');
     }
 

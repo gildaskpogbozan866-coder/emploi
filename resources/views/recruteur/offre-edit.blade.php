@@ -43,15 +43,15 @@
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Type de contrat <span style="color:#e53e3e">*</span></label>
           <select name="type" required style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
-            @foreach(['CDI','CDD','Stage','Bourse','Freelance','Temps partiel'] as $type)
-              <option value="{{ $type }}" {{ old('type', $offre->type) === $type ? 'selected' : '' }}>{{ $type }}</option>
+            <option value="">— Choisir —</option>
+            @foreach($typeContrats as $tc)
+              <option value="{{ $tc->code }}" {{ old('type', $offre->type) === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
             @endforeach
           </select>
         </div>
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Secteur d'activité</label>
-          <input type="text" name="secteur" value="{{ old('secteur', $offre->secteur) }}"
-                 style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
+          <x-secteur-select name="secteur" :selected="collect(old('secteur', $offre->secteur ?? []))" />
         </div>
       </div>
 

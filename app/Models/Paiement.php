@@ -11,10 +11,17 @@ class Paiement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'reference', 'montant', 'devise',
-        'type', 'payable_id', 'payable_type',
-        'methode', 'statut', 'notes',
+        'user_id', 'subscription_id', 'reference', 'transaction_reference',
+        'montant', 'devise', 'type', 'payable_id', 'payable_type',
+        'methode', 'statut', 'notes', 'paid_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'paid_at' => 'datetime',
+        ];
+    }
 
     protected static function booted(): void
     {
@@ -28,6 +35,13 @@ class Paiement extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** Abonnement directement lié à ce paiement (via FK). */
+    public function abonnement()
+    {
+        return $this->belongsTo(Abonnement::class, 'subscription_id');
+    }
+
+    /** Relation polymorphique générique (utilisée pour Commande et autres). */
     public function payable()
     {
         return $this->morphTo();

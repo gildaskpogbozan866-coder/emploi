@@ -117,13 +117,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function abonnementActif()
     {
-        return $this->hasOne(Abonnement::class)->where('statut', 'actif')->latest();
+        return $this->hasOne(Abonnement::class)->where('status', 'active')->latest('starts_at');
     }
 
     public function estPremium(): bool
     {
-        $ab = $this->abonnementActif()->first();
-        return $ab !== null && $ab->plan === 'premium' && $ab->estActif();
+        $ab = $this->abonnementActif()->with('plan')->first();
+        return $ab !== null && ! $ab->plan?->is_free && $ab->estActif();
     }
 
     public function alertes()

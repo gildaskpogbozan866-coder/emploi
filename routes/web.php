@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\BlogController as AdminBlog;
 use App\Http\Controllers\Admin\ServiceController as AdminService;
 use App\Http\Controllers\Admin\PaiementController as AdminPaiement;
 use App\Http\Controllers\Admin\AbonnementController as AdminAbonnement;
+use App\Http\Controllers\Admin\PlanController as AdminPlan;
 use App\Http\Controllers\Admin\MessageController as AdminMessage;
 use App\Http\Controllers\Admin\SignalementController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStat;
@@ -79,12 +80,12 @@ Route::post('/contact',  [ContactController::class, 'envoyer'])->name('contact.e
 Route::prefix('offres')->name('offre.')->group(function () {
     Route::get('/',               [OffreController::class, 'index'])->name('list');
     Route::get('/{offre}',        [OffreController::class, 'detail'])->name('detail');
-    Route::get('/{offre}/postuler', [OffreController::class, 'postuler'])->name('postuler');
-    Route::post('/{offre}/postuler', [OffreController::class, 'storerCandidature'])->name('postuler.store')->middleware('auth');
+    Route::get('/{offre}/postuler',[OffreController::class, 'postuler'])->name('postuler');
+    Route::post('/{offre}/postuler',[OffreController::class, 'storerCandidature'])->name('postuler.store')->middleware('auth');
     Route::get('/{offre}/succes', [OffreController::class, 'candidatureSucces'])->name('candidature-succes');
-    Route::get('/publier/formulaire', [OffreController::class, 'publier'])->name('publier');
+    Route::get('/publier/formulaire',[OffreController::class, 'publier'])->name('publier');
     Route::post('/publier',       [OffreController::class, 'storerOffre'])->name('publier.store')->middleware('auth');
-    Route::get('/{offre}/publiee', [OffreController::class, 'offrePublieeSucces'])->name('publiee-succes');
+    Route::get('/{offre}/publiee',[OffreController::class, 'offrePublieeSucces'])->name('publiee-succes');
 });
 
 // Talents publics
@@ -107,8 +108,8 @@ Route::prefix('cvs')->name('cv.public.')->group(function () {
 Route::prefix('services')->name('service.')->group(function () {
     Route::get('/',                   [ServiceController::class, 'index'])->name('list');
     Route::get('/{service}',          [ServiceController::class, 'detail'])->name('detail');
-    Route::get('/{service}/commander', [ServiceController::class, 'commander'])->name('commande');
-    Route::post('/{service}/commander', [ServiceController::class, 'storerCommande'])->name('commande.store');
+    Route::get('/{service}/commander',[ServiceController::class, 'commander'])->name('commande');
+    Route::post('/{service}/commander',[ServiceController::class,'storerCommande'])->name('commande.store');
     Route::get('/commande/succes',    [ServiceController::class, 'succes'])->name('succes');
 });
 
@@ -179,11 +180,11 @@ Route::middleware('auth')->group(function () {
 // ════════════════════════════════════════════════════════
 //  ESPACE CANDIDAT — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 'spatie.role:' . Role::CANDIDAT])->group(function () {
+Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
     Route::get('/tableau-de-bord', [CandidatDashboard::class, 'index'])->name('dashboard');
 
     // CVs — nécessite permission deposit-cv
-    Route::middleware('permission:' . Permission::DEPOSIT_CV)->group(function () {
+    Route::middleware('permission:'.Permission::DEPOSIT_CV)->group(function () {
         Route::get('/mes-cvs',               [CVController::class, 'index'])->name('cvs');
         Route::get('/mes-cvs/modifier/{cv}', [CVController::class, 'edit'])->name('cvs.edit');
         Route::put('/mes-cvs/{cv}',          [CVController::class, 'update'])->name('cvs.update');
@@ -191,35 +192,36 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     });
 
     // Candidatures — nécessite apply-offre
-    Route::middleware('permission:' . Permission::APPLY_OFFRE)->group(function () {
+    Route::middleware('permission:'.Permission::APPLY_OFFRE)->group(function () {
         Route::get('/mes-candidatures',               [CandidatureController::class, 'index'])->name('candidatures');
         Route::get('/mes-candidatures/{candidature}', [CandidatureController::class, 'detail'])->name('candidatures.detail');
     });
 
     // Offres sauvegardées — nécessite save-offre
-    Route::middleware('permission:' . Permission::SAVE_OFFRE)->group(function () {
+    Route::middleware('permission:'.Permission::SAVE_OFFRE)->group(function () {
         Route::get('/offres-sauvegardees',           [CandidatureController::class, 'offresSauvegardees'])->name('offres-sauvegardees');
         Route::post('/offres-sauvegardees/{offre}',  [CandidatureController::class, 'sauvegarder'])->name('offres-sauvegardees.toggle');
     });
 
     // Alertes — nécessite create-alerte
-    Route::middleware('permission:' . Permission::CREATE_ALERTE)->group(function () {
+    Route::middleware('permission:'.Permission::CREATE_ALERTE)->group(function () {
         Route::get('/mes-alertes',              [AlerteController::class, 'index'])->name('alertes');
         Route::post('/mes-alertes',             [AlerteController::class, 'store'])->name('alertes.store');
         Route::delete('/mes-alertes/{alerte}',  [AlerteController::class, 'destroy'])->name('alertes.destroy');
     });
 
     // Abonnement — nécessite manage-abonnement-candidat
-    Route::middleware('permission:' . Permission::MANAGE_ABONNEMENT_CAN)->group(function () {
-        Route::get('/abonnement',  [CandidatAbonnement::class, 'index'])->name('abonnement');
-        Route::post('/abonnement', [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
+    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_CAN)->group(function () {
+        Route::get('/abonnement',        [CandidatAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans',  [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::post('/abonnement',       [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
         Route::get('/historique-paiements', [CandidatAbonnement::class, 'historique'])->name('paiements');
     });
 
     // Messagerie, Notifications, Profil (accessibles à tous les candidats authentifiés)
     Route::get('/messagerie',              [CandidatMessage::class, 'index'])->name('messagerie');
-    Route::get('/messagerie/{conversation}', [CandidatMessage::class, 'show'])->name('messagerie.show');
-    Route::post('/messagerie/{conversation}', [CandidatMessage::class, 'store'])->name('messagerie.store');
+    Route::get('/messagerie/{conversation}',[CandidatMessage::class, 'show'])->name('messagerie.show');
+    Route::post('/messagerie/{conversation}',[CandidatMessage::class, 'store'])->name('messagerie.store');
     Route::get('/notifications',           [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/marquer',  [NotificationController::class, 'marquerLues'])->name('notifications.lues');
     Route::get('/profil',                  [CandidatProfil::class, 'edit'])->name('profil');
@@ -231,16 +233,16 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     // Expériences (AJAX)
     Route::post('/profil/experiences',              [ExperienceController::class, 'store'])->name('profil.experiences.store');
     Route::put('/profil/experiences/{experience}',  [ExperienceController::class, 'update'])->name('profil.experiences.update');
-    Route::delete('/profil/experiences/{experience}', [ExperienceController::class, 'destroy'])->name('profil.experiences.destroy');
+    Route::delete('/profil/experiences/{experience}',[ExperienceController::class, 'destroy'])->name('profil.experiences.destroy');
 
     // Formations (AJAX)
     Route::post('/profil/formations',              [FormationController::class, 'store'])->name('profil.formations.store');
     Route::put('/profil/formations/{formation}',   [FormationController::class, 'update'])->name('profil.formations.update');
-    Route::delete('/profil/formations/{formation}', [FormationController::class, 'destroy'])->name('profil.formations.destroy');
+    Route::delete('/profil/formations/{formation}',[FormationController::class, 'destroy'])->name('profil.formations.destroy');
 
     // Compétences (AJAX)
     Route::post('/profil/competences',               [CompetenceController::class, 'store'])->name('profil.competences.store');
-    Route::delete('/profil/competences/{competence}', [CompetenceController::class, 'destroy'])->name('profil.competences.destroy');
+    Route::delete('/profil/competences/{competence}',[CompetenceController::class, 'destroy'])->name('profil.competences.destroy');
 
     // Langues (AJAX)
     Route::post('/profil/langues',           [LangueController::class, 'store'])->name('profil.langues.store');
@@ -255,13 +257,12 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::get('/profil/documents/{document}/edit', [CandidatDocumentCtrl::class, 'edit'])->name('documents.edit');
     Route::put('/profil/documents/{document}',      [CandidatDocumentCtrl::class, 'update'])->name('documents.update');
     Route::delete('/profil/documents/{document}',   [CandidatDocumentCtrl::class, 'destroy'])->name('documents.destroy');
-    Route::delete('/profil/langues/{langue}', [LangueController::class, 'destroy'])->name('profil.langues.destroy');
 });
 
 // ════════════════════════════════════════════════════════
 //  ESPACE RECRUTEUR — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
-Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 'spatie.role:' . Role::RECRUTEUR])->group(function () {
+Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 'spatie.role:'.Role::RECRUTEUR])->group(function () {
 
     // Vérification du compte entreprise (accessible avant approbation admin)
     Route::get('/verification',             [RecruteurVerifCtrl::class, 'soumettre'])->name('verification');
@@ -270,9 +271,9 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     Route::get('/verification/rejete',      [RecruteurVerifCtrl::class, 'rejete'])->name('verification.rejete');
 
     // ── Tout ce qui suit nécessite l'approbation du dossier par l'admin ──
-    // Route::middleware('recruteur.approuve')->group(function () {
+    Route::middleware('recruteur.approuve')->group(function () {
 
-        Route::get('/tableau-de-bord', [RecruteurDashboard::class, 'index'])->name('dashboard');
+    Route::get('/tableau-de-bord', [RecruteurDashboard::class, 'index'])->name('dashboard');
 
     // Publication d'offres — nécessite publish-offre
     Route::middleware('permission:'.Permission::PUBLISH_OFFRE)->group(function () {
@@ -282,59 +283,52 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
         Route::get('/mes-offres/{offre}/modifier',         [RecruteurOffre::class, 'edit'])->name('offres.edit');
         Route::put('/mes-offres/{offre}',                  [RecruteurOffre::class, 'update'])->name('offres.update');
         Route::delete('/mes-offres/{offre}',               [RecruteurOffre::class, 'destroy'])->name('offres.destroy');
-        Route::patch('/mes-offres/{offre}/cloturer',       [RecruteurOffre::class, 'cloturer'])->name('offres.cloturer');
+        Route::patch('/mes-offres/{offre}/cloturer',        [RecruteurOffre::class, 'cloturer'])->name('offres.cloturer');
+        Route::patch('/mes-offres/{offre}/mettre-en-avant',[RecruteurOffre::class, 'mettreEnAvant'])->name('offres.mettre-en-avant');
         Route::post('/mes-offres/{offre}/dupliquer',       [RecruteurOffre::class, 'dupliquer'])->name('offres.dupliquer');
         Route::get('/mes-offres/{offre}/statistiques',     [RecruteurOffre::class, 'stats'])->name('offres.stats');
     });
-        // Publication d'offres — nécessite publish-offre
-        Route::middleware('permission:' . Permission::PUBLISH_OFFRE)->group(function () {
-            Route::get('/mes-offres',                     [RecruteurOffre::class, 'index'])->name('offres');
-            Route::get('/mes-offres/creer',               [RecruteurOffre::class, 'create'])->name('offres.create');
-            Route::post('/mes-offres',                    [RecruteurOffre::class, 'store'])->name('offres.store');
-            Route::get('/mes-offres/{offre}/modifier',    [RecruteurOffre::class, 'edit'])->name('offres.edit');
-            Route::put('/mes-offres/{offre}',             [RecruteurOffre::class, 'update'])->name('offres.update');
-            Route::delete('/mes-offres/{offre}',          [RecruteurOffre::class, 'destroy'])->name('offres.destroy');
-        });
 
-        // Candidatures — nécessite view-candidatures
-        Route::middleware('permission:' . Permission::VIEW_CANDIDATURES)->group(function () {
-            Route::get('/candidatures',                   [RecruteurCandidature::class, 'index'])->name('candidatures');
-            Route::get('/candidatures/{candidature}',     [RecruteurCandidature::class, 'show'])->name('candidatures.show');
-            Route::patch('/candidatures/{candidature}/statut', [RecruteurCandidature::class, 'updateStatut'])->name('candidatures.statut');
-        });
+    // Candidatures — nécessite view-candidatures
+    Route::middleware('permission:'.Permission::VIEW_CANDIDATURES)->group(function () {
+        Route::get('/candidatures',                   [RecruteurCandidature::class, 'index'])->name('candidatures');
+        Route::get('/candidatures/{candidature}',     [RecruteurCandidature::class, 'show'])->name('candidatures.show');
+        Route::patch('/candidatures/{candidature}/statut', [RecruteurCandidature::class, 'updateStatut'])->name('candidatures.statut');
+    });
 
-        // CVthèque — nécessite view-cvtheque
-        Route::middleware('permission:' . Permission::VIEW_CVTHEQUE)->group(function () {
-            Route::get('/cvtheque',                [CvthequeController::class, 'index'])->name('cvtheque');
-            Route::post('/cvtheque/{cv}/favoris',  [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
-        });
+    // CVthèque — nécessite view-cvtheque
+    Route::middleware('permission:'.Permission::VIEW_CVTHEQUE)->group(function () {
+        Route::get('/cvtheque',                [CvthequeController::class, 'index'])->name('cvtheque');
+        Route::post('/cvtheque/{cv}/favoris',  [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
+    });
 
-        // Contact candidats (messagerie) — nécessite contact-candidats
-        Route::middleware('permission:' . Permission::CONTACT_CANDIDATS)->group(function () {
-            Route::get('/messagerie',              [RecruteurMessage::class, 'index'])->name('messagerie');
-            Route::get('/messagerie/{conversation}', [RecruteurMessage::class, 'show'])->name('messagerie.show');
-            Route::post('/messagerie/{conversation}', [RecruteurMessage::class, 'store'])->name('messagerie.store');
-        });
+    // Contact candidats (messagerie) — nécessite contact-candidats
+    Route::middleware('permission:'.Permission::CONTACT_CANDIDATS)->group(function () {
+        Route::get('/messagerie',              [RecruteurMessage::class, 'index'])->name('messagerie');
+        Route::get('/messagerie/{conversation}',[RecruteurMessage::class, 'show'])->name('messagerie.show');
+        Route::post('/messagerie/{conversation}',[RecruteurMessage::class, 'store'])->name('messagerie.store');
+    });
 
-        // Abonnement recruteur
-        Route::middleware('permission:' . Permission::MANAGE_ABONNEMENT_REC)->group(function () {
-            Route::get('/abonnement',  [RecruteurAbonnement::class, 'index'])->name('abonnement');
-            Route::post('/abonnement', [RecruteurAbonnement::class, 'souscrire'])->name('abonnement.store');
-        });
+    // Abonnement recruteur
+    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_REC)->group(function () {
+        Route::get('/abonnement',       [RecruteurAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans', [RecruteurAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::post('/abonnement',      [RecruteurAbonnement::class, 'souscrire'])->name('abonnement.store');
+    });
 
-        Route::get('/statistiques',  [RecruteurStat::class, 'index'])->name('statistiques');
-        Route::get('/profil',        [RecruteurProfil::class, 'edit'])->name('profil');
-        Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
-        Route::get('/parametres',    [RecruteurProfil::class, 'parametres'])->name('parametres');
-        Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
-    // }); // fin recruteur.approuve
+    Route::get('/statistiques',  [RecruteurStat::class, 'index'])->name('statistiques');
+    Route::get('/profil',        [RecruteurProfil::class, 'edit'])->name('profil');
+    Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
+    Route::get('/parametres',    [RecruteurProfil::class, 'parametres'])->name('parametres');
+    Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
+
+    }); // fin recruteur.approuve
 });
 
 // ════════════════════════════════════════════════════════
 //  ESPACE TALENT — protégé par rôle + permissions
 // ════════════════════════════════════════════════════════
 Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
-Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spatie.role:' . Role::TALENT])->group(function () {
     Route::get('/tableau-de-bord', [TalentDashboard::class, 'index'])->name('dashboard');
 
     // Profil talent — nécessite create-profil-talent
@@ -353,23 +347,17 @@ Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spati
         Route::delete('/formations/{formation}',            [TalentFormCtrl::class, 'destroy'])->name('formations.delete');
         Route::post('/attestations',                        [TalentAttCtrl::class, 'store'])->name('attestations.store');
         Route::delete('/attestations/{attestation}',        [TalentAttCtrl::class, 'destroy'])->name('attestations.delete');
-    Route::middleware('permission:' . Permission::CREATE_PROFIL_TALENT)->group(function () {
-        Route::get('/mon-profil',          [TalentProfilCtrl::class, 'show'])->name('profil');
-        Route::get('/mon-profil/creer',    [TalentProfilCtrl::class, 'create'])->name('profil.create');
-        Route::post('/mon-profil',         [TalentProfilCtrl::class, 'store'])->name('profil.store');
-        Route::get('/mon-profil/modifier', [TalentProfilCtrl::class, 'edit'])->name('profil.edit');
-        Route::put('/mon-profil',          [TalentProfilCtrl::class, 'update'])->name('profil.update');
     });
 
     // Messagerie — nécessite view-messages-talent
-    Route::middleware('permission:' . Permission::VIEW_MESSAGES_TALENT)->group(function () {
+    Route::middleware('permission:'.Permission::VIEW_MESSAGES_TALENT)->group(function () {
         Route::get('/messagerie',               [TalentMessage::class, 'index'])->name('messagerie');
-        Route::get('/messagerie/{conversation}', [TalentMessage::class, 'show'])->name('messagerie.show');
-        Route::post('/messagerie/{conversation}', [TalentMessage::class, 'store'])->name('messagerie.store');
+        Route::get('/messagerie/{conversation}',[TalentMessage::class, 'show'])->name('messagerie.show');
+        Route::post('/messagerie/{conversation}',[TalentMessage::class, 'store'])->name('messagerie.store');
     });
 
     // Abonnement
-    Route::middleware('permission:' . Permission::MANAGE_ABONNEMENT_TAL)->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_TAL)->group(function () {
         Route::get('/abonnement',  [TalentAbonnement::class, 'index'])->name('abonnement');
         Route::post('/abonnement', [TalentAbonnement::class, 'souscrire'])->name('abonnement.store');
     });
@@ -381,12 +369,12 @@ Route::prefix('talent')->name('talent.')->middleware(['auth', 'verified', 'spati
 // ════════════════════════════════════════════════════════
 //  ADMINISTRATION — protégé rôle admin + permissions granulaires
 // ════════════════════════════════════════════════════════
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Role::ADMIN])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role::ADMIN])->group(function () {
 
     Route::get('/tableau-de-bord', [AdminDashboard::class, 'index'])->name('dashboard');
 
     // Vérification des comptes recruteurs
-    Route::middleware('permission:' . Permission::MANAGE_USERS)->prefix('verifications')->name('verifications.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('verifications')->name('verifications.')->group(function () {
         Route::get('/',                                  [VerificationRecruteurController::class, 'index'])->name('list');
         Route::get('/{verification}',                    [VerificationRecruteurController::class, 'show'])->name('show');
         Route::patch('/{verification}/approuver',        [VerificationRecruteurController::class, 'approuver'])->name('approuver');
@@ -395,18 +383,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
     });
 
     // Gestion utilisateurs
-    Route::middleware('permission:' . Permission::MANAGE_USERS)->prefix('utilisateurs')->name('utilisateurs.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('utilisateurs')->name('utilisateurs.')->group(function () {
         Route::get('/',                 [UtilisateurController::class, 'index'])->name('list');
         Route::get('/candidats',        [UtilisateurController::class, 'candidats'])->name('candidats');
         Route::get('/recruteurs',       [UtilisateurController::class, 'recruteurs'])->name('recruteurs');
         Route::get('/candidats/{user}', [UtilisateurController::class, 'showCandidat'])->name('candidats.detail');
-        Route::get('/recruteurs/{user}', [UtilisateurController::class, 'showRecruteur'])->name('recruteurs.detail');
+        Route::get('/recruteurs/{user}',[UtilisateurController::class, 'showRecruteur'])->name('recruteurs.detail');
         Route::patch('/{user}/statut',  [UtilisateurController::class, 'toggleStatut'])->name('statut');
         Route::delete('/{user}',        [UtilisateurController::class, 'destroy'])->name('destroy');
     });
 
     // Gestion offres
-    Route::middleware('permission:' . Permission::MANAGE_OFFRES)->prefix('offres')->name('offres.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_OFFRES)->prefix('offres')->name('offres.')->group(function () {
         Route::get('/',                    [AdminOffre::class, 'index'])->name('list');
         Route::get('/{offre}',             [AdminOffre::class, 'show'])->name('detail');
         Route::patch('/{offre}/statut',    [AdminOffre::class, 'updateStatut'])->name('statut');
@@ -424,15 +412,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
             Route::get('/{document}',   [AdminDocument::class, 'show'])->name('detail');
             Route::delete('/{document}',[AdminDocument::class, 'destroy'])->name('destroy');
         });
-    // Gestion CVs
-    Route::middleware('permission:' . Permission::MANAGE_CVS)->prefix('cvs')->name('cvs.')->group(function () {
-        Route::get('/',        [AdminCV::class, 'index'])->name('list');
-        Route::get('/{cv}',    [AdminCV::class, 'show'])->name('detail');
-        Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
     });
 
     // Gestion blog
-    Route::middleware('permission:' . Permission::MANAGE_BLOG)->prefix('blog')->name('blog.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_BLOG)->prefix('blog')->name('blog.')->group(function () {
         Route::get('/',                   [AdminBlog::class, 'index'])->name('list');
         Route::get('/creer',              [AdminBlog::class, 'create'])->name('create');
         Route::post('/',                  [AdminBlog::class, 'store'])->name('store');
@@ -442,7 +425,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
     });
 
     // Gestion services & commandes
-    Route::middleware('permission:' . Permission::MANAGE_SERVICES)->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_SERVICES)->group(function () {
         Route::prefix('services')->name('services.')->group(function () {
             Route::get('/',          [AdminService::class, 'index'])->name('list');
             Route::get('/creer',     [AdminService::class, 'create'])->name('create');
@@ -450,47 +433,58 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
             Route::get('/{service}/modifier', [AdminService::class, 'edit'])->name('edit');
             Route::put('/{service}', [AdminService::class, 'update'])->name('update');
         });
-        Route::middleware('permission:' . Permission::MANAGE_COMMANDES)->prefix('commandes')->name('commandes.')->group(function () {
+        Route::middleware('permission:'.Permission::MANAGE_COMMANDES)->prefix('commandes')->name('commandes.')->group(function () {
             Route::get('/',                   [AdminService::class, 'commandes'])->name('list');
             Route::get('/{commande}',         [AdminService::class, 'showCommande'])->name('detail');
-            Route::patch('/{commande}/statut', [AdminService::class, 'updateStatut'])->name('statut');
+            Route::patch('/{commande}/statut',[AdminService::class, 'updateStatut'])->name('statut');
         });
     });
 
     // Paiements
-    Route::middleware('permission:' . Permission::MANAGE_PAIEMENTS)->prefix('paiements')->name('paiements.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_PAIEMENTS)->prefix('paiements')->name('paiements.')->group(function () {
         Route::get('/',           [AdminPaiement::class, 'index'])->name('list');
         Route::get('/{paiement}', [AdminPaiement::class, 'show'])->name('detail');
         Route::patch('/{paiement}/statut', [AdminPaiement::class, 'updateStatut'])->name('statut');
     });
 
-    // Abonnements
-    Route::middleware('permission:' . Permission::MANAGE_ABONNEMENTS)
-        ->get('/abonnements', [AdminAbonnement::class, 'index'])->name('abonnements');
+    // Abonnements & Plans
+    Route::middleware('permission:'.Permission::MANAGE_ABONNEMENTS)->group(function () {
+        Route::get('/abonnements', [AdminAbonnement::class, 'index'])->name('abonnements');
+
+        Route::prefix('plans')->name('plans.')->group(function () {
+            Route::get('/',                [AdminPlan::class, 'index'])->name('list');
+            Route::get('/creer',           [AdminPlan::class, 'create'])->name('create');
+            Route::post('/',               [AdminPlan::class, 'store'])->name('store');
+            Route::get('/{plan}/modifier', [AdminPlan::class, 'edit'])->name('edit');
+            Route::put('/{plan}',          [AdminPlan::class, 'update'])->name('update');
+            Route::patch('/{plan}/toggle', [AdminPlan::class, 'toggle'])->name('toggle');
+            Route::delete('/{plan}',       [AdminPlan::class, 'destroy'])->name('destroy');
+        });
+    });
 
     // Messagerie admin
-    Route::middleware('permission:' . Permission::MANAGE_MESSAGERIE)
+    Route::middleware('permission:'.Permission::MANAGE_MESSAGERIE)
         ->get('/messagerie', [AdminMessage::class, 'index'])->name('messagerie');
 
     // Signalements
-    Route::middleware('permission:' . Permission::MANAGE_SIGNALEMENTS)->prefix('signalements')->name('signalements.')->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_SIGNALEMENTS)->prefix('signalements')->name('signalements.')->group(function () {
         Route::get('/',                   [SignalementController::class, 'index'])->name('list');
         Route::get('/{signalement}',      [SignalementController::class, 'show'])->name('detail');
-        Route::patch('/{signalement}/statut', [SignalementController::class, 'updateStatut'])->name('statut');
+        Route::patch('/{signalement}/statut',[SignalementController::class, 'updateStatut'])->name('statut');
     });
 
     // Statistiques
-    Route::middleware('permission:' . Permission::VIEW_STATISTIQUES)
+    Route::middleware('permission:'.Permission::VIEW_STATISTIQUES)
         ->get('/statistiques', [AdminStat::class, 'index'])->name('statistiques');
 
     // Paramètres
-    Route::middleware('permission:' . Permission::MANAGE_PARAMETRES)->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->group(function () {
         Route::get('/parametres',  [AdminParametre::class, 'index'])->name('parametres');
         Route::put('/parametres',  [AdminParametre::class, 'update'])->name('parametres.update');
     });
 
     // Référentiels RH (compétences, métiers, contrats, secteurs, langues, niveaux)
-    Route::middleware('permission:' . Permission::MANAGE_REFERENTIELS)->group(function () {
+    Route::middleware('permission:'.Permission::MANAGE_REFERENTIELS)->group(function () {
 
         Route::prefix('competences')->name('competences.')->group(function () {
             Route::get('/',                      [AdminCompetences::class, 'index'])->name('index');
@@ -559,10 +553,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
             Route::get('/',                           [AdminNiveauxExperience::class, 'index'])->name('index');
             Route::get('/creer',                      [AdminNiveauxExperience::class, 'create'])->name('create');
             Route::post('/',                          [AdminNiveauxExperience::class, 'store'])->name('store');
-            Route::get('/{niveauExperience}/modifier', [AdminNiveauxExperience::class, 'edit'])->name('edit');
+            Route::get('/{niveauExperience}/modifier',[AdminNiveauxExperience::class, 'edit'])->name('edit');
             Route::put('/{niveauExperience}',         [AdminNiveauxExperience::class, 'update'])->name('update');
             Route::delete('/{niveauExperience}',      [AdminNiveauxExperience::class, 'destroy'])->name('destroy');
         });
+
     });
 
     // Gestion des rôles et permissions (super admin uniquement)
@@ -574,3 +569,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:' . Rol
         Route::delete('/users/{user}/revoke',          [PermissionController::class, 'revokePermissionFromUser'])->name('user.revoke');
     });
 });
+
+
+
+
+
+

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Competence;
 use App\Models\Offre;
 use App\Models\ParametreApp;
+use App\Models\TypeContrat;
 use App\Notifications\NouvelleOffreCreee;
 use App\Services\AlerteService;
 use Illuminate\Http\Request;
@@ -16,34 +17,61 @@ use Illuminate\Support\Str;
 
 class OffreController extends Controller
 {
-    private function getPlanLimite(): int
+    private function infoMiseEnAvant(): array
     {
-        $plan = Auth::user()->abonnementActif?->plan;
-        return match($plan) {
-            'premium_50' => 9999,
-            'premium_30' => 10,
-            default      => 0, // pas d'abonnement = pas de publication
-        };
+        $abonnement = Auth::user()->abonnementActif()->with('plan.features')->first();
+
+        if (!$abonnement) {
+            return ['limite' => 0, 'utilisees' => 0, 'disponible' => false];
+        }
+
+        $limitValue = $abonnement->plan?->getFeature('featured_jobs');
+
+        // Feature non définie = illimité
+        if ($limitValue === null) {
+            return ['limite' => null, 'utilisees' => 0, 'disponible' => true];
+        }
+
+        // 0 = fonctionnalité désactivée sur ce plan
+        if ((int) $limitValue === 0) {
+            return ['limite' => 0, 'utilisees' => 0, 'disponible' => false];
+        }
+
+        $limite    = (int) $limitValue;
+        $utilisees = Auth::user()->offres()->where('premium', true)->count();
+
+        return ['limite' => $limite, 'utilisees' => $utilisees, 'disponible' => $utilisees < $limite];
     }
 
     private function verifierQuota(): ?string
     {
-        // Paiement non encore actif : quota désactivé.
-        // Mettre FACTURATION_ACTIVE=true dans .env pour réactiver.
-        if (!config('app.facturation_active', false)) {
+        $abonnement = Auth::user()->abonnementActif()->with('plan.features')->first();
+
+        if (!$abonnement) {
+            return 'Vous devez souscrire à un abonnement pour publier des offres.';
+        }
+
+        $limitValue = $abonnement->plan?->getFeature('job_post_limit');
+
+        // Feature non définie = illimité
+        if ($limitValue === null) {
             return null;
         }
 
-        $limite        = $this->getPlanLimite();
-        $offresActives = Auth::user()->offres()->where('statut', 'active')->count();
+        // 0 = publication d'offres désactivée sur ce plan
+        if ((int) $limitValue === 0) {
+            return "Votre plan « {$abonnement->plan->name} » ne permet pas de publier des offres. Souscrivez un plan supérieur.";
+        }
 
-        if ($limite === 0) {
-            return 'Vous devez souscrire à un abonnement pour publier des offres.';
+        $limite    = (int) $limitValue;
+        $utilisees = Auth::user()->offres()
+                         ->where('created_at', '>=', $abonnement->starts_at)
+                         ->count();
+
+        if ($utilisees >= $limite) {
+            return "Vous avez utilisé {$utilisees}/{$limite} offres de votre plan « {$abonnement->plan->name} ». Renouvelez votre abonnement pour continuer à publier.";
         }
-        if ($offresActives >= $limite) {
-            $label = $limite === 9999 ? 'illimité' : $limite;
-            return "Votre abonnement est limité à {$label} offre(s) active(s). Passez au plan Illimité pour publier davantage.";
-        }
+
         return null;
     }
 
@@ -62,19 +90,24 @@ class OffreController extends Controller
             $query->where('type', $request->type);
         }
 
-        $offres = $query->paginate(15)->withQueryString();
+        $offres          = $query->paginate(15)->withQueryString();
+        $miseEnAvantInfo = $this->infoMiseEnAvant();
+        $typeContrats    = TypeContrat::orderBy('libelle')->get();
 
-        return view('recruteur.offres', compact('offres'));
+        return view('recruteur.offres', compact('offres', 'miseEnAvantInfo', 'typeContrats'));
     }
 
     public function create()
     {
         $erreurQuota = $this->verifierQuota();
         if ($erreurQuota) {
-            return redirect()->route('recruteur.abonnement')
-                ->with('info', $erreurQuota);
+            $route = Auth::user()->abonnementActif()->exists()
+                ? 'recruteur.abonnement.plans'
+                : 'recruteur.abonnement';
+            return redirect()->route($route)->with('error', $erreurQuota);
         }
-        return view('recruteur.offre-create');
+        $typeContrats = TypeContrat::orderBy('libelle')->get();
+        return view('recruteur.offre-create', compact('typeContrats'));
     }
 
     public function store(Request $request)
@@ -83,7 +116,7 @@ class OffreController extends Controller
             'titre'        => 'required|string|max:200',
             'entreprise'   => 'required|string|max:200',
             'localisation' => 'required|string|max:200',
-            'type'         => 'required|in:CDI,CDD,Stage,Bourse,Freelance,Temps partiel',
+            'type'         => 'required|exists:type_contrats,code',
             'description'  => 'required|string|min:50',
             'date_limite'  => 'nullable|date|after_or_equal:today',
             'fichier'      => 'nullable|file|mimes:pdf,doc,docx|max:5120',
@@ -91,8 +124,10 @@ class OffreController extends Controller
 
         $erreurQuota = $this->verifierQuota();
         if ($erreurQuota) {
-            return redirect()->route('recruteur.abonnement')
-                ->withErrors(['plan' => $erreurQuota]);
+            $route = Auth::user()->abonnementActif()->exists()
+                ? 'recruteur.abonnement.plans'
+                : 'recruteur.abonnement';
+            return redirect()->route($route)->with('error', $erreurQuota);
         }
 
         $fichier = $request->hasFile('fichier')
@@ -100,10 +135,11 @@ class OffreController extends Controller
             : null;
 
         $offre = Offre::create([
-            ...$request->only(['titre','entreprise','localisation','type','secteur','salaire','description','exigences','date_limite']),
+            ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite']),
             'recruteur_id' => Auth::id(),
             'statut'       => 'active',
             'fichier'      => $fichier,
+            'secteur'      => $request->input('secteur', []),
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
@@ -123,7 +159,8 @@ class OffreController extends Controller
     public function edit(Offre $offre)
     {
         $this->authorize('update', $offre);
-        return view('recruteur.offre-edit', compact('offre'));
+        $typeContrats = TypeContrat::orderBy('libelle')->get();
+        return view('recruteur.offre-edit', compact('offre', 'typeContrats'));
     }
 
     public function update(Request $request, Offre $offre)
@@ -132,13 +169,17 @@ class OffreController extends Controller
 
         $request->validate([
             'titre'        => 'required|string|max:200',
+            'entreprise'   => 'required|string|max:200',
             'localisation' => 'required|string|max:200',
-            'type'         => 'required|in:CDI,CDD,Stage,Bourse,Freelance,Temps partiel',
+            'type'         => 'required|exists:type_contrats,code',
             'description'  => 'required|string|min:50',
             'fichier'      => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
-        $data = $request->only(['titre','entreprise','localisation','type','secteur','salaire','description','exigences','date_limite']);
+        $data = array_merge(
+            $request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite']),
+            ['secteur' => $request->input('secteur', [])]
+        );
 
         if ($request->hasFile('fichier')) {
             if ($offre->fichier) Storage::disk('public')->delete($offre->fichier);
@@ -174,15 +215,48 @@ class OffreController extends Controller
         return back()->with('success', 'Offre clôturée — elle n\'est plus visible par les candidats.');
     }
 
+    public function mettreEnAvant(Offre $offre)
+    {
+        $this->authorize('update', $offre);
+
+        // Déjà en avant → on retire sans vérifier le quota
+        if ($offre->premium) {
+            $offre->update(['premium' => false]);
+            return back()->with('success', '« ' . $offre->titre . ' » retirée de la mise en avant.');
+        }
+
+        // Vérifier le quota avant d'activer
+        $info = $this->infoMiseEnAvant();
+
+        if (!$info['disponible']) {
+            $msg = $info['limite'] === 0
+                ? 'Votre abonnement ne permet pas de mettre des offres en avant. Souscrivez un plan avec cette fonctionnalité.'
+                : "Limite atteinte ({$info['utilisees']}/{$info['limite']}). Retirez d'abord une offre mise en avant pour en promouvoir une autre.";
+            return back()->with('error', $msg);
+        }
+
+        $offre->update(['premium' => true]);
+        return back()->with('success', '« ' . $offre->titre . ' » est maintenant mise en avant.');
+    }
+
     public function dupliquer(Offre $offre)
     {
         $this->authorize('update', $offre);
+
+        $erreurQuota = $this->verifierQuota();
+        if ($erreurQuota) {
+            $route = Auth::user()->abonnementActif()->exists()
+                ? 'recruteur.abonnement.plans'
+                : 'recruteur.abonnement';
+            return redirect()->route($route)->with('error', $erreurQuota);
+        }
 
         $copie = $offre->replicate(['vues']);
         $copie->titre   = $offre->titre . ' (copie)';
         $copie->statut  = 'active';
         $copie->vues    = 0;
         $copie->fichier = null;
+        $copie->premium = false;
         $copie->save();
 
         $copie->competences()->sync($offre->competences->pluck('id')->all());
