@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <button type="submit" class="adm-btn adm-btn--primary">Enregistrer</button>
+        <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer</button>
       </form>
     </div>
   </div>
@@ -219,7 +219,7 @@
               </label>
             </div>
 
-            <button type="submit" class="adm-btn adm-btn--primary adm-btn--sm">Enregistrer cette page</button>
+            <button type="submit" class="adm-btn adm-btn--yellow adm-btn--sm">Enregistrer cette page</button>
           </form>
         </div>
       </div>

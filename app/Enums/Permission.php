@@ -26,6 +26,10 @@ class Permission
     const CONTACT_CANDIDATS     = 'contact-candidats';
     const MANAGE_ABONNEMENT_REC = 'manage-abonnement-recruteur';
 
+    // ── ANNONCEUR ──────────────────────────────────────────
+    const SUBMIT_PUBLICITE      = 'submit-publicite';
+    const MANAGE_PUBLICITES     = 'manage-publicites';
+
     // ── CANDIDAT ───────────────────────────────────────────
     const DEPOSIT_CV            = 'deposit-cv';
     const APPLY_OFFRE           = 'apply-offre';
@@ -34,6 +38,13 @@ class Permission
     const MANAGE_ABONNEMENT_CAN = 'manage-abonnement-candidat';
 
     // ── Regroupements par rôle ─────────────────────────────
+    public static function annonceurPermissions(): array
+    {
+        return [
+            self::SUBMIT_PUBLICITE,
+        ];
+    }
+
     public static function adminPermissions(): array
     {
         return [
@@ -50,6 +61,7 @@ class Permission
             self::MANAGE_PARAMETRES,
             self::MANAGE_REFERENTIELS,
             self::VIEW_STATISTIQUES,
+            self::MANAGE_PUBLICITES,
             // + toutes les permissions des autres rôles
             self::PUBLISH_OFFRE,
             self::VIEW_CANDIDATURES,
@@ -90,6 +102,7 @@ class Permission
             self::adminPermissions(),
             self::recruteurPermissions(),
             self::candidatPermissions(),
+            self::annonceurPermissions(),
         ));
     }
 }

@@ -38,20 +38,24 @@ class FedaPayService
 
         $user = $paiement->user;
 
+        $customer = [
+            'firstname' => $user->prenom ?: 'Client',
+            'lastname'  => $user->nom    ?: 'Inconnu',
+            'email'     => $user->email,
+        ];
+
+        // FedaPay refuse un numéro vide ou mal formaté — on ne l'inclut que s'il est valide
+        $phone = $this->sanitizePhone($user->telephone ?? '');
+        if ($phone !== '') {
+            $customer['phone_number'] = ['number' => $phone, 'country' => 'BJ'];
+        }
+
         $transaction = Transaction::create([
             'description' => $this->buildDescription($paiement),
             'amount'      => (int) $paiement->montant,
-            'currency'    => ['iso' => $paiement->devise ?? 'XOF'],
+            'currency'    => ['iso' => 'XOF'],
             'callback_url'=> route('payment.callback.fedapay', ['paiement' => $paiement->id]),
-            'customer'    => [
-                'firstname' => $user->prenom ?? '',
-                'lastname'  => $user->nom    ?? '',
-                'email'     => $user->email,
-                'phone_number' => [
-                    'number'  => $user->telephone ?? '',
-                    'country' => 'BJ',
-                ],
-            ],
+            'customer'    => $customer,
         ]);
 
         // Stocker l'ID de transaction FedaPay
@@ -62,52 +66,6 @@ class FedaPayService
 
         $token = $transaction->generateToken();
         return $token->url;
-    }
-
-    /**
-     * Vérifie et traite un webhook FedaPay.
-     * Retourne le Paiement mis à jour ou null si signature invalide.
-     */
-    public function handleWebhook(string $payload, string $signature): ?Paiement
-    {
-        // Vérification de la signature HMAC-SHA256
-        $secret   = $this->settings?->webhook_secret;
-        $expected = hash_hmac('sha256', $payload, $secret ?? '');
-        if (!hash_equals($expected, $signature)) {
-            return null;
-        }
-
-        $data = json_decode($payload, true);
-        $event = $data['name'] ?? '';
-
-        if (!in_array($event, ['transaction.approved', 'transaction.declined', 'transaction.canceled'])) {
-            return null;
-        }
-
-        $transactionId = $data['data']['object']['id'] ?? null;
-        if (!$transactionId) return null;
-
-        $paiement = Paiement::where('gateway_transaction_id', $transactionId)->first();
-        if (!$paiement) return null;
-
-        $gatewayStatus = $data['data']['object']['status'] ?? '';
-        $fees          = $data['data']['object']['fees'] ?? 0;
-
-        $statut = match($event) {
-            'transaction.approved' => 'confirme',
-            'transaction.declined',
-            'transaction.canceled' => 'echec',
-            default                => $paiement->statut,
-        };
-
-        $paiement->update([
-            'gateway_status' => $gatewayStatus,
-            'gateway_fees'   => (int) $fees,
-            'statut'         => $statut,
-            'paid_at'        => $statut === 'confirme' ? now() : $paiement->paid_at,
-        ]);
-
-        return $paiement;
     }
 
     /**
@@ -129,11 +87,49 @@ class FedaPayService
         }
     }
 
+    /**
+     * Vérifie la signature HMAC d'un webhook FedaPay.
+     * Format header : "t=timestamp,v1=hash"
+     */
+    public function verifyWebhookSignature(string $payload, string $signatureHeader, string $secret): bool
+    {
+        $parts = [];
+        foreach (explode(',', $signatureHeader) as $part) {
+            [$key, $val] = array_pad(explode('=', $part, 2), 2, '');
+            $parts[trim($key)] = trim($val);
+        }
+
+        if (empty($parts['v1'])) {
+            return false;
+        }
+
+        $signed            = ($parts['t'] ?? '') . '.' . $payload;
+        $expectedSignature = hash_hmac('sha256', $signed, $secret);
+
+        return hash_equals($expectedSignature, $parts['v1']);
+    }
+
+    /**
+     * Retire le préfixe international du numéro béninois pour FedaPay.
+     * FedaPay attend le numéro local uniquement (ex: 97000000, pas +22997000000).
+     */
+    private function sanitizePhone(string $phone): string
+    {
+        $phone = preg_replace('/\D/', '', $phone); // garder chiffres seulement
+        if (str_starts_with($phone, '00229')) {
+            $phone = substr($phone, 5);
+        } elseif (str_starts_with($phone, '229')) {
+            $phone = substr($phone, 3);
+        }
+        return strlen($phone) >= 8 ? $phone : '';
+    }
+
     private function buildDescription(Paiement $paiement): string
     {
         return match($paiement->type) {
             'cv_credits'           => "Achat de {$paiement->credits_cv} crédits CVthèque",
             'abonnement_recruteur' => "Abonnement recruteur",
+            'abonnement_candidat'  => "Abonnement candidat",
             default                => "Paiement Emploi Bouge Bénin",
         };
     }

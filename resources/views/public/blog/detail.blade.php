@@ -19,7 +19,7 @@
       <h1 style="font-size:2rem;color:#042C53;line-height:1.3;margin-bottom:16px">{{ $article->titre }}</h1>
 
       <div style="display:flex;align-items:center;gap:16px;color:#64748b;font-size:.88rem;margin-bottom:32px">
-        <span>Par <strong>{{ $article->auteur->nom_complet }}</strong></span>
+        <span>Par <strong>{{ config('app.name') }}</strong></span>
         <span>·</span>
         <span>{{ $article->publie_le?->format('d M Y') }}</span>
         <span>·</span>
@@ -29,8 +29,10 @@
       </div>
 
       @if($article->image)
-        <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->titre }}"
-             style="width:100%;border-radius:16px;margin-bottom:32px;max-height:420px;object-fit:cover">
+        <div style="width:100%;height:420px;border-radius:16px;overflow:hidden;margin-bottom:32px">
+          <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->titre }}"
+               style="width:100%;height:100%;object-fit:cover">
+        </div>
       @endif
     </header>
 

@@ -5,12 +5,23 @@
 <div style="min-height:80vh;background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:40px 20px">
   <div style="width:100%;max-width:520px">
 
+    @php
+      $isService  = $paiement->type === 'service';
+      $isCvCredit = $paiement->type === 'cv_credits';
+    @endphp
+
     {{-- En-tête --}}
     <div style="text-align:center;margin-bottom:32px">
       <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-        <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        @if($isService)
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        @else
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        @endif
       </div>
-      <h1 style="font-size:1.5rem;font-weight:800;color:#042C53;margin:0 0 8px">Finaliser le paiement</h1>
+      <h1 style="font-size:1.5rem;font-weight:800;color:#042C53;margin:0 0 8px">
+        {{ $isService ? 'Paiement de votre commande' : 'Finaliser le paiement' }}
+      </h1>
       <p style="font-size:14px;color:#64748b;margin:0">Choisissez votre mode de paiement préféré</p>
     </div>
 
@@ -18,11 +29,19 @@
     <div style="background:linear-gradient(135deg,#042C53,#185FA5);border-radius:14px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between">
       <div>
         <p style="font-size:12px;color:rgba(255,255,255,.6);margin:0 0 4px;text-transform:uppercase;letter-spacing:.06em">
-          {{ $paiement->type === 'cv_credits' ? 'Crédits CVthèque' : 'Abonnement' }}
+          @if($isCvCredit)
+            Crédits CVthèque
+          @elseif($isService)
+            Commande de service
+          @else
+            Abonnement
+          @endif
         </p>
         <p style="font-size:1.1rem;font-weight:700;color:#fff;margin:0">
-          @if($paiement->type === 'cv_credits')
+          @if($isCvCredit)
             {{ $paiement->credits_cv }} crédit{{ $paiement->credits_cv > 1 ? 's' : '' }}
+          @elseif($isService)
+            {{ $paiement->payable?->service?->nom ?? 'Service' }}
           @else
             {{ $paiement->abonnement?->plan?->name ?? 'Abonnement' }}
           @endif
@@ -110,15 +129,16 @@ const paiementId = {{ $paiement->id }};
 
 document.getElementById('kkiapay-trigger').addEventListener('click', function () {
   openKkiapayWidget({
-    amount:    kkiaConfig.amount,
-    name:      kkiaConfig.name,
-    email:     kkiaConfig.email,
-    phone:     kkiaConfig.phone,
-    key:       kkiaConfig.publicApiKey,
-    sandbox:   kkiaConfig.sandbox,
-    theme:     kkiaConfig.theme,
-    data:      JSON.stringify(kkiaConfig.data),
-    callback:  kkiaConfig.callback,
+    amount:  kkiaConfig.amount,
+    name:    kkiaConfig.name,
+    email:   kkiaConfig.email,
+    phone:   kkiaConfig.phone,
+    key:     kkiaConfig.publicApiKey,
+    sandbox: kkiaConfig.sandbox,
+    theme:   kkiaConfig.theme,
+    data:    kkiaConfig.data,
+    // pas de "callback" : on gère le résultat via addSuccessListener (AJAX + redirect)
+    // "callback" = redirection GET navigateur, incompatible avec notre route POST
   });
 });
 

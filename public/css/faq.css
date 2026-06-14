@@ -1,4 +1,19 @@
-﻿.faq-hero-link {
+﻿/* Réponse rendue depuis Summernote */
+.faq-reponse {
+  padding: 0 18px 16px;
+  color: #475569;
+  font-size: .9rem;
+  line-height: 1.75;
+}
+.faq-reponse p  { margin: 0 0 10px; }
+.faq-reponse p:last-child { margin-bottom: 0; }
+.faq-reponse ul, .faq-reponse ol { padding-left: 20px; margin: 0 0 10px; }
+.faq-reponse li { margin-bottom: 4px; }
+.faq-reponse strong { color: #1e293b; }
+.faq-reponse a { color: #185FA5; font-weight: 500; text-decoration: none; }
+.faq-reponse a:hover { text-decoration: underline; }
+
+.faq-hero-link {
   color: var(--jaune);
   font-weight: 600;
   text-decoration: none;

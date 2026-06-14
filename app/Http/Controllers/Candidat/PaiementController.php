@@ -11,7 +11,7 @@ class PaiementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Paiement::where('user_id', Auth::id())->latest();
+        $query = Paiement::where('user_id', Auth::id())->with('abonnement.plan')->latest();
 
         if ($request->filled('statut')) {
             $query->where('statut', $request->statut);

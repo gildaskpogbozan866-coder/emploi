@@ -77,20 +77,69 @@ class PlansSeeder extends Seeder
                     'featured_jobs'    => '5',
                 ],
             ],
+
+            // ── Plans annonceur ──────────────────────────────────
+            [
+                'name'          => 'Annonceur Gratuit',
+                'slug'          => 'annonceur-gratuit',
+                'description'   => 'Testez la plateforme avec une annonce publicitaire.',
+                'target_type'   => 'annonceur',
+                'price'         => 0,
+                'currency'      => 'FCFA',
+                'duration_days' => null,
+                'is_free'       => true,
+                'is_active'     => true,
+                'features'      => [
+                    'annonce_limit'    => '1',
+                    'display_days'     => '7',
+                    'priority_display' => '0',
+                ],
+            ],
+            [
+                'name'          => 'Annonceur Starter',
+                'slug'          => 'annonceur-starter',
+                'description'   => 'Visibilité régulière pour les petites structures.',
+                'target_type'   => 'annonceur',
+                'price'         => 5000,
+                'currency'      => 'FCFA',
+                'duration_days' => 30,
+                'is_free'       => false,
+                'is_active'     => true,
+                'features'      => [
+                    'annonce_limit'    => '3',
+                    'display_days'     => '30',
+                    'priority_display' => '0',
+                ],
+            ],
+            [
+                'name'          => 'Annonceur Pro',
+                'slug'          => 'annonceur-pro',
+                'description'   => 'Visibilité maximale avec affichage prioritaire.',
+                'target_type'   => 'annonceur',
+                'price'         => 15000,
+                'currency'      => 'FCFA',
+                'duration_days' => 30,
+                'is_free'       => false,
+                'is_active'     => true,
+                'features'      => [
+                    'annonce_limit'    => '10',
+                    'display_days'     => '30',
+                    'priority_display' => '1',
+                ],
+            ],
         ];
 
         foreach ($plans as $data) {
             $features = $data['features'];
             unset($data['features']);
 
-            $plan = Plan::create($data);
+            $plan = Plan::updateOrCreate(['slug' => $data['slug']], $data);
 
             foreach ($features as $key => $value) {
-                PlanFeature::create([
-                    'plan_id'       => $plan->id,
-                    'feature_key'   => $key,
-                    'feature_value' => $value,
-                ]);
+                PlanFeature::updateOrCreate(
+                    ['plan_id' => $plan->id, 'feature_key' => $key],
+                    ['feature_value' => $value]
+                );
             }
         }
     }

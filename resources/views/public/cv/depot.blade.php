@@ -2,6 +2,7 @@
 @section('title', 'Ajouter un CV ou document — Emploi Bouge Bénin')
 
 @section('css')
+<link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
 <link rel="stylesheet" href="{{ asset('css/cv/depot-cv.css') }}">
 @endsection
 
@@ -51,6 +52,26 @@
       <div class="depot-user-badge__sub">Connecté — remplissez les informations ci-dessous</div>
     </div>
   </div>
+  @endauth
+
+  {{-- Quota badge --}}
+  @auth
+  @if(isset($quota) && !$quota['unlimited'])
+  <div style="display:flex;align-items:center;gap:10px;background:{{ $quota['remaining'] <= 1 ? '#fffbeb' : '#f0f9ff' }};border:1.5px solid {{ $quota['remaining'] <= 1 ? '#fde68a' : '#bae6fd' }};border-radius:10px;padding:11px 16px;margin-bottom:18px">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $quota['remaining'] <= 1 ? '#d97706' : '#0284c7' }}" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    <p style="margin:0;font-size:13px;color:{{ $quota['remaining'] <= 1 ? '#92400e' : '#0c4a6e' }};flex:1">
+      <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} documents</strong> utilisés sur votre plan —
+      @if($quota['remaining'] === 0)
+        quota atteint
+      @else
+        encore <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong> disponible{{ $quota['remaining'] > 1 ? 's' : '' }}
+      @endif
+    </p>
+    @if($quota['remaining'] <= 1)
+      <a href="{{ route('candidat.abonnement.plans') }}" style="font-size:12.5px;font-weight:700;color:#92400e;white-space:nowrap">Voir les plans →</a>
+    @endif
+  </div>
+  @endif
   @endauth
 
   @if($errors->any())
@@ -231,13 +252,6 @@
 </div>
 
 <style>
-.cvt-subnav { background:#003d5c; border-bottom:1px solid rgba(255,255,255,.08); }
-.cvt-subnav__inner { max-width:1180px; margin:0 auto; padding:0 24px; display:flex; align-items:center; height:42px; }
-.cvt-subnav__link { font-family:var(--font-body); font-size:13px; font-weight:500; color:#F5C842; text-decoration:none; padding:0 20px; height:100%; display:flex; align-items:center; transition:color .2s,background .2s; border-right:1px solid rgba(255,255,255,.15); }
-.cvt-subnav__link:first-child { border-left:1px solid rgba(255,255,255,.15); }
-.cvt-subnav__link:hover { color:#fff; background:rgba(255,255,255,.06); }
-.cvt-subnav__link.active { color:#fff; background:rgba(245,200,66,.12); }
-
 /* ── Tag input ────────────────────────────────── */
 .tag-input-wrap { position: relative; }
 .tag-input-box {

@@ -67,7 +67,7 @@
       @endphp
 
       @foreach($packs as $pack)
-      <div style="border:2px solid {{ $pack['featured'] ? 'transparent' : ($pack['badge'] === 'Populaire' ? '#93c5fd' : '#e2e8f0') }};border-radius:14px;padding:22px 16px;text-align:center;position:relative;background:{{ $pack['featured'] ? 'linear-gradient(145deg,#042C53,#185FA5)' : '#fff' }}">
+      <div style="border:2px solid {{ $pack['featured'] ? 'transparent' : ($pack['badge'] === 'Populaire' ? '#93c5fd' : '#c9dcf0') }};border-radius:14px;padding:22px 16px;text-align:center;position:relative;background:{{ $pack['featured'] ? 'linear-gradient(145deg,#042C53,#185FA5)' : ($pack['badge'] === 'Populaire' ? '#f0f7ff' : '#f5f9ff') }};box-shadow:{{ $pack['featured'] ? '0 8px 28px rgba(4,44,83,.3)' : '0 2px 10px rgba(4,44,83,.07)' }}">
         @if($pack['badge'])
           <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:10px;font-weight:800;padding:2px 12px;border-radius:20px;white-space:nowrap;text-transform:uppercase">{{ $pack['badge'] }}</div>
         @endif

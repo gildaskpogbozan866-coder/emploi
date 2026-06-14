@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => route('auth.connexion'));
 
-        // Exclure les webhooks de paiement du CSRF
+        // Endpoints webhook (push serveur-à-serveur) — pas de session, pas de CSRF
         $middleware->validateCsrfTokens(except: [
             'payment/webhook/*',
         ]);

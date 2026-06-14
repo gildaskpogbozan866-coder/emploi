@@ -16,7 +16,7 @@
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span style="font-size:13px;color:#0284c7;font-weight:700">{{ $credits }} crédit{{ $credits > 1 ? 's' : '' }}</span>
     </div>
-    <a href="{{ route('cv.public.tarif') }}" class="rec-btn rec-btn--primary rec-btn--sm">+ Acheter des crédits</a>
+    <a href="{{ route('cv.public.tarif') }}" class="rec-btn rec-btn--yellow rec-btn--sm">+ Acheter des crédits</a>
   </div>
 </div>
 
@@ -121,7 +121,7 @@
           </button>
         </form>
         {{-- Voir profil --}}
-        <a href="{{ route('recruteur.cvtheque.show', $cv) }}" class="rec-btn rec-btn--primary rec-btn--sm">Voir profil</a>
+        <a href="{{ route('recruteur.cvtheque.show', $cv) }}" class="rec-btn rec-btn--outline rec-btn--sm">Voir profil</a>
       </div>
     </div>
   </div>

@@ -7,7 +7,7 @@
     <h1>Gestion des services</h1>
     <p>{{ count($services) }} service{{ count($services) > 1 ? 's' : '' }} disponible{{ count($services) > 1 ? 's' : '' }}</p>
   </div>
-  <a href="{{ route('admin.services.create') }}" class="adm-btn adm-btn--primary">
+  <a href="{{ route('admin.services.create') }}" class="adm-btn adm-btn--yellow">
     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Nouveau service
   </a>
@@ -39,8 +39,8 @@
           </td>
           <td>
             <div class="actions">
-              <a href="{{ route('admin.services.edit', $service) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Modifier</a>
-              <a href="{{ route('service.detail', $service) }}" target="_blank" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
+              <a href="{{ route('admin.services.edit', $service) }}" class="adm-btn adm-btn--outline adm-btn--sm">Modifier</a>
+              <a href="{{ route('service.detail', $service) }}" target="_blank" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
             </div>
           </td>
         </tr>
@@ -50,7 +50,7 @@
             <div class="adm-empty">
               <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
               <h3>Aucun service créé</h3>
-              <p><a href="{{ route('admin.services.create') }}" class="adm-btn adm-btn--primary adm-btn--sm" style="margin-top:8px">Créer un service</a></p>
+              <p><a href="{{ route('admin.services.create') }}" class="adm-btn adm-btn--yellow adm-btn--sm" style="margin-top:8px">Créer un service</a></p>
             </div>
           </td>
         </tr>

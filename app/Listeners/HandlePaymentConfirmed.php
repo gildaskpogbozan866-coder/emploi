@@ -2,9 +2,14 @@
 
 namespace App\Listeners;
 
+use App\Enums\Role;
 use App\Events\PaymentConfirmed;
+use App\Models\Commande;
 use App\Models\User;
+use App\Notifications\NouvelleCommandeServiceNotification;
+use App\Notifications\PaiementConfirmeNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HandlePaymentConfirmed
 {
@@ -13,10 +18,41 @@ class HandlePaymentConfirmed
         $paiement = $event->paiement;
 
         match($paiement->type) {
-            'cv_credits'           => $this->activateCvCredits($paiement),
-            'abonnement_recruteur' => $this->activateAbonnement($paiement),
-            default                => null,
+            'cv_credits'                                  => $this->activateCvCredits($paiement),
+            'abonnement_recruteur', 'abonnement_candidat' => $this->activateAbonnement($paiement),
+            'service'                                     => $this->confirmCommande($paiement),
+            default                                       => null,
         };
+
+        try {
+            $paiement->user?->notify(new PaiementConfirmeNotification($paiement));
+        } catch (\Throwable $e) {
+            // L'email échoue (ex: rate limit Mailtrap en dev) mais le paiement est déjà confirmé
+            Log::warning('Notification paiement non envoyée', [
+                'paiement_id' => $paiement->id,
+                'error'       => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function confirmCommande($paiement): void
+    {
+        $commande = $paiement->payable;
+        if (!$commande instanceof Commande) return;
+
+        $commande->update([
+            'paiement_statut' => 'paye',
+            'statut'          => 'en_cours',
+        ]);
+
+        $admins = User::role(Role::ADMIN)->get();
+        foreach ($admins as $admin) {
+            try {
+                $admin->notify(new NouvelleCommandeServiceNotification($commande, $paiement));
+            } catch (\Throwable $e) {
+                Log::warning('Notification admin commande service non envoyée', ['error' => $e->getMessage()]);
+            }
+        }
     }
 
     private function activateCvCredits($paiement): void

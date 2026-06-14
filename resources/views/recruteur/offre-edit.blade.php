@@ -99,7 +99,7 @@
       </div>
 
       <div style="display:flex;gap:12px">
-        <button type="submit" class="rec-btn rec-btn--primary">Enregistrer les modifications</button>
+        <button type="submit" class="rec-btn rec-btn--yellow">Enregistrer les modifications</button>
         <a href="{{ route('recruteur.offres') }}" class="rec-btn rec-btn--outline">Annuler</a>
       </div>
     </form>

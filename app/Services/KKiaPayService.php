@@ -20,23 +20,24 @@ class KKiaPayService
     public function isAvailable(): bool
     {
         return $this->settings?->is_active
-            && $this->settings->secret_key
-            && $this->settings->public_key;
+            && $this->settings->public_key
+            && $this->settings->private_key;
     }
 
     /**
      * Retourne la config nécessaire au widget JS KKiaPay.
+     * On ne passe PAS de "callback" car on utilise addSuccessListener côté JS
+     * (callback = redirection navigateur GET, incompatible avec notre route POST).
      */
     public function widgetConfig(Paiement $paiement): array
     {
         return [
             'publicApiKey' => $this->settings->public_key,
             'amount'       => (int) $paiement->montant,
-            'name'         => $paiement->user->prenom . ' ' . $paiement->user->nom,
+            'name'         => trim(($paiement->user->prenom ?? '') . ' ' . ($paiement->user->nom ?? '')),
             'email'        => $paiement->user->email,
             'phone'        => $paiement->user->telephone ?? '',
             'data'         => ['paiement_id' => $paiement->id],
-            'callback'     => route('payment.callback.kkiapay'),
             'sandbox'      => $this->settings->env !== 'live',
             'theme'        => '#042C53',
         ];
@@ -44,11 +45,12 @@ class KKiaPayService
 
     /**
      * Vérifie côté serveur qu'une transaction KKiaPay est bien approuvée.
+     * Utilise la private_key (clé dédiée à la vérification, distincte de la secret_key).
      */
     public function verifyTransaction(string $transactionId): ?array
     {
         $response = Http::withHeaders([
-            'x-private-key' => $this->settings->secret_key,
+            'x-private-key' => $this->settings->private_key,
         ])->get(self::API_BASE . "/transactions/{$transactionId}/status");
 
         if (!$response->successful()) {
@@ -64,8 +66,7 @@ class KKiaPayService
     }
 
     /**
-     * Traite un callback KKiaPay (depuis le widget JS via Ajax ou depuis le webhook).
-     * Retourne le Paiement mis à jour ou null.
+     * Traite un callback KKiaPay (depuis le widget JS via addSuccessListener).
      */
     public function handleCallback(string $transactionId, int $paiementId): ?Paiement
     {
@@ -82,6 +83,7 @@ class KKiaPayService
         };
 
         $paiement->update([
+            'gateway'                => 'kkiapay',
             'gateway_transaction_id' => $transactionId,
             'gateway_status'         => $verified['status'],
             'statut'                 => $statut,
@@ -89,25 +91,5 @@ class KKiaPayService
         ]);
 
         return $paiement;
-    }
-
-    /**
-     * Vérifie et traite un webhook KKiaPay.
-     */
-    public function handleWebhook(string $payload, string $signature): ?Paiement
-    {
-        $secret   = $this->settings?->webhook_secret;
-        $expected = hash_hmac('sha256', $payload, $secret ?? '');
-        if (!hash_equals($expected, $signature)) {
-            return null;
-        }
-
-        $data          = json_decode($payload, true);
-        $transactionId = $data['transactionId'] ?? null;
-        $paiementId    = $data['data']['paiement_id'] ?? null;
-
-        if (!$transactionId || !$paiementId) return null;
-
-        return $this->handleCallback($transactionId, $paiementId);
     }
 }

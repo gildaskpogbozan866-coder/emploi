@@ -1,27 +1,54 @@
+@php
+  $abActifCand = auth()->user()->abonnementActif()->with('plan')->first();
+  $estPremiumCand = $abActifCand && !($abActifCand->plan?->is_free ?? true);
+@endphp
 <div class="cand-sidebar__user">
   <div class="cand-sidebar__avatar">{{ auth()->user()->initiale }}</div>
   <div class="cand-sidebar__info">
     <div class="cand-sidebar__name">{{ auth()->user()->nom_complet }}</div>
     <div class="cand-sidebar__role">Candidat</div>
-    @if(auth()->user()->premium)
-      <span class="cand-sidebar__badge">Premium <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+    @if($estPremiumCand)
+      <span class="cand-sidebar__badge">
+        {{ $abActifCand->plan->name }}
+        <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-1px;margin-left:2px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+    @elseif($abActifCand)
+      <span class="cand-sidebar__badge cand-sidebar__badge--free">{{ $abActifCand->plan?->name ?? 'Gratuit' }}</span>
     @else
       <span class="cand-sidebar__badge cand-sidebar__badge--free">Gratuit</span>
     @endif
   </div>
 </div>
 
+@if($estPremiumCand && $abActifCand->ends_at)
+  <div style="margin:0 14px 10px;padding:9px 13px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);border-radius:8px">
+    <p style="font-size:11px;color:rgba(255,255,255,0.6);margin:0 0 2px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Plan actif jusqu'au</p>
+    <p style="font-size:12.5px;color:#F5C842;font-weight:700;margin:0">{{ $abActifCand->ends_at->format('d/m/Y') }}
+      <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.55)"> — {{ $abActifCand->ends_at->diffForHumans() }}</span>
+    </p>
+  </div>
+@elseif(!$abActifCand)
+  <a href="{{ route('candidat.abonnement.plans') }}" style="display:block;margin:0 14px 10px;padding:9px 13px;background:rgba(245,200,66,0.1);border:1px dashed rgba(245,200,66,0.4);border-radius:8px;text-decoration:none">
+    <p style="font-size:11px;color:rgba(255,255,255,0.55);margin:0 0 2px">Aucun abonnement actif</p>
+    <p style="font-size:12px;color:#F5C842;font-weight:700;margin:0">Voir les plans →</p>
+  </a>
+@endif
 
 <nav class="cand-nav" id="candNav">
-  <div class="cand-nav__section">Principal</div>
+
+  {{-- ── Mon espace ── --}}
+  <div class="cand-nav__section">Mon espace</div>
 
   <a href="{{ route('candidat.dashboard') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.dashboard') ? 'active' : '' }}">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
     </svg>
     Tableau de bord
   </a>
+
+  {{-- ── Recherche d'emploi ── --}}
+  <div class="cand-nav__section">Recherche d'emploi</div>
 
   <a href="{{ route('candidat.candidatures') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.candidatures*') ? 'active' : '' }}">
@@ -29,14 +56,6 @@
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
     </svg>
     Mes candidatures
-  </a>
-
-  <a href="{{ route('candidat.cvs') }}"
-     class="cand-nav__item {{ request()->routeIs('candidat.cvs*') ? 'active' : '' }}">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-    </svg>
-    CVs & Documents
   </a>
 
   <a href="{{ route('candidat.offres-sauvegardees') }}"
@@ -52,10 +71,29 @@
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
     </svg>
-    Mes alertes emploi
+    Alertes emploi
   </a>
 
-  <div class="cand-nav__divider"></div>
+  {{-- ── Mon profil ── --}}
+  <div class="cand-nav__section">Mon profil</div>
+
+  <a href="{{ route('candidat.cvs') }}"
+     class="cand-nav__item {{ request()->routeIs('candidat.cvs*') ? 'active' : '' }}">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+    CVs &amp; Documents
+  </a>
+
+  <a href="{{ route('candidat.profil') }}"
+     class="cand-nav__item {{ request()->routeIs('candidat.profil*') ? 'active' : '' }}">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+    Mon profil
+  </a>
+
+  {{-- ── Communication ── --}}
   <div class="cand-nav__section">Communication</div>
 
   <a href="{{ route('candidat.messagerie') }}"
@@ -72,13 +110,13 @@
   <a href="{{ route('candidat.notifications') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.notifications*') ? 'active' : '' }}">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="12" y1="2" x2="12" y2="4"/>
     </svg>
     Notifications
   </a>
 
-  <div class="cand-nav__divider"></div>
-  <div class="cand-nav__section">Compte</div>
+  {{-- ── Compte & Finances ── --}}
+  <div class="cand-nav__section">Compte &amp; Finances</div>
 
   <a href="{{ route('candidat.abonnement') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.abonnement*') ? 'active' : '' }}">
@@ -91,19 +129,10 @@
   <a href="{{ route('candidat.paiements') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.paiements*') ? 'active' : '' }}">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+      <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
     </svg>
     Historique paiements
   </a>
-
-  <a href="{{ route('candidat.profil') }}"
-     class="cand-nav__item {{ request()->routeIs('candidat.profil*') ? 'active' : '' }}">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-    </svg>
-    Mon profil
-  </a>
-
 
   <a href="{{ route('candidat.parametres') }}"
      class="cand-nav__item {{ request()->routeIs('candidat.parametres*') ? 'active' : '' }}">
@@ -114,10 +143,12 @@
   </a>
 
   <div class="cand-nav__divider"></div>
+
   <a href="{{ route('offre.list') }}" class="cand-nav__item">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
     </svg>
     Parcourir les offres
   </a>
+
 </nav>

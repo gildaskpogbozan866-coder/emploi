@@ -22,11 +22,16 @@
     @else
       <p style="margin:0 0 28px"></p>
     @endif
+    @php
+      $isRec = auth()->user()->hasRole('recruteur');
+      $dashRoute     = $isRec ? route('recruteur.dashboard') : route('candidat.dashboard');
+      $paiementsRoute = $isRec ? route('recruteur.paiements') : route('candidat.paiements');
+    @endphp
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <a href="{{ route('recruteur.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
+      <a href="{{ $dashRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
         Tableau de bord
       </a>
-      <a href="{{ route('recruteur.paiements') }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
+      <a href="{{ $paiementsRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
         Mes paiements
       </a>
     </div>

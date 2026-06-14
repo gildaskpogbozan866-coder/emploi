@@ -7,11 +7,20 @@
 
 @section('content')
 
+{{-- Page Hero --}}
+<section class="section page-hero">
+  <div class="container page-hero__inner">
+    <span class="badge badge--blue">CVthèque</span>
+    <h1 class="page-hero__title">Trouvez le bon profil</h1>
+    <p class="page-hero__subtitle">{{ $cvs->total() }} CV{{ $cvs->total() > 1 ? 's' : '' }} de candidats disponibles — mis à jour en continu</p>
+  </div>
+</section>
+
 {{-- Sous-nav --}}
 <div class="cvt-subnav">
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link active">Trouver des CV</a>
-    <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs CV</a>
+    <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs crédits</a>
     @if(!auth()->check() || auth()->user()->hasRole('candidat'))
       <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link">Déposer un CV</a>
     @endif

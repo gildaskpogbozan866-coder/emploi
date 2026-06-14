@@ -9,6 +9,7 @@ use App\Services\FedaPayService;
 use App\Services\KKiaPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class GatewayController extends Controller
 {
@@ -23,7 +24,16 @@ class GatewayController extends Controller
     public function choose(Paiement $paiement)
     {
         abort_if($paiement->user_id !== Auth::id(), 403);
-        abort_if($paiement->statut !== 'en_attente', 404);
+        abort_if(!in_array($paiement->statut, ['en_attente', 'echec']), 404);
+
+        if ($paiement->statut === 'echec') {
+            $paiement->update([
+                'statut'                 => 'en_attente',
+                'gateway'                => 'manuel',
+                'gateway_transaction_id' => null,
+                'gateway_status'         => null,
+            ]);
+        }
 
         $gateways = [
             'fedapay' => [
@@ -50,6 +60,10 @@ class GatewayController extends Controller
             ? $this->kkiaPay->widgetConfig($paiement)
             : null;
 
+        if ($paiement->type === 'service') {
+            $paiement->load('payable.service');
+        }
+
         return view('payment.choose', compact('paiement', 'gateways', 'kkiaConfig'));
     }
 
@@ -70,17 +84,21 @@ class GatewayController extends Controller
             if (!$this->fedaPay->isAvailable()) {
                 return back()->with('error', 'FedaPay n\'est pas disponible pour le moment.');
             }
-            $url = $this->fedaPay->initiateTransaction($paiement);
+            try {
+                $url = $this->fedaPay->initiateTransaction($paiement);
+            } catch (\Throwable $e) {
+                Log::error('FedaPay initiate error', [
+                    'paiement_id' => $paiement->id,
+                    'message'     => $e->getMessage(),
+                ]);
+                return back()->with('error', 'Impossible d\'initier le paiement FedaPay : ' . $e->getMessage());
+            }
             return redirect()->away($url);
         }
 
         if ($gateway === 'kkiapay') {
-            if (!$this->kkiaPay->isAvailable()) {
-                return back()->with('error', 'KKiaPay n\'est pas disponible pour le moment.');
-            }
-            // KKiaPay utilise un widget JS — rediriger vers la page qui l'intègre
-            return redirect()->route('payment.choose', ['paiement' => $paiement->id])
-                ->with('launch_kkiapay', true);
+            // KKiaPay s'initialise via son widget JS sur la page de choix
+            return redirect()->route('payment.choose', ['paiement' => $paiement->id]);
         }
 
         // Manuel : laisser en_attente, informer l'utilisateur

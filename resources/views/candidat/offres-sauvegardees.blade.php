@@ -54,7 +54,7 @@
       </div>
       <p class="cand-empty__title">Aucune offre sauvegardée</p>
       <p class="cand-empty__text">Sauvegardez des offres pour les retrouver facilement et postuler quand vous êtes prêt.</p>
-      <a href="{{ route('offre.list') }}" class="cand-btn cand-btn--primary">Parcourir les offres</a>
+      <a href="{{ route('offre.list') }}" class="cand-btn cand-btn--yellow">Parcourir les offres</a>
     </div>
   </div>
 @endforelse

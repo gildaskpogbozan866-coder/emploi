@@ -65,7 +65,24 @@ class ServiceController extends Controller
 
     public function commandes(Request $request)
     {
-        $commandes = Commande::with(['user', 'service'])->latest()->paginate(20);
+        $query = Commande::with(['user', 'service'])->latest();
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('reference', 'like', "%{$q}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('prenom', 'like', "%{$q}%")
+                        ->orWhere('nom', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%"));
+            });
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $commandes = $query->paginate(20)->withQueryString();
+
         return view('admin.services.commandes', compact('commandes'));
     }
 

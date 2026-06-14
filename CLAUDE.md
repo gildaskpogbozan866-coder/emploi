@@ -38,9 +38,11 @@ php artisan permission:cache-reset
 
 ## Architecture
 
-### Authentication — OTP without passwords
+### Authentication — Email + password
 
-Authentication is email-only via 6-digit OTP codes stored in the `otp_codes` table (no password column on users). The flow is: submit email → OTP generated and stored → user enters code → account created or session opened. The OTP is currently flashed to the session (`otp_debug`) for development; remove this before production and uncomment the `Mail::to()->send()` calls in `AuthController`.
+Authentication uses classic email/password via `AuthController`. The flow is: submit email + password → session opened. Email verification is handled by Laravel's built-in `MustVerifyEmail` flow. Password reset uses the standard `Password::sendResetLink()` / `Password::reset()` pipeline.
+
+Routes: `/auth/connexion`, `/auth/inscription`, `/auth/mot-de-passe-oublie`, `/auth/reinitialiser/{token}`, `/auth/changer-mot-de-passe`.
 
 ### Role & Permission System
 

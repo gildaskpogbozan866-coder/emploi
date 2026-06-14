@@ -165,7 +165,7 @@
           <option value="rembourse"  {{ $paiement->statut === 'rembourse'  ? 'selected' : '' }}>Remboursé</option>
         </select>
       </div>
-      <button type="submit" class="adm-btn adm-btn--primary">Mettre à jour</button>
+      <button type="submit" class="adm-btn adm-btn--yellow">Mettre à jour</button>
     </form>
     @if($paiement->subscription_id)
       <p style="font-size:12px;color:#94a3b8;margin:10px 0 0">

@@ -216,6 +216,16 @@ body {
   box-shadow: 0 0 0 2px rgba(245,200,66,0.35);
 }
 
+/* Annonceur — violet */
+.dash-header--annonceur {
+  background: linear-gradient(135deg, #3b0764 0%, #6d28d9 100%);
+}
+.dash-header--annonceur .dash-header__avatar {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(167,139,250,0.40);
+}
+
 /* ════════════════════════════════════════
    LAYOUT PARTAGÉ (wrap / sidebar / main)
 ════════════════════════════════════════ */

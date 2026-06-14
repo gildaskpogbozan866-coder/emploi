@@ -7,6 +7,7 @@ use App\Models\Competence;
 use App\Models\CV;
 use App\Models\Langue;
 use App\Models\TypeDocument;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,21 +73,21 @@ class CVController extends Controller
                 'recruteur' => 'recruteur.dashboard',
                 'admin'     => 'admin.dashboard',
                 default     => 'home',
-            })->with('error', 'Seuls les candidats peuvent déposer un CV. Créez un compte candidat pour accéder à cette fonctionnalité.');
+            })->with('error', 'Seuls les candidats peuvent déposer un CV.');
         }
 
         $user  = Auth::user();
-        $total = $user->cvs()->count() + $user->documents()->count();
+        $quota = $this->cvQuota($user);
 
-        if ($total >= 1 && !$user->estPremium()) {
-            return redirect()->route('candidat.abonnement')
-                ->with('info', 'Vous avez atteint la limite du plan gratuit (1 document). Passez au Premium pour en ajouter davantage.');
+        if ($quota['reached']) {
+            return redirect()->route('candidat.abonnement.plans')
+                ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
         }
 
         $typesDocuments = TypeDocument::actif()->get();
         $competences    = Competence::orderBy('nom')->pluck('nom');
         $langues        = Langue::orderBy('nom')->pluck('nom');
-        return view('public.cv.depot', compact('typesDocuments', 'competences', 'langues'));
+        return view('public.cv.depot', compact('typesDocuments', 'competences', 'langues', 'quota'));
     }
 
     public function store(Request $request)
@@ -100,15 +101,15 @@ class CVController extends Controller
                 'recruteur' => 'recruteur.dashboard',
                 'admin'     => 'admin.dashboard',
                 default     => 'home',
-            })->with('error', 'Seuls les candidats peuvent déposer un CV. Créez un compte candidat pour accéder à cette fonctionnalité.');
+            })->with('error', 'Seuls les candidats peuvent déposer un CV.');
         }
 
         $user  = Auth::user();
-        $total = $user->cvs()->count() + $user->documents()->count();
+        $quota = $this->cvQuota($user);
 
-        if ($total >= 1 && !$user->estPremium()) {
-            return redirect()->route('candidat.abonnement')
-                ->with('info', 'Vous avez atteint la limite du plan gratuit (1 document). Passez au Premium pour en ajouter davantage.');
+        if ($quota['reached']) {
+            return redirect()->route('candidat.abonnement.plans')
+                ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
         }
 
         $request->validate([
@@ -177,10 +178,10 @@ class CVController extends Controller
         $cvs            = $user->cvs()->latest()->get();
         $documents      = $user->documents()->with('type')->latest()->get();
         $typesDocuments = TypeDocument::actif()->get();
-        $estPremium     = $user->estPremium();
         $total          = $cvs->count() + $documents->count();
+        $quota          = $this->cvQuota($user, $total);
 
-        return view('candidat.cvs', compact('cvs', 'documents', 'typesDocuments', 'estPremium', 'total'));
+        return view('candidat.cvs', compact('cvs', 'documents', 'typesDocuments', 'total', 'quota'));
     }
 
     public function edit(CV $cv)
@@ -233,5 +234,21 @@ class CVController extends Controller
         $this->authorize('delete', $cv);
         $cv->delete();
         return redirect()->route('candidat.cvs')->with('success', 'CV supprimé.');
+    }
+
+    // ── Quota helper ──────────────────────────────────────
+    private function cvQuota(User $user, ?int $alreadyCountedTotal = null): array
+    {
+        $abonnement = $user->abonnementActif()->with('plan.features')->first();
+        $total      = $alreadyCountedTotal ?? ($user->cvs()->count() + $user->documents()->count());
+        $limit      = $abonnement ? (int) ($abonnement->plan?->getFeature('cv_limit', 1) ?? 1) : 1;
+        $unlimited  = $limit === 0;
+        return [
+            'used'      => $total,
+            'limit'     => $limit,
+            'unlimited' => $unlimited,
+            'reached'   => !$unlimited && $total >= $limit,
+            'remaining' => $unlimited ? null : max(0, $limit - $total),
+        ];
     }
 }

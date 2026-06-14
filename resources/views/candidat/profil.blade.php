@@ -860,7 +860,7 @@
           </div>
           <div class="cp-modal__actions">
             <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-infos')">Annuler</button>
-            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+            <button type="submit" class="cand-btn cand-btn--yellow">Enregistrer</button>
           </div>
         </form>
       </div>
@@ -918,7 +918,7 @@
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
                         onclick="closeModal('modal-exp')">Annuler</button>
-                    <button type="button" class="cand-btn cand-btn--primary" onclick="saveExp()">Enregistrer</button>
+                    <button type="button" class="cand-btn cand-btn--yellow" onclick="saveExp()">Enregistrer</button>
                 </div>
             </div>
         </div>
@@ -973,7 +973,7 @@
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
                         onclick="closeModal('modal-form')">Annuler</button>
-                    <button type="button" class="cand-btn cand-btn--primary" onclick="saveForm()">Enregistrer</button>
+                    <button type="button" class="cand-btn cand-btn--yellow" onclick="saveForm()">Enregistrer</button>
                 </div>
             </div>
         </div>
@@ -1008,7 +1008,7 @@
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
                         onclick="closeModal('modal-comp')">Annuler</button>
-                    <button type="button" class="cand-btn cand-btn--primary" onclick="saveComp()">Ajouter</button>
+                    <button type="button" class="cand-btn cand-btn--yellow" onclick="saveComp()">Ajouter</button>
                 </div>
             </div>
         </div>
@@ -1042,7 +1042,7 @@
         </div>
         <div class="cp-modal__actions">
           <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-lang')">Annuler</button>
-          <button type="button" id="btn-save-lang" class="cand-btn cand-btn--primary" onclick="saveLang()">Ajouter</button>
+          <button type="button" id="btn-save-lang" class="cand-btn cand-btn--yellow" onclick="saveLang()">Ajouter</button>
         </div>
       </div>
     </div>
@@ -1072,7 +1072,7 @@
           </div>
           <div class="cp-modal__actions">
             <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-travaux')">Annuler</button>
-            <button type="submit" class="cand-btn cand-btn--primary">Enregistrer</button>
+            <button type="submit" class="cand-btn cand-btn--yellow">Enregistrer</button>
           </div>
         </form>
       </div>

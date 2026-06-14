@@ -461,6 +461,282 @@
 </section>
 
 {{-- ═══════════════════════════════════════════
+     ANNONCEURS
+═══════════════════════════════════════════ --}}
+<section class="section" style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:72px 0">
+  <div class="container">
+    <div class="annonceur-grid">
+
+      {{-- Texte gauche --}}
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#F5C842;margin-bottom:16px">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+          Pour les entreprises
+        </span>
+        <h2 style="font-size:2rem;font-weight:800;color:#fff;line-height:1.25;margin:0 0 18px">
+          Vous avez un message à faire passer ?<br>
+          <em style="font-style:normal;color:#F5C842">La plateforme est aussi pour les annonceurs.</em>
+        </h2>
+        <p style="font-size:14.5px;color:rgba(255,255,255,.75);line-height:1.7;margin:0 0 28px">
+          Qu'il s'agisse de promouvoir une marque employeur, de diffuser une campagne ou de cibler des candidats qualifiés au Bénin — Emploi Bouge met votre message devant la bonne audience.
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="{{ route('auth.inscription') }}?role=annonceur"
+             style="display:inline-flex;align-items:center;gap:8px;background:#F5C842;color:#042C53;padding:13px 26px;border-radius:10px;font-weight:800;font-size:14px;text-decoration:none">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Créer un compte annonceur
+          </a>
+          <a href="{{ route('contact') }}"
+             style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);padding:13px 26px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+            Nous contacter
+          </a>
+        </div>
+      </div>
+
+      {{-- Cartes avantages --}}
+      <div class="annonceur-cards">
+
+        <div class="annonceur-card">
+          <div class="annonceur-card__icon">
+            {{-- Mégaphone --}}
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+          </div>
+          <p class="annonceur-card__title">Visibilité ciblée</p>
+          <p class="annonceur-card__desc">Votre message vu par des milliers de candidats actifs et de recruteurs.</p>
+        </div>
+
+        <div class="annonceur-card">
+          <div class="annonceur-card__icon">
+            {{-- Graphique barres --}}
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <p class="annonceur-card__title">Formats variés</p>
+          <p class="annonceur-card__desc">Bannières, mises en avant sponsorisées, emplacements premium.</p>
+        </div>
+
+        <div class="annonceur-card">
+          <div class="annonceur-card__icon">
+            {{-- Cible --}}
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <p class="annonceur-card__title">Audience qualifiée</p>
+          <p class="annonceur-card__desc">Professionnels en recherche active, employeurs, étudiants.</p>
+        </div>
+
+        <div class="annonceur-card">
+          <div class="annonceur-card__icon">
+            {{-- Éclair / rapidité --}}
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <p class="annonceur-card__title">Mise en ligne rapide</p>
+          <p class="annonceur-card__desc">Campagne active en moins de 24h après validation.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{{-- ═══════════════════════════════════════════
+     PLANS INFORMATIFS
+═══════════════════════════════════════════ --}}
+<section class="section" style="background:#f8fafc;padding:80px 0">
+  <div class="container">
+    <div class="section-header section-header--center" style="margin-bottom:48px">
+      <span class="badge badge--yellow">Abonnements</span>
+      <h2 class="section-title" style="margin-top:10px">Des plans pour chaque profil</h2>
+      <p class="section-subtitle">Accès gratuit ou premium — à vous de choisir selon vos besoins.</p>
+    </div>
+
+    {{-- Toggle candidat / recruteur --}}
+    <div style="display:flex;justify-content:center;margin-bottom:36px">
+      <div style="display:inline-flex;background:#e2e8f0;border-radius:10px;padding:4px;gap:4px">
+        <button onclick="showPlans('candidat')" id="tab-candidat"
+                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:#042C53;color:#fff;transition:all .2s">
+          Candidats
+        </button>
+        <button onclick="showPlans('recruteur')" id="tab-recruteur"
+                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:transparent;color:#64748b;transition:all .2s">
+          Recruteurs
+        </button>
+        <button onclick="showPlans('annonceur')" id="tab-annonceur"
+                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:transparent;color:#64748b;transition:all .2s">
+          Annonceurs
+        </button>
+      </div>
+    </div>
+
+    {{-- Plans candidats --}}
+    <div id="plans-candidat" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:0 auto">
+      @foreach($plansCandidats as $plan)
+      @php
+        $isPop = !$plan->is_free;
+        $features = $plan->features->keyBy('feature_key');
+        $cvLimit    = $features->get('cv_limit')?->feature_value ?? '1';
+        $applyLimit = $features->get('job_apply_limit')?->feature_value ?? '10';
+        $featured   = (int)($features->get('featured_profile')?->feature_value ?? 0) > 0;
+      @endphp
+      <div style="background:#fff;border:2px solid {{ $isPop ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $isPop ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
+        @if($isPop)
+          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Plus populaire</span>
+        @endif
+        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $isPop ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
+        <div style="margin-bottom:20px">
+          @if($plan->is_free)
+            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
+          @else
+            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
+            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
+          @endif
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ $cvLimit === '0' ? 'Documents illimités' : $cvLimit.' document(s) max' }}
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ $applyLimit >= 100 ? 'Candidatures illimitées' : $applyLimit.' candidatures / mois' }}
+          </li>
+          @if($featured)
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Profil mis en avant dans la CVthèque
+          </li>
+          @endif
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Accès aux offres d'emploi
+          </li>
+        </ul>
+        <a href="{{ route('auth.inscription') }}"
+           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $isPop ? '#185FA5' : '#f1f5f9' }};color:{{ $isPop ? '#fff' : '#042C53' }}">
+          {{ $plan->is_free ? 'Commencer gratuitement' : 'Choisir ce plan' }}
+        </a>
+      </div>
+      @endforeach
+    </div>
+
+    {{-- Plans recruteurs --}}
+    <div id="plans-recruteur" style="display:none;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:0 auto">
+      @foreach($plansRecruteurs as $plan)
+      @php
+        $isPop = !$plan->is_free;
+        $features = $plan->features->keyBy('feature_key');
+        $postLimit   = $features->get('job_post_limit')?->feature_value ?? '2';
+        $candSearch  = (int)($features->get('candidate_search')?->feature_value ?? 0) > 0;
+        $featuredJ   = $features->get('featured_jobs')?->feature_value ?? '0';
+      @endphp
+      <div style="background:#fff;border:2px solid {{ $isPop ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $isPop ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
+        @if($isPop)
+          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Recommandé</span>
+        @endif
+        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $isPop ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
+        <div style="margin-bottom:20px">
+          @if($plan->is_free)
+            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
+          @else
+            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
+            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
+          @endif
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ $postLimit }} offre{{ (int)$postLimit > 1 ? 's' : '' }} d'emploi max
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $candSearch ? ($isPop ? '#185FA5' : '#22c55e') : '#cbd5e1' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $candSearch ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12' }}"/></svg>
+            <span style="color:{{ $candSearch ? '#374151' : '#94a3b8' }}">Recherche de candidats {{ $candSearch ? 'incluse' : 'non incluse' }}</span>
+          </li>
+          @if((int)$featuredJ > 0)
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ $featuredJ }} offre{{ (int)$featuredJ > 1 ? 's' : '' }} mise{{ (int)$featuredJ > 1 ? 's' : '' }} en avant
+          </li>
+          @endif
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Tableau de bord recruteur
+          </li>
+        </ul>
+        <a href="{{ route('auth.inscription') }}"
+           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $isPop ? '#185FA5' : '#f1f5f9' }};color:{{ $isPop ? '#fff' : '#042C53' }}">
+          {{ $plan->is_free ? 'Démarrer gratuitement' : 'Choisir ce plan' }}
+        </a>
+      </div>
+      @endforeach
+    </div>
+
+    {{-- Plans annonceurs --}}
+    <div id="plans-annonceur" style="display:none;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:900px;margin:0 auto">
+      @foreach($plansAnnonceurs as $plan)
+      @php
+        $isPop = $plan->price > 0 && !$plansAnnonceurs->last()->is_free && $plan->price === $plansAnnonceurs->where('is_free', false)->min('price');
+        $features    = $plan->features->keyBy('feature_key');
+        $annLimit    = $features->get('annonce_limit')?->feature_value ?? '1';
+        $displayDays = $features->get('display_days')?->feature_value ?? '7';
+        $priority    = (int)($features->get('priority_display')?->feature_value ?? 0) > 0;
+      @endphp
+      <div style="background:#fff;border:2px solid {{ $priority ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $priority ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
+        @if($priority)
+          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Meilleure visibilité</span>
+        @endif
+        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $priority ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
+        <div style="margin-bottom:20px">
+          @if($plan->is_free)
+            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
+          @else
+            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
+            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
+          @endif
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ $annLimit }} annonce{{ (int)$annLimit > 1 ? 's' : '' }} active{{ (int)$annLimit > 1 ? 's' : '' }} max
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Diffusion pendant {{ $displayDays }} jours
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : ($priority ? '#22c55e' : '#cbd5e1') }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $priority ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12' }}"/></svg>
+            <span style="color:{{ $priority ? '#374151' : '#94a3b8' }}">Affichage prioritaire {{ $priority ? 'inclus' : 'non inclus' }}</span>
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Tableau de bord annonceur
+          </li>
+        </ul>
+        <a href="{{ route('auth.inscription') }}"
+           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $priority ? '#185FA5' : '#f1f5f9' }};color:{{ $priority ? '#fff' : '#042C53' }}">
+          {{ $plan->is_free ? 'Essayer gratuitement' : 'Choisir ce plan' }}
+        </a>
+      </div>
+      @endforeach
+    </div>
+
+    <p style="text-align:center;font-size:12.5px;color:#94a3b8;margin-top:28px">
+      Tarifs indicatifs — les plans exacts sont visibles après connexion selon votre profil.
+    </p>
+  </div>
+</section>
+
+<script>
+function showPlans(type) {
+  ['candidat','recruteur','annonceur'].forEach(function(t) {
+    var grid = document.getElementById('plans-' + t);
+    var tab  = document.getElementById('tab-' + t);
+    if (grid) grid.style.display  = (t === type) ? 'grid' : 'none';
+    if (tab)  tab.style.background = (t === type) ? '#042C53' : 'transparent';
+    if (tab)  tab.style.color      = (t === type) ? '#fff' : '#64748b';
+  });
+}
+</script>
+
+{{-- ═══════════════════════════════════════════
      NEWSLETTER
 ═══════════════════════════════════════════ --}}
 <section class="newsletter">
@@ -513,8 +789,104 @@
   </div>
 </section>
 
+{{-- ═══════════════════════════════════════════
+     WIDGET PUBLICITÉS (coin bas-droite)
+═══════════════════════════════════════════ --}}
+<div id="pub-widget" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9990;width:280px;max-width:calc(100vw - 32px);filter:drop-shadow(0 8px 24px rgba(0,0,0,.22))">
+
+  {{-- Corps de l'annonce (zone pliable) --}}
+  <div id="pub-body" style="background:#fff;border-radius:14px 14px 0 0;overflow:hidden;transition:max-height .3s ease">
+    <a id="pub-link" href="#" target="_blank" rel="noopener noreferrer sponsored"
+       style="display:block;background:#000;aspect-ratio:4/3;overflow:hidden">
+      <img id="pub-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+    </a>
+    <div style="padding:8px 12px 10px;display:flex;justify-content:space-between;align-items:center">
+      <span id="pub-titre" style="font-size:12.5px;font-weight:600;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px"></span>
+      <span style="font-size:10px;color:#94a3b8;flex-shrink:0;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Annonce</span>
+    </div>
+  </div>
+
+  {{-- Barre de contrôle toujours visible --}}
+  <div style="background:#042C53;border-radius:0 0 14px 14px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:11px;font-weight:700;color:#F5C842;letter-spacing:.06em;text-transform:uppercase">
+      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2.5" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+      Publicité
+    </span>
+    <button id="pub-toggle" onclick="togglePub()"
+            title="Réduire / Agrandir"
+            style="background:rgba(255,255,255,.12);border:none;border-radius:6px;cursor:pointer;padding:4px 8px;display:flex;align-items:center;gap:5px;color:#e2e8f0;font-size:11px;font-weight:600">
+      <svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+      Réduire
+    </button>
+  </div>
+
+</div>
 @endsection
 
 @section('scripts')
 <script src="{{ asset('js/index.js') }}" defer></script>
+<script>
+(function () {
+  let pubs = [], idx = 0, timer = null;
+  let folded = sessionStorage.getItem('pub_folded') === '1';
+
+  const widget  = document.getElementById('pub-widget');
+  const body    = document.getElementById('pub-body');
+  const imgEl   = document.getElementById('pub-img');
+  const linkEl  = document.getElementById('pub-link');
+  const titreEl = document.getElementById('pub-titre');
+
+  function show(pub) {
+    imgEl.src   = pub.image_url;
+    imgEl.alt   = pub.titre;
+    titreEl.textContent = pub.titre;
+    linkEl.href = pub.lien || '#';
+    linkEl.style.pointerEvents = pub.lien ? '' : 'none';
+    widget.style.display = 'block';
+    applyFolded(folded);
+  }
+
+  function applyFolded(state) {
+    const chevron = document.getElementById('pub-chevron');
+    const btn     = document.getElementById('pub-toggle');
+    if (state) {
+      body.style.display     = 'none';
+      chevron.setAttribute('points', '6 9 12 15 18 9');
+      btn.innerHTML = '<svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg> Agrandir';
+    } else {
+      body.style.display     = 'block';
+      chevron.setAttribute('points', '18 15 12 9 6 15');
+      btn.innerHTML = '<svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> Réduire';
+    }
+  }
+
+  window.togglePub = function () {
+    folded = !folded;
+    sessionStorage.setItem('pub_folded', folded ? '1' : '0');
+    applyFolded(folded);
+  };
+
+  function next() {
+    if (!pubs.length) return;
+    idx = (idx + 1) % pubs.length;
+    show(pubs[idx]);
+  }
+
+  function startRotation() {
+    clearInterval(timer);
+    if (pubs.length > 1) timer = setInterval(next, 60000);
+  }
+
+  fetch('/api/publicites/actives')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.length) return;
+      pubs = data;
+      idx  = 0;
+      show(pubs[0]);
+      startRotation();
+    })
+    .catch(() => {});
+})();
+</script>
 @endsection

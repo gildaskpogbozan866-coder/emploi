@@ -267,8 +267,6 @@ details[open] .adm-nav__chevron { transform: rotate(180deg); }
 .adm-btn--danger:hover   { background: #c53030; }
 .adm-btn--green    { background: var(--vert); color: #fff; }
 .adm-btn--green:hover    { background: #276749; }
-.adm-btn--ghost    { background: none; color: var(--gris-text); border: none; padding: 7px 12px; }
-.adm-btn--ghost:hover    { color: var(--bleu-fonce); background: #f1f5f9; }
 .adm-btn--sm { font-size: 0.78rem; padding: 6px 13px; }
 .adm-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
@@ -423,4 +421,124 @@ details[open] .adm-nav__chevron { transform: rotate(180deg); }
   .adm-stats { grid-template-columns: 1fr 1fr; }
   .adm-form-grid { grid-template-columns: 1fr; }
   .adm-form-grid .full { grid-column: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITAIRES ADMIN — partagés entre vues
+═══════════════════════════════════════════════════════════ */
+
+/* En-tête de page admin (titre + actions) */
+.admin-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.admin-page-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--bleu-fonce);
+  margin: 0 0 4px;
+}
+.admin-page-subtitle {
+  font-size: 0.82rem;
+  color: var(--gris-text);
+  margin: 0;
+}
+
+/* Lien retour */
+.adm-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--gris-text);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+.adm-back-link:hover { color: var(--bleu-primary); }
+
+/* Alertes */
+.alert {
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.alert--success { background: #dcfce7; border: 1.5px solid #bbf7d0; color: #15803d; }
+.alert--error   { background: #fef2f2; border: 1.5px solid #fecaca; color: #b91c1c; }
+.alert--warning { background: #fefce8; border: 1.5px solid #fef08a; color: #92400e; }
+
+/* Badge warning */
+.badge--warning { background: #fef3c7; color: #92400e; }
+
+/* Bouton petit format */
+.btn--sm { font-size: 0.8rem !important; padding: 6px 14px !important; }
+
+/* Liste de cartes admin (index légales, FAQ, etc.) */
+.adm-card-list { display: flex; flex-direction: column; gap: 12px; }
+.adm-card-list__row {
+  background: #fff;
+  border: 1px solid var(--gris-border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.adm-card-list__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f0f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.adm-card-list__body   { flex: 1; min-width: 0; }
+.adm-card-list__title  { font-weight: 700; color: var(--bleu-fonce); margin: 0 0 3px; font-size: .9rem; }
+.adm-card-list__meta   { font-size: 12.5px; color: var(--gris-text); margin: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.adm-card-list__actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+/* Carte de formulaire */
+.adm-form-card {
+  background: #fff;
+  border: 1px solid var(--gris-border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.adm-form-field { display: flex; flex-direction: column; gap: 7px; }
+.adm-form-label { font-size: 13px; font-weight: 700; color: #374151; }
+.adm-form-label small { font-weight: 400; color: var(--gris-text); font-size: 12px; }
+.adm-form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.adm-form-input:focus {
+  border-color: var(--bleu-primary);
+  box-shadow: 0 0 0 3px rgba(24,95,165,.1);
+}
+.adm-form-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 600px) {
+  .adm-card-list__row { flex-wrap: wrap; }
+  .adm-card-list__actions { width: 100%; }
+  .adm-form-card { padding: 20px 18px; }
 }

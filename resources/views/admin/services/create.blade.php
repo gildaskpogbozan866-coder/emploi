@@ -64,7 +64,7 @@
       </div>
 
       <div style="display:flex;gap:12px">
-        <button type="submit" class="adm-btn adm-btn--primary">Créer le service</button>
+        <button type="submit" class="adm-btn adm-btn--yellow">Créer le service</button>
         <a href="{{ route('admin.services.list') }}" class="adm-btn adm-btn--outline">Annuler</a>
       </div>
     </form>

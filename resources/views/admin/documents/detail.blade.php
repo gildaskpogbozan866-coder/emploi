@@ -59,7 +59,7 @@
   @if($document->estImage())
     <img src="{{ asset('storage/'.$document->fichier) }}" alt="{{ $document->nom }}" style="max-width:100%;border-radius:6px">
   @else
-    <a href="{{ asset('storage/'.$document->fichier) }}" target="_blank" class="adm-btn adm-btn--primary">
+    <a href="{{ asset('storage/'.$document->fichier) }}" target="_blank" class="adm-btn adm-btn--outline">
       Télécharger le fichier
     </a>
   @endif

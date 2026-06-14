@@ -11,11 +11,16 @@
     <p style="font-size:14px;color:#64748b;margin:0 0 28px;line-height:1.65">
       Votre paiement n'a pas pu être traité. Aucun montant n'a été débité.
     </p>
+    @php
+      $dashRoute = auth()->user()->hasRole('recruteur')
+        ? route('recruteur.dashboard')
+        : route('candidat.dashboard');
+    @endphp
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="{{ route('payment.choose', $paiement) }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
         Réessayer
       </a>
-      <a href="{{ route('recruteur.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
+      <a href="{{ $dashRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
         Tableau de bord
       </a>
     </div>

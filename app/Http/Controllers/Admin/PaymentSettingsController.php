@@ -30,6 +30,7 @@ class PaymentSettingsController extends Controller
         $request->validate([
             'env'            => 'required|in:sandbox,live',
             'public_key'     => 'nullable|string|max:500',
+            'private_key'    => 'nullable|string|max:1000',
             'secret_key'     => 'nullable|string|max:1000',
             'webhook_secret' => 'nullable|string|max:500',
             'is_active'      => 'boolean',
@@ -44,6 +45,9 @@ class PaymentSettingsController extends Controller
 
         if ($request->filled('public_key')) {
             $data['public_key'] = $request->public_key;
+        }
+        if ($request->filled('private_key')) {
+            $data['private_key'] = $request->private_key;
         }
         if ($request->filled('secret_key')) {
             $data['secret_key'] = $request->secret_key;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\RecruteurDocument;
 use App\Models\RecruteurVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +41,12 @@ class VerificationRecruteurController extends Controller
     public function show(RecruteurVerification $verification)
     {
         $verification->load('user', 'reviewedBy');
-        return view('admin.verifications.show', compact('verification'));
+        $documents = RecruteurDocument::where('user_id', $verification->user_id)
+                        ->with('type')
+                        ->get()
+                        ->sortBy('type.ordre');
+
+        return view('admin.verifications.show', compact('verification', 'documents'));
     }
 
     public function approuver(RecruteurVerification $verification)
@@ -75,18 +81,11 @@ class VerificationRecruteurController extends Controller
             ->with('success', 'Dossier rejeté. Le recruteur en sera informé.');
     }
 
-    public function servirDocument(RecruteurVerification $verification, string $field)
+    public function servirDocument(RecruteurDocument $document)
     {
-        $allowed = ['carte_biometrique', 'cip', 'ifu_fichier', 'rccm_fichier'];
+        abort_if(!$document->fichier, 404);
+        abort_if(!Storage::disk('local')->exists($document->fichier), 404);
 
-        if (! in_array($field, $allowed) || ! $verification->$field) {
-            abort(404);
-        }
-
-        if (! Storage::disk('local')->exists($verification->$field)) {
-            abort(404);
-        }
-
-        return Storage::disk('local')->response($verification->$field);
+        return Storage::disk('local')->response($document->fichier);
     }
 }

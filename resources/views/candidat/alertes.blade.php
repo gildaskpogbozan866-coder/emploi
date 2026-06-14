@@ -97,7 +97,7 @@
         </select>
       </div>
       <div class="cand-form-actions">
-        <button type="submit" class="cand-btn cand-btn--primary" style="width:100%">Créer l'alerte</button>
+        <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%">Créer l'alerte</button>
       </div>
     </form>
   </div>

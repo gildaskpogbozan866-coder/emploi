@@ -81,7 +81,7 @@
           <td style="color:#94a3b8;font-size:12px">{{ $cv->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="actions">
-              <a href="{{ route('admin.cvs.detail', $cv) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
+              <a href="{{ route('admin.cvs.detail', $cv) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
               <form method="POST" action="{{ route('admin.cvs.destroy', $cv) }}" data-confirm="Supprimer ce CV ?" data-confirm-btn="Supprimer">
                 @csrf @method('DELETE')
                 <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
@@ -113,7 +113,7 @@
           <td style="color:#94a3b8;font-size:12px">{{ $doc->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="actions">
-              <a href="{{ route('admin.documents.detail', $doc) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
+              <a href="{{ route('admin.documents.detail', $doc) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
               <form method="POST" action="{{ route('admin.documents.destroy', $doc) }}" data-confirm="Supprimer ce document ?" data-confirm-btn="Supprimer">
                 @csrf @method('DELETE')
                 <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>

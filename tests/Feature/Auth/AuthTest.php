@@ -124,7 +124,7 @@ class AuthTest extends TestCase
         $this->assertEquals('TechBénin SARL', $user->entreprise);
     }
 
-    public function test_inscription_talent_role_refuse(): void
+    public function test_inscription_role_invalide_refuse(): void
     {
         $payload = $this->payloadInscription('talent', ['metier' => 'Développeur Web']);
         $this->post(route('auth.inscription.store'), $payload)
@@ -207,14 +207,14 @@ class AuthTest extends TestCase
         ])->assertRedirect(route('recruteur.dashboard'));
     }
 
-    public function test_connexion_talent_redirige_vers_dashboard_candidat(): void
+    public function test_connexion_admin_redirige_vers_dashboard_admin(): void
     {
-        $user = $this->creerUser('candidat');
+        $user = $this->creerUser('admin');
 
         $this->post(route('auth.connexion.store'), [
             'email'    => $user->email,
             'password' => 'password123',
-        ])->assertRedirect(route('candidat.dashboard'));
+        ])->assertRedirect(route('admin.dashboard'));
     }
 
     public function test_connexion_mot_de_passe_incorrect(): void
@@ -286,8 +286,24 @@ class AuthTest extends TestCase
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
 
-    public function test_recruteur_redirige_vers_verification_entreprise_apres_email_verifie(): void
+    public function test_recruteur_redirige_vers_dashboard_apres_email_verifie_si_validation_desactivee(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '0');
+        $user = $this->creerUser('recruteur', verifie: false);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $this->actingAs($user)->get($url)
+            ->assertRedirect(route('recruteur.dashboard'));
+    }
+
+    public function test_recruteur_redirige_vers_verification_entreprise_apres_email_verifie_si_validation_activee(): void
+    {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur', verifie: false);
 
         $url = URL::temporarySignedRoute(
@@ -434,8 +450,19 @@ class AuthTest extends TestCase
     //  MIDDLEWARE RECRUTEUR — VÉRIFICATION ENTREPRISE
     // ══════════════════════════════════════════════════════════════════════
 
-    public function test_recruteur_sans_dossier_redirige_vers_formulaire_verification(): void
+    public function test_recruteur_accede_au_dashboard_si_validation_docs_desactivee(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '0');
+        $user = $this->creerUser('recruteur');
+
+        $this->actingAs($user)
+            ->get(route('recruteur.dashboard'))
+            ->assertOk();
+    }
+
+    public function test_recruteur_sans_dossier_redirige_vers_formulaire_si_validation_activee(): void
+    {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
 
         $this->actingAs($user)
@@ -445,6 +472,7 @@ class AuthTest extends TestCase
 
     public function test_recruteur_en_attente_bloque_acces_dashboard(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
         RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'en_attente']);
 
@@ -455,6 +483,7 @@ class AuthTest extends TestCase
 
     public function test_recruteur_rejete_bloque_acces_dashboard(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
         RecruteurVerification::create([
             'user_id'    => $user->id,
@@ -469,6 +498,7 @@ class AuthTest extends TestCase
 
     public function test_recruteur_approuve_acces_complet_dashboard(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
         RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'approuve']);
 
@@ -479,6 +509,7 @@ class AuthTest extends TestCase
 
     public function test_page_en_attente_accessible_recruteur(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
         RecruteurVerification::create(['user_id' => $user->id, 'statut' => 'en_attente']);
 
@@ -489,6 +520,7 @@ class AuthTest extends TestCase
 
     public function test_page_rejete_affiche_motif(): void
     {
+        \App\Models\ParametreApp::set('recruteur_validation_docs', '1');
         $user = $this->creerUser('recruteur');
         RecruteurVerification::create([
             'user_id'    => $user->id,

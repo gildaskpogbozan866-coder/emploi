@@ -78,7 +78,7 @@
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;min-width:160px">
-      <a href="{{ route('recruteur.cvtheque') }}" class="rec-btn rec-btn--primary rec-btn--sm" style="text-align:center;justify-content:center">Parcourir la CVthèque</a>
+      <a href="{{ route('recruteur.cvtheque') }}" class="rec-btn rec-btn--outline rec-btn--sm" style="text-align:center;justify-content:center">Parcourir la CVthèque</a>
       <a href="{{ route('recruteur.cv-credits.index') }}" class="rec-btn rec-btn--outline rec-btn--sm" style="text-align:center;justify-content:center">
         {{ $cvStats['credits_restants'] > 0 ? 'Acheter plus de crédits' : '⚠ Acheter des crédits' }}
       </a>
@@ -146,7 +146,7 @@
       <span class="rec-card__title">Actions rapides</span>
     </div>
     <div class="rec-card__body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <a href="{{ route('recruteur.offres.create') }}" class="rec-btn rec-btn--primary" style="justify-content:center">
+      <a href="{{ route('recruteur.offres.create') }}" class="rec-btn rec-btn--yellow" style="justify-content:center">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nouvelle offre
       </a>

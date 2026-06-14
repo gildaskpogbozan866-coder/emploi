@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Recruteur;
 
 use App\Http\Controllers\Controller;
 use App\Models\ParametreApp;
+use App\Models\RecruteurDocument;
+use App\Models\RecruteurDocumentType;
 use App\Notifications\NouvelleVerificationRecruteur;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\AnonymousNotifiable;
@@ -14,86 +16,91 @@ class VerificationController extends Controller
 {
     public function soumettre()
     {
-        $verification = auth()->user()->recruteurVerification;
+        if (ParametreApp::get('recruteur_validation_docs', '0') !== '1') {
+            return redirect()->route('recruteur.dashboard');
+        }
+
+        $user         = auth()->user();
+        $verification = $user->recruteurVerification;
 
         if ($verification?->estApprouve()) {
             return redirect()->route('recruteur.dashboard');
         }
 
-        return view('recruteur.verification.soumettre', compact('verification'));
+        $types     = RecruteurDocumentType::actifs()->get();
+        $existants = RecruteurDocument::where('user_id', $user->id)
+                        ->with('type')
+                        ->get()
+                        ->keyBy('type_id');
+
+        return view('recruteur.verification.soumettre', compact('verification', 'types', 'existants'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'carte_biometrique' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'cip'               => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'ifu_fichier'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'ifu_numero'        => 'nullable|string|max:50',
-            'rccm_fichier'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'rccm_numero'       => 'nullable|string|max:100',
-        ], [
-            'carte_biometrique.mimes' => 'Format accepté : PDF, JPG, PNG (max 5 Mo).',
-            'cip.mimes'               => 'Format accepté : PDF, JPG, PNG (max 5 Mo).',
-        ]);
+        $user  = auth()->user();
+        $types = RecruteurDocumentType::actifs()->get();
 
-        $user     = auth()->user();
-        $existing = $user->recruteurVerification;
-
-        // Au moins une pièce d'identité (biométrique OU CIP)
-        $aIdentite = $request->hasFile('carte_biometrique')
-                  || $request->hasFile('cip')
-                  || $existing?->carte_biometrique
-                  || $existing?->cip;
-
-        if (! $aIdentite) {
-            return back()
-                ->withErrors(['carte_biometrique' => 'Veuillez fournir votre carte biométrique ou votre CIP.'])
-                ->withInput();
+        // Validation dynamique
+        $rules = [];
+        foreach ($types as $type) {
+            if ($type->accepte_fichier) {
+                $rules["fichier_{$type->id}"] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120';
+            }
+            if ($type->accepte_texte) {
+                $rules["texte_{$type->id}"] = 'nullable|string|max:500';
+            }
         }
+        $request->validate($rules);
 
-        // Au moins un justificatif d'entreprise (IFU ou RCCM)
-        $aEntreprise = $request->hasFile('ifu_fichier')
-                    || filled($request->ifu_numero)
-                    || $request->hasFile('rccm_fichier')
-                    || filled($request->rccm_numero)
-                    || $existing?->ifu_fichier
-                    || $existing?->ifu_numero
-                    || $existing?->rccm_fichier
-                    || $existing?->rccm_numero;
+        // Vérifier que les types requis ont au moins une valeur
+        $existants = RecruteurDocument::where('user_id', $user->id)->get()->keyBy('type_id');
+        $erreurs   = [];
 
-        if (! $aEntreprise) {
-            return back()
-                ->withErrors(['ifu_numero' => 'Veuillez fournir au moins un IFU ou un RCCM (numéro ou document).'])
-                ->withInput();
-        }
+        foreach ($types as $type) {
+            if (!$type->est_requis) continue;
 
-        $basePath = "verifications/{$user->id}";
+            $aFichier = $request->hasFile("fichier_{$type->id}") || $existants[$type->id]?->fichier;
+            $aTexte   = $type->accepte_texte && filled($request->input("texte_{$type->id}"));
 
-        $data = [
-            'user_id'     => $user->id,
-            'statut'      => 'en_attente',
-            'note_admin'  => null,
-            'reviewed_by' => null,
-            'reviewed_at' => null,
-            'ifu_numero'  => $request->ifu_numero,
-            'rccm_numero' => $request->rccm_numero,
-        ];
-
-        foreach (['carte_biometrique', 'cip', 'ifu_fichier', 'rccm_fichier'] as $field) {
-            if ($request->hasFile($field)) {
-                if ($existing?->$field) {
-                    Storage::disk('local')->delete($existing->$field);
-                }
-                $data[$field] = $request->file($field)->store($basePath, 'local');
-            } else {
-                $data[$field] = $existing?->$field;
+            if (!$aFichier && !$aTexte) {
+                $erreurs["fichier_{$type->id}"] = "Le document « {$type->nom} » est obligatoire.";
             }
         }
 
-        $verification = $user->recruteurVerification()->updateOrCreate(['user_id' => $user->id], $data);
+        if ($erreurs) {
+            return back()->withErrors($erreurs)->withInput();
+        }
 
-        // Alerter l'admin par email
+        // Sauvegarde
+        $basePath = "verifications/{$user->id}";
+
+        foreach ($types as $type) {
+            $existant = $existants[$type->id] ?? null;
+            $data     = ['user_id' => $user->id, 'type_id' => $type->id];
+
+            if ($type->accepte_fichier && $request->hasFile("fichier_{$type->id}")) {
+                if ($existant?->fichier) {
+                    Storage::disk('local')->delete($existant->fichier);
+                }
+                $data['fichier'] = $request->file("fichier_{$type->id}")->store($basePath, 'local');
+            }
+
+            if ($type->accepte_texte) {
+                $data['texte'] = $request->input("texte_{$type->id}") ?? $existant?->texte;
+            }
+
+            RecruteurDocument::updateOrCreate(
+                ['user_id' => $user->id, 'type_id' => $type->id],
+                $data
+            );
+        }
+
+        $verification = $user->recruteurVerification()->updateOrCreate(
+            ['user_id' => $user->id],
+            ['statut' => 'en_attente', 'note_admin' => null, 'reviewed_by' => null, 'reviewed_at' => null]
+        );
+
         $adminEmail = ParametreApp::get('admin_notification_email', config('emploi.admin_notification_email'));
         if ($adminEmail) {
             Notification::route('mail', $adminEmail)
@@ -105,6 +112,10 @@ class VerificationController extends Controller
 
     public function enAttente()
     {
+        if (ParametreApp::get('recruteur_validation_docs', '0') !== '1') {
+            return redirect()->route('recruteur.dashboard');
+        }
+
         $verification = auth()->user()->recruteurVerification;
 
         if ($verification?->estApprouve()) {
@@ -116,6 +127,10 @@ class VerificationController extends Controller
 
     public function rejete()
     {
+        if (ParametreApp::get('recruteur_validation_docs', '0') !== '1') {
+            return redirect()->route('recruteur.dashboard');
+        }
+
         $verification = auth()->user()->recruteurVerification;
         return view('recruteur.verification.rejete', compact('verification'));
     }

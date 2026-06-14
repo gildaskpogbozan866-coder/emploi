@@ -89,6 +89,15 @@ $featureLabels = [
         <form method="POST" action="{{ route('candidat.abonnement.store') }}" style="margin-top:16px">
           @csrf
           <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+          @if(!$plan->is_free)
+          <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin-bottom:14px;padding:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
+            <input type="checkbox" name="consent" value="1" required
+                   style="width:15px;height:15px;accent-color:#185FA5;flex-shrink:0;margin-top:2px">
+            <span style="font-size:12px;color:#78350f;line-height:1.5">
+              Je comprends que le dépôt de mon CV ne garantit pas directement un emploi, mais augmente ma visibilité auprès des recruteurs.
+            </span>
+          </label>
+          @endif
           <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center;font-size:14px;padding:12px">
             @if($plan->is_free) Activer gratuitement @else S'abonner @endif
           </button>

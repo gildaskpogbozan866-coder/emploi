@@ -57,6 +57,13 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\SeoController as AdminSeo;
 use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Admin\VerificationRecruteurController;
+use App\Http\Controllers\Admin\RecruteurDocumentTypeController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessage;
+use App\Http\Controllers\Public\LegaleController;
+use App\Http\Controllers\Admin\PageLegaleController as AdminPageLegale;
+use App\Http\Controllers\Admin\FaqController as AdminFaq;
+use App\Http\Controllers\Admin\JobPublicationPlanController as AdminJobPubPlan;
+use App\Models\RecruteurDocument;
 use App\Http\Controllers\Admin\Referentiel\CompetencesController as AdminCompetences;
 use App\Http\Controllers\Admin\Referentiel\MetiersController as AdminMetiers;
 use App\Http\Controllers\Admin\Referentiel\TypeContratsController as AdminTypeContrats;
@@ -66,7 +73,15 @@ use App\Http\Controllers\Admin\Referentiel\NiveauxLangueController as AdminNivea
 use App\Http\Controllers\Admin\Referentiel\NiveauxEtudeController as AdminNiveauxEtude;
 use App\Http\Controllers\Admin\Referentiel\NiveauxExperienceController as AdminNiveauxExperience;
 use App\Http\Controllers\Recruteur\VerificationController as RecruteurVerifCtrl;
+use App\Http\Controllers\Annonceur\DashboardController as AnnonceurDashboard;
+use App\Http\Controllers\Annonceur\PubliciteController as AnnonceurPublicite;
+use App\Http\Controllers\Admin\PubliciteController as AdminPublicite;
+use App\Http\Controllers\Public\PubliciteController as PublicPublicite;
+use App\Models\ParametreApp;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+// API publique — annonces actives pour le widget homepage
+Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name('publicites.actives');
 
 // ════════════════════════════════════════════════════════
 //  PAGES PUBLIQUES
@@ -82,6 +97,11 @@ Route::get('/a-propos',  [HomeController::class, 'aPropos'])->name('a-propos');
 Route::get('/contact',   [HomeController::class, 'contact'])->name('contact');
 Route::get('/faq',       [HomeController::class, 'faq'])->name('faq');
 Route::post('/contact',  [ContactController::class, 'envoyer'])->name('contact.envoyer');
+
+// Pages légales
+Route::prefix('legale')->name('legale.')->group(function () {
+    Route::get('/{slug}', [LegaleController::class, 'show'])->name('show');
+});
 
 // Offres publiques
 Route::prefix('offres')->name('offre.')->group(function () {
@@ -123,11 +143,8 @@ Route::prefix('blog')->name('blog.')->group(function () {
 //  PAIEMENT — Webhooks (sans CSRF), Callbacks, Status
 // ════════════════════════════════════════════════════════
 
-// Webhooks (exclus du CSRF dans VerifyCsrfToken)
-Route::prefix('payment/webhook')->name('payment.webhook.')->group(function () {
-    Route::post('/fedapay',  [WebhookController::class, 'fedapay'])->name('fedapay');
-    Route::post('/kkiapay',  [WebhookController::class, 'kkiapay'])->name('kkiapay');
-});
+// Webhooks push serveur-à-serveur (CSRF-exempt, voir bootstrap/app.php)
+Route::post('/payment/webhook/fedapay', [WebhookController::class, 'fedapay'])->name('payment.webhook.fedapay');
 
 // Callbacks navigateur (requiert auth)
 Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
@@ -179,10 +196,18 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/email/verifier/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
-        $user = $request->user();
+        $user                  = $request->user();
+        $validationDocsActif   = ParametreApp::get('recruteur_validation_docs', '0') === '1';
+
+        if ($user->role === 'recruteur') {
+            return $validationDocsActif
+                ? redirect()->route('recruteur.verification')
+                : redirect()->route('recruteur.dashboard');
+        }
+
         return match ($user->role) {
             'admin'     => redirect()->route('admin.dashboard'),
-            'recruteur' => redirect()->route('recruteur.verification'),
+            'annonceur' => redirect()->route('annonceur.dashboard'),
             default     => redirect()->route('candidat.dashboard'),
         };
     })->middleware('signed')->name('verification.verify');
@@ -235,7 +260,6 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
         Route::get('/abonnement',        [CandidatAbonnement::class, 'index'])->name('abonnement');
         Route::get('/abonnement/plans',  [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
         Route::post('/abonnement',       [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
-        Route::get('/historique-paiements', [CandidatAbonnement::class, 'historique'])->name('paiements');
     });
 
     // Messagerie (accessibles à tous les candidats authentifiés)
@@ -373,6 +397,20 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 });
 
 // ════════════════════════════════════════════════════════
+//  ESPACE ANNONCEUR — protégé rôle annonceur
+// ════════════════════════════════════════════════════════
+Route::prefix('annonceur')->name('annonceur.')->middleware(['auth', 'verified', 'spatie.role:'.Role::ANNONCEUR])->group(function () {
+    Route::get('/tableau-de-bord',  [AnnonceurDashboard::class, 'index'])->name('dashboard');
+    Route::get('/mes-annonces',     [AnnonceurPublicite::class, 'index'])->name('publicites');
+    Route::post('/mes-annonces',    [AnnonceurPublicite::class, 'store'])->name('publicites.store');
+    Route::delete('/mes-annonces/{publicite}', [AnnonceurPublicite::class, 'destroy'])->name('publicites.destroy');
+    Route::post('/notifications/marquer', function () {
+        auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
+        return back()->with('success', 'Notifications marquées comme lues.');
+    })->name('notifications.lues');
+});
+
+// ════════════════════════════════════════════════════════
 //  ADMINISTRATION — protégé rôle admin + permissions granulaires
 // ════════════════════════════════════════════════════════
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role::ADMIN])->group(function () {
@@ -381,11 +419,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
 
     // Vérification des comptes recruteurs
     Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('verifications')->name('verifications.')->group(function () {
-        Route::get('/',                                  [VerificationRecruteurController::class, 'index'])->name('list');
-        Route::get('/{verification}',                    [VerificationRecruteurController::class, 'show'])->name('show');
-        Route::patch('/{verification}/approuver',        [VerificationRecruteurController::class, 'approuver'])->name('approuver');
-        Route::patch('/{verification}/rejeter',          [VerificationRecruteurController::class, 'rejeter'])->name('rejeter');
-        Route::get('/{verification}/document/{field}',   [VerificationRecruteurController::class, 'servirDocument'])->name('document');
+        Route::get('/',                           [VerificationRecruteurController::class, 'index'])->name('list');
+        Route::get('/{verification}',             [VerificationRecruteurController::class, 'show'])->name('show');
+        Route::patch('/{verification}/approuver', [VerificationRecruteurController::class, 'approuver'])->name('approuver');
+        Route::patch('/{verification}/rejeter',   [VerificationRecruteurController::class, 'rejeter'])->name('rejeter');
+        Route::get('/document/{document}',        [VerificationRecruteurController::class, 'servirDocument'])->name('document');
+    });
+
+    // Types de documents recruteur (configuration)
+    Route::middleware('permission:'.Permission::MANAGE_USERS)->prefix('document-types')->name('document-types.')->group(function () {
+        Route::get('/',           [RecruteurDocumentTypeController::class, 'index'])->name('index');
+        Route::post('/',          [RecruteurDocumentTypeController::class, 'store'])->name('store');
+        Route::put('/{type}',     [RecruteurDocumentTypeController::class, 'update'])->name('update');
+        Route::delete('/{type}',  [RecruteurDocumentTypeController::class, 'destroy'])->name('destroy');
+        Route::post('/toggle',    [RecruteurDocumentTypeController::class, 'toggle'])->name('toggle');
     });
 
     // Gestion utilisateurs
@@ -473,12 +520,56 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
             Route::patch('/{plan}/toggle', [AdminPlan::class, 'toggle'])->name('toggle');
             Route::delete('/{plan}',       [AdminPlan::class, 'destroy'])->name('destroy');
         });
+
+        Route::prefix('publication-plans')->name('publication-plans.')->group(function () {
+            Route::get('/',                              [AdminJobPubPlan::class, 'index'])->name('index');
+            Route::get('/creer',                         [AdminJobPubPlan::class, 'create'])->name('create');
+            Route::post('/',                             [AdminJobPubPlan::class, 'store'])->name('store');
+            Route::get('/{publicationPlan}/edit',        [AdminJobPubPlan::class, 'edit'])->name('edit');
+            Route::put('/{publicationPlan}',             [AdminJobPubPlan::class, 'update'])->name('update');
+            Route::patch('/{publicationPlan}/toggle',    [AdminJobPubPlan::class, 'toggle'])->name('toggle');
+            Route::delete('/{publicationPlan}',          [AdminJobPubPlan::class, 'destroy'])->name('destroy');
+        });
     });
 
     // Messagerie admin
     Route::middleware('permission:'.Permission::MANAGE_MESSAGERIE)->group(function () {
         Route::get('/messagerie',                   [AdminMessage::class, 'index'])->name('messagerie');
         Route::get('/messagerie/{conversation}',    [AdminMessage::class, 'show'])->name('messagerie.show');
+    });
+
+    // FAQ
+    Route::prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/',              [AdminFaq::class, 'index'])->name('index');
+        Route::get('/creer',         [AdminFaq::class, 'create'])->name('create');
+        Route::post('/',             [AdminFaq::class, 'store'])->name('store');
+        Route::get('/{faq}/edit',    [AdminFaq::class, 'edit'])->name('edit');
+        Route::put('/{faq}',         [AdminFaq::class, 'update'])->name('update');
+        Route::delete('/{faq}',      [AdminFaq::class, 'destroy'])->name('destroy');
+        Route::patch('/{faq}/toggle',[AdminFaq::class, 'toggleActif'])->name('toggle');
+    });
+
+    // Pages légales
+    Route::prefix('legales')->name('legales.')->group(function () {
+        Route::get('/',             [AdminPageLegale::class, 'index'])->name('index');
+        Route::get('/{slug}/edit',  [AdminPageLegale::class, 'edit'])->name('edit');
+        Route::put('/{slug}',       [AdminPageLegale::class, 'update'])->name('update');
+    });
+
+    // Messages de contact
+    Route::prefix('contact-messages')->name('contact-messages.')->group(function () {
+        Route::get('/',            [AdminContactMessage::class, 'index'])->name('index');
+        Route::get('/{message}',   [AdminContactMessage::class, 'show'])->name('show');
+        Route::delete('/{message}',[AdminContactMessage::class, 'destroy'])->name('destroy');
+    });
+
+    // Publicités
+    Route::middleware('permission:'.Permission::MANAGE_PUBLICITES)->prefix('publicites')->name('publicites.')->group(function () {
+        Route::get('/',                            [AdminPublicite::class, 'index'])->name('index');
+        Route::get('/{publicite}',                 [AdminPublicite::class, 'show'])->name('show');
+        Route::post('/{publicite}/approuver',      [AdminPublicite::class, 'approuver'])->name('approuver');
+        Route::post('/{publicite}/rejeter',        [AdminPublicite::class, 'rejeter'])->name('rejeter');
+        Route::delete('/{publicite}',              [AdminPublicite::class, 'destroy'])->name('destroy');
     });
 
     // Signalements

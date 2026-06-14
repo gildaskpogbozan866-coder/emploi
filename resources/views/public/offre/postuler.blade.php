@@ -2,12 +2,11 @@
 @section('title', 'Postuler — ' . $offre->titre)
 
 @section('content')
-<section style="padding:48px 20px 64px;background:#f8fafc;min-height:70vh">
-  <div style="max-width:760px;margin:0 auto">
+<section class="section" style="background:#f8fafc;min-height:70vh">
+  <div class="container" style="max-width:780px">
 
-    <a href="{{ route('offre.detail', $offre) }}"
-       style="display:inline-flex;align-items:center;gap:6px;color:#185FA5;font-size:13.5px;margin-bottom:28px;text-decoration:none;font-weight:500">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+    <a href="{{ route('offre.detail', $offre) }}" class="page-back-link">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
       </svg>
       Retour à l'offre
@@ -26,12 +25,10 @@
         Votre candidature pour <strong>{{ $offre->titre }}</strong> chez <strong>{{ $offre->entreprise }}</strong> a bien été transmise.
       </p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a href="{{ route('candidat.candidatures') }}"
-           style="padding:11px 24px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none">
+        <a href="{{ route('candidat.candidatures') }}" class="btn btn--blue">
           Voir mes candidatures
         </a>
-        <a href="{{ route('offre.list') }}"
-           style="padding:11px 24px;background:#f1f5f9;color:#374151;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none">
+        <a href="{{ route('offre.list') }}" class="btn btn--outline">
           Voir d'autres offres
         </a>
       </div>
@@ -88,35 +85,54 @@
                     onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'">{{ old('message_motivation') }}</textarea>
         </div>
 
-        {{-- CV à joindre --}}
+        {{-- Document à joindre --}}
+        @php $hasAny = $cvs->isNotEmpty() || $documents->isNotEmpty(); @endphp
         <div style="margin-bottom:28px">
           <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
-            CV à joindre
+            Document à joindre
             <span style="font-weight:400;color:#64748b;font-size:12px">— optionnel</span>
           </label>
 
-          <input type="hidden" name="cv_id" id="selectedCvId" value="{{ old('cv_id') }}">
+          <input type="hidden" name="cv_id"       id="selectedCvId"  value="{{ old('cv_id') }}">
+          <input type="hidden" name="document_id" id="selectedDocId" value="{{ old('document_id') }}">
 
-          @if($cvs->isNotEmpty())
-          {{-- CVs existants du profil --}}
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px" id="cvCards">
+          @if($hasAny)
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px" id="docCards">
+
+            {{-- CVs structurés --}}
             @foreach($cvs as $cv)
-            <div onclick="selectCv({{ $cv->id }})"
-                 id="cv-card-{{ $cv->id }}"
+            <div onclick="selectItem('cv', {{ $cv->id }})"
+                 id="item-card-cv-{{ $cv->id }}"
                  style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid {{ old('cv_id') == $cv->id ? '#185FA5' : '#e2e8f0' }};border-radius:10px;cursor:pointer;transition:all .15s;background:{{ old('cv_id') == $cv->id ? '#f0f7ff' : '#fff' }}">
-              <div id="cv-dot-{{ $cv->id }}"
+              <div id="item-dot-cv-{{ $cv->id }}"
                    style="width:18px;height:18px;min-width:18px;border-radius:50%;border:2px solid {{ old('cv_id') == $cv->id ? '#185FA5' : '#cbd5e0' }};background:{{ old('cv_id') == $cv->id ? '#185FA5' : 'transparent' }};display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0">
-                @if(old('cv_id') == $cv->id)
-                <div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>
-                @endif
+                @if(old('cv_id') == $cv->id)<div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>@endif
               </div>
               <div style="flex:1;min-width:0">
                 <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $cv->titre_poste }}</p>
                 <p style="font-size:12px;color:#64748b;margin:0">{{ $cv->pays }}{{ $cv->ville ? ' · '.$cv->ville : '' }}</p>
               </div>
-              <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Mon profil</span>
+              <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">CV</span>
             </div>
             @endforeach
+
+            {{-- Autres documents (diplômes, attestations…) --}}
+            @foreach($documents as $doc)
+            <div onclick="selectItem('doc', {{ $doc->id }})"
+                 id="item-card-doc-{{ $doc->id }}"
+                 style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid {{ old('document_id') == $doc->id ? '#185FA5' : '#e2e8f0' }};border-radius:10px;cursor:pointer;transition:all .15s;background:{{ old('document_id') == $doc->id ? '#f0f7ff' : '#fff' }}">
+              <div id="item-dot-doc-{{ $doc->id }}"
+                   style="width:18px;height:18px;min-width:18px;border-radius:50%;border:2px solid {{ old('document_id') == $doc->id ? '#185FA5' : '#cbd5e0' }};background:{{ old('document_id') == $doc->id ? '#185FA5' : 'transparent' }};display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0">
+                @if(old('document_id') == $doc->id)<div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>@endif
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $doc->nom }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $doc->type?->nom }}</p>
+              </div>
+              <span style="font-size:11px;background:#f3e8ff;color:#7c3aed;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">{{ $doc->type?->nom ?? 'Document' }}</span>
+            </div>
+            @endforeach
+
           </div>
 
           <button type="button" id="toggleFileBtn"
@@ -140,7 +156,7 @@
                 </svg>
               </div>
               <div style="flex:1;min-width:0">
-                <p id="fileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre votre CV</p>
+                <p id="fileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre un fichier</p>
                 <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX — 5 Mo maximum</p>
               </div>
               <input type="file" name="cv_file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none"
@@ -150,11 +166,11 @@
               <p style="color:#dc2626;font-size:12.5px;margin:6px 0 0">{{ $message }}</p>
             @enderror
 
-          @if($cvs->isNotEmpty())
+          @if($hasAny)
           </div>{{-- /fileUploadSection --}}
           @endif
 
-        </div>{{-- /CV section --}}
+        </div>{{-- /Document section --}}
 
         {{-- Info --}}
         <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px 18px;margin-bottom:26px;display:flex;gap:10px;align-items:flex-start">
@@ -168,16 +184,13 @@
 
         {{-- Boutons --}}
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button type="submit"
-                  style="flex:1;min-width:220px;padding:15px 24px;background:#F5C842;color:#042C53;border:none;border-radius:10px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px"
-                  onmouseover="this.style.background='#e0a800'" onmouseout="this.style.background='#F5C842'">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <button type="submit" class="btn btn--yellow" style="flex:1;min-width:220px">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
             </svg>
             Envoyer ma candidature
           </button>
-          <a href="{{ route('offre.detail', $offre) }}"
-             style="padding:15px 24px;background:#f1f5f9;color:#374151;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap">
+          <a href="{{ route('offre.detail', $offre) }}" class="btn btn--outline">
             Annuler
           </a>
         </div>
@@ -192,46 +205,42 @@
 <script>
 let fileOpen = false;
 
-function selectCv(id) {
-  const allCards = document.querySelectorAll('[id^="cv-card-"]');
-  allCards.forEach(card => {
-    card.style.border = '2px solid #e2e8f0';
-    card.style.background = '#fff';
+function clearAllItems() {
+  document.querySelectorAll('[id^="item-card-"]').forEach(el => {
+    el.style.border = '2px solid #e2e8f0';
+    el.style.background = '#fff';
   });
-  const allDots = document.querySelectorAll('[id^="cv-dot-"]');
-  allDots.forEach(dot => {
-    dot.style.border = '2px solid #cbd5e0';
-    dot.style.background = 'transparent';
-    dot.innerHTML = '';
+  document.querySelectorAll('[id^="item-dot-"]').forEach(el => {
+    el.style.border = '2px solid #cbd5e0';
+    el.style.background = 'transparent';
+    el.innerHTML = '';
   });
+  document.getElementById('selectedCvId').value  = '';
+  document.getElementById('selectedDocId').value = '';
+}
 
-  const card = document.getElementById('cv-card-' + id);
-  const dot  = document.getElementById('cv-dot-'  + id);
+function selectItem(type, id) {
+  clearAllItems();
+
+  const card = document.getElementById('item-card-' + type + '-' + id);
+  const dot  = document.getElementById('item-dot-'  + type + '-' + id);
   if (card) { card.style.border = '2px solid #185FA5'; card.style.background = '#f0f7ff'; }
   if (dot)  { dot.style.border = '2px solid #185FA5'; dot.style.background = '#185FA5'; dot.innerHTML = '<div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>'; }
 
-  document.getElementById('selectedCvId').value = id;
+  if (type === 'cv')  document.getElementById('selectedCvId').value  = id;
+  if (type === 'doc') document.getElementById('selectedDocId').value = id;
 
-  // Fermer la section fichier
   const fileSection = document.getElementById('fileUploadSection');
   const cvFileInput = document.getElementById('cvFileInput');
   if (fileSection) { fileSection.style.display = 'none'; fileOpen = false; updateToggleBtn(); }
-  if (cvFileInput) { cvFileInput.value = ''; document.getElementById('fileLabel').textContent = 'Cliquer pour joindre votre CV'; }
+  if (cvFileInput) { cvFileInput.value = ''; document.getElementById('fileLabel').textContent = 'Cliquer pour joindre un fichier'; }
 }
 
 function toggleFileSection() {
   fileOpen = !fileOpen;
   const fileSection = document.getElementById('fileUploadSection');
   if (fileSection) fileSection.style.display = fileOpen ? 'block' : 'none';
-
-  if (fileOpen) {
-    // Désélectionner le CV profil
-    const allCards = document.querySelectorAll('[id^="cv-card-"]');
-    allCards.forEach(card => { card.style.border = '2px solid #e2e8f0'; card.style.background = '#fff'; });
-    const allDots = document.querySelectorAll('[id^="cv-dot-"]');
-    allDots.forEach(dot => { dot.style.border = '2px solid #cbd5e0'; dot.style.background = 'transparent'; dot.innerHTML = ''; });
-    document.getElementById('selectedCvId').value = '';
-  }
+  if (fileOpen) clearAllItems();
   updateToggleBtn();
 }
 
@@ -252,14 +261,9 @@ function onFileChosen(input) {
   const label = document.getElementById('fileLabel');
   if (input.files[0]) {
     label.textContent = input.files[0].name;
-    // Désélectionner le CV profil
-    const allCards = document.querySelectorAll('[id^="cv-card-"]');
-    allCards.forEach(card => { card.style.border = '2px solid #e2e8f0'; card.style.background = '#fff'; });
-    const allDots = document.querySelectorAll('[id^="cv-dot-"]');
-    allDots.forEach(dot => { dot.style.border = '2px solid #cbd5e0'; dot.style.background = 'transparent'; dot.innerHTML = ''; });
-    document.getElementById('selectedCvId').value = '';
+    clearAllItems();
   } else {
-    label.textContent = 'Cliquer pour joindre votre CV';
+    label.textContent = 'Cliquer pour joindre un fichier';
   }
 }
 </script>

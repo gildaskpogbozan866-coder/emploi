@@ -484,6 +484,18 @@
   color: rgba(255,255,255,0.65);
 }
 
+/* ── Annonceur variant (violet) ── */
+.cand-sidebar--annonceur { background: #3b0764; }
+.cand-sidebar--annonceur .cand-sidebar__avatar {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  box-shadow: 0 0 0 2px rgba(167,139,250,0.35);
+}
+.cand-sidebar--annonceur .cand-nav__item.active {
+  background: rgba(167,139,250,0.18);
+  color: #fff;
+  border-right-color: #a78bfa;
+}
+
 /* ── Overlay backdrop (mobile drawer) ── */
 .cand-overlay {
   display: none;

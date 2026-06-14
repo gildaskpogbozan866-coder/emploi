@@ -40,23 +40,26 @@
 @endif
 
 <ul class="rec-nav">
-  <li class="rec-nav__section">Tableau de bord</li>
+
+  {{-- ── Vue d'ensemble ── --}}
+  <li class="rec-nav__section">Vue d'ensemble</li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.dashboard') ? 'active' : '' }}">
     <a href="{{ route('recruteur.dashboard') }}">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
       </svg>
-      Vue d'ensemble
+      Tableau de bord
     </a>
   </li>
 
+  {{-- ── Recrutement ── --}}
   <li class="rec-nav__section">Recrutement</li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.offres*') ? 'active' : '' }}">
     <a href="{{ route('recruteur.offres') }}">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
       </svg>
       Mes offres d'emploi
     </a>
@@ -71,7 +74,7 @@
     </a>
   </li>
 
-  <li class="rec-nav__item {{ request()->routeIs('recruteur.cvtheque*') ? 'active' : '' }}">
+  <li class="rec-nav__item {{ request()->routeIs('recruteur.cvtheque*') && !request()->routeIs('recruteur.cv-credits*') ? 'active' : '' }}">
     <a href="{{ route('recruteur.cvtheque') }}">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
@@ -80,7 +83,16 @@
     </a>
   </li>
 
-  <hr class="rec-nav__divider">
+  <li class="rec-nav__item {{ request()->routeIs('recruteur.cv-credits*') ? 'active' : '' }}">
+    <a href="{{ route('recruteur.cv-credits.index') }}">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+      </svg>
+      Crédits CVthèque
+    </a>
+  </li>
+
+  {{-- ── Suivi ── --}}
   <li class="rec-nav__section">Suivi</li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.statistiques*') ? 'active' : '' }}">
@@ -91,6 +103,9 @@
       Statistiques
     </a>
   </li>
+
+  {{-- ── Communication ── --}}
+  <li class="rec-nav__section">Communication</li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.messagerie*') ? 'active' : '' }}">
     <a href="{{ route('recruteur.messagerie') }}" style="display:flex;align-items:center;gap:10px">
@@ -104,8 +119,9 @@
     </a>
   </li>
 
+  {{-- ── Compte & Finances ── --}}
   <hr class="rec-nav__divider">
-  <li class="rec-nav__section">Compte</li>
+  <li class="rec-nav__section">Compte &amp; Finances</li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.abonnement*') ? 'active' : '' }}">
     <a href="{{ route('recruteur.abonnement') }}">
@@ -113,6 +129,15 @@
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
       Mon abonnement
+    </a>
+  </li>
+
+  <li class="rec-nav__item {{ request()->routeIs('recruteur.paiements*') ? 'active' : '' }}">
+    <a href="{{ route('recruteur.paiements') }}">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
+      Historique paiements
     </a>
   </li>
 
@@ -133,4 +158,5 @@
       Paramètres
     </a>
   </li>
+
 </ul>

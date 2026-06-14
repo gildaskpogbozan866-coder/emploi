@@ -1,8 +1,9 @@
 @php
   $markAllRoute = match(auth()->user()->role) {
-    'recruteur' => 'recruteur.notifications.lues',
-    'admin'     => 'admin.notifications.lues',
-    default     => 'candidat.notifications.lues',
+    'recruteur'  => 'recruteur.notifications.lues',
+    'admin'      => 'admin.notifications.lues',
+    'annonceur'  => 'annonceur.notifications.lues',
+    default      => 'candidat.notifications.lues',
   };
   $seeAllRoute = auth()->user()->role === 'candidat' ? route('candidat.notifications') : null;
 @endphp

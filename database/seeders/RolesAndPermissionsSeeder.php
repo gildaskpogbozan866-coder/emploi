@@ -31,6 +31,9 @@ class RolesAndPermissionsSeeder extends Seeder
         $candidat = SpatieRole::firstOrCreate(['name' => Role::CANDIDAT]);
         $candidat->syncPermissions(Permission::candidatPermissions());
 
+        $annonceur = SpatieRole::firstOrCreate(['name' => Role::ANNONCEUR]);
+        $annonceur->syncPermissions(Permission::annonceurPermissions());
+
         $this->command->info('✅ Rôles et permissions créés.');
     }
 }

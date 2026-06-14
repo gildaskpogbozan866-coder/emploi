@@ -30,7 +30,7 @@ class IncriptionRequest extends FormRequest
             'password_confirmation' => 'required|string',
             'tel'                  => 'nullable|string|max:20',
             'pays'                 => 'required|string|max:100',
-            'role'                 => 'required|in:candidat,recruteur',
+            'role'                 => 'required|in:candidat,recruteur,annonceur',
             'entreprise'           => 'nullable|string|max:200',
             'metier'               => 'nullable|string|max:200',
         ];
@@ -49,7 +49,7 @@ class IncriptionRequest extends FormRequest
             'password_confirmation.required' => 'Veuillez confirmer votre mot de passe.',
             'pays.required'                => 'Le pays est requis.',
             'role.required'                => 'Le rôle est requis.',
-            'role.in'                      => 'Le rôle doit être : candidat ou recruteur.',
+            'role.in'                      => 'Le rôle doit être : candidat, recruteur ou annonceur.',
         ];
     }
 }

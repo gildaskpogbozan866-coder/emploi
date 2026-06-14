@@ -47,7 +47,7 @@
       </button>
       <input type="text" name="contenu" id="msgInput" class="msg-form__input"
              placeholder="Votre message…" autocomplete="off">
-      <button type="submit" class="rec-btn rec-btn--primary" id="sendBtn">Envoyer</button>
+      <button type="submit" class="rec-btn rec-btn--yellow" id="sendBtn">Envoyer</button>
     </div>
   </form>
 </div>

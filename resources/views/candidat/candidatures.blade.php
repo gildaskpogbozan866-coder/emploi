@@ -75,7 +75,7 @@
               </div>
               <p class="cand-empty__title">Aucune candidature</p>
               <p class="cand-empty__text">Vous n'avez pas encore postulé à une offre d'emploi.</p>
-              <a href="{{ route('offre.list') }}" class="cand-btn cand-btn--primary">Parcourir les offres</a>
+              <a href="{{ route('offre.list') }}" class="cand-btn cand-btn--yellow">Parcourir les offres</a>
             </div>
           </td>
         </tr>

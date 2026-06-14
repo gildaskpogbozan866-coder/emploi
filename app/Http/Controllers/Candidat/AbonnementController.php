@@ -14,10 +14,46 @@ class AbonnementController extends Controller
     public function index()
     {
         $user        = Auth::user();
-        $abonnement  = $user->abonnementActif()->with('plan')->first();
+        $abonnement  = $user->abonnementActif()->with('plan.features')->first();
         $abonnements = $user->abonnements()->with('plan')->latest('starts_at')->get();
 
-        return view('candidat.abonnement', compact('user', 'abonnement', 'abonnements'));
+        $quotas = $this->buildQuotas($user, $abonnement);
+
+        return view('candidat.abonnement', compact('user', 'abonnement', 'abonnements', 'quotas'));
+    }
+
+    private function buildQuotas($user, $abonnement): array
+    {
+        if (!$abonnement) return [];
+
+        $plan  = $abonnement->plan;
+        $since = $abonnement->starts_at;
+
+        $cvsCount    = $user->cvs()->count() + $user->documents()->count();
+        $cvLimit     = (int) $plan->getFeature('cv_limit', 1);
+
+        $candidatures = $user->candidatures()->where('created_at', '>=', $since)->count();
+        $applyLimit   = (int) $plan->getFeature('job_apply_limit', 10);
+
+        $featuredProfile = (bool) (int) $plan->getFeature('featured_profile', 0);
+
+        return [
+            'cvs' => [
+                'label' => 'CVs créés',
+                'used'  => $cvsCount,
+                'limit' => $cvLimit,
+            ],
+            'candidatures' => [
+                'label'     => 'Candidatures ce cycle',
+                'used'      => $candidatures,
+                'limit'     => $applyLimit,
+                'unlimited' => $applyLimit >= 100,
+            ],
+            'featured_profile' => [
+                'label'   => 'Profil mis en avant',
+                'enabled' => $featuredProfile,
+            ],
+        ];
     }
 
     public function choisirPlan()
@@ -46,6 +82,19 @@ class AbonnementController extends Controller
             ->where('status', 'active')
             ->update(['status' => 'cancelled']);
 
+        if ($plan->is_free) {
+            Abonnement::create([
+                'user_id'    => Auth::id(),
+                'plan_id'    => $plan->id,
+                'status'     => 'active',
+                'starts_at'  => now(),
+                'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
+                'auto_renew' => false,
+            ]);
+            return redirect()->route('candidat.abonnement')
+                ->with('success', 'Plan gratuit activé avec succès.');
+        }
+
         $abonnement = Abonnement::create([
             'user_id'    => Auth::id(),
             'plan_id'    => $plan->id,
@@ -55,25 +104,17 @@ class AbonnementController extends Controller
             'auto_renew' => false,
         ]);
 
-        Paiement::create([
+        $paiement = Paiement::create([
             'user_id'         => Auth::id(),
             'subscription_id' => $abonnement->id,
             'montant'         => $plan->price,
-            'devise'          => $plan->currency,
+            'devise'          => $plan->currency ?? 'XOF',
             'type'            => 'abonnement_candidat',
-            'methode'         => 'mobile_money',
+            'methode'         => 'en_attente',
             'statut'          => 'en_attente',
+            'gateway'         => 'manuel',
         ]);
 
-        return redirect()->route('candidat.abonnement')
-            ->with('success', $plan->is_free
-                ? 'Plan gratuit activé avec succès.'
-                : 'Demande envoyée ! Un conseiller vous contactera pour finaliser le paiement.');
-    }
-
-    public function historique()
-    {
-        $paiements = Auth::user()->paiements()->latest()->paginate(15);
-        return view('candidat.historique-paiements', compact('paiements'));
+        return redirect()->route('payment.choose', ['paiement' => $paiement->id]);
     }
 }

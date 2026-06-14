@@ -101,7 +101,7 @@
         @if($candidature->offre->recruteur)
           <form method="POST" action="{{ route('candidat.messagerie.initier', $candidature->offre->recruteur) }}" style="margin-top:10px">
             @csrf
-            <button type="submit" class="cand-btn cand-btn--primary" style="width:100%;justify-content:center">
+            <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               Contacter le recruteur
             </button>

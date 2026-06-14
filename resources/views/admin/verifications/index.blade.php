@@ -3,9 +3,14 @@
 
 @section('content')
 <div class="dash-content">
-  <div class="dash-content__header">
-    <h1 class="dash-content__title">Vérifications recruteurs</h1>
-    <p class="dash-content__sub">Dossiers soumis par les entreprises pour validation de leur compte.</p>
+  <div class="dash-content__header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+    <div>
+      <h1 class="dash-content__title">Vérifications recruteurs</h1>
+      <p class="dash-content__sub">Dossiers soumis par les entreprises pour validation de leur compte.</p>
+    </div>
+    <a href="{{ route('admin.document-types.index') }}" class="adm-btn adm-btn--outline" style="flex-shrink:0;margin-top:4px">
+      Configurer les documents requis
+    </a>
   </div>
 
   {{-- Compteurs globaux (indépendants des filtres) --}}

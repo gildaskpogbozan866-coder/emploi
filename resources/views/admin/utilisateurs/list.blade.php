@@ -64,7 +64,7 @@
               @if($user->role !== 'admin')
               <form method="POST" action="{{ route('admin.utilisateurs.statut', $user) }}">
                 @csrf @method('PATCH')
-                <button type="submit" class="adm-btn adm-btn--ghost adm-btn--sm" style="color:{{ $user->actif ? '#e53e3e' : '#38A169' }}">
+                <button type="submit" class="adm-btn {{ $user->actif ? 'adm-btn--danger' : 'adm-btn--green' }} adm-btn--sm">
                   {{ $user->actif ? 'Suspendre' : 'Réactiver' }}
                 </button>
               </form>

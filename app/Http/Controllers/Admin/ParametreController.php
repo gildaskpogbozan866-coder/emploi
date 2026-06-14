@@ -15,6 +15,9 @@ class ParametreController extends Controller
             'site_email'                => config('mail.from.address'),
             'maintenance_mode'          => app()->isDownForMaintenance(),
             'admin_notification_email'  => ParametreApp::get('admin_notification_email', config('emploi.admin_notification_email')),
+            'recruteur_validation_docs' => ParametreApp::get('recruteur_validation_docs', '0') === '1',
+            'recaptcha_site_key'        => ParametreApp::get('recaptcha_site_key', ''),
+            'recaptcha_secret_key'      => ParametreApp::get('recaptcha_secret_key', ''),
         ];
 
         return view('admin.parametres', compact('parametres'));
@@ -28,7 +31,10 @@ class ParametreController extends Controller
             'admin_notification_email.email' => 'Veuillez entrer une adresse e-mail valide.',
         ]);
 
-        ParametreApp::set('admin_notification_email', $request->admin_notification_email ?? '');
+        ParametreApp::set('admin_notification_email',  $request->admin_notification_email ?? '');
+        ParametreApp::set('recruteur_validation_docs', $request->boolean('recruteur_validation_docs') ? '1' : '0');
+        ParametreApp::set('recaptcha_site_key',         trim($request->input('recaptcha_site_key', '')));
+        ParametreApp::set('recaptcha_secret_key',       trim($request->input('recaptcha_secret_key', '')));
 
         return back()->with('success', 'Paramètres mis à jour.');
     }

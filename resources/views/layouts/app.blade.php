@@ -95,6 +95,42 @@
   {{-- ── FOOTER ── --}}
   @include('components.footer')
 
+  {{-- ── BANNIÈRE CONSENTEMENT COOKIES ── --}}
+  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;color:#e2e8f0;padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.25)">
+    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:12px">
+      <p style="margin:0;font-size:13.5px;flex:1;min-width:200px;line-height:1.5">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Ce site utilise des cookies pour améliorer votre expérience et mesurer l'audience.
+        <a href="/legale/politique-confidentialite" style="color:#93c5fd;text-decoration:underline;margin-left:4px">En savoir plus</a>
+      </p>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button onclick="setCookieConsent('refused')"
+                style="padding:8px 16px;border-radius:7px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer">
+          Refuser
+        </button>
+        <button onclick="setCookieConsent('accepted')"
+                style="padding:8px 16px;border-radius:7px;border:none;background:#F5C842;color:#1e293b;font-size:13px;font-weight:700;cursor:pointer">
+          Tout accepter
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function () {
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookie-banner').style.display = 'block';
+    }
+  })();
+  function setCookieConsent(choice) {
+    localStorage.setItem('cookie_consent', choice);
+    document.getElementById('cookie-banner').style.display = 'none';
+  }
+  </script>
+
+  @if($recaptchaActif)
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  @endif
+
   <script src="{{ asset('js/app.js') }}" defer></script>
   @include('partials._form-guard')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>

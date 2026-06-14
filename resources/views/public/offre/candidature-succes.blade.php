@@ -11,9 +11,15 @@
     <p style="color:#64748b;margin-bottom:8px">Votre candidature pour <strong>{{ $offre->titre }}</strong> chez <strong>{{ $offre->entreprise }}</strong> a bien été transmise.</p>
     <p style="color:#64748b;margin-bottom:32px">Le recruteur vous contactera si votre profil correspond.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <a href="{{ route('offre.list') }}" class="btn btn--blue">Voir d'autres offres</a>
+      <a href="{{ route('offre.list') }}"
+         style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;border:2px solid #185FA5;transition:background .18s">
+        Voir d'autres offres
+      </a>
       @auth
-      <a href="{{ route('candidat.candidatures') }}" class="btn btn--outline">Mes candidatures</a>
+      <a href="{{ route('candidat.candidatures') }}"
+         style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#fff;color:#042C53;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;border:2px solid #042C53;transition:background .18s">
+        Mes candidatures
+      </a>
       @endauth
     </div>
   </div>

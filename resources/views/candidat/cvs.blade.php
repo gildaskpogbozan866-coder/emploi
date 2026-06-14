@@ -11,11 +11,22 @@
   <div class="cand-alert cand-alert--success" style="margin-bottom:16px">{{ session('success') }}</div>
 @endif
 
-@if($total >= 1 && !$estPremium)
+{{-- Bannière quota atteint --}}
+@if($quota['reached'])
+  <div style="display:flex;align-items:center;gap:12px;background:#fff1f2;border:1.5px solid #fecdd3;border-radius:10px;padding:12px 16px;margin-bottom:20px">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#dc2626" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    <p style="margin:0;font-size:13px;color:#991b1b;flex:1">
+      Quota atteint — <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} document{{ $quota['limit'] > 1 ? 's' : '' }}</strong>. Passez à un plan supérieur pour en ajouter davantage.
+    </p>
+    <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
+  </div>
+@elseif(!$quota['unlimited'] && $quota['remaining'] <= 1)
   <div style="display:flex;align-items:center;gap:12px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px">
     <svg width="18" height="18" fill="#F5C842" viewBox="0 0 24 24" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    <p style="margin:0;font-size:13px;color:#92400e;flex:1">Plan gratuit — <strong>1 document maximum</strong>. Passez au Premium pour ajouter autant de CVs, diplômes et attestations que vous voulez.</p>
-    <a href="{{ route('candidat.abonnement') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Passer au Premium</a>
+    <p style="margin:0;font-size:13px;color:#92400e;flex:1">
+      {{ $quota['used'] }}/{{ $quota['limit'] }} documents — il vous reste <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong>. Passez au Premium pour un quota plus élevé.
+    </p>
+    <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
   </div>
 @endif
 
@@ -23,26 +34,33 @@
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">CVs & Documents</h1>
-    <p class="cand-page-header__sub">Gérez vos CVs, diplômes, attestations et certificats</p>
+    <p class="cand-page-header__sub">
+      Gérez vos CVs, diplômes, attestations et certificats
+      @if(!$quota['unlimited'])
+        &nbsp;·&nbsp;
+        <span style="font-weight:600;color:{{ $quota['reached'] ? '#dc2626' : ($quota['remaining'] <= 1 ? '#d97706' : '#374151') }}">
+          {{ $quota['used'] }}/{{ $quota['limit'] }}
+        </span>
+      @endif
+    </p>
   </div>
   <div class="cand-page-header__actions">
-    @if($total >= 1 && !$estPremium)
-      <a href="{{ route('candidat.abonnement') }}" class="cand-btn cand-btn--yellow">
+    @if($quota['reached'])
+      <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Passer au Premium
+        Mettre à niveau
       </a>
     @else
       <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Ajouter
+        @if(!$quota['unlimited'])
+          <span style="font-size:11px;font-weight:700;background:rgba(255,255,255,.25);border-radius:20px;padding:1px 7px;margin-left:4px">{{ $quota['remaining'] }} restant{{ $quota['remaining'] > 1 ? 's' : '' }}</span>
+        @endif
       </a>
     @endif
   </div>
 </div>
-
-@php
-  $total = $cvs->count() + $documents->count();
-@endphp
 
 @if($total === 0)
   <div class="cand-card">
@@ -52,7 +70,7 @@
       </div>
       <p class="cand-empty__title">Aucun document pour l'instant</p>
       <p class="cand-empty__text">Ajoutez votre CV, vos diplômes, attestations ou certificats.</p>
-      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--primary">Ajouter mon premier document</a>
+      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">Ajouter mon premier document</a>
     </div>
   </div>
 @else

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Crypt;
 class PaymentSetting extends Model
 {
     protected $fillable = [
-        'gateway', 'env', 'public_key', 'secret_key', 'webhook_secret', 'is_active',
+        'gateway', 'env', 'public_key', 'private_key', 'secret_key', 'webhook_secret', 'is_active',
     ];
 
     protected $casts = [
@@ -18,6 +18,17 @@ class PaymentSetting extends Model
     public static function forGateway(string $gateway): ?self
     {
         return static::where('gateway', $gateway)->first();
+    }
+
+    public function getPrivateKeyAttribute(?string $value): ?string
+    {
+        if (!$value) return null;
+        try { return Crypt::decryptString($value); } catch (\Throwable) { return $value; }
+    }
+
+    public function setPrivateKeyAttribute(?string $value): void
+    {
+        $this->attributes['private_key'] = $value ? Crypt::encryptString($value) : null;
     }
 
     public function getSecretKeyAttribute(?string $value): ?string

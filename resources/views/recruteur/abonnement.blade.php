@@ -65,6 +65,65 @@
 </div>
 @endif
 
+{{-- Quotas du plan actif --}}
+@if($abonnement && count($quotas))
+<div style="margin-bottom:28px">
+  <h3 style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em">Utilisation de votre plan</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+
+    {{-- Offres publiées --}}
+    @php
+      $used  = $quotas['offres']['used'];
+      $limit = $quotas['offres']['limit'];
+      $pct   = $limit > 0 ? min(100, round($used / $limit * 100)) : 0;
+      $reste = max(0, $limit - $used);
+      $barColor = $pct >= 90 ? '#ef4444' : ($pct >= 70 ? '#f97316' : '#22c55e');
+    @endphp
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Offres publiées</p>
+        <span style="font-size:12px;font-weight:700;color:{{ $barColor }}">{{ $reste }} restante{{ $reste > 1 ? 's' : '' }}</span>
+      </div>
+      <div style="background:#f1f5f9;border-radius:99px;height:7px;margin-bottom:8px;overflow:hidden">
+        <div style="height:100%;width:{{ $pct }}%;background:{{ $barColor }};border-radius:99px;transition:width .4s"></div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin:0">{{ $used }} utilisée{{ $used > 1 ? 's' : '' }} sur {{ $limit }}</p>
+    </div>
+
+    {{-- Accès CVthèque --}}
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px">
+      <div style="width:40px;height:40px;border-radius:10px;background:{{ $quotas['candidate_search']['enabled'] ? '#dcfce7' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        @if($quotas['candidate_search']['enabled'])
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        @else
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        @endif
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Accès CVthèque</p>
+        <p style="font-size:12px;margin:3px 0 0;color:{{ $quotas['candidate_search']['enabled'] ? '#16a34a' : '#94a3b8' }};font-weight:600">
+          {{ $quotas['candidate_search']['enabled'] ? 'Inclus dans votre plan' : 'Non inclus — Passez au Pro' }}
+        </p>
+      </div>
+    </div>
+
+    {{-- Offres mises en avant --}}
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px">
+      <div style="width:40px;height:40px;border-radius:10px;background:{{ $quotas['featured_jobs']['enabled'] ? '#fef9c3' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" fill="{{ $quotas['featured_jobs']['enabled'] ? '#ca8a04' : '#cbd5e1' }}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Offres mises en avant</p>
+        <p style="font-size:12px;margin:3px 0 0;color:{{ $quotas['featured_jobs']['enabled'] ? '#ca8a04' : '#94a3b8' }};font-weight:600">
+          {{ $quotas['featured_jobs']['enabled'] ? $quotas['featured_jobs']['limit'] . ' offre' . ($quotas['featured_jobs']['limit'] > 1 ? 's' : '') . ' incluse' . ($quotas['featured_jobs']['limit'] > 1 ? 's' : '') : 'Non inclus dans ce plan' }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+@endif
+
 {{-- Historique --}}
 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden">
   <div style="padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">

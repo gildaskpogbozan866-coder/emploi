@@ -58,7 +58,7 @@
 
 @if($cv->fichier_path)
 <div class="adm-card" style="margin-top:20px;padding:20px 24px">
-  <a href="{{ asset('storage/'.$cv->fichier_path) }}" target="_blank" class="adm-btn adm-btn--primary">
+  <a href="{{ asset('storage/'.$cv->fichier_path) }}" target="_blank" class="adm-btn adm-btn--outline">
     Télécharger le fichier CV
   </a>
 </div>

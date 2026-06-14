@@ -64,6 +64,13 @@
               <div class="role-card__label">Recruteur</div>
               <div class="role-card__desc">Je recrute des candidats</div>
             </button>
+            <button type="button" data-role="annonceur" class="role-card {{ old('role') === 'annonceur' ? 'selected' : '' }}" onclick="selectRole('annonceur')">
+              <div class="role-card__icon">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              </div>
+              <div class="role-card__label">Annonceur</div>
+              <div class="role-card__desc">Je publie des annonces</div>
+            </button>
           </div>
           <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'candidat') }}" />
         </div>
@@ -128,6 +135,13 @@
           <input type="checkbox" required />
           J'accepte les <a href="/legale/cgv">conditions d'utilisation</a> et la <a href="/legale/politique-confidentialite">politique de confidentialité</a>.
         </label>
+
+        @if($recaptchaActif)
+          <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-bottom:12px"></div>
+        @endif
+        @error('recaptcha')
+          <p style="color:#e53e3e;font-size:13px;margin-bottom:8px">{{ $message }}</p>
+        @enderror
 
         <button type="submit" class="aform__submit">Créer mon compte gratuitement</button>
 

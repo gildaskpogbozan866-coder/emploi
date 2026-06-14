@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <button type="submit" class="rec-btn rec-btn--primary">Enregistrer le nouveau mot de passe</button>
+      <button type="submit" class="rec-btn rec-btn--yellow">Enregistrer le nouveau mot de passe</button>
     </form>
   </div>
 </div>

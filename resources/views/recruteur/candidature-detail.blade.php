@@ -103,7 +103,7 @@
             <textarea name="note_recruteur" rows="3" placeholder="Commentaire envoyé au candidat avec sa notification…"
                       style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box">{{ $candidature->note_recruteur }}</textarea>
           </div>
-          <button type="submit" class="rec-btn rec-btn--primary">Enregistrer et notifier le candidat</button>
+          <button type="submit" class="rec-btn rec-btn--yellow">Enregistrer et notifier le candidat</button>
         </form>
       </div>
     </div>

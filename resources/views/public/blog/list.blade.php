@@ -6,10 +6,11 @@
 @endsection
 
 @section('content')
-<section class="page-hero">
-  <div class="container">
+<section class="section page-hero">
+  <div class="container page-hero__inner">
+    <span class="badge badge--blue">Blog</span>
     <h1 class="page-hero__title">Blog &amp; Conseils</h1>
-    <p class="page-hero__sub">Guides pratiques, conseils carrière et actualités pour réussir sur le marché africain.</p>
+    <p class="page-hero__subtitle">Guides pratiques, conseils carrière et actualités pour réussir sur le marché africain.</p>
   </div>
 </section>
 

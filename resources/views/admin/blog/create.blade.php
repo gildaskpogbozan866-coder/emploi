@@ -56,20 +56,71 @@
 
       <div class="adm-field">
         <label class="adm-label">Image de couverture</label>
-        <input type="file" class="adm-input" name="image" accept="image/*" style="padding:8px 12px">
+        <div id="img-preview-wrap" style="display:none;width:100%;height:200px;border-radius:10px;overflow:hidden;background:#f1f5f9;margin-bottom:10px">
+          <img id="img-preview" alt="" style="width:100%;height:100%;object-fit:cover">
+        </div>
+        <input type="file" class="adm-input" name="image" accept="image/*"
+               style="padding:8px 12px" onchange="previewImage(this)">
       </div>
 
       <div class="adm-field">
-        <label class="adm-label">Contenu complet <span style="color:#e53e3e">*</span> <span style="font-weight:400;text-transform:none;color:#94a3b8;font-size:11px">(HTML accepté)</span></label>
-        <textarea class="adm-textarea" name="contenu" rows="20" placeholder="<p>Contenu de l'article…</p>" required>{{ old('contenu') }}</textarea>
+        <label class="adm-label">Contenu complet <span style="color:#e53e3e">*</span></label>
+        <textarea id="summernote-contenu" name="contenu" required>{{ old('contenu') }}</textarea>
         @error('contenu')<p class="adm-error">{{ $message }}</p>@enderror
       </div>
 
       <div style="display:flex;gap:10px;padding-top:8px">
-        <button type="submit" class="adm-btn adm-btn--primary">Enregistrer l'article</button>
+        <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer l'article</button>
         <a href="{{ route('admin.blog.list') }}" class="adm-btn adm-btn--outline">Annuler</a>
       </div>
     </form>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/lang/summernote-fr-FR.min.js"></script>
+<script>
+$('#summernote-contenu').summernote({
+  lang: 'fr-FR',
+  height: 420,
+  placeholder: 'Rédigez votre article ici…',
+  toolbar: [
+    ['style',   ['style']],
+    ['font',    ['bold','italic','underline','strikethrough','clear']],
+    ['color',   ['color']],
+    ['para',    ['ul','ol','paragraph']],
+    ['table',   ['table']],
+    ['insert',  ['link','picture']],
+    ['view',    ['codeview','fullscreen']],
+  ],
+  callbacks: {
+    onImageUpload: function(files) {
+      for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
+        reader.onload = (function() {
+          return function(e) {
+            var img = $('<img>').attr('src', e.target.result).css('max-width','100%');
+            $('#summernote-contenu').summernote('insertNode', img[0]);
+          };
+        })();
+        reader.readAsDataURL(files[i]);
+      }
+    }
+  }
+});
+
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('img-preview').src = e.target.result;
+      document.getElementById('img-preview-wrap').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
 @endsection

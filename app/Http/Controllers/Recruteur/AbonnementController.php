@@ -14,14 +14,48 @@ class AbonnementController extends Controller
     public function index()
     {
         $user       = Auth::user();
-        $abonnement = $user->abonnementActif()->with('plan')->first();
+        $abonnement = $user->abonnementActif()->with('plan.features')->first();
 
         $abonnements = $user->abonnements()
                             ->with('plan')
                             ->latest('starts_at')
                             ->get();
 
-        return view('recruteur.abonnement', compact('user', 'abonnement', 'abonnements'));
+        $quotas = $this->buildQuotas($user, $abonnement);
+
+        return view('recruteur.abonnement', compact('user', 'abonnement', 'abonnements', 'quotas'));
+    }
+
+    private function buildQuotas($user, $abonnement): array
+    {
+        if (!$abonnement) return [];
+
+        $plan  = $abonnement->plan;
+        $since = $abonnement->starts_at;
+
+        $offresPubliees = $user->offres()->where('created_at', '>=', $since)->count();
+        $jobLimit       = (int) $plan->getFeature('job_post_limit', 0);
+
+        $featuredLimit    = (int) $plan->getFeature('featured_jobs', 0);
+        $candidateSearch  = (bool) (int) $plan->getFeature('candidate_search', 0);
+
+        return [
+            'offres' => [
+                'label'     => 'Offres publiées',
+                'used'      => $offresPubliees,
+                'limit'     => $jobLimit,
+                'unlimited' => $jobLimit === 0,
+            ],
+            'featured_jobs' => [
+                'label'   => 'Offres mises en avant',
+                'limit'   => $featuredLimit,
+                'enabled' => $featuredLimit > 0,
+            ],
+            'candidate_search' => [
+                'label'   => 'Accès CVthèque',
+                'enabled' => $candidateSearch,
+            ],
+        ];
     }
 
     public function choisirPlan()
@@ -51,10 +85,23 @@ class AbonnementController extends Controller
             ->where('status', 'active')
             ->update(['status' => 'cancelled']);
 
+        if ($plan->is_free) {
+            Abonnement::create([
+                'user_id'    => Auth::id(),
+                'plan_id'    => $plan->id,
+                'status'     => 'active',
+                'starts_at'  => now(),
+                'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
+                'auto_renew' => false,
+            ]);
+            return redirect()->route('recruteur.abonnement')
+                ->with('success', 'Plan gratuit activé avec succès.');
+        }
+
         $abonnement = Abonnement::create([
             'user_id'    => Auth::id(),
             'plan_id'    => $plan->id,
-            'status'     => 'cancelled', // activé par l'admin après confirmation du paiement
+            'status'     => 'cancelled',
             'starts_at'  => now(),
             'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
             'auto_renew' => false,

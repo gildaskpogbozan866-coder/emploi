@@ -90,15 +90,6 @@
         </div>
       @endif
 
-      {{-- Code OTP en dev --}}
-      @if(session('otp_debug'))
-        <div class="ve-debug-box">
-          <span>⚠ Dev — Code OTP :</span>
-          <code id="devCode">{{ session('otp_debug') }}</code>
-          <button type="button" onclick="copierCode()" class="ve-debug-copy">Copier</button>
-        </div>
-      @endif
-
       {{-- Formulaire 6 cases --}}
       <form method="POST" action="{{ route('auth.verification.otp') }}" id="otpForm">
         @csrf

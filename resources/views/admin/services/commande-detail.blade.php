@@ -70,7 +70,7 @@
           @endforeach
         </select>
       </div>
-      <button type="submit" class="adm-btn adm-btn--primary">Mettre à jour</button>
+      <button type="submit" class="adm-btn adm-btn--yellow">Mettre à jour</button>
     </form>
   </div>
 </div>

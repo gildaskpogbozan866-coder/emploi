@@ -60,7 +60,7 @@
       </div>
 
       <div style="display:flex;gap:12px">
-        <button type="submit" class="adm-btn adm-btn--primary">Enregistrer</button>
+        <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer</button>
         <a href="{{ route('admin.services.list') }}" class="adm-btn adm-btn--outline">Annuler</a>
       </div>
     </form>

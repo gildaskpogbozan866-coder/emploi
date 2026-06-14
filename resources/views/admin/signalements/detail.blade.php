@@ -62,7 +62,7 @@
                   style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box">{{ $signalement->note_admin }}</textarea>
       </div>
       <div>
-        <button type="submit" class="adm-btn adm-btn--primary">Enregistrer la décision</button>
+        <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer la décision</button>
       </div>
     </form>
   </div>

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\CV;
 use App\Models\Candidature;
+use App\Models\CV;
+use App\Models\Document;
 use App\Models\Notification;
 use App\Models\Offre;
 use App\Notifications\CandidatureRecueNotification;
@@ -105,9 +106,10 @@ class OffreController extends Controller
             ->where('candidat_id', Auth::id())
             ->exists();
 
-        $cvs = Auth::user()->cvs()->orderByDesc('created_at')->get();
+        $cvs       = Auth::user()->cvs()->orderByDesc('created_at')->get();
+        $documents = Auth::user()->documents()->with('type')->orderByDesc('created_at')->get();
 
-        return view('public.offre.postuler', compact('offre', 'aPostule', 'cvs'));
+        return view('public.offre.postuler', compact('offre', 'aPostule', 'cvs', 'documents'));
     }
 
     public function storerCandidature(Request $request, Offre $offre)
@@ -127,19 +129,22 @@ class OffreController extends Controller
         $request->validate([
             'message_motivation' => 'nullable|string|max:3000',
             'cv_id'              => 'nullable|integer|exists:cvs,id',
+            'document_id'        => 'nullable|integer|exists:documents,id',
             'cv_file'            => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
-        // S'assurer que le CV sélectionné appartient au candidat
-        $cvId = null;
-        if ($request->filled('cv_id')) {
-            $cv = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
-            $cvId = $cv?->id;
-        }
-
-        // Upload fichier seulement si aucun CV profil sélectionné
+        $cvId   = null;
         $cvPath = null;
-        if (!$cvId && $request->hasFile('cv_file')) {
+
+        if ($request->filled('cv_id')) {
+            // CV structuré du profil
+            $cv   = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
+            $cvId = $cv?->id;
+        } elseif ($request->filled('document_id')) {
+            // Document déposé (diplôme, attestation, etc.)
+            $doc    = Document::where('id', $request->document_id)->where('user_id', Auth::id())->first();
+            $cvPath = $doc?->fichier;
+        } elseif ($request->hasFile('cv_file')) {
             $cvPath = $request->file('cv_file')->store('candidatures', 'public');
         }
 

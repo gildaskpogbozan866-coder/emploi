@@ -33,7 +33,7 @@
         </span>
       </div>
       @if($role->name !== 'admin')
-        <button type="submit" form="form-role-{{ $role->id }}" class="adm-btn adm-btn--primary adm-btn--sm">
+        <button type="submit" form="form-role-{{ $role->id }}" class="adm-btn adm-btn--yellow adm-btn--sm">
           Sauvegarder
         </button>
       @else
@@ -122,7 +122,7 @@
                       <option value="{{ $r }}" {{ $user->role === $r ? 'selected' : '' }}>{{ ucfirst($r) }}</option>
                     @endforeach
                   </select>
-                  <button type="submit" class="adm-btn adm-btn--primary adm-btn--sm">OK</button>
+                  <button type="submit" class="adm-btn adm-btn--yellow adm-btn--sm">OK</button>
                 </form>
                 @else
                   <span style="font-size:12.5px;color:#94a3b8;font-style:italic">Super Admin</span>

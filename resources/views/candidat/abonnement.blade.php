@@ -65,6 +65,78 @@
 </div>
 @endif
 
+{{-- Quotas du plan actif --}}
+@if($abonnement && count($quotas))
+<div style="margin-bottom:28px">
+  <h3 style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em">Utilisation de votre plan</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+
+    {{-- CVs créés --}}
+    @php
+      $cvsUsed  = $quotas['cvs']['used'];
+      $cvsLimit = $quotas['cvs']['limit'];
+      $cvsPct   = $cvsLimit > 0 ? min(100, round($cvsUsed / $cvsLimit * 100)) : 0;
+      $cvsReste = max(0, $cvsLimit - $cvsUsed);
+      $cvsColor = $cvsPct >= 100 ? '#ef4444' : ($cvsPct >= 70 ? '#f97316' : '#22c55e');
+    @endphp
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Documents déposés</p>
+        <span style="font-size:12px;font-weight:700;color:{{ $cvsColor }}">{{ $cvsReste }} slot{{ $cvsReste > 1 ? 's' : '' }} restant{{ $cvsReste > 1 ? 's' : '' }}</span>
+      </div>
+      <div style="background:#f1f5f9;border-radius:99px;height:7px;margin-bottom:8px;overflow:hidden">
+        <div style="height:100%;width:{{ $cvsPct }}%;background:{{ $cvsColor }};border-radius:99px;transition:width .4s"></div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin:0">{{ $cvsUsed }} déposé{{ $cvsUsed > 1 ? 's' : '' }} sur {{ $cvsLimit }} autorisé{{ $cvsLimit > 1 ? 's' : '' }}</p>
+    </div>
+
+    {{-- Candidatures ce cycle --}}
+    @php
+      $appUsed    = $quotas['candidatures']['used'];
+      $appLimit   = $quotas['candidatures']['limit'];
+      $appUnlim   = $quotas['candidatures']['unlimited'];
+      $appPct     = (!$appUnlim && $appLimit > 0) ? min(100, round($appUsed / $appLimit * 100)) : 0;
+      $appReste   = max(0, $appLimit - $appUsed);
+      $appColor   = $appPct >= 90 ? '#ef4444' : ($appPct >= 70 ? '#f97316' : '#22c55e');
+    @endphp
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Candidatures</p>
+        @if($appUnlim)
+          <span style="font-size:12px;font-weight:700;color:#22c55e">Illimitées</span>
+        @else
+          <span style="font-size:12px;font-weight:700;color:{{ $appColor }}">{{ $appReste }} restante{{ $appReste > 1 ? 's' : '' }}</span>
+        @endif
+      </div>
+      @if(!$appUnlim)
+      <div style="background:#f1f5f9;border-radius:99px;height:7px;margin-bottom:8px;overflow:hidden">
+        <div style="height:100%;width:{{ $appPct }}%;background:{{ $appColor }};border-radius:99px;transition:width .4s"></div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin:0">{{ $appUsed }} envoyée{{ $appUsed > 1 ? 's' : '' }} sur {{ $appLimit }} ce cycle</p>
+      @else
+      <div style="background:#f0fdf4;border-radius:8px;padding:8px 12px;margin-top:4px">
+        <p style="font-size:12px;color:#16a34a;margin:0;font-weight:600">{{ $appUsed }} envoyées — aucune limite</p>
+      </div>
+      @endif
+    </div>
+
+    {{-- Profil mis en avant --}}
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px">
+      <div style="width:40px;height:40px;border-radius:10px;background:{{ $quotas['featured_profile']['enabled'] ? '#fef9c3' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" fill="{{ $quotas['featured_profile']['enabled'] ? '#ca8a04' : '#cbd5e1' }}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Profil mis en avant</p>
+        <p style="font-size:12px;margin:3px 0 0;color:{{ $quotas['featured_profile']['enabled'] ? '#ca8a04' : '#94a3b8' }};font-weight:600">
+          {{ $quotas['featured_profile']['enabled'] ? 'Votre profil est visible en priorité' : 'Non inclus — Passez au Premium' }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+@endif
+
 {{-- Historique --}}
 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden">
   <div style="padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">

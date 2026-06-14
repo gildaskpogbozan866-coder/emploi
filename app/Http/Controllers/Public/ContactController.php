@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContactMessage;
+use App\Models\Notification;
+use App\Models\ParametreApp;
+use App\Models\User;
+use App\Notifications\NouveauMessageContactNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
@@ -15,22 +20,56 @@ class ContactController extends Controller
 
         if ($type === 'newsletter') {
             $request->validate(['email' => 'required|email']);
-            // TODO: ajouter à la liste newsletter
             Log::info('Newsletter inscription: ' . $request->email);
             return back()->with('success', 'Vous êtes maintenant abonné(e) à notre newsletter !');
         }
 
-        $request->validate([
+        if ($this->recaptchaActif()) {
+            $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret'   => ParametreApp::get('recaptcha_secret_key'),
+                'response' => $request->input('g-recaptcha-response'),
+                'remoteip' => $request->ip(),
+            ]);
+            if (!$verify->json('success')) {
+                return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
+            }
+        }
+
+        $validated = $request->validate([
             'prenom'  => 'required|string|max:100',
-            'nom'     => 'required|string|max:100',
-            'email'   => 'required|email',
-            'sujet'   => 'required|string',
-            'message' => 'required|string|min:20',
+            'nom'     => 'nullable|string|max:100',
+            'email'   => 'required|email|max:191',
+            'sujet'   => 'required|string|in:question,partenariat,signalement,technique,autre',
+            'message' => 'required|string|min:20|max:3000',
         ]);
 
-        // En production: Mail::to('contact@emploibougebenin.com')->send(new ContactMail($request->all()));
-        Log::info('Message contact reçu', $request->only('prenom', 'nom', 'email', 'sujet'));
+        $contactMessage = ContactMessage::create($validated);
 
-        return back()->with('success', 'Votre message a bien été envoyé. Nous vous répondrons sous 48h.');
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type'    => 'contact',
+                'titre'   => 'Nouveau message de contact',
+                'contenu' => "{$validated['prenom']} {$validated['nom']} — {$contactMessage->sujet_label}",
+                'lien'    => route('admin.contact-messages.show', $contactMessage),
+            ]);
+
+            $admin->notify(new NouveauMessageContactNotification($contactMessage));
+        }
+
+        return back()->with('contact_sent', [
+            'prenom' => $validated['prenom'],
+            'email'  => $validated['email'],
+            'sujet'  => $validated['sujet'],
+        ]);
+    }
+
+    private function recaptchaActif(): bool
+    {
+        return !app()->isLocal()
+            && ParametreApp::get('recaptcha_site_key') !== ''
+            && ParametreApp::get('recaptcha_secret_key') !== '';
     }
 }

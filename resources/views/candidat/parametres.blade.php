@@ -66,7 +66,7 @@
     </div>
 
     <div class="cand-form-actions">
-      <button type="submit" class="cand-btn cand-btn--primary">Enregistrer le nouveau mot de passe</button>
+      <button type="submit" class="cand-btn cand-btn--yellow">Enregistrer le nouveau mot de passe</button>
     </div>
   </form>
 </div>

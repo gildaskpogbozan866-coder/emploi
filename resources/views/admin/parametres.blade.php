@@ -94,8 +94,74 @@
         </div>
       </div>
 
-      <button type="submit" class="adm-btn adm-btn--primary">Enregistrer les paramètres</button>
+      {{-- reCAPTCHA --}}
+      <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
+        <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 6px">Google reCAPTCHA v2</h3>
+        <p style="font-size:12.5px;color:#6b7280;margin:0 0 14px">
+          Protection anti-spam sur les formulaires de contact et d'inscription.
+          Clés disponibles sur <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener" style="color:#185FA5">console.google.com/recaptcha</a>.
+          <strong>Non actif en environnement local</strong> — les clés ne prennent effet qu'en production.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Clé publique (Site Key)</label>
+            <input type="text" name="recaptcha_site_key" value="{{ $parametres['recaptcha_site_key'] }}"
+                   placeholder="6Lc…"
+                   style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13.5px;font-family:monospace;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Clé secrète (Secret Key)</label>
+            <input type="password" name="recaptcha_secret_key" value="{{ $parametres['recaptcha_secret_key'] }}"
+                   placeholder="6Lc…"
+                   style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13.5px;font-family:monospace;box-sizing:border-box">
+            <p style="font-size:12px;color:#94a3b8;margin-top:4px">La clé secrète n'est jamais affichée en clair une fois enregistrée.</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- Vérification des recruteurs --}}
+      <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
+        <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 6px">Vérification des recruteurs</h3>
+        <p style="font-size:12.5px;color:#6b7280;margin:0 0 14px">
+          Si activé, après inscription, les recruteurs devront soumettre leurs documents d'entreprise avant d'accéder au tableau de bord. L'admin les valide manuellement.
+        </p>
+        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;background:{{ $parametres['recruteur_validation_docs'] ? '#f0fdf4' : '#f8fafc' }};border:1.5px solid {{ $parametres['recruteur_validation_docs'] ? '#bbf7d0' : '#e2e8f0' }};border-radius:10px" id="validLbl">
+          <div style="position:relative;width:44px;height:24px;flex-shrink:0">
+            <input type="checkbox" name="recruteur_validation_docs" value="1"
+                   {{ $parametres['recruteur_validation_docs'] ? 'checked' : '' }}
+                   onchange="updateToggle(this)"
+                   style="opacity:0;width:0;height:0;position:absolute">
+            <span id="validTrack" style="position:absolute;inset:0;border-radius:99px;background:{{ $parametres['recruteur_validation_docs'] ? '#16a34a' : '#cbd5e1' }};transition:background .2s"></span>
+            <span id="validThumb" style="position:absolute;top:3px;left:{{ $parametres['recruteur_validation_docs'] ? '23px' : '3px' }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s"></span>
+          </div>
+          <div>
+            <p id="validTxt" style="font-size:13.5px;font-weight:700;color:{{ $parametres['recruteur_validation_docs'] ? '#16a34a' : '#374151' }};margin:0">
+              {{ $parametres['recruteur_validation_docs'] ? 'Soumission de documents activée' : 'Soumission de documents désactivée' }}
+            </p>
+            <p style="font-size:12px;color:#64748b;margin:2px 0 0">
+              {{ $parametres['recruteur_validation_docs'] ? 'Les recruteurs doivent soumettre leurs documents après inscription.' : 'Les recruteurs accèdent directement au tableau de bord après inscription.' }}
+            </p>
+          </div>
+        </label>
+      </div>
+
+      <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer les paramètres</button>
     </form>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+function updateToggle(cb) {
+  const on = cb.checked;
+  document.getElementById('validTrack').style.background  = on ? '#16a34a' : '#cbd5e1';
+  document.getElementById('validThumb').style.left        = on ? '23px' : '3px';
+  document.getElementById('validTxt').style.color         = on ? '#16a34a' : '#374151';
+  document.getElementById('validTxt').textContent         = on ? 'Soumission de documents activée' : 'Soumission de documents désactivée';
+  const lbl = document.getElementById('validLbl');
+  lbl.style.background   = on ? '#f0fdf4' : '#f8fafc';
+  lbl.style.borderColor  = on ? '#bbf7d0' : '#e2e8f0';
+}
+</script>
 @endsection

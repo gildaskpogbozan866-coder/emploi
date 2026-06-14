@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
 use App\Models\Commande;
+use App\Models\Paiement;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +29,11 @@ class ServiceController extends Controller
 
     public function storerCommande(Request $request, Service $service)
     {
+        if (!Auth::check()) {
+            return redirect()->route('auth.connexion')
+                ->with('error', 'Connectez-vous pour passer une commande.');
+        }
+
         $request->validate([
             'details_demande' => 'required|string|min:20',
             'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt|max:10240',
@@ -38,7 +44,7 @@ class ServiceController extends Controller
             $fichierPath = $request->file('fichier_joint')->store('commandes', 'public');
         }
 
-        Commande::create([
+        $commande = Commande::create([
             'user_id'         => Auth::id(),
             'service_id'      => $service->id,
             'details_demande' => $request->details_demande,
@@ -50,7 +56,17 @@ class ServiceController extends Controller
 
         $service->increment('nb_commandes');
 
-        return redirect()->route('service.succes')->with('service', $service->nom);
+        $paiement = Paiement::create([
+            'user_id'      => Auth::id(),
+            'montant'      => $service->prix,
+            'devise'       => 'XOF',
+            'type'         => 'service',
+            'statut'       => 'en_attente',
+            'payable_id'   => $commande->id,
+            'payable_type' => Commande::class,
+        ]);
+
+        return redirect()->route('payment.choose', $paiement);
     }
 
     public function succes()

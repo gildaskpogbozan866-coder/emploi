@@ -165,7 +165,7 @@
           </td>
 
           <td>
-            <a href="{{ route('admin.paiements.detail', $paiement) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
+            <a href="{{ route('admin.paiements.detail', $paiement) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
           </td>
         </tr>
         @empty

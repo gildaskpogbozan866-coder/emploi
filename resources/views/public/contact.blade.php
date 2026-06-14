@@ -25,87 +25,138 @@
   {{-- ═══════════════════════════════════════════
        FORMULAIRE DE CONTACT
   ═══════════════════════════════════════════ --}}
-  <section class="section" style="background:#fff;">
-    <div class="container" style="max-width:680px">
+  <section class="contact-section">
+    <div class="container contact-section__inner">
 
-      <div class="section-header section-header--center" style="margin-bottom:40px">
-        <span class="badge badge--yellow">Formulaire</span>
-        <h2 class="section-title" style="margin-top:10px">Envoyez-nous un message</h2>
+      {{-- Colonne gauche : infos + promesse --}}
+      <div class="contact-side">
+        <span class="badge badge--yellow" style="margin-bottom:18px">Nous contacter</span>
+        <h2 class="contact-side__title">Une question ?<br><span class="text-accent">Écrivez-nous.</span></h2>
+        <p class="contact-side__sub">Nous lisons chaque message et répondons sous 24h.</p>
+
+        <div class="contact-side__items">
+          <a href="mailto:emploibougebenin@gmail.com" class="contact-side__item">
+            <span class="contact-side__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </span>
+            <span>emploibougebenin@gmail.com</span>
+          </a>
+          <a href="https://wa.me/22901519298" target="_blank" rel="noopener noreferrer" class="contact-side__item contact-side__item--wa">
+            <span class="contact-side__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </span>
+            <span>+229 01 51 92 98 56</span>
+          </a>
+        </div>
+
+        <div class="contact-side__promise">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Réponse sous 24h
+        </div>
       </div>
 
-      @if(session('success'))
-        <div class="flash flash--success" style="margin-bottom:24px">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          {{ session('success') }}
-        </div>
-      @endif
+      {{-- Colonne droite : formulaire --}}
+      <div class="contact-form-card">
 
-      <form class="contact-form" method="POST" action="{{ route('contact.envoyer') }}">
-        @csrf
-        <input type="hidden" name="type" value="contact">
-
-        <div class="contact-form__row">
-          <div class="contact-form__field">
-            <label class="contact-form__label" for="prenom">Prénom</label>
-            <input class="contact-form__input" type="text" id="prenom" name="prenom"
-                   value="{{ old('prenom', auth()->user()?->prenom) }}"
-                   placeholder="Jean" required />
+        @if(session('contact_sent'))
+          @php $sent = session('contact_sent'); @endphp
+          <div class="contact-confirm">
+            <div class="contact-confirm__icon">
+              <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="contact-confirm__title">Message envoyé, {{ $sent['prenom'] }} !</h3>
+            <p class="contact-confirm__sub">Votre message a bien été reçu. Nous vous répondrons <strong>sous 24h</strong> à l'adresse&nbsp;:</p>
+            <div class="contact-confirm__email">{{ $sent['email'] }}</div>
+            <div class="contact-confirm__meta">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 10V5a2 2 0 012-2z"/></svg>
+              Sujet : <strong>
+                {{ match($sent['sujet']) {
+                  'question'    => 'Question générale',
+                  'partenariat' => 'Proposition de partenariat',
+                  'signalement' => 'Signalement d\'un contenu',
+                  'technique'   => 'Problème technique',
+                  default       => 'Autre',
+                } }}
+              </strong>
+            </div>
+            <a href="{{ route('contact') }}" class="btn btn--yellow contact-confirm__btn">
+              Envoyer un autre message
+            </a>
           </div>
+        @endif
+
+        @if($errors->any())
+          <div class="contact-error">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            {{ $errors->first() }}
+          </div>
+        @endif
+
+        @if(!session('contact_sent'))
+        <form class="contact-form" method="POST" action="{{ route('contact.envoyer') }}">
+          @csrf
+          <input type="hidden" name="type" value="contact">
+
+          <div class="contact-form__row">
+            <div class="contact-form__field">
+              <label class="contact-form__label" for="prenom">Prénom <span class="contact-form__req">*</span></label>
+              <input class="contact-form__input {{ $errors->has('prenom') ? 'contact-form__input--error' : '' }}"
+                     type="text" id="prenom" name="prenom"
+                     value="{{ old('prenom', auth()->user()?->prenom) }}"
+                     placeholder="Jean" required />
+            </div>
+            <div class="contact-form__field">
+              <label class="contact-form__label" for="nom">Nom</label>
+              <input class="contact-form__input"
+                     type="text" id="nom" name="nom"
+                     value="{{ old('nom', auth()->user()?->nom) }}"
+                     placeholder="Dupont" />
+            </div>
+          </div>
+
           <div class="contact-form__field">
-            <label class="contact-form__label" for="email">Adresse e-mail</label>
-            <input class="contact-form__input" type="email" id="email" name="email"
+            <label class="contact-form__label" for="email">Adresse e-mail <span class="contact-form__req">*</span></label>
+            <input class="contact-form__input {{ $errors->has('email') ? 'contact-form__input--error' : '' }}"
+                   type="email" id="email" name="email"
                    value="{{ old('email', auth()->user()?->email) }}"
                    placeholder="jean@exemple.com" required />
           </div>
-        </div>
 
-        <div class="contact-form__field">
-          <label class="contact-form__label" for="sujet">Sujet</label>
-          <select class="contact-form__input" id="sujet" name="sujet" required style="cursor:pointer">
-            <option value="">-- Choisissez un sujet --</option>
-            <option value="question"     {{ old('sujet') === 'question'     ? 'selected' : '' }}>Question générale</option>
-            <option value="partenariat"  {{ old('sujet') === 'partenariat'  ? 'selected' : '' }}>Proposition de partenariat</option>
-            <option value="signalement"  {{ old('sujet') === 'signalement'  ? 'selected' : '' }}>Signalement d'un contenu</option>
-            <option value="technique"    {{ old('sujet') === 'technique'    ? 'selected' : '' }}>Problème technique</option>
-            <option value="autre"        {{ old('sujet') === 'autre'        ? 'selected' : '' }}>Autre</option>
-          </select>
-          @error('sujet')<p style="color:#e53e3e;font-size:.82rem;margin-top:4px">{{ $message }}</p>@enderror
-        </div>
+          <div class="contact-form__field">
+            <label class="contact-form__label" for="sujet">Sujet <span class="contact-form__req">*</span></label>
+            <select class="contact-form__input contact-form__select {{ $errors->has('sujet') ? 'contact-form__input--error' : '' }}"
+                    id="sujet" name="sujet" required>
+              <option value="">— Choisissez un sujet —</option>
+              <option value="question"     {{ old('sujet') === 'question'     ? 'selected' : '' }}>Question générale</option>
+              <option value="partenariat"  {{ old('sujet') === 'partenariat'  ? 'selected' : '' }}>Proposition de partenariat</option>
+              <option value="signalement"  {{ old('sujet') === 'signalement'  ? 'selected' : '' }}>Signalement d'un contenu</option>
+              <option value="technique"    {{ old('sujet') === 'technique'    ? 'selected' : '' }}>Problème technique</option>
+              <option value="autre"        {{ old('sujet') === 'autre'        ? 'selected' : '' }}>Autre</option>
+            </select>
+          </div>
 
-        <div class="contact-form__field">
-          <label class="contact-form__label" for="message">Message</label>
-          <textarea class="contact-form__input contact-form__textarea"
-                    id="message" name="message" rows="6"
-                    placeholder="Décrivez votre demande…" required>{{ old('message') }}</textarea>
-          @error('message')<p style="color:#e53e3e;font-size:.82rem;margin-top:4px">{{ $message }}</p>@enderror
-        </div>
+          <div class="contact-form__field">
+            <label class="contact-form__label" for="message">Message <span class="contact-form__req">*</span></label>
+            <textarea class="contact-form__input contact-form__textarea {{ $errors->has('message') ? 'contact-form__input--error' : '' }}"
+                      id="message" name="message" rows="5"
+                      placeholder="Décrivez votre demande en quelques lignes…" required>{{ old('message') }}</textarea>
+          </div>
 
-        <button type="submit" class="btn btn--blue" style="width:100%;justify-content:center;padding:14px">
-          Envoyer le message
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-          </svg>
-        </button>
-      </form>
+          @if($recaptchaActif)
+            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-bottom:16px"></div>
+          @endif
+          @error('recaptcha')
+            <p style="color:#e53e3e;font-size:13px;margin-bottom:10px">{{ $message }}</p>
+          @enderror
 
-      {{-- Infos directes --}}
-      <div class="contact-info-row">
-        <a href="mailto:gildaskpogbozan866@gmail.com" class="contact-info-item">
-          <span class="contact-info-item__icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          <button type="submit" class="btn btn--yellow contact-form__btn">
+            Envoyer le message
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
             </svg>
-          </span>
-          <span>gildaskpogbozan866@gmail.com</span>
-        </a>
-        <a href="https://wa.me/22901519298​56" target="_blank" rel="noopener noreferrer" class="contact-info-item contact-info-item--green">
-          <span class="contact-info-item__icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          </span>
-          <span>+229 01 51 92 98 56</span>
-        </a>
+          </button>
+        </form>
+        @endif
       </div>
 
     </div>

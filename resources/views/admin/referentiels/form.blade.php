@@ -71,7 +71,7 @@
       @endif
 
       <div style="display:flex;gap:12px;margin-top:8px">
-        <button type="submit" class="adm-btn adm-btn--primary">
+        <button type="submit" class="adm-btn adm-btn--yellow">
           {{ $item ? 'Mettre à jour' : 'Ajouter' }}
         </button>
         <a href="{{ route($routeIndex) }}" class="adm-btn adm-btn--outline">Annuler</a>

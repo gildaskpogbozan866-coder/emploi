@@ -71,7 +71,7 @@
       </div>
 
       <div style="display:flex;gap:10px">
-        <button type="submit" class="rec-btn rec-btn--primary">Mettre à jour mon profil</button>
+        <button type="submit" class="rec-btn rec-btn--yellow">Mettre à jour mon profil</button>
       </div>
     </form>
   </div>

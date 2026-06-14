@@ -9,6 +9,25 @@
   </div>
 </div>
 
+<div class="adm-filters" style="margin-bottom:16px">
+  <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;align-items:center">
+    <div class="adm-search" style="flex:1;max-width:320px">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" name="q" value="{{ request('q') }}" placeholder="Référence, client, email…">
+    </div>
+    <select name="statut" class="adm-select">
+      <option value="">Tous les statuts</option>
+      @foreach(['en_attente' => 'En attente','en_cours' => 'En cours','livree' => 'Livrée','annulee' => 'Annulée'] as $val => $label)
+        <option value="{{ $val }}" {{ request('statut') === $val ? 'selected' : '' }}>{{ $label }}</option>
+      @endforeach
+    </select>
+    <button type="submit" class="adm-btn adm-btn--primary">Filtrer</button>
+    @if(request()->hasAny(['q', 'statut']))
+      <a href="{{ route('admin.commandes.list') }}" class="adm-btn adm-btn--outline">Effacer</a>
+    @endif
+  </form>
+</div>
+
 <div class="adm-card">
   <div class="adm-table-wrap">
     <table class="adm-table">
@@ -46,7 +65,7 @@
           </td>
           <td style="color:#94a3b8;font-size:12px">{{ $commande->created_at->format('d/m/Y') }}</td>
           <td>
-            <a href="{{ route('admin.commandes.detail', $commande) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Voir</a>
+            <a href="{{ route('admin.commandes.detail', $commande) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
           </td>
         </tr>
         @empty

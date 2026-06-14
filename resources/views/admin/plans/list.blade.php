@@ -7,7 +7,7 @@
     <h1>Plans d'abonnement</h1>
     <p>{{ $plans->count() }} plan{{ $plans->count() > 1 ? 's' : '' }} configuré{{ $plans->count() > 1 ? 's' : '' }}</p>
   </div>
-  <a href="{{ route('admin.plans.create') }}" class="adm-btn adm-btn--primary">
+  <a href="{{ route('admin.plans.create') }}" class="adm-btn adm-btn--yellow">
     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Nouveau plan
   </a>
@@ -96,11 +96,11 @@
               {{-- Actions --}}
               <td>
                 <div class="actions" style="justify-content:flex-end">
-                  <a href="{{ route('admin.plans.edit', $plan) }}" class="adm-btn adm-btn--ghost adm-btn--sm">Modifier</a>
+                  <a href="{{ route('admin.plans.edit', $plan) }}" class="adm-btn adm-btn--outline adm-btn--sm">Modifier</a>
 
                   <form method="POST" action="{{ route('admin.plans.toggle', $plan) }}" style="display:inline">
                     @csrf @method('PATCH')
-                    <button type="submit" class="adm-btn adm-btn--ghost adm-btn--sm"
+                    <button type="submit" class="adm-btn adm-btn--outline adm-btn--sm"
                             style="color:{{ $plan->is_active ? '#d97706' : '#16a34a' }}">
                       {{ $plan->is_active ? 'Désactiver' : 'Activer' }}
                     </button>
@@ -110,7 +110,7 @@
                   <form method="POST" action="{{ route('admin.plans.destroy', $plan) }}" style="display:inline"
                         onsubmit="return confirm('Supprimer le plan « {{ $plan->name }} » ? Cette action est irréversible.')">
                     @csrf @method('DELETE')
-                    <button type="submit" class="adm-btn adm-btn--ghost adm-btn--sm" style="color:#ef4444">Supprimer</button>
+                    <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
                   </form>
                   @endif
                 </div>
@@ -131,7 +131,7 @@
       <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <h3>Aucun plan configuré</h3>
       <p>Créez votre premier plan d'abonnement pour commencer.</p>
-      <a href="{{ route('admin.plans.create') }}" class="adm-btn adm-btn--primary" style="margin-top:12px">Créer un plan</a>
+      <a href="{{ route('admin.plans.create') }}" class="adm-btn adm-btn--yellow" style="margin-top:12px">Créer un plan</a>
     </div>
   </div>
 @endif

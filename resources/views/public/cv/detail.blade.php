@@ -7,6 +7,7 @@
 
 @section('content')
 
+{{-- Sous-nav --}}
 <div class="cvt-subnav">
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
@@ -17,14 +18,15 @@
   </div>
 </div>
 
-<div class="cvt-page">
-  <div style="max-width:760px;margin:0 auto;padding:32px 20px">
+<section class="section" style="background:#f2f4f7;min-height:60vh">
+  <div class="container" style="max-width:780px">
 
-    <div style="margin-bottom:20px">
-      <a href="{{ route('cv.public.theque') }}" style="font-size:13px;color:#185FA5;text-decoration:none">← Retour à la CVthèque</a>
-    </div>
+    <a href="{{ route('cv.public.theque') }}" class="page-back-link">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Retour à la CVthèque
+    </a>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden">
+    <div class="pub-card">
 
       {{-- En-tête professionnel — visible par tous --}}
       <div style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:32px 28px;display:flex;align-items:center;gap:20px">
@@ -175,6 +177,6 @@
       </div>
     </div>
   </div>
-</div>
+</section>
 
 @endsection
