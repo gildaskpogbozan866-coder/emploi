@@ -5,6 +5,7 @@ namespace Tests\Feature\Candidat;
 use App\Models\Abonnement;
 use App\Models\CV;
 use App\Models\Document;
+use App\Models\PlanFeature;
 use App\Models\TypeDocument;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -52,6 +53,8 @@ class CVControllerTest extends TestCase
             'is_free'       => false,
             'is_active'     => true,
         ]);
+        // cv_limit = 0 signifie illimité dans le contrôleur
+        \App\Models\PlanFeature::create(['plan_id' => $plan->id, 'feature_key' => 'cv_limit', 'feature_value' => '0']);
         Abonnement::create([
             'user_id'   => $user->id,
             'plan_id'   => $plan->id,
@@ -136,7 +139,7 @@ class CVControllerTest extends TestCase
 
         $this->actingAs($candidat)
             ->get(route('cv.public.depot'))
-            ->assertRedirect(route('candidat.abonnement'));
+            ->assertRedirect(route('candidat.abonnement.plans'));
     }
 
     public function test_page_depot_accessible_si_premium_meme_avec_un_cv(): void
@@ -232,7 +235,7 @@ class CVControllerTest extends TestCase
                 'type_document_id' => $typeCV->id,
                 'nom'              => 'Second CV',
             ])
-            ->assertRedirect(route('candidat.abonnement'));
+            ->assertRedirect(route('candidat.abonnement.plans'));
 
         $this->assertDatabaseCount('cvs', 1);
     }
