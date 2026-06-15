@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Plans d\'abonnement — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Plans d\'abonnement, Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -68,7 +68,7 @@
               {{-- Features --}}
               <td>
                 @if($plan->features->isEmpty())
-                  <span style="color:#cbd5e1;font-size:12px">—</span>
+                  <span style="color:#cbd5e1;font-size:12px">-</span>
                 @else
                   <div style="display:flex;flex-wrap:wrap;gap:4px">
                     @foreach($plan->features as $f)

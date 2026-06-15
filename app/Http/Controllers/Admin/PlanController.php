@@ -9,12 +9,14 @@ use App\Http\Requests\Admin\PlanRequest;
 class PlanController extends Controller
 {
     public const FEATURE_KEYS = [
-        'cv_limit'         => 'Nombre max de CVs',
-        'job_apply_limit'  => 'Candidatures max',
-        'job_post_limit'   => 'Offres publiables',
-        'candidate_search' => 'Accès CVthèque (0 = non / 1 = oui)',
-        'featured_profile' => 'Profil mis en avant (0 / 1)',
-        'featured_jobs'    => 'Offres mises en avant',
+        'cv_limit'            => 'Nombre max de CVs',
+        'job_apply_limit'     => 'Candidatures max',
+        'job_post_limit'      => 'Offres publiables',
+        'candidate_search'    => 'Accès CVthèque (0 = non / 1 = oui)',
+        'featured_profile'    => 'Profil mis en avant (0 / 1)',
+        'featured_jobs'       => 'Offres mises en avant',
+        'show_profile_views'  => 'Affichage des vues du profil (0 = non / 1 = oui)',
+        'alert_limit'         => 'Alertes emploi max (0 = désactivé)',
     ];
 
     public function index()

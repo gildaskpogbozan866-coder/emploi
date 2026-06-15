@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Paramètres — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Paramètres | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -100,7 +100,7 @@
         <p style="font-size:12.5px;color:#6b7280;margin:0 0 14px">
           Protection anti-spam sur les formulaires de contact et d'inscription.
           Clés disponibles sur <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener" style="color:#185FA5">console.google.com/recaptcha</a>.
-          <strong>Non actif en environnement local</strong> — les clés ne prennent effet qu'en production.
+          <strong>Non actif en environnement local</strong>, les clés ne prennent effet qu'en production.
         </p>
         <div style="display:flex;flex-direction:column;gap:12px">
           <div>

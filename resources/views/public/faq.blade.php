@@ -1,5 +1,7 @@
-@extends('layouts.app')
-@section('title', 'FAQ — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'FAQ | Questions fréquentes sur l\'emploi au Bénin | Emploi Bouge Bénin')
+@section('description', 'Toutes les réponses à vos questions sur Emploi Bouge Bénin : comment postuler, déposer un CV, publier une offre, abonnements et plus encore.')
+@section('canonical', route('faq'))
 
 @section('content')
 <section class="section page-hero">

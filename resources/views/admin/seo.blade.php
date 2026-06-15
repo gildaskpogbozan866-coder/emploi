@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'SEO & Référencement')
 
 @section('content')
@@ -76,7 +76,7 @@
         </div>
 
         <div style="margin-bottom:24px">
-          <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 14px">robots.txt — Lignes supplémentaires</h3>
+          <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 14px">robots.txt, Lignes supplémentaires</h3>
           <div>
             <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Règles additionnelles (optionnel)</label>
             <textarea name="robots_txt_extra" rows="4"
@@ -153,7 +153,7 @@
               {{ url('/') }}/{{ $page->page_slug === 'home' ? '' : $page->page_slug }}
             </div>
             <div style="font-size:13px;color:#545454;line-height:1.4">
-              {{ $page->meta_description ? Str::limit($page->meta_description, 160) : '—' }}
+              {{ $page->meta_description ? Str::limit($page->meta_description, 160) : '-' }}
             </div>
           </div>
           @endif

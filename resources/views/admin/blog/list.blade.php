@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Blog — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Blog | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -36,7 +36,7 @@
           <td style="max-width:260px">
             <a href="{{ route('blog.detail', $article) }}" target="_blank" style="font-weight:600;color:#042C53;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $article->titre }}</a>
           </td>
-          <td>{{ $article->categorie ? '<span class="tag">'.e($article->categorie).'</span>' : '—' }}</td>
+          <td>{{ $article->categorie ? '<span class="tag">'.e($article->categorie).'</span>' : '-' }}</td>
           <td style="color:#64748b">{{ $article->auteur->nom_complet }}</td>
           <td style="font-weight:600">{{ number_format($article->vues) }}</td>
           <td>
@@ -49,7 +49,7 @@
               {{ ucfirst($article->statut) }}
             </span>
           </td>
-          <td style="color:#94a3b8;font-size:12px">{{ $article->publie_le?->format('d/m/Y') ?? '—' }}</td>
+          <td style="color:#94a3b8;font-size:12px">{{ $article->publie_le?->format('d/m/Y') ?? '-' }}</td>
           <td>
             <div class="actions">
               <a href="{{ route('admin.blog.edit', $article) }}" class="adm-btn adm-btn--outline adm-btn--sm">Modifier</a>

@@ -1,5 +1,5 @@
-@extends('layouts.auth')
-@section('title', 'Vérification OTP — Emploi Bouge Bénin')
+﻿@extends('layouts.auth')
+@section('title', 'Vérification OTP | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/auth/verification-email.css') }}">
@@ -203,7 +203,7 @@
       if (timerEl) timerEl.textContent = '00:00';
       if (countdownEl) countdownEl.classList.add('ve-countdown--expired');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Code expiré — renvoyez-en un';
+      submitBtn.textContent = 'Code expiré, renvoyez-en un';
     }
   }, 1000);
 

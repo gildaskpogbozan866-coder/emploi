@@ -1,11 +1,11 @@
-@extends('layouts.admin')
-@section('title', 'Statistiques — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Statistiques | Administration')
 
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
     <h1>Statistiques de la plateforme</h1>
-    <p>Vue d'ensemble des données clés — Emploi Bouge Bénin</p>
+    <p>Vue d'ensemble des données clés, Emploi Bouge Bénin</p>
   </div>
 </div>
 
@@ -225,7 +225,7 @@
             <tr>
               <td style="font-weight:700;color:#185FA5">{{ $i + 1 }}</td>
               <td>{{ $rec->nom_complet }}</td>
-              <td>{{ $rec->entreprise ?? '—' }}</td>
+              <td>{{ $rec->entreprise ?? '-' }}</td>
               <td style="font-size:12.5px;color:#64748b">{{ $rec->email }}</td>
               <td style="text-align:right;font-weight:700;color:#042C53">{{ $rec->total_candidatures }}</td>
             </tr>

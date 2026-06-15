@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Mon espace Recruteur')
 
 @section('sidebar')
@@ -61,7 +61,7 @@
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
     </div>
     <div style="flex:1">
-      <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 6px">CVthèque — Crédits</p>
+      <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 6px">CVthèque, Crédits</p>
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div>
           <span style="font-size:1.6rem;font-weight:800;color:{{ $cvStats['credits_restants'] > 0 ? '#0284c7' : '#d97706' }}">{{ $cvStats['credits_restants'] }}</span>

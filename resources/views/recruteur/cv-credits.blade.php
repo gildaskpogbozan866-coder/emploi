@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Crédits CVthèque')
 
 @section('sidebar')
@@ -120,7 +120,7 @@
               <span style="font-size:12px;color:#94a3b8;margin-left:3px">crédits</span>
             </td>
             <td style="padding:12px 18px;font-weight:700;color:#042C53">{{ number_format($p->montant, 0, ',', ' ') }} FCFA</td>
-            <td style="padding:12px 18px;font-size:13px;color:#64748b">{{ ucfirst(str_replace('_', ' ', $p->methode ?? '—')) }}</td>
+            <td style="padding:12px 18px;font-size:13px;color:#64748b">{{ ucfirst(str_replace('_', ' ', $p->methode ?? '-')) }}</td>
             <td style="padding:12px 18px">
               @php
                 $badge = match($p->statut) {

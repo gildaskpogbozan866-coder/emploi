@@ -1,5 +1,5 @@
-@extends('layouts.recruteur')
-@section('title', 'Profil — ' . $cv->titre_poste)
+﻿@extends('layouts.recruteur')
+@section('title', 'Profil | ' . $cv->titre_poste)
 
 @section('sidebar')
 @include('recruteur._sidebar')
@@ -121,41 +121,46 @@
   <div style="display:flex;flex-direction:column;gap:12px">
 
     {{-- Télécharger --}}
-    <div class="rec-card" style="border-color:{{ $cv->fichier_path ? '#bae6fd' : '#e2e8f0' }}">
+    <div class="rec-card" style="border-color:#bae6fd">
       <div class="rec-card__body">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#042C53" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <h3 style="font-size:13px;font-weight:700;color:#042C53;margin:0">Télécharger le CV</h3>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </div>
+          <h3 style="font-size:13px;font-weight:700;color:#042C53;margin:0">Téléchargements</h3>
         </div>
+
+        {{-- Bouton fiche PDF (toujours disponible) --}}
+        <a href="{{ route('recruteur.cvtheque.pdf', $cv) }}" target="_blank"
+           style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;background:linear-gradient(135deg,#042C53,#185FA5);color:#fff;border-radius:9px;font-weight:700;font-size:13px;text-decoration:none;letter-spacing:.01em;margin-bottom:10px">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Télécharger la fiche PDF
+        </a>
+        <p style="font-size:11px;color:#94a3b8;text-align:center;margin:0 0 14px">Fiche générée avec logo Emploi Bouge Bénin</p>
 
         @if($cv->fichier_path)
           @php $ext = strtoupper(pathinfo($cv->fichier_path, PATHINFO_EXTENSION)); @endphp
-          <div style="background:#f0f9ff;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span style="font-size:12px;color:#0284c7;font-weight:600">Fichier {{ $ext }} disponible</span>
-          </div>
-          <p style="font-size:12px;color:#64748b;margin:0 0 12px;line-height:1.55">
-            <strong style="color:#dc2626">−1 crédit</strong> par téléchargement.<br>
-            Solde actuel : <strong style="color:#042C53">{{ $credits }}</strong> crédit{{ $credits > 1 ? 's' : '' }}.
-          </p>
-          <form method="POST" action="{{ route('recruteur.cvtheque.telecharger', $cv) }}">
-            @csrf
-            <button type="submit" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#042C53,#185FA5);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;letter-spacing:.01em">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              Télécharger le CV
-            </button>
-          </form>
-
-          @if(session('error'))
-            <p style="font-size:12px;color:#dc2626;margin:8px 0 0;text-align:center">{{ session('error') }}</p>
-          @endif
-
-        @else
-          <div style="text-align:center;padding:12px 0">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="1.5" style="display:block;margin:0 auto 8px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <p style="font-size:12.5px;color:#94a3b8;margin:0">Ce candidat n'a pas joint de fichier.</p>
+          <div style="border-top:1px solid #f0f2f5;padding-top:14px">
+            <div style="background:#f0f9ff;border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span style="font-size:11.5px;color:#0284c7;font-weight:600">Fichier {{ $ext }} joint disponible</span>
+            </div>
+            <p style="font-size:11.5px;color:#64748b;margin:0 0 10px;line-height:1.55">
+              <strong style="color:#dc2626">−1 crédit</strong> · Solde : <strong style="color:#042C53">{{ $credits }}</strong> crédit{{ $credits > 1 ? 's' : '' }}.
+            </p>
+            <form method="POST" action="{{ route('recruteur.cvtheque.telecharger', $cv) }}">
+              @csrf
+              <button type="submit" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;background:#fff;color:#042C53;border:1.5px solid #cbd5e1;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Fichier original ({{ $ext }})
+              </button>
+            </form>
+            @if(session('error'))
+              <p style="font-size:12px;color:#dc2626;margin:8px 0 0;text-align:center">{{ session('error') }}</p>
+            @endif
           </div>
         @endif
+
       </div>
     </div>
 

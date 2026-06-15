@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'CVs & Documents')
 
 @section('sidebar')
@@ -16,7 +16,7 @@
   <div style="display:flex;align-items:center;gap:12px;background:#fff1f2;border:1.5px solid #fecdd3;border-radius:10px;padding:12px 16px;margin-bottom:20px">
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#dc2626" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
     <p style="margin:0;font-size:13px;color:#991b1b;flex:1">
-      Quota atteint — <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} document{{ $quota['limit'] > 1 ? 's' : '' }}</strong>. Passez à un plan supérieur pour en ajouter davantage.
+      Quota atteint, <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} document{{ $quota['limit'] > 1 ? 's' : '' }}</strong>. Passez à un plan supérieur pour en ajouter davantage.
     </p>
     <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
   </div>
@@ -24,7 +24,7 @@
   <div style="display:flex;align-items:center;gap:12px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px">
     <svg width="18" height="18" fill="#F5C842" viewBox="0 0 24 24" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
     <p style="margin:0;font-size:13px;color:#92400e;flex:1">
-      {{ $quota['used'] }}/{{ $quota['limit'] }} documents — il vous reste <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong>. Passez au Premium pour un quota plus élevé.
+      {{ $quota['used'] }}/{{ $quota['limit'] }} documents, il vous reste <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong>. Passez au Premium pour un quota plus élevé.
     </p>
     <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
   </div>

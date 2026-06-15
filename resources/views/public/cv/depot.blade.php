@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Ajouter un CV ou document — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Ajouter un CV ou document | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
@@ -49,7 +49,7 @@
     <div class="depot-user-badge__avatar">{{ mb_strtoupper(mb_substr(auth()->user()->prenom, 0, 1)) }}</div>
     <div>
       <div class="depot-user-badge__name">{{ auth()->user()->prenom }} {{ auth()->user()->nom }}</div>
-      <div class="depot-user-badge__sub">Connecté — remplissez les informations ci-dessous</div>
+      <div class="depot-user-badge__sub">Connecté, remplissez les informations ci-dessous</div>
     </div>
   </div>
   @endauth
@@ -60,7 +60,7 @@
   <div style="display:flex;align-items:center;gap:10px;background:{{ $quota['remaining'] <= 1 ? '#fffbeb' : '#f0f9ff' }};border:1.5px solid {{ $quota['remaining'] <= 1 ? '#fde68a' : '#bae6fd' }};border-radius:10px;padding:11px 16px;margin-bottom:18px">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $quota['remaining'] <= 1 ? '#d97706' : '#0284c7' }}" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
     <p style="margin:0;font-size:13px;color:{{ $quota['remaining'] <= 1 ? '#92400e' : '#0c4a6e' }};flex:1">
-      <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} documents</strong> utilisés sur votre plan —
+      <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} documents</strong> utilisés sur votre plan
       @if($quota['remaining'] === 0)
         quota atteint
       @else
@@ -111,7 +111,7 @@
             <label class="field__label">Intitulé <span class="req">*</span></label>
             <input class="field__input" type="text" name="nom" required
               value="{{ old('nom') }}"
-              placeholder="Ex : Développeur Web Full Stack, Licence en Droit — UAC 2023, Certificat AWS…">
+              placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023, Certificat AWS…">
             <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
           </div>
         </div>
@@ -119,7 +119,7 @@
         {{-- Détails complémentaires (CV) --}}
         <div class="form-section-label" style="margin-top:20px">
           Détails complémentaires
-          <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">— utile pour les CV, ignorez si autre document</span>
+          <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
         </div>
 
         <div class="form-row form-row--2">
@@ -200,7 +200,7 @@
                 </svg>
               </div>
               <div class="upload-zone__title">Glissez votre fichier ici ou <span>cliquez pour charger</span></div>
-              <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP — max 5 Mo</div>
+              <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP, max 5 Mo</div>
             </div>
 
             <div class="file-preview" id="filePreview">
@@ -210,8 +210,8 @@
                 </svg>
               </div>
               <div>
-                <div class="file-preview__name" id="previewName">—</div>
-                <div class="file-preview__meta" id="previewMeta">—</div>
+                <div class="file-preview__name" id="previewName">-</div>
+                <div class="file-preview__meta" id="previewMeta">-</div>
               </div>
               <button type="button" class="file-preview__remove" id="removeFile">✕</button>
             </div>
@@ -225,7 +225,7 @@
                 </div>
                 <div>
                   <div class="cv-promo-banner__title">Votre CV vous coûte des opportunités.</div>
-                  <div class="cv-promo-banner__sub">Un recruteur décide en 7 secondes. Nos experts rédigent un CV qui passe tous les filtres — livré sous 48h.</div>
+                  <div class="cv-promo-banner__sub">Un recruteur décide en 7 secondes. Nos experts rédigent un CV qui passe tous les filtres, livré sous 48h.</div>
                 </div>
               </div>
               <span class="cv-promo-banner__cta">
@@ -328,7 +328,7 @@ kbd { font-size: 11px; background: #f1f5f9; border: 1px solid #e2e8f0; border-ra
     input.value = '';
     zone.classList.remove('has-file');
     preview.classList.remove('visible');
-    name.textContent = meta.textContent = '—';
+    name.textContent = meta.textContent = '-';
   });
 })();
 

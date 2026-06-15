@@ -1,49 +1,63 @@
-@extends('layouts.app')
-@section('title', $offre->titre . ' — ' . $offre->entreprise . ' | Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', $offre->titre . ', ' . $offre->entreprise . ' | Emploi Bouge Bénin')
 @section('description', Str::limit(strip_tags($offre->description ?? ''), 160))
 @section('canonical', route('offre.detail', $offre))
 @section('og_type', 'article')
-@section('og_title', $offre->titre . ' — ' . $offre->entreprise)
+@section('og_title', $offre->titre . ', ' . $offre->entreprise)
 @section('og_description', Str::limit(strip_tags($offre->description ?? ''), 160))
 @section('og_url', route('offre.detail', $offre))
 
 @section('jsonld')
 @php
-$jsonld = [
-    '@@context'      => 'https://schema.org/',
-    '@@type'         => 'JobPosting',
+$jobPosting = [
+    '@context'       => 'https://schema.org',
+    '@type'          => 'JobPosting',
     'title'          => $offre->titre,
     'description'    => strip_tags($offre->description ?? ''),
+    'identifier'     => ['@type' => 'PropertyValue', 'name' => 'Emploi Bouge Bénin', 'value' => $offre->id],
+    'url'            => route('offre.detail', $offre),
     'datePosted'     => $offre->created_at->toDateString(),
+    'dateModified'   => $offre->updated_at->toDateString(),
     'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre->type ?? 'OTHER')),
+    'jobLocationType'=> 'TELECOMMUTE',
     'hiringOrganization' => [
-        '@@type' => 'Organization',
+        '@type'  => 'Organization',
         'name'   => $offre->entreprise,
         'sameAs' => route('home'),
     ],
     'jobLocation' => [
-        '@@type' => 'Place',
+        '@type'   => 'Place',
         'address' => [
-            '@@type'          => 'PostalAddress',
-            'addressLocality' => $offre->localisation ?? 'Bénin',
+            '@type'           => 'PostalAddress',
+            'addressLocality' => $offre->localisation ?? 'Cotonou',
+            'addressRegion'   => $offre->localisation ?? 'Littoral',
             'addressCountry'  => 'BJ',
         ],
     ],
+    'applicantLocationRequirements' => ['@type' => 'Country', 'name' => 'Bénin'],
 ];
 if ($offre->date_limite) {
-    $jsonld['validThrough'] = \Carbon\Carbon::parse($offre->date_limite)->toIso8601String();
+    $jobPosting['validThrough'] = \Carbon\Carbon::parse($offre->date_limite)->toIso8601String();
 }
 if ($offre->salaire) {
-    $jsonld['baseSalary'] = [
-        '@@type'    => 'MonetaryAmount',
-        'currency'  => 'XOF',
-        'value'     => ['@@type' => 'QuantitativeValue', 'value' => $offre->salaire, 'unitText' => 'MONTH'],
+    $jobPosting['baseSalary'] = [
+        '@type'    => 'MonetaryAmount',
+        'currency' => 'XOF',
+        'value'    => ['@type' => 'QuantitativeValue', 'value' => $offre->salaire, 'unitText' => 'MONTH'],
     ];
 }
-// Replace @@-escaped keys with @ for valid JSON-LD
-$jsonOutput = str_replace('"@@', '"@', json_encode($jsonld, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+$breadcrumb = [
+    '@context'        => 'https://schema.org',
+    '@type'           => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil',         'item' => route('home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Offres d\'emploi','item' => route('offre.list')],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $offre->titre,     'item' => route('offre.detail', $offre)],
+    ],
+];
 @endphp
-<script type="application/ld+json">{!! $jsonOutput !!}</script>
+<script type="application/ld+json">{!! json_encode($jobPosting, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumb, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 @endsection
 
 @section('css')

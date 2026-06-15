@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Publier une offre')
 
 @section('sidebar')
@@ -43,7 +43,7 @@
         <div class="rec-form-group">
           <label>Type de contrat <span style="color:#e53e3e">*</span></label>
           <select name="type" required>
-            <option value="">— Choisir —</option>
+            <option value="">Sélectionner</option>
             @foreach($typeContrats as $tc)
               <option value="{{ $tc->code }}" {{ old('type') === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
             @endforeach
@@ -81,7 +81,7 @@
         </div>
 
         <div class="rec-form-group full">
-          <label>Document joint <small style="color:#94a3b8;font-weight:400">(optionnel — PDF, DOC, DOCX · max 5 Mo)</small></label>
+          <label>Document joint <small style="color:#94a3b8;font-weight:400">(optionnel, PDF, DOC, DOCX · max 5 Mo)</small></label>
           <input type="file" name="fichier" accept=".pdf,.doc,.docx" style="width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff;cursor:pointer">
           <small style="color:#94a3b8">Utile pour les annonces officielles, appels d'offres ou documents multi-pages.</small>
           @error('fichier')<small style="color:#e53e3e">{{ $message }}</small>@enderror

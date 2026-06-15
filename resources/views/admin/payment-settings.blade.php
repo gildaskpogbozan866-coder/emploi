@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Gateways de paiement — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Gateways de paiement | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -84,7 +84,7 @@
                    style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;box-sizing:border-box">
           </div>
 
-          {{-- Private key (KKiaPay uniquement — vérification de transactions) --}}
+          {{-- Private key (KKiaPay uniquement, vérification de transactions) --}}
           @if($key === 'kkiapay')
           <div>
             <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">

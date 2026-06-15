@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Détail paiement — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Détail paiement | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -54,7 +54,7 @@
       </div>
       <div>
         <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Méthode de paiement</p>
-        <p style="font-weight:600;color:#042C53;margin:0">{{ ucfirst(str_replace('_', ' ', $paiement->methode ?? '—')) }}</p>
+        <p style="font-weight:600;color:#042C53;margin:0">{{ ucfirst(str_replace('_', ' ', $paiement->methode ?? '-')) }}</p>
       </div>
       @if($paiement->type)
       <div>
@@ -98,7 +98,7 @@
         </div>
         <div>
           <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Rôle</p>
-          <p style="font-weight:600;color:#042C53;margin:0">{{ ucfirst($paiement->user->role ?? '—') }}</p>
+          <p style="font-weight:600;color:#042C53;margin:0">{{ ucfirst($paiement->user->role ?? '-') }}</p>
         </div>
       @else
         <p style="color:#94a3b8;font-style:italic;margin:0">Utilisateur supprimé.</p>
@@ -116,7 +116,7 @@
   <div style="padding:22px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
     <div>
       <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Plan</p>
-      <p style="font-weight:700;color:#042C53;margin:0">{{ $paiement->abonnement->plan?->name ?? '—' }}</p>
+      <p style="font-weight:700;color:#042C53;margin:0">{{ $paiement->abonnement->plan?->name ?? '-' }}</p>
     </div>
     <div>
       <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Statut abonnement</p>
@@ -136,7 +136,7 @@
     </div>
     <div>
       <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Début</p>
-      <p style="font-weight:600;color:#042C53;margin:0">{{ $paiement->abonnement->starts_at?->format('d/m/Y') ?? '—' }}</p>
+      <p style="font-weight:600;color:#042C53;margin:0">{{ $paiement->abonnement->starts_at?->format('d/m/Y') ?? '-' }}</p>
     </div>
     <div>
       <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Expiration</p>

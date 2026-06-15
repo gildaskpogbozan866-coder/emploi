@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'Administration') — Emploi Bouge Bénin</title>
+  <title>@yield('title', 'Administration') | Emploi Bouge Bénin</title>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
   <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
@@ -67,6 +67,8 @@
         $validationDocsActif = \App\Models\ParametreApp::get('recruteur_validation_docs', '0') === '1';
         $enAttente          = $validationDocsActif ? \App\Models\RecruteurVerification::where('statut','en_attente')->count() : 0;
         $msgsNonLus         = \App\Models\ContactMessage::where('lu', false)->count();
+        $pubEnAttente       = \App\Models\Publicite::where('statut','en_attente')->count();
+        $commandesActives   = \App\Models\Commande::whereIn('statut', ['en_attente','en_cours'])->where('paiement_statut','paye')->count();
       @endphp
       <ul class="adm-nav">
 
@@ -143,6 +145,9 @@
           <a href="{{ route('admin.commandes.list') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
             Commandes clients
+            @if($commandesActives > 0)
+              <span style="background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:auto">{{ $commandesActives }}</span>
+            @endif
           </a>
         </li>
 
@@ -214,6 +219,16 @@
           <a href="{{ route('admin.publicites.index') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             Publicités
+            @if($pubEnAttente > 0)
+              <span style="background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:auto">{{ $pubEnAttente }}</span>
+            @endif
+          </a>
+        </li>
+
+        <li class="adm-nav__item {{ request()->routeIs('admin.partenaires*') ? 'active' : '' }}">
+          <a href="{{ route('admin.partenaires.index') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Partenaires
           </a>
         </li>
 

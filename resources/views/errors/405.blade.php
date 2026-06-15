@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Méthode non autorisée — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Méthode non autorisée | Emploi Bouge Bénin')
 
 @section('content')
 <section class="error-page">

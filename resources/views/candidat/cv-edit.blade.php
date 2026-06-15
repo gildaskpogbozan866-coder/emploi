@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'Modifier mon CV')
 
 @section('css')
@@ -14,7 +14,7 @@
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">Modifier mon CV</h1>
-    <p class="cand-page-header__sub">{{ $cv->titre_poste }} — {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</p>
+    <p class="cand-page-header__sub">{{ $cv->titre_poste }}, {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</p>
   </div>
   <div class="cand-page-header__actions">
     <a href="{{ route('candidat.cvs') }}" class="cand-btn cand-btn--outline">
@@ -126,7 +126,7 @@
               </svg>
             </div>
             <div class="upload-zone__title">Glissez votre fichier ici ou <span>cliquez pour charger</span></div>
-            <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP — max 5 Mo{{ $cv->fichier_path ? ' (optionnel)' : '' }}</div>
+            <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP, max 5 Mo{{ $cv->fichier_path ? ' (optionnel)' : '' }}</div>
           </div>
           <div class="file-preview" id="filePreview">
             <div class="file-preview__icon">
@@ -135,8 +135,8 @@
               </svg>
             </div>
             <div>
-              <div class="file-preview__name" id="previewName">—</div>
-              <div class="file-preview__meta" id="previewMeta">—</div>
+              <div class="file-preview__name" id="previewName">-</div>
+              <div class="file-preview__meta" id="previewMeta">-</div>
             </div>
             <button type="button" class="file-preview__remove" id="removeFile">✕</button>
           </div>
@@ -188,7 +188,7 @@
     input.value = '';
     zone.classList.remove('has-file');
     preview.classList.remove('visible');
-    name.textContent = meta.textContent = '—';
+    name.textContent = meta.textContent = '-';
   });
 })();
 </script>

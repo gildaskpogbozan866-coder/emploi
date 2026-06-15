@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Messagerie — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Messagerie | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -42,10 +42,10 @@
                 {{ Str::limit($conv->dernierMessage->contenu ?? '📎 Pièce jointe', 80) }}
               </p>
             @else
-              <span style="color:#94a3b8;font-size:13px">—</span>
+              <span style="color:#94a3b8;font-size:13px">-</span>
             @endif
           </td>
-          <td style="color:#94a3b8;font-size:12px">{{ $conv->dernier_message_at?->format('d/m/Y H:i') ?? '—' }}</td>
+          <td style="color:#94a3b8;font-size:12px">{{ $conv->dernier_message_at?->format('d/m/Y H:i') ?? '-' }}</td>
           <td>
             <a href="{{ route('admin.messagerie.show', $conv) }}"
                style="font-size:12.5px;font-weight:600;color:#185FA5;text-decoration:none;white-space:nowrap">

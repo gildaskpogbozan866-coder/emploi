@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Tableau de bord — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Tableau de bord | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -169,7 +169,7 @@
                 <p style="font-size:11px;color:#94a3b8;margin:2px 0 0">{{ $offre->entreprise }}</p>
               </td>
               <td><span class="badge-statut badge-statut--{{ $offre->statut }}">{{ ucfirst(str_replace('_',' ',$offre->statut)) }}</span></td>
-              <td style="font-size:12px;color:#64748b">{{ $offre->recruteur?->nom_complet ?? '—' }}</td>
+              <td style="font-size:12px;color:#64748b">{{ $offre->recruteur?->nom_complet ?? '-' }}</td>
               <td style="color:#94a3b8;font-size:12px;white-space:nowrap">{{ $offre->created_at->format('d/m/Y') }}</td>
             </tr>
             @endforeach
@@ -199,7 +199,7 @@
             @foreach($dernieres_commandes as $cmd)
             <tr>
               <td style="font-weight:500;white-space:nowrap">{{ $cmd->user->nom_complet }}</td>
-              <td style="color:#6b7a8d;font-size:12.5px">{{ $cmd->service->nom ?? '—' }}</td>
+              <td style="color:#6b7a8d;font-size:12.5px">{{ $cmd->service->nom ?? '-' }}</td>
               <td><span class="badge-statut badge-statut--{{ $cmd->statut }}">{{ ucfirst(str_replace('_',' ',$cmd->statut)) }}</span></td>
               <td style="color:#94a3b8;font-size:12px;white-space:nowrap">{{ $cmd->created_at->format('d/m/Y') }}</td>
             </tr>
@@ -279,7 +279,7 @@
 
   {{-- Rangée 2 : Inscriptions pleine largeur --}}
   <div class="adm-card" style="margin-bottom:20px">
-    <div class="adm-card__header"><h2>Nouvelles inscriptions — 6 derniers mois</h2></div>
+    <div class="adm-card__header"><h2>Nouvelles inscriptions, 6 derniers mois</h2></div>
     <div style="padding:16px 22px 20px">
       <canvas id="chartInscriptions" height="80"></canvas>
     </div>
@@ -294,7 +294,7 @@
       </div>
     </div>
     <div class="adm-card">
-      <div class="adm-card__header"><h2>Revenus confirmés — 6 mois (FCFA)</h2></div>
+      <div class="adm-card__header"><h2>Revenus confirmés, 6 mois (FCFA)</h2></div>
       <div style="padding:16px 22px 20px">
         <canvas id="chartRevenus" height="140"></canvas>
       </div>
@@ -343,7 +343,7 @@
           <tr>
             <td style="font-weight:700;color:#185FA5">{{ $i + 1 }}</td>
             <td style="font-weight:500">{{ $rec->nom_complet }}</td>
-            <td style="color:#64748b">{{ $rec->entreprise ?? '—' }}</td>
+            <td style="color:#64748b">{{ $rec->entreprise ?? '-' }}</td>
             <td style="font-size:12.5px;color:#64748b">{{ $rec->email }}</td>
             <td style="text-align:right;font-weight:700;color:#042C53">{{ $rec->total_candidatures }}</td>
           </tr>
@@ -406,7 +406,7 @@ function initCharts() {
 
   const gridColor = '#f1f5f9';
 
-  // ① Répartition utilisateurs — doughnut
+  // ① Répartition utilisateurs, doughnut
   new Chart(document.getElementById('chartUtilisateurs'), {
     type: 'doughnut',
     data: {
@@ -420,7 +420,7 @@ function initCharts() {
     }
   });
 
-  // ② Offres par statut — doughnut
+  // ② Offres par statut, doughnut
   new Chart(document.getElementById('chartOffresStatut'), {
     type: 'doughnut',
     data: {
@@ -434,7 +434,7 @@ function initCharts() {
     }
   });
 
-  // ③ Inscriptions — bar
+  // ③ Inscriptions, bar
   new Chart(document.getElementById('chartInscriptions'), {
     type: 'bar',
     data: {
@@ -458,7 +458,7 @@ function initCharts() {
     }
   });
 
-  // ④ Candidatures par mois — line
+  // ④ Candidatures par mois, line
   new Chart(document.getElementById('chartCandidatures'), {
     type: 'line',
     data: {
@@ -485,7 +485,7 @@ function initCharts() {
     }
   });
 
-  // ⑤ Revenus par mois — bar
+  // ⑤ Revenus par mois, bar
   new Chart(document.getElementById('chartRevenus'), {
     type: 'bar',
     data: {
@@ -512,7 +512,7 @@ function initCharts() {
     }
   });
 
-  // ⑥ Offres par type de contrat — horizontal bar
+  // ⑥ Offres par type de contrat, horizontal bar
   if (chartData.offresParType.labels.length) {
     new Chart(document.getElementById('chartOffresType'), {
       type: 'bar',
@@ -538,7 +538,7 @@ function initCharts() {
     });
   }
 
-  // ⑦ Candidatures par statut — horizontal bar
+  // ⑦ Candidatures par statut, horizontal bar
   if (chartData.candParStatut.labels.length) {
     new Chart(document.getElementById('chartCandStatut'), {
       type: 'bar',
@@ -564,7 +564,7 @@ function initCharts() {
     });
   }
 
-  // ⑧ Top 5 offres les plus vues — horizontal bar
+  // ⑧ Top 5 offres les plus vues, horizontal bar
   const elTopOffres = document.getElementById('chartTopOffres');
   if (elTopOffres && chartData.topOffres.labels.length) {
     new Chart(elTopOffres, {

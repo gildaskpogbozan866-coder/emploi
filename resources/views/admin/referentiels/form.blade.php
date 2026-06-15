@@ -1,11 +1,11 @@
-@extends('layouts.admin')
-@section('title', ($item ? 'Modifier' : 'Ajouter') . ' — ' . $label)
+﻿@extends('layouts.admin')
+@section('title', ($item ? 'Modifier' : 'Ajouter') . ', ' . $label)
 
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
     <a href="{{ route($routeIndex) }}" class="adm-btn adm-btn--outline adm-btn--sm" style="margin-bottom:8px">← Retour</a>
-    <h1>{{ $item ? 'Modifier' : 'Ajouter' }} — {{ $singular }}</h1>
+    <h1>{{ $item ? 'Modifier' : 'Ajouter' }}, {{ $singular }}</h1>
   </div>
 </div>
 

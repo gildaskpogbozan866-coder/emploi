@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Modifier l\'article')
 
 @section('content')
@@ -102,7 +102,7 @@ $('#summernote-contenu').summernote({
   ],
   callbacks: {
     onImageUpload: function(files) {
-      // Pas d'upload serveur — on insère en base64 pour l'instant
+      // Pas d'upload serveur, on insère en base64 pour l'instant
       for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
         reader.onload = (function(f) {

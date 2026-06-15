@@ -1,5 +1,5 @@
-@extends('layouts.recruteur')
-@section('title', 'Candidature — Recruteur')
+﻿@extends('layouts.recruteur')
+@section('title', 'Candidature | Recruteur')
 
 @section('sidebar')
 @include('recruteur._sidebar')
@@ -120,7 +120,7 @@
         </div>
         <div>
           <p style="font-weight:700;color:#042C53;margin:0 0 2px">{{ $candidature->candidat->nom_complet }}</p>
-          <p style="font-size:12.5px;color:#94a3b8;margin:0">{{ $candidature->candidat->pays ?? '—' }}</p>
+          <p style="font-size:12.5px;color:#94a3b8;margin:0">{{ $candidature->candidat->pays ?? '-' }}</p>
         </div>
         <form method="POST" action="{{ route('recruteur.messagerie.initier', $candidature->candidat) }}">
           @csrf

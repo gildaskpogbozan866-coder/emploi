@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', ($plan->exists ? 'Modifier' : 'Créer') . ' un plan — Administration')
+﻿@extends('layouts.admin')
+@section('title', ($plan->exists ? 'Modifier' : 'Créer') . ' un plan, Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -34,7 +34,7 @@
 
       <div class="adm-form-field">
         <label for="slug" class="adm-form-label">
-          Slug <small>— lettres minuscules, chiffres et tirets uniquement</small>
+          Slug <small>lettres minuscules, chiffres et tirets uniquement</small>
           <span style="color:#e53e3e">*</span>
         </label>
         <input id="slug" type="text" name="slug" value="{{ old('slug', $plan->slug) }}" required
@@ -55,7 +55,7 @@
           Cible <span style="color:#e53e3e">*</span>
         </label>
         <select id="target_type" name="target_type" required class="adm-form-input">
-          <option value="">— Choisir —</option>
+          <option value="">Sélectionner</option>
           <option value="candidat"  {{ old('target_type', $plan->target_type) === 'candidat'  ? 'selected' : '' }}>Candidats uniquement</option>
           <option value="recruteur" {{ old('target_type', $plan->target_type) === 'recruteur' ? 'selected' : '' }}>Recruteurs uniquement</option>
           <option value="both"      {{ old('target_type', $plan->target_type) === 'both'      ? 'selected' : '' }}>Tous les utilisateurs</option>
@@ -199,7 +199,7 @@ function escHtml(s) {
 }
 
 function buildOptions(selected) {
-  let html = '<option value="">— Choisir —</option>';
+  let html = '<option value="">Sélectionner</option>';
   for (const [k, label] of Object.entries(FEATURE_KEYS)) {
     html += `<option value="${escHtml(k)}"${k === selected ? ' selected' : ''}>${escHtml(label)}</option>`;
   }
@@ -217,7 +217,7 @@ function addFeatureRow(key, value) {
   const div = document.createElement('div');
   div.className = 'feature-row';
 
-  {{-- Un seul input hidden par ligne — le select n'a pas de name --}}
+  {{-- Un seul input hidden par ligne, le select n'a pas de name --}}
   div.innerHTML = `
     <select>${buildOptions(isCustom ? '__custom__' : key)}</select>
     <input type="text" class="custom-key-input" placeholder="Clé personnalisée"

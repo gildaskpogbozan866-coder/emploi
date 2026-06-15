@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Profil candidat — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Profil candidat | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -30,8 +30,8 @@
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom complet</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->nom_complet }}</p></div>
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->email }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Téléphone</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->tel ?? '—' }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Pays</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->pays ?? '—' }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Téléphone</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->tel ?? '-' }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Pays</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->pays ?? '-' }}</p></div>
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Statut Premium</p>
         @if($user->premium)
           <span class="adm-badge adm-badge--yellow">★ Premium</span>
@@ -106,7 +106,7 @@
           <td style="font-weight:600">{{ ucfirst(str_replace('_',' ',$ab->plan)) }}</td>
           <td>{{ ucfirst($ab->type) }}</td>
           <td>{{ $ab->prix > 0 ? number_format($ab->prix,0,',',' ').' FCFA' : 'Gratuit' }}</td>
-          <td style="color:#64748b;font-size:12px">{{ $ab->debut_le?->format('d/m/Y') ?? '—' }}</td>
+          <td style="color:#64748b;font-size:12px">{{ $ab->debut_le?->format('d/m/Y') ?? '-' }}</td>
           <td style="color:#64748b;font-size:12px">{{ $ab->expire_le?->format('d/m/Y') ?? 'Illimité' }}</td>
           <td><span class="adm-badge adm-badge--{{ $ab->statut === 'actif' ? 'green' : 'gray' }}">{{ ucfirst($ab->statut) }}</span></td>
         </tr>

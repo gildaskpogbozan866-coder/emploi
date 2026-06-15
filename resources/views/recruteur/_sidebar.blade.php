@@ -1,4 +1,4 @@
-<a href="{{ route('home') }}" class="rec-sidebar__logo">
+﻿<a href="{{ route('home') }}" class="rec-sidebar__logo">
   <span>Emploi Bouge</span>
   <small>Bénin · Recruteur</small>
 </a>
@@ -29,7 +29,7 @@
   <div style="margin:0 14px 10px;padding:9px 13px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);border-radius:8px">
     <p style="font-size:11px;color:rgba(255,255,255,0.6);margin:0 0 2px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Plan actif jusqu'au</p>
     <p style="font-size:12.5px;color:#F5C842;font-weight:700;margin:0">{{ $abActif->ends_at->format('d/m/Y') }}
-      <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.55)"> — {{ $abActif->ends_at->diffForHumans() }}</span>
+      <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.55)">, {{ $abActif->ends_at->diffForHumans() }}</span>
     </p>
   </div>
 @elseif(!$abActif)

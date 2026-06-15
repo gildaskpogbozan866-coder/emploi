@@ -1,5 +1,19 @@
-@extends('layouts.app')
-@section('title', 'Blog & Conseils — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Blog Emploi Bénin | Conseils carrière, CV & recrutement | Emploi Bouge Bénin')
+@section('description', 'Conseils pratiques pour trouver un emploi au Bénin : rédiger un CV, réussir un entretien, se reconvertir. Guides emploi pour candidats et recruteurs béninois.')
+
+@section('jsonld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"{{ route('home') }}"},
+    {"@type":"ListItem","position":2,"name":"Blog & Conseils","item":"{{ route('blog.list') }}"}
+  ]
+}
+</script>
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/blog/blog.css') }}">

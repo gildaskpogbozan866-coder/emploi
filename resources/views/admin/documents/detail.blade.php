@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Document — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Document | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -36,7 +36,7 @@
     </div>
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->nom }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type</p><span class="adm-badge adm-badge--blue">{{ $document->type->nom ?? '—' }}</span></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type</p><span class="adm-badge adm-badge--blue">{{ $document->type->nom ?? '-' }}</span></div>
       @if($document->pays)
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Localisation</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->ville ? $document->ville.', ' : '' }}{{ $document->pays }}</p></div>
       @endif

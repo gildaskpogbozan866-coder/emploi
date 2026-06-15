@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Modifier l\'offre')
 
 @section('sidebar')
@@ -43,7 +43,7 @@
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Type de contrat <span style="color:#e53e3e">*</span></label>
           <select name="type" required style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
-            <option value="">— Choisir —</option>
+            <option value="">Sélectionner</option>
             @foreach($typeContrats as $tc)
               <option value="{{ $tc->code }}" {{ old('type', $offre->type) === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
             @endforeach

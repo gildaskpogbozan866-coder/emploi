@@ -1,5 +1,21 @@
-@extends('layouts.app')
-@section('title', 'Offres d\'emploi — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Offres d\'emploi au Bénin, CDI, CDD, Stage, Bourse à Cotonou | Emploi Bouge Bénin')
+@section('description', 'Consultez toutes les offres d\'emploi au Bénin : CDI, CDD, stages, bourses et freelance à Cotonou et dans tout le Bénin. Annonces vérifiées, mise à jour quotidienne.')
+@section('og_title', 'Offres d\'emploi au Bénin, Annonces CDI, CDD, Stages | Emploi Bouge Bénin')
+@section('og_description', 'Parcourez les offres d\'emploi au Bénin. Trouvez un CDI, CDD, stage ou bourse à Cotonou et dans tout le Bénin. Candidature en ligne.')
+
+@section('jsonld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"{{ route('home') }}"},
+    {"@type":"ListItem","position":2,"name":"Offres d'emploi","item":"{{ route('offre.list') }}"}
+  ]
+}
+</script>
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/offre/list-offre.css') }}">
@@ -10,7 +26,7 @@
 {{-- Hero recherche --}}
 <div class="ol-hero">
   <h1 class="ol-hero__title">Offres d'emploi au Bénin</h1>
-  <p class="ol-hero__sub">{{ $offres->total() }} offre{{ $offres->total() !== 1 ? 's' : '' }} disponible{{ $offres->total() !== 1 ? 's' : '' }} — mise à jour en continu</p>
+  <p class="ol-hero__sub">{{ $offres->total() }} offre{{ $offres->total() !== 1 ? 's' : '' }} disponible{{ $offres->total() !== 1 ? 's' : '' }}, mise à jour en continu</p>
   <form method="GET" action="{{ route('offre.list') }}" class="ol-hero__search">
     @foreach(request()->except(['q','page']) as $k => $v)
       <input type="hidden" name="{{ $k }}" value="{{ $v }}">

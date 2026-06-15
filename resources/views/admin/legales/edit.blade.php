@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Modifier — ' . $page->titre)
+﻿@extends('layouts.admin')
+@section('title', 'Modifier | ' . $page->titre)
 
 @section('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css">

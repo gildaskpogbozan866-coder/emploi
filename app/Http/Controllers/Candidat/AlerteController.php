@@ -11,12 +11,30 @@ class AlerteController extends Controller
 {
     public function index()
     {
-        $alertes = Auth::user()->alertes()->latest()->get();
-        return view('candidat.alertes', compact('alertes'));
+        $user       = Auth::user();
+        $abonnement = $user->abonnementActif()->with('plan.features')->first();
+        $alertLimit = $abonnement ? (int) $abonnement->plan?->getFeature('alert_limit', 0) : 0;
+        $alertes    = $user->alertes()->latest()->get();
+
+        return view('candidat.alertes', compact('alertes', 'alertLimit', 'abonnement'));
     }
 
     public function store(Request $request)
     {
+        $user       = Auth::user();
+        $abonnement = $user->abonnementActif()->with('plan.features')->first();
+        $alertLimit = $abonnement ? (int) $abonnement->plan?->getFeature('alert_limit', 0) : 0;
+
+        if ($alertLimit === 0) {
+            return redirect()->route('candidat.abonnement.plans')
+                ->with('info', 'Les alertes emploi sont réservées aux abonnés Premium. Passez au plan Premium pour en bénéficier.');
+        }
+
+        $currentCount = $user->alertes()->count();
+        if ($currentCount >= $alertLimit) {
+            return back()->with('error', "Vous avez atteint votre limite de {$alertLimit} alerte(s). Supprimez-en une ou passez au plan Premium.");
+        }
+
         $request->validate([
             'nom'          => 'nullable|string|max:100',
             'mots_cles'    => 'nullable|string|max:200',

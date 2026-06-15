@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Mes abonnements')
 
 @section('sidebar')
@@ -28,11 +28,11 @@
 <div style="background:linear-gradient(135deg,#021e3a 0%,#185FA5 100%);border-radius:14px;padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
   <div>
     <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin:0 0 5px">Plan actif</p>
-    <h2 style="font-size:1.7rem;font-weight:800;margin:0;color:#fff">{{ $abonnement->plan?->name ?? '—' }}</h2>
+    <h2 style="font-size:1.7rem;font-weight:800;margin:0;color:#fff">{{ $abonnement->plan?->name ?? '-' }}</h2>
     @if($abonnement->ends_at)
       <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.65)">
         Expire le {{ $abonnement->ends_at->format('d/m/Y') }}
-        <span style="color:rgba(255,255,255,.4)"> — {{ $abonnement->ends_at->diffForHumans() }}</span>
+        <span style="color:rgba(255,255,255,.4)">, {{ $abonnement->ends_at->diffForHumans() }}</span>
       </p>
     @else
       <p style="font-size:13px;margin:6px 0 0;color:rgba(255,255,255,.55)">Sans limite de durée</p>
@@ -102,7 +102,7 @@
       <div>
         <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Accès CVthèque</p>
         <p style="font-size:12px;margin:3px 0 0;color:{{ $quotas['candidate_search']['enabled'] ? '#16a34a' : '#94a3b8' }};font-weight:600">
-          {{ $quotas['candidate_search']['enabled'] ? 'Inclus dans votre plan' : 'Non inclus — Passez au Pro' }}
+          {{ $quotas['candidate_search']['enabled'] ? 'Inclus dans votre plan' : 'Non inclus, Passez au Pro' }}
         </p>
       </div>
     </div>
@@ -153,7 +153,7 @@
         <tr style="border-bottom:1px solid #f1f5f9;{{ $ab->status === 'active' ? 'background:#f0fdf4' : '' }}">
           <td style="padding:13px 18px">
             <span style="font-weight:{{ $ab->status === 'active' ? '700' : '500' }};color:#042C53">
-              {{ $ab->plan?->name ?? '—' }}
+              {{ $ab->plan?->name ?? '-' }}
             </span>
             @if($ab->status === 'active')
               <span style="margin-left:6px;font-size:11px;background:#dcfce7;color:#16a34a;font-weight:700;padding:2px 7px;border-radius:20px">actif</span>
@@ -165,11 +165,11 @@
             @elseif($ab->plan)
               {{ number_format($ab->plan->price, 0, ',', ' ') }} {{ $ab->plan->currency }}
             @else
-              —
+             
             @endif
           </td>
           <td style="padding:13px 18px;color:#64748b">
-            {{ $ab->starts_at?->format('d/m/Y') ?? '—' }}
+            {{ $ab->starts_at?->format('d/m/Y') ?? '-' }}
           </td>
           <td style="padding:13px 18px;color:#64748b">
             @if($ab->ends_at === null)

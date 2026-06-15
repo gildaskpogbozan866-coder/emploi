@@ -1,6 +1,57 @@
-@extends('layouts.app')
-@section('title', 'Emploi Bouge Bénin — Offres d\'emploi, stages, bourses au Bénin')
-@section('description', 'Plateforme emploi au Bénin. Trouvez des offres vérifiées, déposez votre CV, valorisez vos compétences.')
+﻿@extends('layouts.app')
+@section('title', 'Emploi Bénin | Offres d\'emploi, recrutement & stages au Bénin | Emploi Bouge Bénin')
+@section('description', 'Trouvez un emploi au Bénin sur Emploi Bouge Bénin : offres CDI, CDD, stages, bourses à Cotonou et partout au Bénin. Déposez votre CV gratuitement et soyez visible des recruteurs.')
+@section('og_title', 'Emploi Bénin, Offres d\'emploi & recrutement | Emploi Bouge Bénin')
+@section('og_description', 'La plateforme #1 pour trouver un emploi au Bénin. Offres vérifiées, dépôt CV gratuit, recrutement Cotonou & toutes villes du Bénin.')
+
+@section('jsonld')
+@php
+$orgSchema = [
+  '@context' => 'https://schema.org',
+  '@graph'   => [
+    [
+      '@type'       => 'Organization',
+      '@id'         => route('home') . '#organization',
+      'name'        => 'Emploi Bouge Bénin',
+      'url'         => route('home'),
+      'logo'        => [
+        '@type' => 'ImageObject',
+        'url'   => asset('images/Logo.png'),
+      ],
+      'description' => 'Plateforme d\'emploi au Bénin : offres d\'emploi, recrutement, dépôt de CV et services carrière.',
+      'address'     => [
+        '@type'           => 'PostalAddress',
+        'addressLocality' => 'Cotonou',
+        'addressCountry'  => 'BJ',
+      ],
+      'contactPoint' => [
+        '@type'       => 'ContactPoint',
+        'contactType' => 'customer support',
+        'email'       => 'contact@emploibouge.bj',
+      ],
+      'sameAs' => ['https://whatsapp.com/channel/0029VbCGlUo5q08ZH1bnm11F'],
+    ],
+    [
+      '@type'           => 'WebSite',
+      '@id'             => route('home') . '#website',
+      'name'            => 'Emploi Bouge Bénin',
+      'url'             => route('home'),
+      'inLanguage'      => 'fr-FR',
+      'description'     => 'Plateforme d\'emploi et de recrutement au Bénin',
+      'potentialAction' => [
+        '@type'       => 'SearchAction',
+        'target'      => [
+          '@type'       => 'EntryPoint',
+          'urlTemplate' => route('offre.list') . '?q={search_term_string}',
+        ],
+        'query-input' => 'required name=search_term_string',
+      ],
+    ],
+  ],
+];
+echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+@endphp
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/index.css') }}">
@@ -16,13 +67,14 @@
 
     <div class="hero-left">
       <h1 class="hero-title">
-        Le pont entre les <span class="accent">recruteurs</span> et les <span class="accent">talents</span>
+        Votre prochain emploi<br>
+        est déjà publié,<br>
+        <span class="accent">trouvez-le maintenant.</span>
       </h1>
       <p class="hero-sub">
-        Les recruteurs diffusent leurs annonces, les candidats trouvent
-        <strong>emploi</strong>, <strong>stage</strong>, <strong>bourse</strong>,
-        <strong>freelance</strong> ou mettent en avant leurs <strong>compétences</strong> — peu importe le profil.<br>
-        Informations vérifiées, plateforme intuitive, mises à jour en continu.
+        <strong>La plateforme d'emploi numéro 1 au Bénin.</strong><br>
+        Des centaines d'offres vérifiées chaque semaine à <strong>Cotonou</strong> et dans tout le <strong>Bénin</strong>, CDI, CDD, stages, bourses et freelance.<br>
+        Candidatez en quelques clics. Déposez votre CV gratuitement. Soyez contacté par les meilleurs recruteurs.
       </p>
 
       <div class="hs2-wrap">
@@ -46,15 +98,21 @@
           Parcourir les offres
         </a>
         @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-          <a href="{{ route('cv.public.depot') }}" class="btn-hero-cv">
+          <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="btn-hero-cv">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             Déposer mon CV
           </a>
         @endif
         @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
-          <a href="{{ route('offre.publier') }}" class="btn-hero-outline">
+          <a href="{{ auth()->check() ? route('offre.publier') : route('auth.inscription').'?role=recruteur' }}" class="btn-hero-outline">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             Publier une annonce
+          </a>
+        @endif
+        @if(!auth()->check() || auth()->user()->hasRole('annonceur'))
+          <a href="{{ auth()->check() ? route('annonceur.publicites') : route('auth.inscription').'?role=annonceur' }}" class="btn-hero-outline" style="background:rgba(245,200,66,.12);border-color:#F5C842;color:#b8860b">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            Publier une Affiche Publicitaire
           </a>
         @endif
       </div>
@@ -111,22 +169,29 @@
       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       Par où commencer ?
     </span>
-    <h2 class="split-cta-title">Candidat ou recruteur ?</h2>
-    <p class="split-cta-sub">Que vous cherchiez un emploi, un stage, une bourse ou que vous souhaitiez mettre en avant vos compétences — une seule plateforme pour tout.</p>
+    <h2 class="split-cta-title">Candidat, Recruteur ou Annonceur ?</h2>
+    <p class="split-cta-sub">Que vous cherchiez un emploi, recrutiez des talents ou souhaitiez diffuser une publicité, une seule plateforme pour tout.</p>
     <div class="split-cta-btns">
       @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-        <a href="{{ route('cv.public.depot') }}" class="split-cta-btn split-cta-btn--candidat">
+        <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="split-cta-btn split-cta-btn--candidat">
           <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
           <span class="split-cta-btn__title">Je cherche du travail</span>
           <span class="split-cta-btn__sub">CDI · CDD · Stage · Bourse · Freelance · Compétences</span>
         </a>
       @endif
       @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
-        <a href="{{ route('offre.publier') }}" class="split-cta-btn split-cta-btn--recruteur">
+        <a href="{{ auth()->check() ? route('offre.publier') : route('auth.inscription').'?role=recruteur' }}" class="split-cta-btn split-cta-btn--recruteur">
           <span class="split-cta-badge">Recommandé</span>
           <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>
           <span class="split-cta-btn__title">Je recrute</span>
           <span class="split-cta-btn__sub">Publiez une annonce, accédez aux CV et profils</span>
+        </a>
+      @endif
+      @if(!auth()->check() || auth()->user()->hasRole('annonceur'))
+        <a href="{{ auth()->check() ? route('annonceur.publicites') : route('auth.inscription').'?role=annonceur' }}" class="split-cta-btn" style="background:#fff;border:2px solid #F5C842;color:#042C53;position:relative">
+          <span class="split-cta-btn__icon" style="background:rgba(245,200,66,.15)"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#b8860b" stroke-width="1.8"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <span class="split-cta-btn__title" style="color:#042C53">Je publie une publicité</span>
+          <span class="split-cta-btn__sub" style="color:#64748b">Affichage de votre marque devant des milliers de visiteurs</span>
         </a>
       @endif
     </div>
@@ -136,31 +201,52 @@
 {{-- ═══════════════════════════════════════════
      OBSTACLES
 ═══════════════════════════════════════════ --}}
-<section class="section section--blue-bg">
-  <div class="container">
-    <div class="section-header section-header--center">
-      <h2 class="section-title section-title--white">Obstacles rencontrés par les jeunes Africains</h2>
-      <p class="section-subtitle section-subtitle--white">Quatre principaux défis limitent l'accès aux opportunités en Afrique</p>
-    </div>
-    <div class="cards-grid cards-grid--2col">
-      @foreach([
-        ['M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', 'Informations peu fiables sur les opportunités', 'Opportunités non vérifiées, sources obsolètes, données dispersées.'],
-        ['M13 10V3L4 14h7v7l9-11h-7z', 'Démarches administratives complexes', 'Procédures longues, exigences floues, risques d\'erreur.'],
-        ['M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z', 'Ressources hors contexte africain', 'Contenus inadaptés aux réalités socio-économiques locales.'],
-        ['M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'Manque de réseau et d\'accompagnement', 'Pas de mentorat, isolement, conseils génériques.'],
-      ] as [$path, $titre, $desc])
-      <div class="obstacle-card">
-        <div class="card-icon-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}"/>
-          </svg>
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">{{ $titre }}</h3>
-          <p class="card-desc">{{ $desc }}</p>
+<section style="padding:80px 20px;background:#fff">
+  <div style="max-width:1100px;margin:0 auto">
+    <style>
+      .obs-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:center}
+      .obs-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+      @media(max-width:860px){.obs-wrap{grid-template-columns:1fr;gap:36px}.obs-cards{grid-template-columns:1fr 1fr}}
+      @media(max-width:480px){.obs-cards{grid-template-columns:1fr}}
+    </style>
+    <div class="obs-wrap">
+
+      {{-- Côté gauche, Texte --}}
+      <div>
+        <span style="display:inline-block;background:#eff6ff;color:#185FA5;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 14px;border-radius:99px;margin-bottom:20px">Les défis</span>
+        <h2 style="font-size:clamp(1.5rem,2.5vw,2rem);font-weight:800;color:#042C53;line-height:1.25;margin:0 0 16px">
+          Obstacles rencontrés<br>par les jeunes Africains
+        </h2>
+        <p style="font-size:14.5px;color:#64748b;line-height:1.75;margin:0 0 28px">
+          Quatre principaux défis limitent l'accès aux opportunités en Afrique. Emploi Bouge Bénin a été conçu pour lever ces barrières, une à une.
+        </p>
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;background:#f8fafc;border-left:3px solid #185FA5;border-radius:0 8px 8px 0">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p style="font-size:13px;color:#374151;margin:0;font-weight:500">Notre plateforme répond à chacun de ces obstacles.</p>
         </div>
       </div>
-      @endforeach
+
+      {{-- Côté droit, 4 cartes --}}
+      <div class="obs-cards">
+        @foreach([
+          ['01','M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6','Informations peu fiables','Sources non vérifiées, données obsolètes et dispersées.'],
+          ['02','M13 10V3L4 14h7v7l9-11h-7z','Démarches complexes','Procédures longues, exigences floues, risques d\'erreur.'],
+          ['03','M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z','Ressources inadaptées','Contenus éloignés des réalités locales africaines.'],
+          ['04','M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253','Manque de réseau','Pas de mentorat, isolement, conseils trop génériques.'],
+        ] as [$num, $path, $titre, $desc])
+        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:22px 18px;position:relative;transition:box-shadow .2s,border-color .2s"
+             onmouseover="this.style.boxShadow='0 6px 24px rgba(24,95,165,.1)';this.style.borderColor='#bfdbfe'"
+             onmouseout="this.style.boxShadow='none';this.style.borderColor='#e2e8f0'">
+          <span style="position:absolute;top:14px;right:16px;font-size:10px;font-weight:800;color:#cbd5e1;letter-spacing:.06em">{{ $num }}</span>
+          <div style="width:40px;height:40px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+            <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}"/></svg>
+          </div>
+          <h3 style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 6px;line-height:1.3">{{ $titre }}</h3>
+          <p style="font-size:12.5px;color:#64748b;line-height:1.6;margin:0">{{ $desc }}</p>
+        </div>
+        @endforeach
+      </div>
+
     </div>
   </div>
 </section>
@@ -179,7 +265,7 @@
     <div class="formation-section">
       <article class="formation-card">
         <div class="formation-card__left">
-          <span class="formation-card__tag">Service n°1 — Très demandé</span>
+          <span class="formation-card__tag">Service n°1, Très demandé</span>
           <h3 class="formation-card__title">
             CV Professionnel <em>&amp; Lettre de Motivation</em><br>
             <span style="font-size:0.75em;color:#64748b;font-weight:600;">Arrêtez de postuler dans le vide.</span>
@@ -297,7 +383,7 @@
       <div>
         <span class="badge badge--yellow">CV récents</span>
         <h2 class="section-title" style="margin-top:10px">Derniers CV déposés</h2>
-        <p class="section-subtitle">Des candidats actifs — emploi, stage, bourse ou freelance.</p>
+        <p class="section-subtitle">Des candidats actifs, emploi, stage, bourse ou freelance.</p>
       </div>
       <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
         Accéder aux CV
@@ -321,7 +407,7 @@
             <div class="cvt-card__info">
               <div class="cvt-card__row">
                 <span class="cvt-card__label">Secteur :</span>
-                <span class="cvt-card__val">{{ $cv->titre_poste }} · {{ $cv->pays }}{{ $cv->ville ? ' — '.$cv->ville : '' }}</span>
+                <span class="cvt-card__val">{{ $cv->titre_poste }} · {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</span>
               </div>
               @if($cv->experience)
               <div class="cvt-card__row">
@@ -401,6 +487,132 @@
   </div>
 </section>
 
+@if($partenaires->isNotEmpty())
+{{-- ═══════════════════════════════════════════
+     ILS NOUS FONT CONFIANCE
+═══════════════════════════════════════════ --}}
+<section style="padding:64px 20px;background:#fff">
+  <div style="max-width:1100px;margin:0 auto">
+
+    {{-- Header --}}
+    <div style="text-align:center;margin-bottom:44px">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;color:#185FA5;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 14px;border-radius:99px;margin-bottom:14px">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Ils nous font confiance
+      </span>
+      <h2 style="font-size:1.5rem;font-weight:800;color:#042C53;margin:0 0 8px">Nos partenaires & entreprises</h2>
+      <p style="font-size:14px;color:#64748b;margin:0">Des entreprises qui nous font confiance pour leurs recrutements et leurs annonces.</p>
+    </div>
+
+    {{-- Grille 5 colonnes --}}
+    <style>.partenaires-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}@media(max-width:640px){.partenaires-grid{grid-template-columns:repeat(2,1fr)}}</style>
+    <div class="partenaires-grid">
+      @foreach($partenaires as $p)
+      @php $tag = $p->lien ? 'a' : 'div'; @endphp
+      <{{ $tag }}
+        @if($p->lien) href="{{ $p->lien }}" target="_blank" rel="noopener noreferrer" @endif
+        title="{{ $p->nom }}"
+        style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:24px 16px;text-decoration:none;transition:border-color .2s,box-shadow .2s,transform .2s"
+        onmouseover="this.style.borderColor='#185FA5';this.style.boxShadow='0 4px 20px rgba(24,95,165,.12)';this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.transform='translateY(0)'">
+        <div style="width:64px;height:44px;display:flex;align-items:center;justify-content:center">
+          <img src="{{ asset('storage/'.$p->logo) }}" alt="{{ $p->nom }}" loading="lazy"
+               style="max-width:64px;max-height:44px;object-fit:contain;filter:grayscale(1);transition:filter .2s"
+               onmouseover="this.style.filter='grayscale(0)'" onmouseout="this.style.filter='grayscale(1)'">
+        </div>
+        <span style="font-size:11.5px;font-weight:600;color:#64748b;text-align:center;line-height:1.3">{{ $p->nom }}</span>
+      </{{ $tag }}>
+      @endforeach
+    </div>
+
+  </div>
+</section>
+@endif
+
+{{-- ═══════════════════════════════════════════
+     SECTION ANNONCEURS
+═══════════════════════════════════════════ --}}
+<section style="padding:72px 20px;background:linear-gradient(135deg,#042C53 0%,#0f3d7a 100%);position:relative;overflow:hidden">
+
+  {{-- Décor --}}
+  <div style="position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:rgba(255,255,255,.04);border-radius:50%;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-80px;left:-40px;width:240px;height:240px;background:rgba(245,200,66,.06);border-radius:50%;pointer-events:none"></div>
+
+  <style>.annonceurs-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}@media(max-width:768px){.annonceurs-grid{grid-template-columns:1fr;gap:32px}.annonceurs-text{order:1}.annonceurs-card{order:2}}</style>
+  <div style="max-width:1000px;margin:0 auto;position:relative" class="annonceurs-grid">
+
+    {{-- Texte --}}
+    <div class="annonceurs-text">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,200,66,.15);color:#F5C842;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 14px;border-radius:99px;margin-bottom:20px">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Pour les entreprises
+      </span>
+      <h2 style="font-size:clamp(1.5rem,3vw,2rem);font-weight:800;color:#fff;margin:0 0 16px;line-height:1.25">
+        Vous avez un message<br>à faire passer ?
+      </h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.75);line-height:1.75;margin:0 0 28px">
+        La plateforme est aussi pour les annonceurs. Diffusez vos publicités auprès de milliers de candidats, recruteurs et talents actifs sur Emploi Bouge Bénin.
+      </p>
+      <ul style="list-style:none;padding:0;margin:0 0 32px;display:flex;flex-direction:column;gap:12px">
+        @foreach([
+          'Visibilité ciblée auprès de professionnels béninois',
+          'Formats adaptés : bannière, affiche, popup',
+          'Activation immédiate après validation admin',
+          'Tableau de bord dédié pour suivre vos publicités',
+        ] as $item)
+        <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.85)">
+          <span style="width:20px;height:20px;background:#F5C842;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#042C53" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          {{ $item }}
+        </li>
+        @endforeach
+      </ul>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="{{ auth()->check() && auth()->user()->hasRole('annonceur') ? route('annonceur.publicites') : route('auth.inscription').'?role=annonceur' }}"
+           style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:#F5C842;color:#042C53;border-radius:10px;font-weight:800;font-size:14px;text-decoration:none">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Publier une publicité
+        </a>
+        <a href="{{ route('contact') }}"
+           style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25);border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+          Nous contacter
+        </a>
+      </div>
+    </div>
+
+    {{-- Carte illustration --}}
+    <div class="annonceurs-card" style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;backdrop-filter:blur(4px)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:40px;height:40px;background:#F5C842;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#042C53" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#fff;margin:0">Portée maximale</p>
+            <p style="font-size:12px;color:rgba(255,255,255,.55);margin:0">Touchez la bonne audience</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          @foreach([['Candidats','Actifs sur la plateforme'],['Recruteurs','À la recherche de talents'],['Talents','Freelances & consultants'],['Visiteurs','Trafic quotidien']] as [$label,$desc])
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px">
+            <p style="font-size:12px;font-weight:700;color:#F5C842;margin:0 0 2px">{{ $label }}</p>
+            <p style="font-size:11px;color:rgba(255,255,255,.5);margin:0;line-height:1.4">{{ $desc }}</p>
+          </div>
+          @endforeach
+        </div>
+      </div>
+      <div style="background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 8v4l3 3"/></svg>
+        <p style="font-size:13px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">
+          <strong style="color:#F5C842">Activation rapide.</strong> Votre publicité est en ligne dès validation par notre équipe.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 {{-- ═══════════════════════════════════════════
      BLOG
 ═══════════════════════════════════════════ --}}
@@ -460,281 +672,8 @@
   </div>
 </section>
 
-{{-- ═══════════════════════════════════════════
-     ANNONCEURS
-═══════════════════════════════════════════ --}}
-<section class="section" style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:72px 0">
-  <div class="container">
-    <div class="annonceur-grid">
 
-      {{-- Texte gauche --}}
-      <div>
-        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#F5C842;margin-bottom:16px">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-          Pour les entreprises
-        </span>
-        <h2 style="font-size:2rem;font-weight:800;color:#fff;line-height:1.25;margin:0 0 18px">
-          Vous avez un message à faire passer ?<br>
-          <em style="font-style:normal;color:#F5C842">La plateforme est aussi pour les annonceurs.</em>
-        </h2>
-        <p style="font-size:14.5px;color:rgba(255,255,255,.75);line-height:1.7;margin:0 0 28px">
-          Qu'il s'agisse de promouvoir une marque employeur, de diffuser une campagne ou de cibler des candidats qualifiés au Bénin — Emploi Bouge met votre message devant la bonne audience.
-        </p>
-        <div style="display:flex;flex-wrap:wrap;gap:12px">
-          <a href="{{ route('auth.inscription') }}?role=annonceur"
-             style="display:inline-flex;align-items:center;gap:8px;background:#F5C842;color:#042C53;padding:13px 26px;border-radius:10px;font-weight:800;font-size:14px;text-decoration:none">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            Créer un compte annonceur
-          </a>
-          <a href="{{ route('contact') }}"
-             style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);padding:13px 26px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
-            Nous contacter
-          </a>
-        </div>
-      </div>
 
-      {{-- Cartes avantages --}}
-      <div class="annonceur-cards">
-
-        <div class="annonceur-card">
-          <div class="annonceur-card__icon">
-            {{-- Mégaphone --}}
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-          </div>
-          <p class="annonceur-card__title">Visibilité ciblée</p>
-          <p class="annonceur-card__desc">Votre message vu par des milliers de candidats actifs et de recruteurs.</p>
-        </div>
-
-        <div class="annonceur-card">
-          <div class="annonceur-card__icon">
-            {{-- Graphique barres --}}
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          </div>
-          <p class="annonceur-card__title">Formats variés</p>
-          <p class="annonceur-card__desc">Bannières, mises en avant sponsorisées, emplacements premium.</p>
-        </div>
-
-        <div class="annonceur-card">
-          <div class="annonceur-card__icon">
-            {{-- Cible --}}
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-          </div>
-          <p class="annonceur-card__title">Audience qualifiée</p>
-          <p class="annonceur-card__desc">Professionnels en recherche active, employeurs, étudiants.</p>
-        </div>
-
-        <div class="annonceur-card">
-          <div class="annonceur-card__icon">
-            {{-- Éclair / rapidité --}}
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          </div>
-          <p class="annonceur-card__title">Mise en ligne rapide</p>
-          <p class="annonceur-card__desc">Campagne active en moins de 24h après validation.</p>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-</section>
-
-{{-- ═══════════════════════════════════════════
-     PLANS INFORMATIFS
-═══════════════════════════════════════════ --}}
-<section class="section" style="background:#f8fafc;padding:80px 0">
-  <div class="container">
-    <div class="section-header section-header--center" style="margin-bottom:48px">
-      <span class="badge badge--yellow">Abonnements</span>
-      <h2 class="section-title" style="margin-top:10px">Des plans pour chaque profil</h2>
-      <p class="section-subtitle">Accès gratuit ou premium — à vous de choisir selon vos besoins.</p>
-    </div>
-
-    {{-- Toggle candidat / recruteur --}}
-    <div style="display:flex;justify-content:center;margin-bottom:36px">
-      <div style="display:inline-flex;background:#e2e8f0;border-radius:10px;padding:4px;gap:4px">
-        <button onclick="showPlans('candidat')" id="tab-candidat"
-                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:#042C53;color:#fff;transition:all .2s">
-          Candidats
-        </button>
-        <button onclick="showPlans('recruteur')" id="tab-recruteur"
-                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:transparent;color:#64748b;transition:all .2s">
-          Recruteurs
-        </button>
-        <button onclick="showPlans('annonceur')" id="tab-annonceur"
-                style="padding:9px 24px;border-radius:8px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;background:transparent;color:#64748b;transition:all .2s">
-          Annonceurs
-        </button>
-      </div>
-    </div>
-
-    {{-- Plans candidats --}}
-    <div id="plans-candidat" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:0 auto">
-      @foreach($plansCandidats as $plan)
-      @php
-        $isPop = !$plan->is_free;
-        $features = $plan->features->keyBy('feature_key');
-        $cvLimit    = $features->get('cv_limit')?->feature_value ?? '1';
-        $applyLimit = $features->get('job_apply_limit')?->feature_value ?? '10';
-        $featured   = (int)($features->get('featured_profile')?->feature_value ?? 0) > 0;
-      @endphp
-      <div style="background:#fff;border:2px solid {{ $isPop ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $isPop ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
-        @if($isPop)
-          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Plus populaire</span>
-        @endif
-        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $isPop ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
-        <div style="margin-bottom:20px">
-          @if($plan->is_free)
-            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
-          @else
-            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
-            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
-          @endif
-        </div>
-        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $cvLimit === '0' ? 'Documents illimités' : $cvLimit.' document(s) max' }}
-          </li>
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $applyLimit >= 100 ? 'Candidatures illimitées' : $applyLimit.' candidatures / mois' }}
-          </li>
-          @if($featured)
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Profil mis en avant dans la CVthèque
-          </li>
-          @endif
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Accès aux offres d'emploi
-          </li>
-        </ul>
-        <a href="{{ route('auth.inscription') }}"
-           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $isPop ? '#185FA5' : '#f1f5f9' }};color:{{ $isPop ? '#fff' : '#042C53' }}">
-          {{ $plan->is_free ? 'Commencer gratuitement' : 'Choisir ce plan' }}
-        </a>
-      </div>
-      @endforeach
-    </div>
-
-    {{-- Plans recruteurs --}}
-    <div id="plans-recruteur" style="display:none;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:0 auto">
-      @foreach($plansRecruteurs as $plan)
-      @php
-        $isPop = !$plan->is_free;
-        $features = $plan->features->keyBy('feature_key');
-        $postLimit   = $features->get('job_post_limit')?->feature_value ?? '2';
-        $candSearch  = (int)($features->get('candidate_search')?->feature_value ?? 0) > 0;
-        $featuredJ   = $features->get('featured_jobs')?->feature_value ?? '0';
-      @endphp
-      <div style="background:#fff;border:2px solid {{ $isPop ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $isPop ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
-        @if($isPop)
-          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Recommandé</span>
-        @endif
-        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $isPop ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
-        <div style="margin-bottom:20px">
-          @if($plan->is_free)
-            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
-          @else
-            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
-            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
-          @endif
-        </div>
-        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $postLimit }} offre{{ (int)$postLimit > 1 ? 's' : '' }} d'emploi max
-          </li>
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $candSearch ? ($isPop ? '#185FA5' : '#22c55e') : '#cbd5e1' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $candSearch ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12' }}"/></svg>
-            <span style="color:{{ $candSearch ? '#374151' : '#94a3b8' }}">Recherche de candidats {{ $candSearch ? 'incluse' : 'non incluse' }}</span>
-          </li>
-          @if((int)$featuredJ > 0)
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $featuredJ }} offre{{ (int)$featuredJ > 1 ? 's' : '' }} mise{{ (int)$featuredJ > 1 ? 's' : '' }} en avant
-          </li>
-          @endif
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $isPop ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Tableau de bord recruteur
-          </li>
-        </ul>
-        <a href="{{ route('auth.inscription') }}"
-           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $isPop ? '#185FA5' : '#f1f5f9' }};color:{{ $isPop ? '#fff' : '#042C53' }}">
-          {{ $plan->is_free ? 'Démarrer gratuitement' : 'Choisir ce plan' }}
-        </a>
-      </div>
-      @endforeach
-    </div>
-
-    {{-- Plans annonceurs --}}
-    <div id="plans-annonceur" style="display:none;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:900px;margin:0 auto">
-      @foreach($plansAnnonceurs as $plan)
-      @php
-        $isPop = $plan->price > 0 && !$plansAnnonceurs->last()->is_free && $plan->price === $plansAnnonceurs->where('is_free', false)->min('price');
-        $features    = $plan->features->keyBy('feature_key');
-        $annLimit    = $features->get('annonce_limit')?->feature_value ?? '1';
-        $displayDays = $features->get('display_days')?->feature_value ?? '7';
-        $priority    = (int)($features->get('priority_display')?->feature_value ?? 0) > 0;
-      @endphp
-      <div style="background:#fff;border:2px solid {{ $priority ? '#185FA5' : '#e2e8f0' }};border-radius:16px;padding:28px 24px;position:relative;{{ $priority ? 'box-shadow:0 8px 32px rgba(24,95,165,.15)' : '' }}">
-        @if($priority)
-          <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap">Meilleure visibilité</span>
-        @endif
-        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{{ $priority ? '#185FA5' : '#94a3b8' }};margin:0 0 6px">{{ $plan->name }}</p>
-        <div style="margin-bottom:20px">
-          @if($plan->is_free)
-            <span style="font-size:2rem;font-weight:800;color:#042C53">Gratuit</span>
-          @else
-            <span style="font-size:2rem;font-weight:800;color:#042C53">{{ number_format($plan->price, 0, ',', ' ') }}</span>
-            <span style="font-size:14px;color:#64748b;font-weight:600"> FCFA{{ $plan->duration_days ? ' / '.$plan->duration_days.'j' : '' }}</span>
-          @endif
-        </div>
-        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px">
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ $annLimit }} annonce{{ (int)$annLimit > 1 ? 's' : '' }} active{{ (int)$annLimit > 1 ? 's' : '' }} max
-          </li>
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Diffusion pendant {{ $displayDays }} jours
-          </li>
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : ($priority ? '#22c55e' : '#cbd5e1') }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $priority ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12' }}"/></svg>
-            <span style="color:{{ $priority ? '#374151' : '#94a3b8' }}">Affichage prioritaire {{ $priority ? 'inclus' : 'non inclus' }}</span>
-          </li>
-          <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#374151">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $priority ? '#185FA5' : '#22c55e' }}" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Tableau de bord annonceur
-          </li>
-        </ul>
-        <a href="{{ route('auth.inscription') }}"
-           style="display:block;text-align:center;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;background:{{ $priority ? '#185FA5' : '#f1f5f9' }};color:{{ $priority ? '#fff' : '#042C53' }}">
-          {{ $plan->is_free ? 'Essayer gratuitement' : 'Choisir ce plan' }}
-        </a>
-      </div>
-      @endforeach
-    </div>
-
-    <p style="text-align:center;font-size:12.5px;color:#94a3b8;margin-top:28px">
-      Tarifs indicatifs — les plans exacts sont visibles après connexion selon votre profil.
-    </p>
-  </div>
-</section>
-
-<script>
-function showPlans(type) {
-  ['candidat','recruteur','annonceur'].forEach(function(t) {
-    var grid = document.getElementById('plans-' + t);
-    var tab  = document.getElementById('tab-' + t);
-    if (grid) grid.style.display  = (t === type) ? 'grid' : 'none';
-    if (tab)  tab.style.background = (t === type) ? '#042C53' : 'transparent';
-    if (tab)  tab.style.color      = (t === type) ? '#fff' : '#64748b';
-  });
-}
-</script>
 
 {{-- ═══════════════════════════════════════════
      NEWSLETTER
@@ -789,104 +728,8 @@ function showPlans(type) {
   </div>
 </section>
 
-{{-- ═══════════════════════════════════════════
-     WIDGET PUBLICITÉS (coin bas-droite)
-═══════════════════════════════════════════ --}}
-<div id="pub-widget" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9990;width:280px;max-width:calc(100vw - 32px);filter:drop-shadow(0 8px 24px rgba(0,0,0,.22))">
-
-  {{-- Corps de l'annonce (zone pliable) --}}
-  <div id="pub-body" style="background:#fff;border-radius:14px 14px 0 0;overflow:hidden;transition:max-height .3s ease">
-    <a id="pub-link" href="#" target="_blank" rel="noopener noreferrer sponsored"
-       style="display:block;background:#000;aspect-ratio:4/3;overflow:hidden">
-      <img id="pub-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
-    </a>
-    <div style="padding:8px 12px 10px;display:flex;justify-content:space-between;align-items:center">
-      <span id="pub-titre" style="font-size:12.5px;font-weight:600;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px"></span>
-      <span style="font-size:10px;color:#94a3b8;flex-shrink:0;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Annonce</span>
-    </div>
-  </div>
-
-  {{-- Barre de contrôle toujours visible --}}
-  <div style="background:#042C53;border-radius:0 0 14px 14px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between">
-    <span style="font-size:11px;font-weight:700;color:#F5C842;letter-spacing:.06em;text-transform:uppercase">
-      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2.5" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-      Publicité
-    </span>
-    <button id="pub-toggle" onclick="togglePub()"
-            title="Réduire / Agrandir"
-            style="background:rgba(255,255,255,.12);border:none;border-radius:6px;cursor:pointer;padding:4px 8px;display:flex;align-items:center;gap:5px;color:#e2e8f0;font-size:11px;font-weight:600">
-      <svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
-      Réduire
-    </button>
-  </div>
-
-</div>
 @endsection
 
 @section('scripts')
 <script src="{{ asset('js/index.js') }}" defer></script>
-<script>
-(function () {
-  let pubs = [], idx = 0, timer = null;
-  let folded = sessionStorage.getItem('pub_folded') === '1';
-
-  const widget  = document.getElementById('pub-widget');
-  const body    = document.getElementById('pub-body');
-  const imgEl   = document.getElementById('pub-img');
-  const linkEl  = document.getElementById('pub-link');
-  const titreEl = document.getElementById('pub-titre');
-
-  function show(pub) {
-    imgEl.src   = pub.image_url;
-    imgEl.alt   = pub.titre;
-    titreEl.textContent = pub.titre;
-    linkEl.href = pub.lien || '#';
-    linkEl.style.pointerEvents = pub.lien ? '' : 'none';
-    widget.style.display = 'block';
-    applyFolded(folded);
-  }
-
-  function applyFolded(state) {
-    const chevron = document.getElementById('pub-chevron');
-    const btn     = document.getElementById('pub-toggle');
-    if (state) {
-      body.style.display     = 'none';
-      chevron.setAttribute('points', '6 9 12 15 18 9');
-      btn.innerHTML = '<svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg> Agrandir';
-    } else {
-      body.style.display     = 'block';
-      chevron.setAttribute('points', '18 15 12 9 6 15');
-      btn.innerHTML = '<svg id="pub-chevron" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> Réduire';
-    }
-  }
-
-  window.togglePub = function () {
-    folded = !folded;
-    sessionStorage.setItem('pub_folded', folded ? '1' : '0');
-    applyFolded(folded);
-  };
-
-  function next() {
-    if (!pubs.length) return;
-    idx = (idx + 1) % pubs.length;
-    show(pubs[idx]);
-  }
-
-  function startRotation() {
-    clearInterval(timer);
-    if (pubs.length > 1) timer = setInterval(next, 60000);
-  }
-
-  fetch('/api/publicites/actives')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if (!data || !data.length) return;
-      pubs = data;
-      idx  = 0;
-      show(pubs[0]);
-      startRotation();
-    })
-    .catch(() => {});
-})();
-</script>
 @endsection

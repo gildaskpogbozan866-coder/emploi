@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Contact — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Contact | Emploi Bouge Bénin')
 @section('description', 'Contactez Emploi Bouge Bénin pour toute question, partenariat ou collaboration.')
 
 @section('css')
@@ -126,7 +126,7 @@
             <label class="contact-form__label" for="sujet">Sujet <span class="contact-form__req">*</span></label>
             <select class="contact-form__input contact-form__select {{ $errors->has('sujet') ? 'contact-form__input--error' : '' }}"
                     id="sujet" name="sujet" required>
-              <option value="">— Choisissez un sujet —</option>
+              <option value="">Choisissez un sujet</option>
               <option value="question"     {{ old('sujet') === 'question'     ? 'selected' : '' }}>Question générale</option>
               <option value="partenariat"  {{ old('sujet') === 'partenariat'  ? 'selected' : '' }}>Proposition de partenariat</option>
               <option value="signalement"  {{ old('sujet') === 'signalement'  ? 'selected' : '' }}>Signalement d'un contenu</option>

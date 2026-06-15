@@ -1,5 +1,5 @@
-@extends('layouts.annonceur')
-@section('title', 'Tableau de bord — Espace Annonceur')
+﻿@extends('layouts.annonceur')
+@section('title', 'Tableau de bord | Espace Annonceur')
 
 @section('content')
 <div class="cand-page-header">

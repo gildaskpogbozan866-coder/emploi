@@ -1,5 +1,7 @@
-@extends('layouts.app')
-@section('title', $service->nom.' — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', $service->nom.', Services au Bénin | Emploi Bouge Bénin')
+@section('description', $service->description ? Str::limit(strip_tags($service->description), 155) : 'Découvrez ce service proposé sur Emploi Bouge Bénin, la plateforme emploi et freelance au Bénin.')
+@section('canonical', route('service.detail', $service->slug))
 
 @section('content')
 <section class="section" style="background:#f8fafc;min-height:60vh">

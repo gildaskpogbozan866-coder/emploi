@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Dossier — ' . $verification->user->prenom . ' ' . $verification->user->nom)
+﻿@extends('layouts.admin')
+@section('title', 'Dossier | ' . $verification->user->prenom . ' ' . $verification->user->nom)
 
 @section('content')
 <div class="dash-content">
@@ -13,7 +13,7 @@
     <h1 class="dash-content__title" style="margin-top:8px">
       Dossier de {{ $verification->user->prenom }} {{ $verification->user->nom }}
     </h1>
-    <p class="dash-content__sub">{{ $verification->user->entreprise }} — {{ $verification->user->email }}</p>
+    <p class="dash-content__sub">{{ $verification->user->entreprise }}, {{ $verification->user->email }}</p>
   </div>
 
   @if(session('success'))
@@ -79,8 +79,8 @@
         <div style="font-size:.83rem;color:#374151;line-height:1.9">
           <div><strong>Nom :</strong> {{ $verification->user->prenom }} {{ $verification->user->nom }}</div>
           <div><strong>E-mail :</strong> {{ $verification->user->email }}</div>
-          <div><strong>Tél :</strong> {{ $verification->user->telephone ?? '—' }}</div>
-          <div><strong>Entreprise :</strong> {{ $verification->user->entreprise ?? '—' }}</div>
+          <div><strong>Tél :</strong> {{ $verification->user->telephone ?? '-' }}</div>
+          <div><strong>Entreprise :</strong> {{ $verification->user->entreprise ?? '-' }}</div>
           <div><strong>Soumis le :</strong> {{ $verification->created_at->format('d/m/Y à H:i') }}</div>
           @if($verification->reviewed_at)
             <div><strong>Examiné le :</strong> {{ $verification->reviewed_at->format('d/m/Y à H:i') }}</div>

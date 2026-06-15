@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'Mes paiements')
 
 @section('sidebar')
@@ -116,7 +116,7 @@
               @if($p->statut === 'en_attente')
                 <a href="{{ route('payment.choose', $p) }}" style="font-size:12px;font-weight:600;color:#185FA5;text-decoration:none">Payer</a>
               @else
-                <span style="font-size:12px;color:#cbd5e1">—</span>
+                <span style="font-size:12px;color:#cbd5e1">-</span>
               @endif
             </td>
           </tr>

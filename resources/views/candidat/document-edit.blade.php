@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'Modifier le document')
 
 @section('css')
@@ -14,7 +14,7 @@
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">Modifier le document</h1>
-    <p class="cand-page-header__sub">{{ $document->nom }} — {{ $document->type->nom }}</p>
+    <p class="cand-page-header__sub">{{ $document->nom }}, {{ $document->type->nom }}</p>
   </div>
   <div class="cand-page-header__actions">
     <a href="{{ route('candidat.cvs') }}" class="cand-btn cand-btn--outline">
@@ -61,7 +61,7 @@
           <label class="field__label">Intitulé <span class="req">*</span></label>
           <input class="field__input" type="text" name="nom" required
             value="{{ old('nom', $document->nom) }}"
-            placeholder="Ex : Développeur Web Full Stack, Licence en Droit — UAC 2023…">
+            placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023…">
           <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
         </div>
       </div>
@@ -69,7 +69,7 @@
       {{-- Détails complémentaires --}}
       <div class="form-section-label" style="margin-top:20px">
         Détails complémentaires
-        <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">— utile pour les CV, ignorez si autre document</span>
+        <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
       </div>
 
       <div class="form-row form-row--2">
@@ -143,7 +143,7 @@
               </svg>
             </div>
             <div class="upload-zone__title">Glissez votre fichier ici ou <span>cliquez pour charger</span></div>
-            <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP — max 5 Mo (optionnel)</div>
+            <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP, max 5 Mo (optionnel)</div>
           </div>
           <div class="file-preview" id="filePreview">
             <div class="file-preview__icon">
@@ -152,8 +152,8 @@
               </svg>
             </div>
             <div>
-              <div class="file-preview__name" id="previewName">—</div>
-              <div class="file-preview__meta" id="previewMeta">—</div>
+              <div class="file-preview__name" id="previewName">-</div>
+              <div class="file-preview__meta" id="previewMeta">-</div>
             </div>
             <button type="button" class="file-preview__remove" id="removeFile">✕</button>
           </div>
@@ -205,7 +205,7 @@
     input.value = '';
     zone.classList.remove('has-file');
     preview.classList.remove('visible');
-    name.textContent = meta.textContent = '—';
+    name.textContent = meta.textContent = '-';
   });
 })();
 </script>

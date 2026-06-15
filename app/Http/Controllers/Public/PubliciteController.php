@@ -7,6 +7,12 @@ use App\Models\Publicite;
 
 class PubliciteController extends Controller
 {
+    public function index()
+    {
+        $publicites = Publicite::actives()->with('user')->latest()->get();
+        return view('public.publicites', compact('publicites'));
+    }
+
     public function actives()
     {
         $publicites = Publicite::actives()

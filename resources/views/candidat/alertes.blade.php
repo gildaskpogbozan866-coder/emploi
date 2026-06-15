@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'Mes alertes emploi')
 
 @section('sidebar')
@@ -11,6 +11,48 @@
     <h1 class="cand-page-header__title">Mes alertes emploi</h1>
     <p class="cand-page-header__sub">Recevez les offres correspondant à votre profil directement par email</p>
   </div>
+</div>
+
+@if($alertLimit === 0)
+{{-- ── Accès bloqué : plan gratuit ─────────────────────────── --}}
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:56px 20px;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;max-width:520px;margin:0 auto">
+  <div style="width:64px;height:64px;background:#fef9c3;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  </div>
+  <h2 style="font-size:1.1rem;font-weight:800;color:#042C53;margin:0 0 10px">Fonctionnalité Premium</h2>
+  <p style="font-size:14px;color:#64748b;line-height:1.7;margin:0 0 24px;max-width:380px">
+    Les alertes emploi sont réservées aux abonnés <strong>Premium</strong>. Passez au Premium pour être notifié dès qu'une offre correspond à votre profil.
+  </p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+    <a href="{{ route('candidat.abonnement.plans') }}"
+       style="padding:11px 24px;background:#F5C842;color:#042C53;border-radius:9px;font-weight:800;font-size:13.5px;text-decoration:none">
+      Passer au Premium →
+    </a>
+    <a href="{{ route('candidat.dashboard') }}"
+       style="padding:11px 20px;background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:9px;font-weight:600;font-size:13px;text-decoration:none">
+      Retour au tableau de bord
+    </a>
+  </div>
+</div>
+
+@else
+{{-- ── Accès accordé ────────────────────────────────────────── --}}
+
+{{-- Bandeau quota --}}
+@php $remaining = $alertLimit - $alertes->count(); @endphp
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;margin-bottom:20px">
+  <span style="font-size:13px;color:#15803d;font-weight:600">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    {{ $alertes->count() }} / {{ $alertLimit }} alerte(s) utilisée(s)
+    @if($remaining > 0)
+      <span>{{ $remaining }} restante(s)</span>
+    @else
+      <span style="color:#dc2626">Limite atteinte</span>
+    @endif
+  </span>
+  @if($remaining <= 0)
+    <a href="{{ route('candidat.abonnement.plans') }}" style="font-size:12px;font-weight:700;color:#185FA5;text-decoration:none">Augmenter ma limite →</a>
+  @endif
 </div>
 
 <div class="alertes-grid" style="display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start">
@@ -65,44 +107,58 @@
         Créer une alerte
       </h2>
     </div>
-    <form method="POST" action="{{ route('candidat.alertes.store') }}">
-      @csrf
-      <div class="cand-form-group">
-        <label class="cand-form-label">Nom de l'alerte <span class="req">*</span></label>
-        <input class="cand-form-input" type="text" name="nom" value="{{ old('nom') }}" placeholder="Ex : Dev Web Cotonou" required>
+
+    @if($remaining <= 0)
+      <div style="padding:16px;text-align:center">
+        <p style="font-size:13px;color:#64748b;margin:0 0 12px;line-height:1.6">
+          Vous avez atteint votre limite de <strong>{{ $alertLimit }}</strong> alerte(s).<br>
+          Supprimez-en une ou passez au Premium pour en créer davantage.
+        </p>
+        <a href="{{ route('candidat.abonnement.plans') }}" style="display:inline-block;padding:9px 20px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:800;font-size:13px;text-decoration:none">
+          Voir les plans →
+        </a>
       </div>
-      <div class="cand-form-group">
-        <label class="cand-form-label">Mots-clés</label>
-        <input class="cand-form-input" type="text" name="mots_cles" value="{{ old('mots_cles') }}" placeholder="Développeur, Marketing…">
-      </div>
-      <div class="cand-form-group">
-        <label class="cand-form-label">Localisation</label>
-        <input class="cand-form-input" type="text" name="localisation" value="{{ old('localisation') }}" placeholder="Cotonou, Bénin…">
-      </div>
-      <div class="cand-form-group">
-        <label class="cand-form-label">Type de contrat</label>
-        <select class="cand-form-select" name="type_contrat">
-          <option value="">Tous les types</option>
-          @foreach(['CDI','CDD','Stage','Bourse','Freelance'] as $t)
-            <option value="{{ $t }}" {{ old('type_contrat') === $t ? 'selected' : '' }}>{{ $t }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div class="cand-form-group">
-        <label class="cand-form-label">Fréquence de notification <span class="req">*</span></label>
-        <select class="cand-form-select" name="frequence" required>
-          <option value="immediat" {{ old('frequence') === 'immediat' ? 'selected' : '' }}>Immédiat</option>
-          <option value="quotidien" {{ old('frequence', 'quotidien') === 'quotidien' ? 'selected' : '' }}>Quotidien</option>
-          <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire</option>
-        </select>
-      </div>
-      <div class="cand-form-actions">
-        <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%">Créer l'alerte</button>
-      </div>
-    </form>
+    @else
+      <form method="POST" action="{{ route('candidat.alertes.store') }}">
+        @csrf
+        <div class="cand-form-group">
+          <label class="cand-form-label">Nom de l'alerte <span class="req">*</span></label>
+          <input class="cand-form-input" type="text" name="nom" value="{{ old('nom') }}" placeholder="Ex : Dev Web Cotonou" required>
+        </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Mots-clés</label>
+          <input class="cand-form-input" type="text" name="mots_cles" value="{{ old('mots_cles') }}" placeholder="Développeur, Marketing…">
+        </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Localisation</label>
+          <input class="cand-form-input" type="text" name="localisation" value="{{ old('localisation') }}" placeholder="Cotonou, Bénin…">
+        </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Type de contrat</label>
+          <select class="cand-form-select" name="type_contrat">
+            <option value="">Tous les types</option>
+            @foreach(['CDI','CDD','Stage','Bourse','Freelance'] as $t)
+              <option value="{{ $t }}" {{ old('type_contrat') === $t ? 'selected' : '' }}>{{ $t }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Fréquence de notification <span class="req">*</span></label>
+          <select class="cand-form-select" name="frequence" required>
+            <option value="immediat"     {{ old('frequence') === 'immediat'     ? 'selected' : '' }}>Immédiat</option>
+            <option value="quotidien"    {{ old('frequence', 'quotidien') === 'quotidien'    ? 'selected' : '' }}>Quotidien</option>
+            <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire</option>
+          </select>
+        </div>
+        <div class="cand-form-actions">
+          <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%">Créer l'alerte</button>
+        </div>
+      </form>
+    @endif
   </div>
 
 </div>
+@endif
 
 <style>
 @media (max-width: 900px) {

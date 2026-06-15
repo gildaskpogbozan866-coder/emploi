@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Soumettre votre dossier')
 
 @section('content')
@@ -67,12 +67,12 @@
           @if($type->accepte_fichier)
             <div style="margin-bottom:{{ $type->accepte_texte ? '12px' : '0' }}">
               <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px">
-                Fichier (PDF, JPG, PNG — max 5 Mo)
+                Fichier (PDF, JPG, PNG, max 5 Mo)
               </label>
               @if($existant?->fichier)
                 <p style="font-size:12px;color:#16a34a;margin:0 0 6px;display:flex;align-items:center;gap:6px">
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  Fichier déjà soumis — laisser vide pour conserver
+                  Fichier déjà soumis, laisser vide pour conserver
                 </p>
               @endif
               <input type="file" name="fichier_{{ $type->id }}" accept=".pdf,.jpg,.jpeg,.png"

@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', $page->titre . ' — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', $page->titre . ', Emploi Bouge Bénin')
 
 @section('css')
 <style>

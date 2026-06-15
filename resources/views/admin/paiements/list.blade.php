@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Paiements — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Paiements | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -130,7 +130,7 @@
                 {{ ucfirst(str_replace(['abonnement_', '_'], ['', ' '], $paiement->type)) }}
               </span>
             @else
-              <span style="color:#cbd5e1">—</span>
+              <span style="color:#cbd5e1">-</span>
             @endif
           </td>
 
@@ -139,7 +139,7 @@
           </td>
 
           <td style="font-size:13px;color:#64748b">
-            {{ ucfirst(str_replace('_', ' ', $paiement->methode ?? '—')) }}
+            {{ ucfirst(str_replace('_', ' ', $paiement->methode ?? '-')) }}
           </td>
 
           <td>

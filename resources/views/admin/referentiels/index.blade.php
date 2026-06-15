@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', $label . ' — Administration')
+﻿@extends('layouts.admin')
+@section('title', $label . ', Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -40,7 +40,7 @@
             <td style="font-weight:600">{{ $item->libelle }}</td>
           @else
             <td style="font-weight:600">{{ $item->nom }}</td>
-            @if($hasDesc)<td style="color:#64748b;font-size:13px">{{ $item->description ?? '—' }}</td>@endif
+            @if($hasDesc)<td style="color:#64748b;font-size:13px">{{ $item->description ?? '-' }}</td>@endif
           @endif
           @if($hasOrdre)<td style="color:#64748b;text-align:center">{{ $item->ordre }}</td>@endif
           <td style="text-align:center">

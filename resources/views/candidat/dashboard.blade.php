@@ -1,4 +1,4 @@
-@extends('layouts.candidat')
+﻿@extends('layouts.candidat')
 @section('title', 'Mon espace Candidat')
 
 @section('sidebar')
@@ -106,6 +106,10 @@
 @endif
 
 {{-- Stats --}}
+@php
+  $isPremiumUser  = $abonnement && $abonnement->plan && !$abonnement->plan->is_free;
+  $canSeeViews    = $abonnement && $abonnement->plan && $abonnement->plan->getFeature('show_profile_views', '0') === '1';
+@endphp
 <div class="cand-stats">
   <div class="cand-stat">
     <div class="cand-stat__icon cand-stat__icon--blue">
@@ -132,8 +136,12 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
     </div>
     <div>
-      <div class="cand-stat__val">{{ $stats['offres_vues'] }}</div>
-      <div class="cand-stat__label">Candidatures vues</div>
+      @if($canSeeViews)
+        <div class="cand-stat__val">{{ $stats['offres_vues'] }}</div>
+      @else
+        <a href="{{ route('candidat.abonnement.plans') }}" style="display:inline-flex;align-items:center;gap:5px;background:#fef9c3;color:#92400e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;text-decoration:none;border:1px solid #fde68a">🔒 Premium</a>
+      @endif
+      <div class="cand-stat__label">Vues par recruteurs</div>
     </div>
   </div>
 
@@ -150,10 +158,21 @@
 
 {{-- Actions rapides --}}
 @php
-  $cvBloque  = $quotas && !$quotas['cvs']['unlimited'] && $quotas['cvs']['used'] >= $quotas['cvs']['limit'];
-  $appBloque = $quotas && !$quotas['candidatures']['unlimited'] && $quotas['candidatures']['used'] >= $quotas['candidatures']['limit'];
+  $cvBloque    = $quotas && !$quotas['cvs']['unlimited'] && $quotas['cvs']['used'] >= $quotas['cvs']['limit'];
+  $appBloque   = $quotas && !$quotas['candidatures']['unlimited'] && $quotas['candidatures']['used'] >= $quotas['candidatures']['limit'];
   $hasFeatured = $quotas && $quotas['featured_profile'];
 @endphp
+
+@if(!$isPremiumUser)
+<style>
+  .dash-main-wrap{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+  @media(max-width:900px){.dash-main-wrap{grid-template-columns:1fr}}
+  .dash-main-wrap .dash-premium-col{position:sticky;top:20px}
+</style>
+<div class="dash-main-wrap">
+<div>{{-- Colonne principale --}}
+@endif
+
 <div class="cand-card">
   <div class="cand-card__head">
     <h2 class="cand-card__title">Actions rapides</h2>
@@ -166,7 +185,7 @@
       Chercher des offres
     </a>
 
-    {{-- Déposer un CV — bloqué si quota atteint --}}
+    {{-- Déposer un CV, bloqué si quota atteint --}}
     @if($cvBloque)
     <a href="{{ route('candidat.abonnement.plans') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:18px 14px;text-decoration:none;color:#c2410c;font-size:13px;font-weight:600">
       <span style="position:relative;display:inline-block">
@@ -174,7 +193,7 @@
         <svg width="12" height="12" fill="#c2410c" viewBox="0 0 24 24" style="position:absolute;bottom:-3px;right:-5px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </span>
       Déposer un CV
-      <span style="font-size:11px;font-weight:400;color:#c2410c">Limite atteinte — Upgrader</span>
+      <span style="font-size:11px;font-weight:400;color:#c2410c">Limite atteinte, Upgrader</span>
     </a>
     @else
     <a href="{{ route('cv.public.depot') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'" onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
@@ -192,7 +211,7 @@
       Créer une alerte emploi
     </a>
 
-    {{-- Profil mis en avant — premium uniquement --}}
+    {{-- Profil mis en avant, premium uniquement --}}
     @if($hasFeatured)
     <a href="{{ route('candidat.profil') }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;border-radius:10px;padding:18px 14px;text-decoration:none;color:#92400e;font-size:13px;font-weight:600">
       <svg width="22" height="22" fill="#F5C842" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -213,6 +232,7 @@
 {{-- Dernières candidatures --}}
 <div class="cand-card">
   <div class="cand-card__head">
+
     <h2 class="cand-card__title">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Dernières candidatures
@@ -267,4 +287,62 @@
     </div>
   @endif
 </div>
+
+@if(!$isPremiumUser)
+</div>{{-- fin colonne principale --}}
+
+{{-- Colonne carte premium --}}
+<div class="dash-premium-col">
+  <div style="background:linear-gradient(160deg,#042C53 0%,#185FA5 100%);border-radius:16px;padding:24px 20px;color:#fff;position:relative;overflow:hidden">
+
+    {{-- Décor --}}
+    <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(245,200,66,.08);border-radius:50%;pointer-events:none"></div>
+
+    {{-- Badge --}}
+    <div style="display:inline-flex;align-items:center;gap:5px;background:#F5C842;color:#042C53;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:99px;margin-bottom:16px">
+      <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Premium
+    </div>
+
+    {{-- Titre --}}
+    <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.3">Boostez vos chances de trouver un emploi</h3>
+    <p style="font-size:12px;color:rgba(255,255,255,.65);margin:0 0 20px;line-height:1.6">Passez à la vitesse supérieure avec le plan Premium.</p>
+
+    {{-- Prix --}}
+    <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;margin-bottom:20px;text-align:center">
+      <div style="font-size:1.6rem;font-weight:900;color:#F5C842;line-height:1">1 500 <span style="font-size:.9rem;font-weight:700">FCFA</span></div>
+      <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:3px">par mois seulement</div>
+    </div>
+
+    {{-- Avantages --}}
+    <ul style="list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:10px">
+      @foreach([
+        ['M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z','Candidatures illimitées'],
+        ['M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12','Dépôt de plusieurs CV'],
+        ['M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z','Profil en tête de la CVthèque'],
+        ['M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z','CV recommandé aux entreprises'],
+        ['M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z','Vues de votre CV par recruteurs'],
+        ['M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9','Alertes emploi en temps réel'],
+      ] as [$icon, $label])
+      <li style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:rgba(255,255,255,.9)">
+        <span style="width:20px;height:20px;background:rgba(245,200,66,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/></svg>
+        </span>
+        {{ $label }}
+      </li>
+      @endforeach
+    </ul>
+
+    {{-- CTA --}}
+    <a href="{{ route('candidat.abonnement.plans') }}"
+       style="display:block;text-align:center;background:#F5C842;color:#042C53;padding:12px;border-radius:10px;font-weight:800;font-size:13.5px;text-decoration:none">
+      Passer Premium maintenant →
+    </a>
+    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);margin:10px 0 0">Sans engagement · Résiliable à tout moment</p>
+  </div>
+</div>
+
+</div>{{-- fin dash-main-wrap --}}
+@endif
+
 @endsection

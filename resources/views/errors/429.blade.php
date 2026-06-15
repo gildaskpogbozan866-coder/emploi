@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Trop de tentatives — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Trop de tentatives | Emploi Bouge Bénin')
 
 @section('content')
 <section class="error-page">

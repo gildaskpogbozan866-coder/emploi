@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Offre soumise — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Offre soumise | Emploi Bouge Bénin')
 
 @section('content')
 <section style="padding:80px 20px;background:#f8fafc;min-height:70vh;display:flex;align-items:center;justify-content:center">

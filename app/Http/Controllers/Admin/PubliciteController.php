@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Notifications\PubliciteApprouveeNotification;
 use App\Notifications\PubliciteRejeteNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class PubliciteController extends Controller
@@ -40,7 +41,18 @@ class PubliciteController extends Controller
 
     public function approuver(Publicite $publicite)
     {
-        $publicite->update(['statut' => 'approuve', 'note_admin' => null]);
+        $today = Carbon::today();
+
+        // Si date_debut est vide ou dans le futur → mise en ligne immédiate
+        $dateDebut = $publicite->date_debut && $publicite->date_debut->lte($today)
+            ? $publicite->date_debut
+            : $today;
+
+        $publicite->update([
+            'statut'     => 'approuve',
+            'note_admin' => null,
+            'date_debut' => $dateDebut,
+        ]);
 
         $annonceur = $publicite->user;
 

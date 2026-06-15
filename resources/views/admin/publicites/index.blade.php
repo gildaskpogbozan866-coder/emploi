@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Publicités — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Publicités | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -70,7 +70,7 @@
             </td>
             <td style="font-size:12.5px;color:#64748b">
               @if($pub->date_debut || $pub->date_fin)
-                {{ $pub->date_debut?->format('d/m/Y') ?? '—' }}→{{ $pub->date_fin?->format('d/m/Y') ?? '∞' }}
+                {{ $pub->date_debut?->format('d/m/Y') ?? '-' }}→{{ $pub->date_fin?->format('d/m/Y') ?? '∞' }}
               @else
                 <span style="color:#94a3b8">Sans limite</span>
               @endif

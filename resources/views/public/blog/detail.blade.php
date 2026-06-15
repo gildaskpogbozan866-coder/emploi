@@ -1,6 +1,47 @@
-@extends('layouts.app')
-@section('title', $article->titre . ' — Blog Emploi Bouge Bénin')
-@section('description', $article->extrait)
+﻿@extends('layouts.app')
+@section('title', $article->titre . ' | Blog Emploi Bénin, Emploi Bouge Bénin')
+@section('description', Str::limit(strip_tags($article->extrait ?? ''), 160))
+@section('canonical', route('blog.detail', $article->slug))
+@section('og_type', 'article')
+@section('og_title', $article->titre)
+@section('og_description', Str::limit(strip_tags($article->extrait ?? ''), 160))
+@if($article->image) @section('og_image', asset('storage/' . $article->image)) @endif
+
+@section('jsonld')
+@php
+$articleSchema = [
+  '@context'         => 'https://schema.org',
+  '@type'            => 'Article',
+  'headline'         => $article->titre,
+  'description'      => Str::limit(strip_tags($article->extrait ?? ''), 160),
+  'url'              => route('blog.detail', $article->slug),
+  'datePublished'    => $article->publie_le?->toIso8601String(),
+  'dateModified'     => $article->updated_at->toIso8601String(),
+  'inLanguage'       => 'fr-FR',
+  'author'           => ['@type' => 'Organization', 'name' => 'Emploi Bouge Bénin', 'url' => route('home')],
+  'publisher'        => [
+    '@type' => 'Organization',
+    'name'  => 'Emploi Bouge Bénin',
+    'logo'  => ['@type' => 'ImageObject', 'url' => asset('images/Logo.png')],
+  ],
+  'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => route('blog.detail', $article->slug)],
+];
+if ($article->image) {
+  $articleSchema['image'] = ['@type' => 'ImageObject', 'url' => asset('storage/' . $article->image)];
+}
+$breadcrumb = [
+  '@context'        => 'https://schema.org',
+  '@type'           => 'BreadcrumbList',
+  'itemListElement' => [
+    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil',       'item' => route('home')],
+    ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog',          'item' => route('blog.list')],
+    ['@type' => 'ListItem', 'position' => 3, 'name' => $article->titre, 'item' => route('blog.detail', $article->slug)],
+  ],
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumb, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/blog/detail-blog.css') }}">

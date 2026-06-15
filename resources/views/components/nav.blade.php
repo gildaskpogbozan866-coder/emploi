@@ -9,10 +9,11 @@
         <li><a href="{{ route('a-propos') }}" class="nav__link {{ request()->routeIs('a-propos') ? 'nav__link--active' : '' }}">À propos</a></li>
         <li><a href="{{ route('service.list') }}" class="nav__link {{ request()->routeIs('service.*') ? 'nav__link--active' : '' }}">Services</a></li>
         <li><a href="{{ route('offre.list') }}" class="nav__link {{ request()->routeIs('offre.*') ? 'nav__link--active' : '' }}">Offres d'emploi</a></li>
+        <li><a href="{{ route('publicites.index') }}" class="nav__link {{ request()->routeIs('publicites.*') ? 'nav__link--active' : '' }}">Publicités</a></li>
         <li><a href="{{ route('contact') }}" class="nav__link {{ request()->routeIs('contact') ? 'nav__link--active' : '' }}">Contact</a></li>
       </ul>
       <div class="nav__actions">
-        <a href="{{ route('cv.public.depot') }}" class="nav__cta">
+        <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="nav__cta">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           Déposer mon CV
         </a>
@@ -24,6 +25,7 @@
             <a href="{{ match(auth()->user()->role) {
               'admin'     => route('admin.dashboard'),
               'recruteur' => route('recruteur.dashboard'),
+              'annonceur' => route('annonceur.dashboard'),
               default     => route('candidat.dashboard')
             } }}" class="nav__btn-outline" style="display:flex;align-items:center;gap:6px;padding:8px 14px">
               <span style="width:22px;height:22px;border-radius:50%;background:#042C53;color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center">{{ auth()->user()->initiale }}</span>
@@ -48,9 +50,10 @@
       <li><a href="{{ route('a-propos') }}" class="nav__mobile-link">À propos</a></li>
       <li><a href="{{ route('service.list') }}" class="nav__mobile-link">Services</a></li>
       <li><a href="{{ route('offre.list') }}" class="nav__mobile-link">Offres d'emploi</a></li>
+      <li><a href="{{ route('publicites.index') }}" class="nav__mobile-link">Publicités</a></li>
       <li><a href="{{ route('contact') }}" class="nav__mobile-link">Contact</a></li>
     </ul>
-    <a href="{{ route('cv.public.depot') }}" class="nav__mobile-cta">Déposer mon CV</a>
+    <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="nav__mobile-cta">Déposer mon CV</a>
     @guest
       <div class="nav__mobile-auth">
         <a href="{{ route('auth.connexion') }}" class="nav__btn-outline">Connexion</a>
@@ -61,6 +64,7 @@
         <a href="{{ match(auth()->user()->role) {
           'admin'     => route('admin.dashboard'),
           'recruteur' => route('recruteur.dashboard'),
+          'annonceur' => route('annonceur.dashboard'),
           default     => route('candidat.dashboard')
         } }}" class="nav__btn-filled" style="text-align:center;display:block">Mon espace</a>
         <form method="POST" action="{{ route('auth.deconnecter') }}">

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\CV;
 use App\Models\Offre;
 use App\Models\ParametreApp;
+use App\Models\Service;
 
 class SitemapController extends Controller
 {
@@ -20,6 +22,9 @@ class SitemapController extends Controller
             ['url' => route('a-propos'),         'priority' => '0.5', 'changefreq' => 'monthly'],
             ['url' => route('contact'),          'priority' => '0.5', 'changefreq' => 'monthly'],
             ['url' => route('faq'),              'priority' => '0.4', 'changefreq' => 'monthly'],
+            ['url' => route('seo.emploi-cotonou'),   'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['url' => route('seo.recrutement-benin'),'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['url' => route('seo.stage-benin'),      'priority' => '0.8', 'changefreq' => 'weekly'],
         ];
 
         $offres = Offre::active()
@@ -34,7 +39,17 @@ class SitemapController extends Controller
             ->limit(200)
             ->get();
 
-        $content = view('public.sitemap', compact('staticPages', 'offres', 'articles'))->render();
+        $services = Service::where('actif', true)
+            ->select('slug', 'updated_at')
+            ->get();
+
+        $cvs = CV::visible()
+            ->select('id', 'updated_at')
+            ->orderByDesc('updated_at')
+            ->limit(300)
+            ->get();
+
+        $content = view('public.sitemap', compact('staticPages', 'offres', 'articles', 'services', 'cvs'))->render();
 
         return response($content, 200)->header('Content-Type', 'application/xml');
     }

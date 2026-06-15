@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'CVs & Documents — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'CVs & Documents | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -108,8 +108,8 @@
             <div style="font-size:12px;color:#94a3b8">{{ $doc->user->email }}</div>
           </td>
           <td style="font-weight:500;color:#042C53">{{ $doc->nom }}</td>
-          <td><span class="adm-badge adm-badge--blue">{{ $doc->type->nom ?? '—' }}</span></td>
-          <td style="color:#64748b">{{ $doc->pays ?? '—' }}</td>
+          <td><span class="adm-badge adm-badge--blue">{{ $doc->type->nom ?? '-' }}</span></td>
+          <td style="color:#64748b">{{ $doc->pays ?? '-' }}</td>
           <td style="color:#94a3b8;font-size:12px">{{ $doc->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="actions">

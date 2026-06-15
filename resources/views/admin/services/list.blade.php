@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Services — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Services | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -28,9 +28,9 @@
               <div style="font-size:12px;color:#94a3b8">{{ Str::limit($service->description, 60) }}</div>
             @endif
           </td>
-          <td style="color:#64748b;font-size:13px">{{ $service->type ?? '—' }}</td>
+          <td style="color:#64748b;font-size:13px">{{ $service->type ?? '-' }}</td>
           <td style="font-weight:700;color:#185FA5">{{ number_format($service->prix, 0, ',', ' ') }} FCFA</td>
-          <td style="color:#64748b;font-size:13px">{{ $service->delai ?? '—' }}</td>
+          <td style="color:#64748b;font-size:13px">{{ $service->delai ?? '-' }}</td>
           <td style="text-align:center"><strong>{{ $service->commandes_count }}</strong></td>
           <td>
             <span class="adm-badge adm-badge--{{ $service->actif ? 'green' : 'red' }}">

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'Espace Candidat') — Emploi Bouge Bénin</title>
+  <title>@yield('title', 'Espace Candidat') | Emploi Bouge Bénin</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />

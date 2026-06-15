@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', isset($faq) ? 'Modifier la question' : 'Nouvelle question')
 
 @section('css')
@@ -41,7 +41,7 @@
     <div class="adm-form-field">
       <label class="adm-form-label">
         Catégorie
-        <small>— ex : Candidats, Recruteurs, Général</small>
+        <small>ex : Candidats, Recruteurs, Général</small>
       </label>
       <input type="text" name="categorie"
              value="{{ old('categorie', $faq->categorie ?? '') }}"
@@ -64,7 +64,7 @@
              class="adm-form-input">
     </div>
 
-    {{-- Réponse — Summernote --}}
+    {{-- Réponse, Summernote --}}
     <div class="adm-form-field">
       <label class="adm-form-label">Réponse</label>
       <textarea id="summernote-faq" name="reponse">{{ old('reponse', $faq->reponse ?? '') }}</textarea>

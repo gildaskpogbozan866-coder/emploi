@@ -1,5 +1,5 @@
-@extends('layouts.candidat')
-@section('title', 'Mon profil — Emploi Bouge Bénin')
+﻿@extends('layouts.candidat')
+@section('title', 'Mon profil | Emploi Bouge Bénin')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/candidat/profil.css') }}">
@@ -170,7 +170,7 @@
                 [
                     'done' => $user->competences->count() >= 3,
                     'label' => 'Compétences (min. 3)',
-                    'hint' => 'Vous en avez ' . $user->competences->count() . '/3 — ajoutez les vôtres',
+                    'hint' => 'Vous en avez ' . $user->competences->count() . '/3, ajoutez les vôtres',
                     'pts' => 10,
                     'action' => "openModal('modal-comp')",
                 ],
@@ -216,7 +216,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3" />
                     </svg>
                     {{ $missing->count() }} élément{{ $missing->count() > 1 ? 's' : '' }}
-                    manquant{{ $missing->count() > 1 ? 's' : '' }} — {{ $missing->sum('pts') }} pts à gagner
+                    manquant{{ $missing->count() > 1 ? 's' : '' }}, {{ $missing->sum('pts') }} pts à gagner
                 </div>
                 <div class="cp-checklist-grid">
                     @foreach ($missing as $item)
@@ -265,7 +265,7 @@
                     stroke-width="2.5" style="vertical-align:-2px">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                Profil 100% complet — félicitations !
+                Profil 100% complet, félicitations !
             </div>
         @endif
     </div>
@@ -395,7 +395,7 @@
                                     <div class="cp-timeline__title">{{ $formation->diplome }}</div>
                                     <div class="cp-timeline__sub">{{ $formation->etablissement }}</div>
                                     <div class="cp-timeline__meta">
-                                        <span>{{ $formation->date_debut->format('Y') }} —
+                                        <span>{{ $formation->date_debut->format('Y') }}
                                             {{ $formation->en_cours ? 'En cours' : $formation->date_fin?->format('Y') ?? '' }}</span>
                                         @if ($formation->domaine)
                                             <span>· {{ $formation->domaine }}</span>
@@ -657,7 +657,7 @@
                                 <div class="cp-pref__val" style="font-size:11px">
                                     @if ($profil->salaire_min || $profil->salaire_max)
                                         {{ number_format($profil->salaire_min ?? 0, 0, ',', ' ') }}@if ($profil->salaire_max)
-                                            — {{ number_format($profil->salaire_max, 0, ',', ' ') }}
+                                           , {{ number_format($profil->salaire_max, 0, ',', ' ') }}
                                         @endif FCFA
                                     @else
                                         N/D @endif
@@ -856,7 +856,7 @@
           <div class="cand-form-group">
             <label class="cand-form-label">Photo de profil</label>
             <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="cand-form-input" style="padding:7px">
-            <div class="cand-form-hint">JPG, PNG ou WebP — max 2 Mo</div>
+            <div class="cand-form-hint">JPG, PNG ou WebP, max 2 Mo</div>
           </div>
           <div class="cp-modal__actions">
             <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-infos')">Annuler</button>
@@ -913,7 +913,7 @@
                             style="flex-shrink:0;white-space:nowrap">+ Ajouter</button>
                     </div>
                     <div id="exp-missions-list"></div>
-                    <div class="cand-form-hint">Max 20 missions — Entrée ou clic sur Ajouter</div>
+                    <div class="cand-form-hint">Max 20 missions, Entrée ou clic sur Ajouter</div>
                 </div>
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
@@ -968,7 +968,7 @@
                             Ajouter</button>
                     </div>
                     <div id="form-activites-list"></div>
-                    <div class="cand-form-hint">Max 20 activités — Entrée ou clic sur Ajouter</div>
+                    <div class="cand-form-hint">Max 20 activités, Entrée ou clic sur Ajouter</div>
                 </div>
                 <div class="cp-modal__actions">
                     <button type="button" class="cand-btn cand-btn--outline"
@@ -993,7 +993,7 @@
                 <div class="cand-form-group">
                     <label class="cand-form-label">Compétence <span class="req">*</span></label>
                     <select id="comp-competence-id" class="cand-form-select">
-                        <option value="">— Choisir une compétence —</option>
+                        <option value="">Choisir une compétence</option>
                         @foreach ($competences as $comp)
                             <option value="{{ $comp->id }}">{{ $comp->nom }}</option>
                         @endforeach
@@ -1036,7 +1036,7 @@
           <select id="lang-niveau" class="cand-form-select">
             <option value="">-- Choisir un niveau --</option>
             @foreach($niveauxLangue as $nl)
-              <option value="{{ $nl->id }}">{{ $nl->code }} — {{ $nl->libelle }}</option>
+              <option value="{{ $nl->id }}">{{ $nl->code }}, {{ $nl->libelle }}</option>
             @endforeach
           </select>
         </div>
@@ -1063,7 +1063,7 @@
             <label class="cand-form-label">Photos <span class="req">*</span></label>
             <input type="file" name="photos[]" class="cand-form-input" accept="image/jpeg,image/png,image/webp"
                    multiple style="padding:7px">
-            <div class="cand-form-hint">JPG, PNG ou WebP — max 3 Mo par photo — max 8 photos au total</div>
+            <div class="cand-form-hint">JPG, PNG ou WebP, max 3 Mo par photo, max 8 photos au total</div>
           </div>
           <div class="cand-form-group">
             <label class="cand-form-label">Description (optionnelle)</label>
@@ -1248,7 +1248,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox
                     showToast(status === 403 ? 'Action non autorisée.' : (data.message ??
                         'Erreur lors de la suppression.'), true);
                 }
-            }).catch(() => showToast('Erreur réseau — réessayez.', true));
+            }).catch(() => showToast('Erreur réseau, réessayez.', true));
         }
 
         // Expériences
@@ -1301,7 +1301,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox
             } = await ajax(editingExpId ? `/candidat/profil/experiences/${editingExpId}` :
                 '/candidat/profil/experiences', editingExpId ? 'PUT' : 'POST', body);
             if (!ok) {
-                showToast(data.errors ? Object.values(data.errors).flat().join(' — ') : (data.message ?? 'Erreur.'),
+                showToast(data.errors ? Object.values(data.errors).flat().join(', ') : (data.message ?? 'Erreur.'),
                     true);
                 return;
             }
@@ -1361,7 +1361,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox
             } = await ajax(editingFormId ? `/candidat/profil/formations/${editingFormId}` :
                 '/candidat/profil/formations', editingFormId ? 'PUT' : 'POST', body);
             if (!ok) {
-                showToast(data.errors ? Object.values(data.errors).flat().join(' — ') : (data.message ?? 'Erreur.'),
+                showToast(data.errors ? Object.values(data.errors).flat().join(', ') : (data.message ?? 'Erreur.'),
                     true);
                 return;
             }
@@ -1456,7 +1456,7 @@ const _flash = document.getElementById('flash-data');
 if(_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
 @if($errors->any())
   openModal('modal-infos');
-  showToast({{ Js::from(implode(' — ', $errors->all())) }}, true);
+  showToast({{ Js::from(implode(', ', $errors->all())) }}, true);
 @endif
 </script>
 <style>

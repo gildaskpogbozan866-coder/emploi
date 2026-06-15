@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Mes offres d\'emploi')
 
 @section('sidebar')
@@ -82,7 +82,7 @@
               {{ ucfirst(str_replace('_',' ',$offre->statut)) }}
             </span>
           </td>
-          <td style="color:#94a3b8;font-size:12.5px">{{ $offre->date_limite?->format('d/m/Y') ?? '—' }}</td>
+          <td style="color:#94a3b8;font-size:12.5px">{{ $offre->date_limite?->format('d/m/Y') ?? '-' }}</td>
           <td>
             <div class="actions">
 
@@ -103,7 +103,7 @@
                             title="Mettre en avant">★ Mettre en avant</button>
                   </form>
                 @else
-                  <span style="font-size:12px;color:#cbd5e1;padding:0 4px" title="Limite de mise en avant atteinte">★ —</span>
+                  <span style="font-size:12px;color:#cbd5e1;padding:0 4px" title="Limite de mise en avant atteinte">★</span>
                 @endif
               @endif
 

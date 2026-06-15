@@ -1,5 +1,19 @@
-@extends('layouts.app')
-@section('title', 'CVthèque — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'CVthèque Bénin | Recrutez des talents béninois | Emploi Bouge Bénin')
+@section('description', 'Accédez à la CVthèque de talents au Bénin. Recruteurs : consultez des CV vérifiés de candidats qualifiés à Cotonou et dans tout le Bénin. Déposez votre CV gratuitement.')
+
+@section('jsonld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"{{ route('home') }}"},
+    {"@type":"ListItem","position":2,"name":"CVthèque","item":"{{ route('cv.public.theque') }}"}
+  ]
+}
+</script>
+@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
@@ -12,7 +26,7 @@
   <div class="container page-hero__inner">
     <span class="badge badge--blue">CVthèque</span>
     <h1 class="page-hero__title">Trouvez le bon profil</h1>
-    <p class="page-hero__subtitle">{{ $cvs->total() }} CV{{ $cvs->total() > 1 ? 's' : '' }} de candidats disponibles — mis à jour en continu</p>
+    <p class="page-hero__subtitle">{{ $cvs->total() }} CV{{ $cvs->total() > 1 ? 's' : '' }} de candidats disponibles, mis à jour en continu</p>
   </div>
 </section>
 

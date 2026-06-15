@@ -1,4 +1,4 @@
-<footer class="footer">
+﻿<footer class="footer">
   <div class="container">
     <div class="footer__grid">
 
@@ -44,6 +44,18 @@
         </ul>
       </div>
 
+      {{-- Colonne SEO --}}
+      <div class="footer-col">
+        <p class="footer__col-title">Emploi au Bénin</p>
+        <ul class="footer__nav-list">
+          <li><a href="{{ route('seo.emploi-cotonou') }}">Emploi à Cotonou</a></li>
+          <li><a href="{{ route('seo.recrutement-benin') }}">Recrutement au Bénin</a></li>
+          <li><a href="{{ route('seo.stage-benin') }}">Stages au Bénin</a></li>
+          <li><a href="{{ route('offre.list', ['type' => 'CDI']) }}">CDI au Bénin</a></li>
+          <li><a href="{{ route('offre.list', ['type' => 'CDD']) }}">CDD au Bénin</a></li>
+        </ul>
+      </div>
+
       {{-- Colonne infos & contact --}}
       <div class="footer-col">
         <p class="footer__col-title">Informations</p>
@@ -82,7 +94,7 @@
   <div class="footer__bottom">
     <div class="container">
       <div class="footer__bottom-inner">
-        <p class="footer__copyright">© {{ date('Y') }} Emploi Bouge Bénin — Tous droits réservés</p>
+        <p class="footer__copyright">© {{ date('Y') }} Emploi Bouge Bénin, Tous droits réservés</p>
         <p class="footer__credit">Conçu avec <svg width="13" height="13" fill="#e53e3e" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-2px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> pour la jeunesse africaine</p>
       </div>
     </div>

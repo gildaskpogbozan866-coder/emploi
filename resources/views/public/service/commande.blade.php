@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Commander — ' . $service->nom)
+﻿@extends('layouts.app')
+@section('title', 'Commander | ' . $service->nom)
 
 @section('content')
 <section style="padding:48px 20px 64px;background:#f8fafc;min-height:70vh">
@@ -71,7 +71,7 @@
         <div style="margin-bottom:24px">
           <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:8px">
             Joindre un document
-            <span style="font-weight:400;color:#94a3b8;font-size:12px">— optionnel (CV actuel, notes…)</span>
+            <span style="font-weight:400;color:#94a3b8;font-size:12px">optionnel (CV actuel, notes…)</span>
           </label>
           <label style="display:flex;align-items:center;gap:14px;padding:18px 20px;border:2px dashed #cbd5e0;border-radius:12px;cursor:pointer;background:#fafafa"
                  onmouseover="this.style.borderColor='#185FA5';this.style.background='#f0f7ff'"
@@ -83,7 +83,7 @@
             </div>
             <div style="flex:1">
               <p id="commFileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre un fichier</p>
-              <p style="font-size:12px;color:#94a3b8;margin:3px 0 0">PDF, DOC, DOCX, TXT — 10 Mo maximum</p>
+              <p style="font-size:12px;color:#94a3b8;margin:3px 0 0">PDF, DOC, DOCX, TXT, 10 Mo maximum</p>
             </div>
             <input type="file" name="fichier_joint" accept=".pdf,.doc,.docx,.txt" style="display:none"
                    onchange="document.getElementById('commFileLabel').textContent = this.files[0] ? this.files[0].name : 'Cliquer pour joindre un fichier'">

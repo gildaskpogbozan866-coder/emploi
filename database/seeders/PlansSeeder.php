@@ -22,10 +22,12 @@ class PlansSeeder extends Seeder
                 'is_free'       => true,
                 'is_active'     => true,
                 'features'      => [
-                    'cv_limit'         => '1',
-                    'job_apply_limit'  => '10',
-                    'candidate_search' => '0',
-                    'featured_profile' => '0',
+                    'cv_limit'           => '1',
+                    'job_apply_limit'    => '10',
+                    'candidate_search'   => '0',
+                    'featured_profile'   => '0',
+                    'show_profile_views' => '0',
+                    'alert_limit'        => '0',
                 ],
             ],
             [
@@ -39,10 +41,12 @@ class PlansSeeder extends Seeder
                 'is_free'       => false,
                 'is_active'     => true,
                 'features'      => [
-                    'cv_limit'         => '5',
-                    'job_apply_limit'  => '100',
-                    'candidate_search' => '0',
-                    'featured_profile' => '1',
+                    'cv_limit'           => '5',
+                    'job_apply_limit'    => '100',
+                    'candidate_search'   => '0',
+                    'featured_profile'   => '1',
+                    'show_profile_views' => '1',
+                    'alert_limit'        => '5',
                 ],
             ],
             [

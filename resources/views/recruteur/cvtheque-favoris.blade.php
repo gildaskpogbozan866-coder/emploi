@@ -1,5 +1,5 @@
-@extends('layouts.recruteur')
-@section('title', 'CVs favoris — CVthèque')
+﻿@extends('layouts.recruteur')
+@section('title', 'CVs favoris | CVthèque')
 
 @section('sidebar')
 @include('recruteur._sidebar')

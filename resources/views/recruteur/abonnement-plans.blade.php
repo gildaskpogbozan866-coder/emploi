@@ -1,5 +1,5 @@
-@extends('layouts.recruteur')
-@section('title', 'Choisir un plan — Recruteur')
+﻿@extends('layouts.recruteur')
+@section('title', 'Choisir un plan | Recruteur')
 
 @section('sidebar')
 @include('recruteur._sidebar')

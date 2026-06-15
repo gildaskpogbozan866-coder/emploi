@@ -9,5 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('offres:expirer')->dailyAt('01:00');
+Schedule::command('publicites:expirer')->dailyAt('01:30');
 Schedule::command('alertes:envoyer quotidien')->dailyAt('07:00');
 Schedule::command('alertes:envoyer hebdomadaire')->weeklyOn(1, '08:00'); // lundi 8h

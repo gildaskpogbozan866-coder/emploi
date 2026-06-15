@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Services — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Services | Emploi Bouge Bénin')
 @section('description', 'Des services concrets pour trouver un emploi, rédiger un CV professionnel et développer vos compétences en Afrique.')
 
 @section('css')
@@ -40,11 +40,11 @@
       <div class="cv-premium-card">
 
         <div class="cv-card__left">
-          <span class="cv-card__badge">Service n°1 — Très demandé</span>
+          <span class="cv-card__badge">Service n°1, Très demandé</span>
           <h2 class="cv-card__title">Arrêtez de postuler<br>dans le vide.</h2>
           <p class="cv-card__hook">
             Un recruteur décide en <strong>7 secondes</strong>. Si votre CV ne retient pas l'attention immédiatement,
-            votre candidature finit à la corbeille — même si vous êtes le meilleur candidat.
+            votre candidature finit à la corbeille, même si vous êtes le meilleur candidat.
             <strong>Ne laissez plus passer vos chances.</strong>
           </p>
           <ul class="cv-card__features">
@@ -52,7 +52,7 @@
             <li>Lettre de motivation ciblée et personnalisée à chaque poste</li>
             <li>Analyse complète de votre profil et de vos objectifs professionnels</li>
             <li>Livraison sous 48 h en format Word &amp; PDF, prêt à l'emploi</li>
-            <li>1 révision gratuite incluse — jusqu'à votre entière satisfaction</li>
+            <li>1 révision gratuite incluse, jusqu'à votre entière satisfaction</li>
           </ul>
           <div class="cv-card__proof">
             <div class="cv-card__proof-avatars">
@@ -131,7 +131,7 @@
           <h3 class="svc-item__title">{{ $service->nom }}</h3>
           <p class="svc-item__text">{{ $service->description }}</p>
           <a href="{{ route('service.commande', $service) }}" class="svc-item__link">
-            Commander — {{ number_format($service->prix, 0, ',', ' ') }} {{ $service->devise }} <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            Commander, {{ number_format($service->prix, 0, ',', ' ') }} {{ $service->devise }} <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
         @endforeach

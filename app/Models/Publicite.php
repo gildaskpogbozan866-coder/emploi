@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Publicite extends Model
 {
     protected $fillable = [
-        'user_id', 'titre', 'image', 'lien',
+        'user_id', 'plan_id', 'titre', 'image', 'lien',
         'note_annonceur', 'note_admin',
         'statut', 'date_debut', 'date_fin',
     ];
@@ -21,6 +21,11 @@ class Publicite extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(\App\Models\JobPublicationPlan::class, 'plan_id');
     }
 
     public function scopeActives(Builder $query): Builder
@@ -37,6 +42,7 @@ class Publicite extends Model
     public function getStatutLabelAttribute(): string
     {
         return match($this->statut) {
+            'brouillon'  => 'Paiement en cours',
             'en_attente' => 'En attente',
             'approuve'   => 'Approuvée',
             'rejete'     => 'Rejetée',
@@ -48,6 +54,7 @@ class Publicite extends Model
     public function getStatutBadgeAttribute(): string
     {
         return match($this->statut) {
+            'brouillon'  => 'gray',
             'en_attente' => 'yellow',
             'approuve'   => 'green',
             'rejete'     => 'red',

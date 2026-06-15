@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Profil CVthèque — ' . $cv->titre_poste . ' — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Profil CVthèque | ' . $cv->titre_poste . ', Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
@@ -28,7 +28,7 @@
 
     <div class="pub-card">
 
-      {{-- En-tête professionnel — visible par tous --}}
+      {{-- En-tête professionnel, visible par tous --}}
       <div style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:32px 28px;display:flex;align-items:center;gap:20px">
         <div style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">
           <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      {{-- Détails professionnels — visibles par tous --}}
+      {{-- Détails professionnels, visibles par tous --}}
       <div style="padding:28px">
 
         @if($cv->secteur)
@@ -135,7 +135,7 @@
             @csrf
             <button type="submit" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 20px;background:linear-gradient(135deg,#042C53,#185FA5);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14.5px;cursor:pointer;font-family:inherit">
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              Télécharger ce CV — 1 crédit
+              Télécharger ce CV, 1 crédit
             </button>
           </form>
           @endif

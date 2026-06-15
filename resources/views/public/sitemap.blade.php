@@ -23,4 +23,20 @@
     <changefreq>monthly</changefreq>
   </url>
 @endforeach
+@foreach($services as $service)
+  <url>
+    <loc>{{ route('service.detail', $service->slug) }}</loc>
+    <lastmod>{{ $service->updated_at->toAtomString() }}</lastmod>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+@endforeach
+@foreach($cvs as $cv)
+  <url>
+    <loc>{{ route('cv.public.detail', $cv) }}</loc>
+    <lastmod>{{ $cv->updated_at->toAtomString() }}</lastmod>
+    <priority>0.5</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+@endforeach
 </urlset>

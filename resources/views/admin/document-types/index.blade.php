@@ -1,10 +1,10 @@
-@extends('layouts.admin')
-@section('title', 'Documents recruteur — Configuration')
+﻿@extends('layouts.admin')
+@section('title', 'Documents recruteur | Configuration')
 
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
-    <h1>Documents requis — Recruteurs</h1>
+    <h1>Documents requis, Recruteurs</h1>
     <p>Définissez les justificatifs demandés lors de l'inscription d'un recruteur</p>
   </div>
   <div class="adm-topbar__right">
@@ -40,9 +40,9 @@
     <p style="font-size:15px;font-weight:700;color:#042C53;margin:0 0 4px">Validation des documents requise</p>
     <p style="font-size:13px;color:#64748b;margin:0">
       @if($validationActive)
-        <span style="color:#d97706;font-weight:600">Activée</span> — Les recruteurs doivent soumettre un dossier avant d'accéder au dashboard.
+        <span style="color:#d97706;font-weight:600">Activée</span>, Les recruteurs doivent soumettre un dossier avant d'accéder au dashboard.
       @else
-        <span style="color:#94a3b8;font-weight:600">Désactivée</span> — Les recruteurs accèdent directement après confirmation de leur email.
+        <span style="color:#94a3b8;font-weight:600">Désactivée</span>, Les recruteurs accèdent directement après confirmation de leur email.
       @endif
     </p>
   </div>
@@ -66,7 +66,7 @@
       <details>
         <summary style="padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;list-style:none">
           <div style="flex:1;display:flex;align-items:center;gap:12px">
-            <span style="font-size:12px;font-weight:700;color:#94a3b8;width:24px;text-align:center">{{ $type->ordre ?: '—' }}</span>
+            <span style="font-size:12px;font-weight:700;color:#94a3b8;width:24px;text-align:center">{{ $type->ordre ?: '-' }}</span>
             <div>
               <p style="font-size:14px;font-weight:700;color:#042C53;margin:0">{{ $type->nom }}</p>
               @if($type->description)

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'Espace Recruteur') — Emploi Bouge Bénin</title>
+  <title>@yield('title', 'Espace Recruteur') | Emploi Bouge Bénin</title>
   <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
   <link rel="stylesheet" href="{{ asset('css/recruteur/recruteur.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />

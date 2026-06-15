@@ -12,9 +12,12 @@
       Votre paiement n'a pas pu être traité. Aucun montant n'a été débité.
     </p>
     @php
-      $dashRoute = auth()->user()->hasRole('recruteur')
-        ? route('recruteur.dashboard')
-        : route('candidat.dashboard');
+      $dashRoute = match(auth()->user()->role) {
+        'recruteur' => route('recruteur.dashboard'),
+        'annonceur' => route('annonceur.dashboard'),
+        'admin'     => route('admin.dashboard'),
+        default     => route('candidat.dashboard'),
+      };
     @endphp
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="{{ route('payment.choose', $paiement) }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">

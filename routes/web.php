@@ -4,6 +4,7 @@ use App\Enums\Permission;
 use App\Enums\Role;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\OffreController;
 use App\Http\Controllers\Public\ServiceController;
@@ -56,6 +57,7 @@ use App\Http\Controllers\Admin\ParametreController as AdminParametre;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\SeoController as AdminSeo;
 use App\Http\Controllers\Public\SitemapController;
+use App\Http\Controllers\Public\SeoLandingController;
 use App\Http\Controllers\Admin\VerificationRecruteurController;
 use App\Http\Controllers\Admin\RecruteurDocumentTypeController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessage;
@@ -76,12 +78,37 @@ use App\Http\Controllers\Recruteur\VerificationController as RecruteurVerifCtrl;
 use App\Http\Controllers\Annonceur\DashboardController as AnnonceurDashboard;
 use App\Http\Controllers\Annonceur\PubliciteController as AnnonceurPublicite;
 use App\Http\Controllers\Admin\PubliciteController as AdminPublicite;
+use App\Http\Controllers\Admin\PartenaireController as AdminPartenaire;
 use App\Http\Controllers\Public\PubliciteController as PublicPublicite;
 use App\Models\ParametreApp;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // API publique — annonces actives pour le widget homepage
 Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name('publicites.actives');
+
+// PWA manifest dynamique
+Route::get('/manifest.json', function () {
+    return response()->json([
+        'name'             => 'Emploi Bouge Bénin',
+        'short_name'       => 'EmploiBénin',
+        'description'      => 'La plateforme d\'emploi numéro 1 au Bénin. Offres vérifiées, CV en ligne, recrutement.',
+        'start_url'        => url('/'),
+        'scope'            => url('/'),
+        'display'          => 'standalone',
+        'orientation'      => 'portrait',
+        'background_color' => '#042C53',
+        'theme_color'      => '#042C53',
+        'lang'             => 'fr',
+        'icons'            => [
+            ['src' => asset('images/Logo.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any maskable'],
+            ['src' => asset('images/Logo.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any maskable'],
+        ],
+        'categories' => ['business', 'productivity'],
+    ])->header('Content-Type', 'application/manifest+json');
+})->name('pwa.manifest');
+
+// Page publique des affichages publicitaires
+Route::get('/affichages-publicitaires', [PublicPublicite::class, 'index'])->name('publicites.index');
 
 // ════════════════════════════════════════════════════════
 //  PAGES PUBLIQUES
@@ -91,6 +118,13 @@ Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name
 // ════════════════════════════════════════════════════════
 Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt',  [SitemapController::class, 'robots'])->name('robots');
+
+// ════════════════════════════════════════════════════════
+//  SEO Landing Pages — mots-clés cibles
+// ════════════════════════════════════════════════════════
+Route::get('/emploi-cotonou',       [SeoLandingController::class, 'emploiCotonou'])->name('seo.emploi-cotonou');
+Route::get('/recrutement-benin',    [SeoLandingController::class, 'recrutementBenin'])->name('seo.recrutement-benin');
+Route::get('/stage-benin',          [SeoLandingController::class, 'stageBenin'])->name('seo.stage-benin');
 
 Route::get('/',          [HomeController::class, 'index'])->name('home');
 Route::get('/a-propos',  [HomeController::class, 'aPropos'])->name('a-propos');
@@ -176,6 +210,12 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/changer-mot-de-passe', [AuthController::class, 'changerMotDePasse'])->name('changer-mot-de-passe.store')->middleware('auth');
 
     Route::post('/deconnecter', [AuthController::class, 'deconnecter'])->name('deconnecter')->middleware('auth');
+
+    // Google OAuth
+    Route::get('/google',          [GoogleController::class, 'redirect'])->name('google');
+    Route::get('/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+    Route::get('/google/role',     [GoogleController::class, 'showRoleSelect'])->name('google.role');
+    Route::post('/google/create',  [GoogleController::class, 'createWithRole'])->name('google.create');
 });
 
 // ════════════════════════════════════════════════════════
@@ -350,6 +390,7 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
         Route::get('/cvtheque/favoris',             [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
         Route::get('/cvtheque/{cv}',                [CvthequeController::class, 'show'])->name('cvtheque.show');
         Route::post('/cvtheque/{cv}/telecharger',   [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
+        Route::get('/cvtheque/{cv}/pdf',            [CvthequeController::class, 'telechargerPdf'])->name('cvtheque.pdf');
         Route::post('/cvtheque/{cv}/favoris',       [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
     });
 
@@ -671,6 +712,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
             Route::delete('/{niveauExperience}',      [AdminNiveauxExperience::class, 'destroy'])->name('destroy');
         });
 
+    });
+
+    // Partenaires / logos de confiance
+    Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->prefix('partenaires')->name('partenaires.')->group(function () {
+        Route::get('/',                       [AdminPartenaire::class, 'index'])->name('index');
+        Route::post('/',                      [AdminPartenaire::class, 'store'])->name('store');
+        Route::put('/{partenaire}',           [AdminPartenaire::class, 'update'])->name('update');
+        Route::delete('/{partenaire}',        [AdminPartenaire::class, 'destroy'])->name('destroy');
     });
 
     // Notifications admin

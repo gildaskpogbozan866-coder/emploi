@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Nouveau plan de publication — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Nouveau plan de publication | Administration')
 
 @section('content')
 <div class="adm-topbar">

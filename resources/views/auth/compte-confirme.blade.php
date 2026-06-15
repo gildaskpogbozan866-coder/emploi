@@ -1,5 +1,5 @@
-@extends('layouts.auth')
-@section('title', 'Compte confirmé — Emploi Bouge Bénin')
+﻿@extends('layouts.auth')
+@section('title', 'Compte confirmé | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/auth/compte-confirme.css') }}">

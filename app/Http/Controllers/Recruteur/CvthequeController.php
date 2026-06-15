@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Recruteur;
 use App\Http\Controllers\Controller;
 use App\Models\CV;
 use App\Models\CvDownload;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -103,6 +104,40 @@ class CvthequeController extends Controller
             'Content-Type'        => Storage::disk('public')->mimeType($cv->fichier_path),
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    public function telechargerPdf(CV $cv)
+    {
+        if (!$cv->visible) {
+            abort(404);
+        }
+
+        $user = Auth::user();
+
+        $affected = DB::table('users')
+            ->where('id', $user->id)
+            ->where('cv_credits', '>', 0)
+            ->decrement('cv_credits');
+
+        if ($affected === 0) {
+            return redirect()->route('cv.public.tarif')
+                ->with('info', 'Vous n\'avez plus de crédits. Achetez un pack pour télécharger des CVs.');
+        }
+
+        CvDownload::create([
+            'recruteur_id' => $user->id,
+            'cv_id'        => $cv->id,
+        ]);
+
+        $cv->load('candidat');
+
+        $pdf = Pdf::loadView('pdf.cv', compact('cv'))
+            ->setPaper('a4', 'portrait');
+
+        $slug     = Str::slug(($cv->candidat?->prenom ?? '') . '-' . ($cv->candidat?->nom ?? '') ?: 'candidat');
+        $filename = 'fiche-' . $slug . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function toggleFavoris(CV $cv)

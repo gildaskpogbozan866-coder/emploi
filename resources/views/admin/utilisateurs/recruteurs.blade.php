@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Recruteurs — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Recruteurs | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -37,7 +37,7 @@
               <a href="{{ route('admin.utilisateurs.recruteurs.detail', $user) }}" style="font-weight:600;color:#042C53;text-decoration:none">{{ $user->nom_complet }}</a>
             </div>
           </td>
-          <td style="color:#64748b">{{ $user->entreprise ?? '—' }}</td>
+          <td style="color:#64748b">{{ $user->entreprise ?? '-' }}</td>
           <td style="color:#64748b;font-size:12.5px">{{ $user->email }}</td>
           <td><strong>{{ $user->offres_count }}</strong></td>
           <td>

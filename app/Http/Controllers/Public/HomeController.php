@@ -7,6 +7,7 @@ use App\Models\Offre;
 use App\Models\CV;
 use App\Models\Article;
 use App\Models\Faq;
+use App\Models\Partenaire;
 use App\Models\Plan;
 
 class HomeController extends Controller
@@ -27,7 +28,9 @@ class HomeController extends Controller
             ->where('target_type', 'annonceur')
             ->with('features')->orderBy('price')->get();
 
-        return view('public.index', compact('offres', 'cvs', 'articles', 'plansCandidats', 'plansRecruteurs', 'plansAnnonceurs'));
+        $partenaires = Partenaire::actifs()->get();
+
+        return view('public.index', compact('offres', 'cvs', 'articles', 'plansCandidats', 'plansRecruteurs', 'plansAnnonceurs', 'partenaires'));
     }
 
     public function aPropos()

@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Abonnements souscrits — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Abonnements souscrits | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -92,13 +92,13 @@
 
           {{-- Utilisateur --}}
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $ab->user?->nom_complet ?? '—' }}</div>
+            <div style="font-weight:600;color:#042C53">{{ $ab->user?->nom_complet ?? '-' }}</div>
             <div style="font-size:12px;color:#94a3b8">{{ $ab->user?->email }}</div>
           </td>
 
           {{-- Plan --}}
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $ab->plan?->name ?? '—' }}</div>
+            <div style="font-weight:600;color:#042C53">{{ $ab->plan?->name ?? '-' }}</div>
             @if($ab->plan)
               <span class="adm-badge adm-badge--{{ match($ab->plan->target_type) {
                 'candidat'  => 'blue',
@@ -125,13 +125,13 @@
                 {{ number_format($ab->plan->price, 0, ',', ' ') }} {{ $ab->plan->currency }}
               </span>
             @else
-              <span style="color:#cbd5e1">—</span>
+              <span style="color:#cbd5e1">-</span>
             @endif
           </td>
 
           {{-- Début --}}
           <td style="color:#64748b;font-size:12.5px">
-            {{ $ab->starts_at?->format('d/m/Y') ?? '—' }}
+            {{ $ab->starts_at?->format('d/m/Y') ?? '-' }}
           </td>
 
           {{-- Expiration --}}
@@ -151,7 +151,7 @@
             @if($ab->auto_renew)
               <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5" title="Renouvellement auto"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             @else
-              <span style="color:#cbd5e1;font-size:12px">—</span>
+              <span style="color:#cbd5e1;font-size:12px">-</span>
             @endif
           </td>
 

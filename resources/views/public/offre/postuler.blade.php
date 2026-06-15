@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Postuler — ' . $offre->titre)
+﻿@extends('layouts.app')
+@section('title', 'Postuler | ' . $offre->titre)
 
 @section('content')
 <section class="section" style="background:#f8fafc;min-height:70vh">
@@ -76,7 +76,7 @@
         <div style="margin-bottom:24px">
           <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:8px">
             Message de motivation
-            <span style="font-weight:400;color:#64748b;font-size:12px">— optionnel</span>
+            <span style="font-weight:400;color:#64748b;font-size:12px">optionnel</span>
           </label>
           <textarea name="message_motivation" rows="7"
                     placeholder="Expliquez en quelques mots pourquoi vous correspondez à ce poste, vos motivations et vos points forts…"
@@ -90,7 +90,7 @@
         <div style="margin-bottom:28px">
           <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
             Document à joindre
-            <span style="font-weight:400;color:#64748b;font-size:12px">— optionnel</span>
+            <span style="font-weight:400;color:#64748b;font-size:12px">optionnel</span>
           </label>
 
           <input type="hidden" name="cv_id"       id="selectedCvId"  value="{{ old('cv_id') }}">
@@ -157,7 +157,7 @@
               </div>
               <div style="flex:1;min-width:0">
                 <p id="fileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre un fichier</p>
-                <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX — 5 Mo maximum</p>
+                <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX, 5 Mo maximum</p>
               </div>
               <input type="file" name="cv_file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none"
                      onchange="onFileChosen(this)">

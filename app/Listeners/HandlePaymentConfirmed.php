@@ -5,9 +5,13 @@ namespace App\Listeners;
 use App\Enums\Role;
 use App\Events\PaymentConfirmed;
 use App\Models\Commande;
+use App\Models\Notification;
+use App\Models\Publicite;
 use App\Models\User;
 use App\Notifications\NouvelleCommandeServiceNotification;
+use App\Notifications\NouvellePubliciteAdminNotification;
 use App\Notifications\PaiementConfirmeNotification;
+use App\Notifications\PubliciteSoumiseNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +25,7 @@ class HandlePaymentConfirmed
             'cv_credits'                                  => $this->activateCvCredits($paiement),
             'abonnement_recruteur', 'abonnement_candidat' => $this->activateAbonnement($paiement),
             'service'                                     => $this->confirmCommande($paiement),
+            'publicite'                                   => $this->submitPublicite($paiement),
             default                                       => null,
         };
 
@@ -45,12 +50,58 @@ class HandlePaymentConfirmed
             'statut'          => 'en_cours',
         ]);
 
+        $client  = $commande->user;
+        $service = $commande->service?->nom ?? 'Service';
+
         $admins = User::role(Role::ADMIN)->get();
         foreach ($admins as $admin) {
             try {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'type'    => 'commande',
+                    'titre'   => 'Nouvelle commande à traiter',
+                    'contenu' => ($client?->nom_complet ?? 'Un client') . " a commandé « {$service} » et vient de payer.",
+                    'lien'    => route('admin.commandes.detail', $commande),
+                ]);
                 $admin->notify(new NouvelleCommandeServiceNotification($commande, $paiement));
             } catch (\Throwable $e) {
                 Log::warning('Notification admin commande service non envoyée', ['error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    private function submitPublicite($paiement): void
+    {
+        $publicite = $paiement->payable;
+        if (!$publicite instanceof Publicite) return;
+
+        $publicite->update(['statut' => 'en_attente']);
+
+        $annonceur = $publicite->user;
+
+        // Notification in-app + email à tous les admins
+        $admins = User::role(Role::ADMIN)->get();
+        foreach ($admins as $admin) {
+            try {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'type'    => 'publicite',
+                    'titre'   => 'Nouvelle publicité à valider',
+                    'contenu' => ($annonceur?->nom_complet ?? 'Un annonceur') . " a soumis une publicité : « {$publicite->titre} ».",
+                    'lien'    => route('admin.publicites.show', $publicite),
+                ]);
+                $admin->notify(new NouvellePubliciteAdminNotification($publicite));
+            } catch (\Throwable $e) {
+                Log::warning('Notification admin publicite non envoyée', ['error' => $e->getMessage()]);
+            }
+        }
+
+        // Email de confirmation à l'annonceur
+        if ($annonceur) {
+            try {
+                $annonceur->notify(new PubliciteSoumiseNotification($publicite));
+            } catch (\Throwable $e) {
+                Log::warning('Notification annonceur publicite non envoyée', ['error' => $e->getMessage()]);
             }
         }
     }

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Vérifications recruteurs')
 
 @section('content')
@@ -55,7 +55,7 @@
             <div style="font-weight:600;color:#111827">{{ $v->user->prenom }} {{ $v->user->nom }}</div>
             <div style="font-size:.78rem;color:#6b7280">{{ $v->user->email }}</div>
           </td>
-          <td style="padding:12px 16px;color:#374151">{{ $v->user->entreprise ?? '—' }}</td>
+          <td style="padding:12px 16px;color:#374151">{{ $v->user->entreprise ?? '-' }}</td>
           <td style="padding:12px 16px;color:#6b7280;font-size:.82rem">{{ $v->created_at->format('d/m/Y H:i') }}</td>
           <td style="padding:12px 16px;text-align:center">
             @if($v->statut === 'en_attente')

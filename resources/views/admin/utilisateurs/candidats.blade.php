@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Candidats — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Candidats | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -40,7 +40,7 @@
             </div>
           </td>
           <td style="color:#64748b;font-size:12.5px">{{ $user->email }}</td>
-          <td style="color:#64748b">{{ $user->pays ?? '—' }}</td>
+          <td style="color:#64748b">{{ $user->pays ?? '-' }}</td>
           <td><strong>{{ $user->cvs->count() }}</strong></td>
           <td>
             <span class="adm-badge adm-badge--{{ $user->actif ? 'green' : 'red' }}">

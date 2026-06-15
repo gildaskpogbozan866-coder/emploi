@@ -1,5 +1,5 @@
-@extends('layouts.admin')
-@section('title', 'Profil recruteur — Administration')
+﻿@extends('layouts.admin')
+@section('title', 'Profil recruteur | Administration')
 
 @section('content')
 <div class="adm-topbar">
@@ -26,7 +26,7 @@
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom complet</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->nom_complet }}</p></div>
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->email }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Entreprise</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->entreprise ?? '—' }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Entreprise</p><p style="font-weight:600;color:#042C53;margin:0">{{ $user->entreprise ?? '-' }}</p></div>
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Abonnement</p>
         @if($user->premium)
           <span class="adm-badge adm-badge--yellow">★ Premium</span>

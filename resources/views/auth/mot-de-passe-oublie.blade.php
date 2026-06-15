@@ -1,5 +1,5 @@
-@extends('layouts.auth')
-@section('title', 'Mot de passe oublié — Emploi Bouge Bénin')
+﻿@extends('layouts.auth')
+@section('title', 'Mot de passe oublié | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/auth/mot-de-passe-oublie.css') }}">

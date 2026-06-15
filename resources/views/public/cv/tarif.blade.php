@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Packs crédits CVthèque — Emploi Bouge Bénin')
+﻿@extends('layouts.app')
+@section('title', 'Packs crédits CVthèque | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">

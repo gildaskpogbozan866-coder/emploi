@@ -1,5 +1,5 @@
-@extends('layouts.recruteur')
-@section('title', 'Messagerie — Recruteur')
+﻿@extends('layouts.recruteur')
+@section('title', 'Messagerie | Recruteur')
 
 @section('sidebar')
 @include('recruteur._sidebar')
