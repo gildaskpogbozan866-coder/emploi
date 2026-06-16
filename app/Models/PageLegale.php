@@ -11,9 +11,10 @@ class PageLegale extends Model
     public static function slugs(): array
     {
         return [
-            'mentions-legales'       => 'Mentions légales',
-            'politique-confidentialite' => 'Politique de confidentialité',
-            'cgv'                    => 'Conditions Générales de Vente',
+            'mentions-legales'                => 'Mentions légales',
+            'conditions-generales-utilisation' => "Conditions Générales d'Utilisation",
+            'conditions-generales-de-vente'   => 'Conditions Générales de Vente',
+            'politique-confidentialite'        => 'Politique de confidentialité',
         ];
     }
 }

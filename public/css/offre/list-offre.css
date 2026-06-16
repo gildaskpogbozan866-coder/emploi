@@ -65,20 +65,18 @@
 .ol-tabs {
   background: #f8f9fb;
   border-bottom: 1px solid #e4e7ec;
-  padding: 0 20px;
+  padding: 8px 20px 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.ol-tabs::-webkit-scrollbar { display: none; }
 .ol-tab {
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
   color: #6b7280;
   text-decoration: none;
-  padding: 13px 18px;
+  padding: 10px 16px 12px;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
   transition: color .18s, border-color .18s;
@@ -443,8 +441,8 @@
   .ol-hero { padding: 24px 14px 22px; }
   .ol-card { flex-direction: column; gap: 10px; padding: 14px 14px; }
   .ol-card__avatar { width: 42px; height: 42px; font-size: 14px; }
-  .ol-tabs { padding: 0 14px; }
-  .ol-tab { padding: 11px 12px; font-size: 12px; }
+  .ol-tabs { padding: 6px 14px 0; }
+  .ol-tab { padding: 8px 11px 10px; font-size: 12px; }
 }
 @media (max-width: 768px) {
   .ol-hero__input, .ol-finput, .ol-fselect { font-size: 16px !important; }

@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\ContactMessage;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NouveauMessageContactNotification extends Notification
+class NouveauMessageContactNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
     public function __construct(public ContactMessage $message) {}
 
     public function via($notifiable): array

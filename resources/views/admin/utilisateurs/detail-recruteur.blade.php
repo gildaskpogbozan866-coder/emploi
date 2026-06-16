@@ -15,6 +15,15 @@
         {{ $user->actif ? 'Suspendre' : 'Réactiver' }}
       </button>
     </form>
+    <form method="POST" action="{{ route('admin.utilisateurs.destroy', $user) }}"
+          data-confirm="Supprimer définitivement le compte de {{ $user->nom_complet }} ? Toutes ses offres et données seront supprimées. Action irréversible."
+          data-confirm-btn="Supprimer le compte">
+      @csrf @method('DELETE')
+      <button type="submit" class="adm-btn adm-btn--danger">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-right:5px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        Supprimer le compte
+      </button>
+    </form>
   </div>
 </div>
 

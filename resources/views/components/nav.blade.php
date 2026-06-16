@@ -13,10 +13,12 @@
         <li><a href="{{ route('contact') }}" class="nav__link {{ request()->routeIs('contact') ? 'nav__link--active' : '' }}">Contact</a></li>
       </ul>
       <div class="nav__actions">
+        @if(!auth()->check() || auth()->user()->hasRole('candidat'))
         <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="nav__cta">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           Déposer mon CV
         </a>
+        @endif
         @guest
           <a href="{{ route('auth.connexion') }}" class="nav__btn-outline">Connexion</a>
           <a href="{{ route('auth.inscription') }}" class="nav__btn-filled">Inscription</a>
@@ -53,7 +55,9 @@
       <li><a href="{{ route('publicites.index') }}" class="nav__mobile-link">Publicités</a></li>
       <li><a href="{{ route('contact') }}" class="nav__mobile-link">Contact</a></li>
     </ul>
+    @if(!auth()->check() || auth()->user()->hasRole('candidat'))
     <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="nav__mobile-cta">Déposer mon CV</a>
+    @endif
     @guest
       <div class="nav__mobile-auth">
         <a href="{{ route('auth.connexion') }}" class="nav__btn-outline">Connexion</a>

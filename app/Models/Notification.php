@@ -24,4 +24,14 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeNonLues($query)
+    {
+        return $query->where('lu', false);
+    }
+
+    public function scopeParType($query, string $type)
+    {
+        return $query->where('type', $type);
+    }
 }

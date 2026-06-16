@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\RecruteurVerification;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NouvelleVerificationRecruteur extends Notification
+class NouvelleVerificationRecruteur extends Notification implements ShouldQueue
 {
+    use Queueable;
     public function __construct(public RecruteurVerification $verification) {}
 
     public function via($notifiable): array

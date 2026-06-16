@@ -139,8 +139,8 @@
           <label class="aform__label" for="pays">Pays</label>
           <select class="aform__input aform__select" id="pays" name="pays" required>
             <option value="">-- Sélectionnez votre pays --</option>
-            @foreach(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','Madagascar','Autre'] as $pays)
-              <option value="{{ $pays }}" {{ old('pays') === $pays ? 'selected' : '' }}>{{ $pays }}</option>
+            @foreach($paysList as $p)
+              <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>
         </div>

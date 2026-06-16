@@ -61,6 +61,12 @@
                   {{ $user->actif ? 'Suspendre' : 'Réactiver' }}
                 </button>
               </form>
+              <form method="POST" action="{{ route('admin.utilisateurs.destroy', $user) }}"
+                    data-confirm="Supprimer définitivement le compte de {{ $user->nom_complet }} ? Cette action est irréversible."
+                    data-confirm-btn="Supprimer">
+                @csrf @method('DELETE')
+                <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>
+              </form>
             </div>
           </td>
         </tr>

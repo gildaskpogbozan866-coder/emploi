@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\RecruteurDocument;
 use App\Models\RecruteurVerification;
+use App\Notifications\VerificationApprouveeNotification;
+use App\Notifications\VerificationRejeteNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class VerificationRecruteurController extends Controller
@@ -58,8 +62,30 @@ class VerificationRecruteurController extends Controller
             'note_admin'  => null,
         ]);
 
+        $recruteur = $verification->user;
+
+        // Notification in-app au recruteur
+        try {
+            Notification::create([
+                'user_id' => $recruteur->id,
+                'type'    => 'message',
+                'titre'   => 'Dossier approuvé',
+                'contenu' => 'Votre dossier de vérification a été approuvé. Vous avez maintenant accès à toutes les fonctionnalités recruteur.',
+                'lien'    => route('recruteur.dashboard'),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Notification in-app approbation non créée', ['error' => $e->getMessage()]);
+        }
+
+        // Email au recruteur
+        try {
+            $recruteur->notify(new VerificationApprouveeNotification($verification));
+        } catch (\Throwable $e) {
+            Log::warning('Email VerificationApprouvee non envoyé', ['error' => $e->getMessage()]);
+        }
+
         return redirect()->route('admin.verifications.show', $verification)
-            ->with('success', 'Compte recruteur approuvé. L\'entreprise a maintenant accès au dashboard.');
+            ->with('success', 'Compte recruteur approuvé. Le recruteur a été notifié par e-mail.');
     }
 
     public function rejeter(Request $request, RecruteurVerification $verification)
@@ -77,8 +103,30 @@ class VerificationRecruteurController extends Controller
             'note_admin'  => $request->note_admin,
         ]);
 
+        $recruteur = $verification->user;
+
+        // Notification in-app au recruteur
+        try {
+            Notification::create([
+                'user_id' => $recruteur->id,
+                'type'    => 'message',
+                'titre'   => 'Dossier non approuvé',
+                'contenu' => "Votre dossier de vérification n'a pas été approuvé. Motif : {$request->note_admin}",
+                'lien'    => route('recruteur.verification'),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Notification in-app rejet non créée', ['error' => $e->getMessage()]);
+        }
+
+        // Email au recruteur
+        try {
+            $recruteur->notify(new VerificationRejeteNotification($verification, $request->note_admin));
+        } catch (\Throwable $e) {
+            Log::warning('Email VerificationRejete non envoyé', ['error' => $e->getMessage()]);
+        }
+
         return redirect()->route('admin.verifications.show', $verification)
-            ->with('success', 'Dossier rejeté. Le recruteur en sera informé.');
+            ->with('success', 'Dossier rejeté. Le recruteur a été notifié par e-mail.');
     }
 
     public function servirDocument(RecruteurDocument $document)

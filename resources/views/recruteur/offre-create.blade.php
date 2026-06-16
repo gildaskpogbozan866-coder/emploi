@@ -1,6 +1,24 @@
 ﻿@extends('layouts.recruteur')
 @section('title', 'Publier une offre')
 
+@section('css')
+@include('partials._jquery-cdn')
+@once
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/fr.js"></script>
+@endonce
+<style>
+#metier-select-create + .select2-container .select2-selection--single {
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+</style>
+@endsection
+
 @section('sidebar')
 @include('recruteur._sidebar')
 @endsection
@@ -60,8 +78,39 @@
         </div>
 
         <div class="rec-form-group">
+          <label>Métier / Fonction</label>
+          <select name="metier" id="metier-select-create" style="width:100%">
+            <option value="">Sélectionner un métier…</option>
+            @foreach($metiers as $m)
+              <option value="{{ $m->nom }}" {{ old('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
+            @endforeach
+          </select>
+          @error('metier')<small style="color:#e53e3e">{{ $message }}</small>@enderror
+        </div>
+        <div class="rec-form-group">
           <label>Date limite de candidature</label>
           <input type="date" name="date_limite" value="{{ old('date_limite') }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+        </div>
+
+        <div class="rec-form-group">
+          <label>Niveau d'expérience</label>
+          <select name="niveau_experience">
+            <option value="">Non précisé</option>
+            @foreach($niveauxExp as $n)
+              <option value="{{ $n->code }}" {{ old('niveau_experience') === $n->code ? 'selected' : '' }}>{{ $n->libelle }}</option>
+            @endforeach
+          </select>
+          @error('niveau_experience')<small style="color:#e53e3e">{{ $message }}</small>@enderror
+        </div>
+        <div class="rec-form-group">
+          <label>Niveau d'études requis</label>
+          <select name="niveau_etude">
+            <option value="">Non précisé</option>
+            @foreach($niveauxEtude as $n)
+              <option value="{{ $n->code }}" {{ old('niveau_etude') === $n->code ? 'selected' : '' }}>{{ $n->libelle }}</option>
+            @endforeach
+          </select>
+          @error('niveau_etude')<small style="color:#e53e3e">{{ $message }}</small>@enderror
         </div>
 
         <div class="rec-form-group full">
@@ -98,4 +147,25 @@
     </form>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+(function () {
+  function initMetierSelect() {
+    if (!window.$ || !$.fn.select2) return;
+    $('#metier-select-create').select2({
+      language: 'fr',
+      placeholder: 'Rechercher un métier…',
+      allowClear: true,
+      width: '100%',
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMetierSelect);
+  } else {
+    initMetierSelect();
+  }
+})();
+</script>
 @endsection

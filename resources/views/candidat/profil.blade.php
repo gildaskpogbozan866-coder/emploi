@@ -800,7 +800,12 @@
           </div>
           <div class="cand-form-group">
             <label class="cand-form-label">Pays</label>
-            <input type="text" name="pays" class="cand-form-input" value="{{ old('pays', $user->pays) }}">
+            <select name="pays" class="cand-form-select">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($paysList as $p)
+                <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
+              @endforeach
+            </select>
           </div>
           <div class="cand-form-grid">
             <div class="cand-form-group">

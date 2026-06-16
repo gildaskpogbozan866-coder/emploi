@@ -16,10 +16,12 @@ class PaiementController extends Controller
 
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->whereHas('user', fn ($sq) => $sq
-                ->where('prenom', 'like', "%$q%")
-                ->orWhere('nom',   'like', "%$q%")
-                ->orWhere('email', 'like', "%$q%")
+            $query->where(fn($sq) => $sq
+                ->whereHas('user', fn($u) => $u
+                    ->where('prenom', 'like', "%$q%")
+                    ->orWhere('nom',   'like', "%$q%")
+                    ->orWhere('email', 'like', "%$q%"))
+                ->orWhere('reference', 'like', "%$q%")
             );
         }
 
@@ -37,6 +39,18 @@ class PaiementController extends Controller
             }
         }
 
+        if ($request->filled('methode')) {
+            $query->where('methode', $request->methode);
+        }
+
+        if ($request->filled('date_debut')) {
+            $query->whereDate('created_at', '>=', $request->date_debut);
+        }
+
+        if ($request->filled('date_fin')) {
+            $query->whereDate('created_at', '<=', $request->date_fin);
+        }
+
         $paiements = $query->paginate(20)->withQueryString();
 
         $stats = [
@@ -47,7 +61,9 @@ class PaiementController extends Controller
             'count_credits_attente'=> Paiement::where('type', 'cv_credits')->where('statut', 'en_attente')->count(),
         ];
 
-        return view('admin.paiements.list', compact('paiements', 'stats'));
+        $methodes = Paiement::whereNotNull('methode')->distinct()->pluck('methode')->sort()->values();
+
+        return view('admin.paiements.list', compact('paiements', 'stats', 'methodes'));
     }
 
     public function show(Paiement $paiement)

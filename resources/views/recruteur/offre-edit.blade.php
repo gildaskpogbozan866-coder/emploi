@@ -1,6 +1,15 @@
 ﻿@extends('layouts.recruteur')
 @section('title', 'Modifier l\'offre')
 
+@section('css')
+@include('partials._jquery-cdn')
+@once
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/fr.js"></script>
+@endonce
+@endsection
+
 @section('sidebar')
 @include('recruteur._sidebar')
 @endsection
@@ -69,6 +78,40 @@
       </div>
 
       <div style="margin-bottom:18px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Métier / Fonction</label>
+        <select name="metier" id="metier-select-edit" style="width:100%">
+          <option value="">Sélectionner un métier…</option>
+          @foreach($metiers as $m)
+            <option value="{{ $m->nom }}" {{ old('metier', $offre->metier) === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
+          @endforeach
+        </select>
+        @error('metier')<p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p>@enderror
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Niveau d'expérience</label>
+          <select name="niveau_experience" style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
+            <option value="">Non précisé</option>
+            @foreach($niveauxExp as $n)
+              <option value="{{ $n->code }}" {{ old('niveau_experience', $offre->niveau_experience) === $n->code ? 'selected' : '' }}>{{ $n->libelle }}</option>
+            @endforeach
+          </select>
+          @error('niveau_experience')<p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p>@enderror
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Niveau d'études requis</label>
+          <select name="niveau_etude" style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
+            <option value="">Non précisé</option>
+            @foreach($niveauxEtude as $n)
+              <option value="{{ $n->code }}" {{ old('niveau_etude', $offre->niveau_etude) === $n->code ? 'selected' : '' }}>{{ $n->libelle }}</option>
+            @endforeach
+          </select>
+          @error('niveau_etude')<p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p>@enderror
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Description complète <span style="color:#e53e3e">*</span></label>
         <x-summernote name="description" :value="old('description', $offre->description)" :height="300" />
         @error('description') <p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p> @enderror
@@ -105,4 +148,25 @@
     </form>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+(function () {
+  function initMetierSelect() {
+    if (!window.$ || !$.fn.select2) return;
+    $('#metier-select-edit').select2({
+      language: 'fr',
+      placeholder: 'Rechercher un métier…',
+      allowClear: true,
+      width: '100%',
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMetierSelect);
+  } else {
+    initMetierSelect();
+  }
+})();
+</script>
 @endsection

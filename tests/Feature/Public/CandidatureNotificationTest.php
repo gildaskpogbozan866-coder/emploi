@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Models\RecruteurVerification;
 use App\Models\User;
 use App\Notifications\CandidatureRecueNotification;
+use App\Notifications\NouvellesCandidatureRecruteurNotification;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -123,6 +124,25 @@ class CandidatureNotificationTest extends TestCase
             'user_id' => $recruteur->id,
             'type'    => 'candidature',
         ]);
+    }
+
+    public function test_soumission_envoie_email_au_recruteur(): void
+    {
+        NotificationFacade::fake();
+
+        $recruteur = $this->creerRecruteur();
+        $candidat  = $this->creerCandidat();
+        $offre     = $this->creerOffre($recruteur);
+
+        $this->actingAs($candidat)
+            ->post(route('offre.postuler.store', $offre), [
+                'message_motivation' => 'Motivé !',
+            ]);
+
+        NotificationFacade::assertSentTo(
+            $recruteur,
+            NouvellesCandidatureRecruteurNotification::class,
+        );
     }
 
     public function test_soumission_en_double_bloquee(): void

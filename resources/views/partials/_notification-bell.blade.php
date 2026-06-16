@@ -5,7 +5,13 @@
     'annonceur'  => 'annonceur.notifications.lues',
     default      => 'candidat.notifications.lues',
   };
-  $seeAllRoute = auth()->user()->role === 'candidat' ? route('candidat.notifications') : null;
+  $seeAllRoute = match(auth()->user()->role) {
+    'candidat'  => route('candidat.notifications'),
+    'recruteur' => route('recruteur.notifications'),
+    'admin'     => route('admin.notifications'),
+    'annonceur' => route('annonceur.notifications'),
+    default     => null,
+  };
 @endphp
 
 <div class="notif-bell" id="notifBell">

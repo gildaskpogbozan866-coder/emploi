@@ -39,6 +39,29 @@ class CVController extends Controller
             $query->where('secteur', 'like', '%'.$request->secteur.'%');
         }
 
+        if ($request->filled('langue')) {
+            $query->where('langues', 'like', '%'.$request->langue.'%');
+        }
+
+        if ($request->filled('metier')) {
+            $query->where(function ($sq) use ($request) {
+                $sq->where('metier', 'like', '%'.$request->metier.'%')
+                   ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
+            });
+        }
+
+        if ($request->filled('niveau_etude')) {
+            $query->where('niveau_etude', $request->niveau_etude);
+        }
+
+        if ($request->filled('type_contrat')) {
+            $query->where('type_contrat', $request->type_contrat);
+        }
+
+        if ($request->filled('niveau_experience')) {
+            $query->where('niveau_experience', $request->niveau_experience);
+        }
+
         $cvs = $query->paginate(12)->withQueryString();
         return view('public.cv.theque', compact('cvs'));
     }
@@ -51,10 +74,7 @@ class CVController extends Controller
 
         $cv->load('candidat');
 
-        $user = Auth::user();
-        $canSeePersonalInfo = $user && $user->hasRole('recruteur') && $user->cv_credits > 0;
-
-        return view('public.cv.detail', compact('cv', 'canSeePersonalInfo'));
+        return view('public.cv.detail', compact('cv'));
     }
 
     public function tarif()

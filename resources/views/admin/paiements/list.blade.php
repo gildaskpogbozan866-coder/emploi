@@ -59,34 +59,164 @@
   </div>
 </div>
 
-{{-- Filtres --}}
-<div class="adm-filters" style="margin-bottom:16px">
-  <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;align-items:center">
+{{-- ── FILTRES ── --}}
+@php
+  $filtresActifs = collect([
+    'q'          => request('q')          ? 'Recherche : "'.request('q').'"'            : null,
+    'statut'     => request('statut')     ? 'Statut : '.match(request('statut')) { 'confirme'=>'Confirmé','en_attente'=>'En attente','echec'=>'Échec','rembourse'=>'Remboursé',default=>request('statut')} : null,
+    'categorie'  => request('categorie')  ? 'Catégorie : '.match(request('categorie')) { 'abonnement'=>'Abonnements','cv_credits'=>'Crédits CVthèque','service'=>'Services',default=>request('categorie')} : null,
+    'methode'    => request('methode')    ? 'Méthode : '.ucfirst(str_replace('_',' ',request('methode'))) : null,
+    'date_debut' => request('date_debut') ? 'Depuis : '.request('date_debut')           : null,
+    'date_fin'   => request('date_fin')   ? 'Jusqu\'au : '.request('date_fin')          : null,
+  ])->filter();
+  $hasFilters = $filtresActifs->isNotEmpty();
+@endphp
 
-    <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher un utilisateur…"
-           class="adm-input" style="flex:1;min-width:200px;max-width:280px">
+<div class="adm-card" style="margin-bottom:20px;padding:0;overflow:visible">
 
-    <select name="statut" class="adm-select">
-      <option value="">Tous les statuts</option>
-      <option value="en_attente" {{ request('statut') === 'en_attente' ? 'selected' : '' }}>En attente</option>
-      <option value="confirme"   {{ request('statut') === 'confirme'   ? 'selected' : '' }}>Confirmé</option>
-      <option value="echec"      {{ request('statut') === 'echec'      ? 'selected' : '' }}>Échec</option>
-      <option value="rembourse"  {{ request('statut') === 'rembourse'  ? 'selected' : '' }}>Remboursé</option>
-    </select>
-
-    <select name="categorie" class="adm-select">
-      <option value="">Toutes catégories</option>
-      <option value="abonnement"  {{ request('categorie') === 'abonnement'  ? 'selected' : '' }}>Abonnements</option>
-      <option value="cv_credits"  {{ request('categorie') === 'cv_credits'  ? 'selected' : '' }}>Crédits CVthèque</option>
-      <option value="service"     {{ request('categorie') === 'service'     ? 'selected' : '' }}>Services / Commandes</option>
-    </select>
-
-    <button type="submit" class="adm-btn adm-btn--primary">Filtrer</button>
-
-    @if(request()->hasAny(['q', 'statut', 'categorie']))
-      <a href="{{ route('admin.paiements.list') }}" class="adm-btn adm-btn--outline">Effacer</a>
+  {{-- En-tête filtres --}}
+  <div style="padding:14px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      <span style="font-size:13px;font-weight:700;color:#042C53">Filtres</span>
+      @if($hasFilters)
+        <span style="background:#eff6ff;color:#185FA5;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">{{ $filtresActifs->count() }} actif{{ $filtresActifs->count() > 1 ? 's' : '' }}</span>
+      @endif
+    </div>
+    @if($hasFilters)
+      <a href="{{ route('admin.paiements.list') }}" style="font-size:12.5px;color:#94a3b8;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Tout effacer
+      </a>
     @endif
+  </div>
+
+  {{-- Formulaire --}}
+  <form method="GET" id="filterForm">
+    <div style="padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+
+      {{-- Recherche --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Recherche</label>
+        <div class="adm-search" style="max-width:100%;flex:none">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" name="q" value="{{ request('q') }}" placeholder="Nom, email, référence…">
+        </div>
+      </div>
+
+      {{-- Statut --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Statut</label>
+        <select name="statut" class="adm-select" style="width:100%">
+          <option value="">Tous les statuts</option>
+          <option value="en_attente" {{ request('statut') === 'en_attente' ? 'selected' : '' }}>⏳ En attente</option>
+          <option value="confirme"   {{ request('statut') === 'confirme'   ? 'selected' : '' }}>✅ Confirmé</option>
+          <option value="echec"      {{ request('statut') === 'echec'      ? 'selected' : '' }}>❌ Échec</option>
+          <option value="rembourse"  {{ request('statut') === 'rembourse'  ? 'selected' : '' }}>↩ Remboursé</option>
+        </select>
+      </div>
+
+      {{-- Catégorie --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Catégorie</label>
+        <select name="categorie" class="adm-select" style="width:100%">
+          <option value="">Toutes catégories</option>
+          <option value="abonnement" {{ request('categorie') === 'abonnement' ? 'selected' : '' }}>Abonnements</option>
+          <option value="cv_credits" {{ request('categorie') === 'cv_credits' ? 'selected' : '' }}>Crédits CVthèque</option>
+          <option value="service"    {{ request('categorie') === 'service'    ? 'selected' : '' }}>Services</option>
+        </select>
+      </div>
+
+      {{-- Méthode --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Méthode</label>
+        <select name="methode" class="adm-select" style="width:100%">
+          <option value="">Toutes méthodes</option>
+          @foreach($methodes as $m)
+            <option value="{{ $m }}" {{ request('methode') === $m ? 'selected' : '' }}>
+              {{ ucfirst(str_replace('_', ' ', $m)) }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+
+      {{-- Date début --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Date début</label>
+        <input type="date" name="date_debut" value="{{ request('date_debut') }}"
+               class="adm-select" style="width:100%">
+      </div>
+
+      {{-- Date fin --}}
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Date fin</label>
+        <input type="date" name="date_fin" value="{{ request('date_fin') }}"
+               class="adm-select" style="width:100%">
+      </div>
+
+      {{-- Boutons --}}
+      <div style="grid-column:span 2;display:flex;align-items:flex-end;gap:10px">
+        <button type="submit" class="adm-btn adm-btn--primary" style="flex:1">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;vertical-align:-2px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Appliquer
+        </button>
+        @if($hasFilters)
+          <a href="{{ route('admin.paiements.list') }}" class="adm-btn adm-btn--outline" style="flex:1;text-align:center">Réinitialiser</a>
+        @endif
+      </div>
+
+    </div>
+
+    {{-- Raccourcis rapides --}}
+    <div style="padding:12px 20px;border-top:1px solid #f8fafc;background:#fafbff;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-radius:0 0 12px 12px">
+      <span style="font-size:11.5px;color:#94a3b8;font-weight:600;margin-right:4px">Accès rapide :</span>
+      <a href="{{ route('admin.paiements.list', ['statut' => 'en_attente']) }}"
+         style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;text-decoration:none;border:1.5px solid {{ request('statut') === 'en_attente' && !$hasFilters || (request()->all() == ['statut'=>'en_attente']) ? '#fde68a' : '#e2e8f0' }};background:{{ request('statut') === 'en_attente' && count(request()->all()) === 1 ? '#fef3c7' : '#fff' }};color:#92400e">
+        <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;display:inline-block"></span>
+        En attente ({{ $stats['count_attente'] }})
+      </a>
+      <a href="{{ route('admin.paiements.list', ['statut' => 'confirme']) }}"
+         style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;text-decoration:none;border:1.5px solid {{ count(request()->all()) === 1 && request('statut') === 'confirme' ? '#bbf7d0' : '#e2e8f0' }};background:{{ count(request()->all()) === 1 && request('statut') === 'confirme' ? '#f0fdf4' : '#fff' }};color:#166534">
+        <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+        Confirmés ({{ $stats['count_confirme'] }})
+      </a>
+      <a href="{{ route('admin.paiements.list', ['categorie' => 'cv_credits', 'statut' => 'en_attente']) }}"
+         style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;text-decoration:none;border:1.5px solid #e2e8f0;background:#fff;color:#0369a1">
+        <span style="width:7px;height:7px;border-radius:50%;background:#0284c7;display:inline-block"></span>
+        Crédits CVthèque en attente ({{ $stats['count_credits_attente'] }})
+      </a>
+      @php
+        $today = now()->format('Y-m-d');
+        $firstOfMonth = now()->startOfMonth()->format('Y-m-d');
+      @endphp
+      <a href="{{ route('admin.paiements.list', ['date_debut' => $firstOfMonth, 'date_fin' => $today]) }}"
+         style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;text-decoration:none;border:1.5px solid #e2e8f0;background:#fff;color:#64748b">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Ce mois-ci
+      </a>
+    </div>
   </form>
+
+  {{-- Chips filtres actifs --}}
+  @if($hasFilters)
+  <div style="padding:10px 20px;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:11.5px;color:#64748b;font-weight:600">Filtres actifs :</span>
+    @foreach($filtresActifs as $key => $label)
+      @php
+        $urlSansFiltre = request()->except($key);
+      @endphp
+      <span style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;color:#185FA5;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #bfdbfe">
+        {{ $label }}
+        <a href="{{ route('admin.paiements.list', $urlSansFiltre) }}"
+           style="display:flex;align-items:center;color:#185FA5;text-decoration:none;opacity:.7;margin-left:2px"
+           title="Retirer ce filtre">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </a>
+      </span>
+    @endforeach
+  </div>
+  @endif
+
 </div>
 
 <div class="adm-card">

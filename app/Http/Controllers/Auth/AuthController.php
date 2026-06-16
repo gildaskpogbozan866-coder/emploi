@@ -78,7 +78,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect($this->dashboardUrl(Auth::user()));
+        return redirect()->intended($this->dashboardUrl(Auth::user()));
     }
 
     // ── Inscription ───────────────────────────────────────

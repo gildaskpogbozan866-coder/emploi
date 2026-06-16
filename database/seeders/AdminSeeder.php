@@ -31,11 +31,8 @@ class AdminSeeder extends Seeder
 
         $this->command->info('✅ Compte admin créé/mis à jour.');
         $this->command->line('   Email    : admin@emploibougebenin.com');
-        $this->command->line('   Password : 
-        
-        
-        
-        
-        ');
-    }
+        $this->command->line('   Password : Admin@2026');
+
+
+'f'        }
 }

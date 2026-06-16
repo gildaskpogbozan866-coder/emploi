@@ -66,11 +66,14 @@
   </li>
 
   <li class="rec-nav__item {{ request()->routeIs('recruteur.candidatures*') ? 'active' : '' }}">
-    <a href="{{ route('recruteur.candidatures') }}">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <a href="{{ route('recruteur.candidatures') }}" style="display:flex;align-items:center;gap:10px">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
-      Candidatures reçues
+      <span style="flex:1">Candidatures reçues</span>
+      @if(!empty($candidaturesNouvelles) && $candidaturesNouvelles > 0)
+        <span style="background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;line-height:1.6">{{ $candidaturesNouvelles > 99 ? '99+' : $candidaturesNouvelles }}</span>
+      @endif
     </a>
   </li>
 
@@ -115,6 +118,18 @@
       <span style="flex:1">Messagerie</span>
       @if(!empty($messagesNonLus) && $messagesNonLus > 0)
         <span style="background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;line-height:1.6">{{ $messagesNonLus }}</span>
+      @endif
+    </a>
+  </li>
+
+  <li class="rec-nav__item {{ request()->routeIs('recruteur.notifications*') ? 'active' : '' }}">
+    <a href="{{ route('recruteur.notifications') }}" style="display:flex;align-items:center;gap:10px">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span style="flex:1">Notifications</span>
+      @if(!empty($notifNonLues) && $notifNonLues > 0)
+        <span style="background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;line-height:1.6">{{ $notifNonLues > 9 ? '9+' : $notifNonLues }}</span>
       @endif
     </a>
   </li>

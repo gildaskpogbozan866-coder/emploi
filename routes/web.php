@@ -65,6 +65,7 @@ use App\Http\Controllers\Public\LegaleController;
 use App\Http\Controllers\Admin\PageLegaleController as AdminPageLegale;
 use App\Http\Controllers\Admin\FaqController as AdminFaq;
 use App\Http\Controllers\Admin\JobPublicationPlanController as AdminJobPubPlan;
+use App\Http\Controllers\Admin\CreditCvPackController as AdminCreditCvPack;
 use App\Models\RecruteurDocument;
 use App\Http\Controllers\Admin\Referentiel\CompetencesController as AdminCompetences;
 use App\Http\Controllers\Admin\Referentiel\MetiersController as AdminMetiers;
@@ -74,12 +75,19 @@ use App\Http\Controllers\Admin\Referentiel\LanguesController as AdminLangues;
 use App\Http\Controllers\Admin\Referentiel\NiveauxLangueController as AdminNiveauxLangue;
 use App\Http\Controllers\Admin\Referentiel\NiveauxEtudeController as AdminNiveauxEtude;
 use App\Http\Controllers\Admin\Referentiel\NiveauxExperienceController as AdminNiveauxExperience;
+use App\Http\Controllers\Admin\Referentiel\DisponibilitesController as AdminDisponibilites;
+use App\Http\Controllers\Admin\Referentiel\RegionsController as AdminRegions;
 use App\Http\Controllers\Recruteur\VerificationController as RecruteurVerifCtrl;
 use App\Http\Controllers\Annonceur\DashboardController as AnnonceurDashboard;
 use App\Http\Controllers\Annonceur\PubliciteController as AnnonceurPublicite;
 use App\Http\Controllers\Admin\PubliciteController as AdminPublicite;
 use App\Http\Controllers\Admin\PartenaireController as AdminPartenaire;
 use App\Http\Controllers\Public\PubliciteController as PublicPublicite;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\Admin\NewsletterController as AdminNewsletter;
+use App\Http\Controllers\Admin\NotificationController as AdminNotification;
+use App\Http\Controllers\Recruteur\NotificationController as RecruteurNotification;
+use App\Http\Controllers\Annonceur\NotificationController as AnnonceurNotification;
 use App\Models\ParametreApp;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -125,6 +133,10 @@ Route::get('/robots.txt',  [SitemapController::class, 'robots'])->name('robots')
 Route::get('/emploi-cotonou',       [SeoLandingController::class, 'emploiCotonou'])->name('seo.emploi-cotonou');
 Route::get('/recrutement-benin',    [SeoLandingController::class, 'recrutementBenin'])->name('seo.recrutement-benin');
 Route::get('/stage-benin',          [SeoLandingController::class, 'stageBenin'])->name('seo.stage-benin');
+
+// Newsletter publique
+Route::post('/newsletter/abonner',           [NewsletterController::class, 'abonner'])->name('newsletter.abonner');
+Route::get('/newsletter/desabonner/{token}', [NewsletterController::class, 'desabonner'])->name('newsletter.desabonner');
 
 Route::get('/',          [HomeController::class, 'index'])->name('home');
 Route::get('/a-propos',  [HomeController::class, 'aPropos'])->name('a-propos');
@@ -225,9 +237,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/email/verifier', function () {
         $user = auth()->user();
         if ($user->hasVerifiedEmail()) {
+            $validationDocsActif = \App\Models\ParametreApp::get('recruteur_validation_docs', '0') === '1';
             return match ($user->role) {
                 'admin'     => redirect()->route('admin.dashboard'),
-                'recruteur' => redirect()->route('recruteur.dashboard'),
+                'recruteur' => $validationDocsActif
+                                ? redirect()->route('recruteur.verification')
+                                : redirect()->route('recruteur.dashboard'),
+                'annonceur' => redirect()->route('annonceur.dashboard'),
                 default     => redirect()->route('candidat.dashboard'),
             };
         }
@@ -431,6 +447,7 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     }); // fin recruteur.approuve
 
     // Notifications (accessibles hors approbation)
+    Route::get('/notifications',          [RecruteurNotification::class, 'index'])->name('notifications');
     Route::post('/notifications/marquer', function () {
         auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
         return back()->with('success', 'Notifications marquées comme lues.');
@@ -445,6 +462,7 @@ Route::prefix('annonceur')->name('annonceur.')->middleware(['auth', 'verified', 
     Route::get('/mes-annonces',     [AnnonceurPublicite::class, 'index'])->name('publicites');
     Route::post('/mes-annonces',    [AnnonceurPublicite::class, 'store'])->name('publicites.store');
     Route::delete('/mes-annonces/{publicite}', [AnnonceurPublicite::class, 'destroy'])->name('publicites.destroy');
+    Route::get('/notifications',          [AnnonceurNotification::class, 'index'])->name('notifications');
     Route::post('/notifications/marquer', function () {
         auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
         return back()->with('success', 'Notifications marquées comme lues.');
@@ -503,6 +521,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
             Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
         });
         Route::prefix('documents')->name('documents.')->group(function () {
+            Route::get('/',             [AdminDocument::class, 'index'])->name('list');
             Route::get('/{document}',   [AdminDocument::class, 'show'])->name('detail');
             Route::delete('/{document}',[AdminDocument::class, 'destroy'])->name('destroy');
         });
@@ -560,6 +579,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
             Route::put('/{plan}',          [AdminPlan::class, 'update'])->name('update');
             Route::patch('/{plan}/toggle', [AdminPlan::class, 'toggle'])->name('toggle');
             Route::delete('/{plan}',       [AdminPlan::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('credit-cv-packs')->name('credit-cv-packs.')->group(function () {
+            Route::get('/',                          [AdminCreditCvPack::class, 'index'])->name('index');
+            Route::get('/creer',                     [AdminCreditCvPack::class, 'create'])->name('create');
+            Route::post('/',                         [AdminCreditCvPack::class, 'store'])->name('store');
+            Route::get('/{creditCvPack}/modifier',   [AdminCreditCvPack::class, 'edit'])->name('edit');
+            Route::put('/{creditCvPack}',            [AdminCreditCvPack::class, 'update'])->name('update');
+            Route::patch('/{creditCvPack}/toggle',   [AdminCreditCvPack::class, 'toggle'])->name('toggle');
+            Route::delete('/{creditCvPack}',         [AdminCreditCvPack::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('publication-plans')->name('publication-plans.')->group(function () {
@@ -621,8 +650,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     });
 
     // Statistiques
-    Route::middleware('permission:'.Permission::VIEW_STATISTIQUES)
-        ->get('/statistiques', [AdminStat::class, 'index'])->name('statistiques');
+    Route::middleware('permission:'.Permission::VIEW_STATISTIQUES)->group(function () {
+        Route::get('/statistiques',          [AdminStat::class, 'index'])->name('statistiques');
+        Route::get('/statistiques/terminaux',[AdminStat::class, 'terminaux'])->name('statistiques.terminaux');
+    });
 
     // Paramètres
     Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->group(function () {
@@ -712,6 +743,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
             Route::delete('/{niveauExperience}',      [AdminNiveauxExperience::class, 'destroy'])->name('destroy');
         });
 
+        Route::prefix('disponibilites')->name('disponibilites.')->group(function () {
+            Route::get('/',                            [AdminDisponibilites::class, 'index'])->name('index');
+            Route::get('/creer',                       [AdminDisponibilites::class, 'create'])->name('create');
+            Route::post('/',                           [AdminDisponibilites::class, 'store'])->name('store');
+            Route::get('/{disponibilite}/modifier',    [AdminDisponibilites::class, 'edit'])->name('edit');
+            Route::put('/{disponibilite}',             [AdminDisponibilites::class, 'update'])->name('update');
+            Route::delete('/{disponibilite}',          [AdminDisponibilites::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('regions')->name('regions.')->group(function () {
+            Route::get('/',                   [AdminRegions::class, 'index'])->name('index');
+            Route::get('/creer',              [AdminRegions::class, 'create'])->name('create');
+            Route::post('/',                  [AdminRegions::class, 'store'])->name('store');
+            Route::get('/{region}/modifier',  [AdminRegions::class, 'edit'])->name('edit');
+            Route::put('/{region}',           [AdminRegions::class, 'update'])->name('update');
+            Route::delete('/{region}',        [AdminRegions::class, 'destroy'])->name('destroy');
+        });
+
     });
 
     // Partenaires / logos de confiance
@@ -723,10 +772,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     });
 
     // Notifications admin
+    Route::get('/notifications',          [AdminNotification::class, 'index'])->name('notifications');
     Route::post('/notifications/marquer', function () {
         auth()->user()->notifications()->where('lu', false)->update(['lu' => true]);
         return back()->with('success', 'Notifications marquées comme lues.');
     })->name('notifications.lues');
+
+    // Newsletter admin
+    Route::prefix('newsletter')->name('newsletter.')->group(function () {
+        Route::get('/',                          [AdminNewsletter::class, 'index'])->name('index');
+        Route::get('/export',                    [AdminNewsletter::class, 'export'])->name('export');
+        Route::patch('/{subscriber}/toggle',     [AdminNewsletter::class, 'toggleStatut'])->name('toggle');
+        Route::delete('/{subscriber}',           [AdminNewsletter::class, 'destroy'])->name('destroy');
+    });
 
     // Gestion des rôles et permissions (super admin uniquement)
     Route::prefix('permissions')->name('permissions.')->group(function () {

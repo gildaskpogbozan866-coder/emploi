@@ -8,8 +8,10 @@ use App\Models\Candidature;
 use App\Models\Commande;
 use App\Models\CV;
 use App\Models\Offre;
+use App\Models\PageVisit;
 use App\Models\Paiement;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StatistiqueController extends Controller
@@ -99,6 +101,79 @@ class StatistiqueController extends Controller
             'tauxConversion',
             'candidaturesParStatut',
             'totaux'
+        ));
+    }
+
+    public function terminaux(Request $request)
+    {
+        $periode = $request->get('periode', '30');
+
+        $base = PageVisit::query();
+        if ($periode !== 'tout') {
+            $base->where('created_at', '>=', now()->subDays((int) $periode));
+        }
+
+        $total   = (clone $base)->count();
+        $uniques = (clone $base)->distinct('session_id')->count('session_id');
+
+        // Répartition par device
+        $parDevice = (clone $base)
+            ->selectRaw('device_type, COUNT(*) as total')
+            ->groupBy('device_type')
+            ->pluck('total', 'device_type')
+            ->toArray();
+
+        $devices = [
+            'mobile'     => $parDevice['mobile']     ?? 0,
+            'tablette'   => $parDevice['tablette']   ?? 0,
+            'ordinateur' => $parDevice['ordinateur'] ?? 0,
+        ];
+
+        // Répartition par navigateur
+        $parBrowser = (clone $base)
+            ->selectRaw('browser, COUNT(*) as total')
+            ->groupBy('browser')
+            ->orderByDesc('total')
+            ->pluck('total', 'browser');
+
+        // Répartition par OS
+        $parOs = (clone $base)
+            ->selectRaw('os, COUNT(*) as total')
+            ->groupBy('os')
+            ->orderByDesc('total')
+            ->pluck('total', 'os');
+
+        // Top pays (hors Local)
+        $topPays = (clone $base)
+            ->whereNotNull('country')
+            ->where('country', '!=', 'Local')
+            ->selectRaw('country, COUNT(*) as total')
+            ->groupBy('country')
+            ->orderByDesc('total')
+            ->limit(25)
+            ->get();
+
+        // Top villes (hors Local)
+        $topVilles = (clone $base)
+            ->whereNotNull('city')
+            ->where('city', '!=', 'Local')
+            ->selectRaw('city, country, COUNT(*) as total')
+            ->groupBy('city', 'country')
+            ->orderByDesc('total')
+            ->limit(25)
+            ->get();
+
+        // Visites par jour (pour mini graphique tendance)
+        $parJour = (clone $base)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->selectRaw('DATE(created_at) as jour, COUNT(*) as total')
+            ->groupBy('jour')
+            ->orderBy('jour')
+            ->pluck('total', 'jour');
+
+        return view('admin.statistiques-terminaux', compact(
+            'total', 'uniques', 'devices', 'parBrowser', 'parOs',
+            'topPays', 'topVilles', 'parJour', 'periode'
         ));
     }
 }

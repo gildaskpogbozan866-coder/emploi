@@ -34,10 +34,13 @@
         <h2 style="margin:0 0 3px;font-size:1.15rem;color:#fff;font-weight:700">{{ $cv->candidat?->prenom }} {{ $cv->candidat?->nom }}</h2>
         <p style="margin:0;font-size:.95rem;color:rgba(255,255,255,.8)">{{ $cv->titre_poste }}</p>
         @if($cv->disponibilite)
+        @php $dispo = $disponibilitesList->firstWhere('code', $cv->disponibilite) @endphp
+        @if($dispo)
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 12px;font-size:11.5px;color:#fff;font-weight:600">
-          <span style="width:7px;height:7px;border-radius:50%;background:{{ $cv->disponibilite === 'en_recherche' ? '#4ade80' : ($cv->disponibilite === 'ouvert' ? '#facc15' : '#f87171') }}"></span>
-          {{ ['en_recherche' => 'En recherche active', 'ouvert' => 'Ouvert aux opportunités', 'indisponible' => 'Non disponible'][$cv->disponibilite] }}
+          <span style="width:7px;height:7px;border-radius:50%;background:{{ $dispo->couleur }}"></span>
+          {{ $dispo->libelle }}
         </span>
+        @endif
         @endif
       </div>
     </div>
@@ -191,10 +194,13 @@
     @if(auth()->user()->hasPermissionTo('contact-candidats'))
     <div class="rec-card">
       <div class="rec-card__body">
-        <a href="{{ route('recruteur.messagerie.initier', $cv->candidat) }}" class="rec-btn rec-btn--outline" style="width:100%;justify-content:center;text-align:center;display:block">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-          Envoyer un message
-        </a>
+        <form method="POST" action="{{ route('recruteur.messagerie.initier', $cv->candidat) }}">
+          @csrf
+          <button type="submit" class="rec-btn rec-btn--outline" style="width:100%;justify-content:center;text-align:center;display:flex">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            Envoyer un message
+          </button>
+        </form>
       </div>
     </div>
     @endif

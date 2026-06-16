@@ -62,7 +62,7 @@
         </div>
       </div>
       @php
-        $refRoutes          = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*'];
+        $refRoutes          = ['admin.competences*','admin.metiers*','admin.types-contrat*','admin.secteurs-activite*','admin.langues*','admin.niveaux-langue*','admin.niveaux-etude*','admin.niveaux-experience*','admin.disponibilites*','admin.regions*'];
         $refActif           = request()->routeIs(...$refRoutes);
         $validationDocsActif = \App\Models\ParametreApp::get('recruteur_validation_docs', '0') === '1';
         $enAttente          = $validationDocsActif ? \App\Models\RecruteurVerification::where('statut','en_attente')->count() : 0;
@@ -81,7 +81,20 @@
             Tableau de bord
           </a>
         </li>
-        {{-- Statistiques consolidées dans le toggle Graphiques du tableau de bord --}}
+        @can('view-statistiques')
+        <li class="adm-nav__item {{ request()->routeIs('admin.statistiques') ? 'active' : '' }}">
+          <a href="{{ route('admin.statistiques') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Statistiques
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.statistiques.terminaux') ? 'active' : '' }}">
+          <a href="{{ route('admin.statistiques.terminaux') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            Terminaux &amp; Géographie
+          </a>
+        </li>
+        @endcan
 
         {{-- ── UTILISATEURS ── --}}
         <li class="adm-nav__section">Utilisateurs</li>
@@ -178,6 +191,12 @@
             Plans de publication
           </a>
         </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.credit-cv-packs*') ? 'active' : '' }}">
+          <a href="{{ route('admin.credit-cv-packs.index') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+            Packs Crédits CVthèque
+          </a>
+        </li>
         <li class="adm-nav__item {{ request()->routeIs('admin.payment-settings*') ? 'active' : '' }}">
           <a href="{{ route('admin.payment-settings.index') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -189,9 +208,12 @@
         <li class="adm-nav__section">Communication</li>
 
         <li class="adm-nav__item {{ request()->routeIs('admin.messagerie*') ? 'active' : '' }}">
-          <a href="{{ route('admin.messagerie') }}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Messagerie
+          <a href="{{ route('admin.messagerie') }}" style="display:flex;align-items:center;gap:10px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span style="flex:1">Messagerie</span>
+            @if(!empty($messagesNonLus) && $messagesNonLus > 0)
+              <span style="background:#ef4444;color:#fff;border-radius:10px;padding:1px 7px;font-size:.65rem;font-weight:700;line-height:1.6">{{ $messagesNonLus > 9 ? '9+' : $messagesNonLus }}</span>
+            @endif
           </a>
         </li>
         <li class="adm-nav__item {{ request()->routeIs('admin.contact-messages*') ? 'active' : '' }}">
@@ -229,6 +251,25 @@
           <a href="{{ route('admin.partenaires.index') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Partenaires
+          </a>
+        </li>
+        @php $newsletterRecents = \App\Models\NewsletterSubscriber::actifs()->recents(7)->count(); @endphp
+        <li class="adm-nav__item {{ request()->routeIs('admin.newsletter*') ? 'active' : '' }}">
+          <a href="{{ route('admin.newsletter.index') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Newsletter
+            @if($newsletterRecents > 0)
+              <span style="background:#16a34a;color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:auto">+{{ $newsletterRecents }}</span>
+            @endif
+          </a>
+        </li>
+        <li class="adm-nav__item {{ request()->routeIs('admin.notifications') ? 'active' : '' }}">
+          <a href="{{ route('admin.notifications') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            Mes notifications
+            @if(!empty($notifNonLues) && $notifNonLues > 0)
+              <span style="background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:auto">{{ $notifNonLues > 9 ? '9+' : $notifNonLues }}</span>
+            @endif
           </a>
         </li>
 
@@ -277,6 +318,8 @@
               <li><a href="{{ route('admin.niveaux-langue.index') }}" class="{{ request()->routeIs('admin.niveaux-langue*') ? 'active' : '' }}">Niveaux de langue</a></li>
               <li><a href="{{ route('admin.niveaux-etude.index') }}" class="{{ request()->routeIs('admin.niveaux-etude*') ? 'active' : '' }}">Niveaux d'étude</a></li>
               <li><a href="{{ route('admin.niveaux-experience.index') }}" class="{{ request()->routeIs('admin.niveaux-experience*') ? 'active' : '' }}">Niveaux d'expérience</a></li>
+              <li><a href="{{ route('admin.disponibilites.index') }}" class="{{ request()->routeIs('admin.disponibilites*') ? 'active' : '' }}">Disponibilités</a></li>
+              <li><a href="{{ route('admin.regions.index') }}" class="{{ request()->routeIs('admin.regions*') ? 'active' : '' }}">Régions / Communes</a></li>
             </ul>
           </details>
         </li>

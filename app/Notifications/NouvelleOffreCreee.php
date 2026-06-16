@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Offre;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NouvelleOffreCreee extends Notification
+class NouvelleOffreCreee extends Notification implements ShouldQueue
 {
+    use Queueable;
     public function __construct(public Offre $offre) {}
 
     public function via($notifiable): array

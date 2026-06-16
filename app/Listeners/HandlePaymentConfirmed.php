@@ -8,11 +8,11 @@ use App\Models\Commande;
 use App\Models\Notification;
 use App\Models\Publicite;
 use App\Models\User;
+use App\Notifications\AbonnementActiveNotification;
 use App\Notifications\NouvelleCommandeServiceNotification;
 use App\Notifications\NouvellePubliciteAdminNotification;
 use App\Notifications\PaiementConfirmeNotification;
 use App\Notifications\PubliciteSoumiseNotification;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class HandlePaymentConfirmed
@@ -30,9 +30,9 @@ class HandlePaymentConfirmed
         };
 
         try {
+            $paiement->refresh()->load(['abonnement.plan', 'payable']);
             $paiement->user?->notify(new PaiementConfirmeNotification($paiement));
         } catch (\Throwable $e) {
-            // L'email échoue (ex: rate limit Mailtrap en dev) mais le paiement est déjà confirmé
             Log::warning('Notification paiement non envoyée', [
                 'paiement_id' => $paiement->id,
                 'error'       => $e->getMessage(),
@@ -52,6 +52,21 @@ class HandlePaymentConfirmed
 
         $client  = $commande->user;
         $service = $commande->service?->nom ?? 'Service';
+
+        // Notification in-app au client
+        if ($client) {
+            try {
+                Notification::create([
+                    'user_id' => $client->id,
+                    'type'    => 'commande',
+                    'titre'   => 'Commande confirmée',
+                    'contenu' => "Votre commande « {$service} » a bien été reçue et est en cours de traitement.",
+                    'lien'    => url('/'),
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Notification in-app commande client non créée', ['error' => $e->getMessage()]);
+            }
+        }
 
         $admins = User::role(Role::ADMIN)->get();
         foreach ($admins as $admin) {
@@ -79,7 +94,6 @@ class HandlePaymentConfirmed
 
         $annonceur = $publicite->user;
 
-        // Notification in-app + email à tous les admins
         $admins = User::role(Role::ADMIN)->get();
         foreach ($admins as $admin) {
             try {
@@ -96,7 +110,6 @@ class HandlePaymentConfirmed
             }
         }
 
-        // Email de confirmation à l'annonceur
         if ($annonceur) {
             try {
                 $annonceur->notify(new PubliciteSoumiseNotification($publicite));
@@ -108,9 +121,21 @@ class HandlePaymentConfirmed
 
     private function activateCvCredits($paiement): void
     {
-        if ($paiement->credits_cv > 0 && $paiement->user_id) {
-            User::where('id', $paiement->user_id)
-                ->increment('cv_credits', $paiement->credits_cv);
+        if ($paiement->credits_cv <= 0 || !$paiement->user_id) return;
+
+        User::where('id', $paiement->user_id)
+            ->increment('cv_credits', $paiement->credits_cv);
+
+        try {
+            Notification::create([
+                'user_id' => $paiement->user_id,
+                'type'    => 'commande',
+                'titre'   => 'Crédits CVthèque ajoutés',
+                'contenu' => "{$paiement->credits_cv} crédit(s) CVthèque ont été ajoutés à votre compte.",
+                'lien'    => route('recruteur.cvtheque'),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Notification in-app cv_credits non créée', ['error' => $e->getMessage()]);
         }
     }
 
@@ -118,7 +143,7 @@ class HandlePaymentConfirmed
     {
         if (!$paiement->subscription_id) return;
 
-        $abonnement = $paiement->abonnement()->with('plan')->first();
+        $abonnement = $paiement->abonnement()->with('plan.features')->first();
         if (!$abonnement) return;
 
         $startsAt = now();
@@ -131,5 +156,50 @@ class HandlePaymentConfirmed
             'starts_at' => $startsAt,
             'ends_at'   => $endsAt,
         ]);
+
+        $user    = $paiement->user;
+        $planNom = $abonnement->plan?->name ?? 'votre plan';
+
+        // Notification in-app
+        if ($user) {
+            try {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'type'    => 'commande',
+                    'titre'   => 'Abonnement activé',
+                    'contenu' => "Votre abonnement {$planNom} est maintenant actif."
+                        . ($endsAt ? " Valable jusqu'au " . $endsAt->format('d/m/Y') . '.' : ''),
+                    'lien' => $user->role === 'recruteur'
+                        ? route('recruteur.abonnement')
+                        : route('candidat.abonnement'),
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Notification in-app abonnement non créée', ['error' => $e->getMessage()]);
+            }
+
+            // Email riche avec détails du plan
+            try {
+                $user->notify(new AbonnementActiveNotification($abonnement));
+            } catch (\Throwable $e) {
+                Log::warning('Email AbonnementActive non envoyé', ['error' => $e->getMessage()]);
+            }
+        }
+
+        // Notification admin
+        $admins = User::role(Role::ADMIN)->get();
+        foreach ($admins as $admin) {
+            try {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'type'    => 'commande',
+                    'titre'   => 'Nouvel abonnement activé',
+                    'contenu' => ($user?->nom_complet ?? 'Un utilisateur')
+                        . " a souscrit à l'abonnement {$planNom}.",
+                    'lien' => route('admin.abonnements'),
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Notification admin abonnement non créée', ['error' => $e->getMessage()]);
+            }
+        }
     }
 }

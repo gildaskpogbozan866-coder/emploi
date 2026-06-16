@@ -68,8 +68,9 @@
         <p class="footer__col-title" style="margin-top:12px">Légal</p>
         <ul class="footer__nav-list">
           <li><a href="{{ url('/legale/mentions-legales') }}">Mentions légales</a></li>
+          <li><a href="{{ url('/legale/conditions-generales-utilisation') }}">CGU</a></li>
+          <li><a href="{{ url('/legale/conditions-generales-de-vente') }}">CGV</a></li>
           <li><a href="{{ url('/legale/politique-confidentialite') }}">Politique de confidentialité</a></li>
-          <li><a href="{{ url('/legale/cgv') }}">CGV</a></li>
         </ul>
 
         <ul class="footer__contact-list" style="margin-top:8px">
@@ -88,6 +89,36 @@
         </ul>
       </div>
 
+    </div>
+  </div>
+
+  {{-- Newsletter --}}
+  <div class="footer__newsletter">
+    <div class="container">
+      <div class="footer__newsletter-inner">
+        <div class="footer__newsletter-text">
+          <p class="footer__newsletter-title">Recevez les meilleures offres d'emploi</p>
+          <p class="footer__newsletter-sub">Inscrivez-vous à notre newsletter et ne ratez plus aucune opportunité au Bénin.</p>
+        </div>
+        <form method="POST" action="{{ route('newsletter.abonner') }}" class="footer__newsletter-form">
+          @csrf
+          <input type="hidden" name="source" value="footer">
+          <input type="email" name="email" placeholder="Votre adresse e-mail" required
+            class="footer__newsletter-input"
+            value="{{ old('email') }}">
+          <button type="submit" class="footer__newsletter-btn">S'inscrire</button>
+        </form>
+      </div>
+      @if(session('newsletter_success'))
+        <p style="text-align:center;color:#86efac;font-size:13.5px;margin:10px 0 0;font-weight:600">
+          ✓ {{ session('newsletter_success') }}
+        </p>
+      @endif
+      @if(session('newsletter_info'))
+        <p style="text-align:center;color:#fcd34d;font-size:13.5px;margin:10px 0 0">
+          {{ session('newsletter_info') }}
+        </p>
+      @endif
     </div>
   </div>
 

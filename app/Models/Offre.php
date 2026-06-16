@@ -14,6 +14,7 @@ class Offre extends Model
         'type', 'secteur', 'salaire', 'description',
         'exigences', 'date_limite', 'fichier', 'statut', 'premium', 'vues',
         'publication_plan_id', 'published_at', 'expires_at',
+        'niveau_experience', 'niveau_etude', 'metier',
     ];
 
     protected function casts(): array

@@ -42,24 +42,78 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Pays</label>
-        <select name="pays" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="pays" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les pays</option>
-          @foreach(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso'] as $p)
+          @foreach($paysList->reject(fn($p) => $p === 'Autre') as $p)
             <option value="{{ $p }}" {{ request('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
           @endforeach
         </select>
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:180px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Disponibilité</label>
-        <select name="disponibilite" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="disponibilite" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Toutes</option>
-          <option value="en_recherche" {{ request('disponibilite') === 'en_recherche' ? 'selected' : '' }}>En recherche active</option>
-          <option value="ouvert" {{ request('disponibilite') === 'ouvert' ? 'selected' : '' }}>Ouvert aux opportunités</option>
-          <option value="indisponible" {{ request('disponibilite') === 'indisponible' ? 'selected' : '' }}>Non disponible</option>
+          @foreach($disponibilitesList as $d)
+            <option value="{{ $d->code }}" {{ request('disponibilite') === $d->code ? 'selected' : '' }}>{{ $d->libelle }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:170px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Secteur</label>
+        <select name="secteur" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Tous les secteurs</option>
+          @foreach($secteursList as $s)
+            <option value="{{ $s->libelle }}" {{ request('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:150px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Langue</label>
+        <select name="langue" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Toutes les langues</option>
+          @foreach($languesList as $l)
+            <option value="{{ $l->nom }}" {{ request('langue') === $l->nom ? 'selected' : '' }}>{{ $l->nom }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Métier</label>
+        <select name="metier" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Tous les métiers</option>
+          @foreach($metiersList as $m)
+            <option value="{{ $m->nom }}" {{ request('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Niveau d'études</label>
+        <select name="niveau_etude" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Tous niveaux</option>
+          @foreach($niveauxEtudeList as $ne)
+            <option value="{{ $ne->code }}" {{ request('niveau_etude') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Type de contrat</label>
+        <select name="type_contrat" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Tous types</option>
+          @foreach($typeContratsList as $tc)
+            <option value="{{ $tc->code }}" {{ request('type_contrat') === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:150px">
+        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Expérience</label>
+        <select name="niveau_experience" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+          <option value="">Toute expérience</option>
+          @foreach($niveauxExpList as $ne)
+            <option value="{{ $ne->code }}" {{ request('niveau_experience') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+          @endforeach
         </select>
       </div>
       <button type="submit" class="rec-btn rec-btn--primary">Rechercher</button>
-      @if(request()->hasAny(['q','pays','disponibilite']))
+      @if(request()->hasAny(['q','pays','disponibilite','secteur','langue','metier','niveau_etude','type_contrat','niveau_experience']))
         <a href="{{ route('recruteur.cvtheque') }}" class="rec-btn rec-btn--outline">Effacer</a>
       @endif
     </form>
@@ -86,10 +140,13 @@
 
     <div style="width:100%">
       @if($cv->disponibilite)
+      @php $dispo = $disponibilitesList->firstWhere('code', $cv->disponibilite) @endphp
+      @if($dispo)
       <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;background:#f8fafc;border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600;color:#475569">
-        <span style="width:6px;height:6px;border-radius:50%;background:{{ $cv->disponibilite === 'en_recherche' ? '#16a34a' : ($cv->disponibilite === 'ouvert' ? '#d97706' : '#dc2626') }}"></span>
-        {{ ['en_recherche' => 'En recherche', 'ouvert' => 'Ouvert', 'indisponible' => 'Indisponible'][$cv->disponibilite] }}
+        <span style="width:6px;height:6px;border-radius:50%;background:{{ $dispo->couleur }}"></span>
+        {{ $dispo->libelle }}
       </div>
+      @endif
       @endif
       <p style="font-size:12.5px;color:#94a3b8;margin:0 0 6px">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -126,11 +183,48 @@
     </div>
   </div>
   @empty
+    @php
+      if (request('metier')) {
+        $emptyTitle = 'Aucun profil "' . request('metier') . '" disponible pour l\'instant';
+        $emptySub   = 'Ce métier est très demandé sur le marché ! De nouveaux candidats rejoignent la plateforme chaque semaine. Revenez bientôt ou élargissez vos critères.';
+      } elseif (request('q')) {
+        $emptyTitle = 'Aucun résultat pour « ' . request('q') . ' »';
+        $emptySub   = 'Ce profil ou cette compétence n\'est pas encore très représenté(e), mais notre base de CVs grandit chaque jour. Essayez un terme proche.';
+      } elseif (request('secteur')) {
+        $emptyTitle = 'Aucun profil en ' . request('secteur') . ' pour l\'instant';
+        $emptySub   = 'Ce secteur est en plein développement sur Emploi Bouge Bénin. De nouveaux talents de ce domaine nous rejoignent régulièrement. Revenez bientôt !';
+      } elseif (request('disponibilite')) {
+        $libDispo = $disponibilitesList->firstWhere('code', request('disponibilite'));
+        $emptyTitle = 'Aucun candidat "' . ($libDispo?->libelle ?? request('disponibilite')) . '" en ce moment';
+        $emptySub   = 'Les disponibilités évoluent régulièrement ! Consultez les autres statuts ou revenez dans quelques jours pour trouver le profil idéal.';
+      } elseif (request('pays')) {
+        $emptyTitle = 'Aucun candidat au ' . request('pays') . ' pour l\'instant';
+        $emptySub   = 'Notre réseau s\'étend rapidement dans ce pays. En attendant, explorez les profils d\'autres pays — beaucoup sont ouverts à la mobilité !';
+      } elseif (request('langue')) {
+        $emptyTitle = 'Pas encore de profil parlant ' . request('langue');
+        $emptySub   = 'Ce profil linguistique est rare et très valorisé ! Il rejoindra bientôt la plateforme. Consultez les profils disponibles en attendant.';
+      } elseif (request('niveau_etude')) {
+        $libEtude = $niveauxEtudeList->firstWhere('code', request('niveau_etude'));
+        $emptyTitle = 'Aucun profil avec ce niveau d\'études pour l\'instant';
+        $emptySub   = 'Les candidats de niveau ' . ($libEtude?->libelle ?? '') . ' sont très recherchés et arrivent régulièrement. Modifiez le filtre ou revenez bientôt.';
+      } elseif (request('type_contrat')) {
+        $libContrat = $typeContratsList->firstWhere('code', request('type_contrat'));
+        $emptyTitle = 'Aucun candidat cherchant un ' . ($libContrat?->libelle ?? request('type_contrat')) . ' pour l\'instant';
+        $emptySub   = 'De nombreux candidats sont ouverts à plusieurs types de contrats. Publiez votre offre et les bons profils viendront directement à vous !';
+      } elseif (request('niveau_experience')) {
+        $libExp = $niveauxExpList->firstWhere('code', request('niveau_experience'));
+        $emptyTitle = 'Aucun profil avec ce niveau d\'expérience pour l\'instant';
+        $emptySub   = 'Les talents de niveau ' . ($libExp?->libelle ?? '') . ' sont très convoités. Publiez une offre attractive et recevez des candidatures directement !';
+      } else {
+        $emptyTitle = 'La CVthèque se remplit chaque jour !';
+        $emptySub   = 'Soyez parmi les premiers recruteurs à découvrir les nouveaux talents béninois. Revenez bientôt ou publiez une offre pour attirer les candidats.';
+      }
+    @endphp
     <div style="grid-column:1/-1">
       <div class="rec-empty">
         <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-        <h3>Aucun CV trouvé</h3>
-        <p>Essayez d'ajuster vos critères de recherche.</p>
+        <h3>{{ $emptyTitle }}</h3>
+        <p>{{ $emptySub }}</p>
       </div>
     </div>
   @endforelse

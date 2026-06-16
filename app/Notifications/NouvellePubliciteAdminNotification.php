@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Publicite;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NouvellePubliciteAdminNotification extends Notification
+class NouvellePubliciteAdminNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
     public function __construct(public Publicite $publicite) {}
 
     public function via($notifiable): array

@@ -395,7 +395,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
 
     <div class="lo-list" id="cvGrid">
       @foreach($cvs as $j => $cv)
-      <div class="cvt-card">
+      <div class="cvt-card" onclick="location.href='{{ route('cv.public.detail', $cv) }}'" style="cursor:pointer">
         <div class="cvt-card__inner">
           <div class="cvt-card__id">Profil n°{{ str_pad($cv->id, 8, '0', STR_PAD_LEFT) }}</div>
           <div class="cvt-card__body">
@@ -433,7 +433,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
             </div>
           </div>
           <div class="cvt-card__footer">
-            <a href="{{ route('cv.public.theque') }}" class="cvt-card__btn">
+            <a href="{{ route('cv.public.detail', $cv) }}" class="cvt-card__btn" onclick="event.stopPropagation()">
               Voir le CV
               <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>

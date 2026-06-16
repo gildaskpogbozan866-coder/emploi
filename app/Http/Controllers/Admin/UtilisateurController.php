@@ -86,7 +86,15 @@ class UtilisateurController extends Controller
         if ($user->role === 'admin') {
             return back()->withErrors(['Impossible de supprimer un administrateur.']);
         }
+        $role = $user->role;
+        $nom  = $user->nom_complet;
         $user->delete();
-        return redirect()->route('admin.utilisateurs.candidats')->with('success', 'Compte supprimé.');
+
+        $redirect = match($role) {
+            'recruteur' => route('admin.utilisateurs.recruteurs'),
+            default     => route('admin.utilisateurs.candidats'),
+        };
+
+        return redirect($redirect)->with('success', "Compte de {$nom} supprimé avec succès.");
     }
 }

@@ -58,7 +58,8 @@
         <div class="rec-form-group">
           <label>Pays</label>
           <select name="pays">
-            @foreach(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Autre'] as $p)
+            <option value="">-- Sélectionnez --</option>
+            @foreach($paysList as $p)
               <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>

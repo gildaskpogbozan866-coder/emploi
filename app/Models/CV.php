@@ -15,6 +15,7 @@ class CV extends Model
         'candidat_id', 'titre_poste', 'pays', 'ville', 'competences',
         'experience', 'formation', 'langues', 'fichier_path',
         'photo', 'plan', 'visible', 'vues', 'disponibilite', 'resume', 'secteur',
+        'metier', 'niveau_etude', 'type_contrat', 'niveau_experience',
     ];
 
     protected function casts(): array

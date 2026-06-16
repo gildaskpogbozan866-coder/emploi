@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Recruteur;
 
 use App\Http\Controllers\Controller;
 use App\Models\Competence;
+use App\Models\Metier;
+use App\Models\NiveauEtude;
+use App\Models\NiveauExperience;
 use App\Models\Offre;
 use App\Models\ParametreApp;
 use App\Models\TypeContrat;
@@ -106,20 +109,26 @@ class OffreController extends Controller
                 : 'recruteur.abonnement';
             return redirect()->route($route)->with('error', $erreurQuota);
         }
-        $typeContrats = TypeContrat::orderBy('libelle')->get();
-        return view('recruteur.offre-create', compact('typeContrats'));
+        $typeContrats  = TypeContrat::orderBy('libelle')->get();
+        $metiers       = Metier::orderBy('nom')->get();
+        $niveauxExp    = NiveauExperience::orderBy('ordre')->get();
+        $niveauxEtude  = NiveauEtude::orderBy('ordre')->get();
+        return view('recruteur.offre-create', compact('typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'titre'        => 'required|string|max:200',
-            'entreprise'   => 'required|string|max:200',
-            'localisation' => 'required|string|max:200',
-            'type'         => 'required|exists:type_contrats,code',
-            'description'  => 'required|string|min:50',
-            'date_limite'  => 'nullable|date|after_or_equal:today',
-            'fichier'      => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'titre'             => 'required|string|max:200',
+            'entreprise'        => 'required|string|max:200',
+            'localisation'      => 'required|string|max:200',
+            'type'              => 'required|exists:type_contrats,code',
+            'description'       => 'required|string|min:50',
+            'date_limite'       => 'nullable|date|after_or_equal:today',
+            'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'metier'            => 'nullable|string|max:200',
+            'niveau_experience' => 'nullable|exists:niveaux_experience,code',
+            'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
         ]);
 
         $erreurQuota = $this->verifierQuota();
@@ -135,7 +144,7 @@ class OffreController extends Controller
             : null;
 
         $offre = Offre::create([
-            ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite']),
+            ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
             'recruteur_id' => Auth::id(),
             'statut'       => 'active',
             'fichier'      => $fichier,
@@ -159,8 +168,11 @@ class OffreController extends Controller
     public function edit(Offre $offre)
     {
         $this->authorize('update', $offre);
-        $typeContrats = TypeContrat::orderBy('libelle')->get();
-        return view('recruteur.offre-edit', compact('offre', 'typeContrats'));
+        $typeContrats  = TypeContrat::orderBy('libelle')->get();
+        $metiers       = Metier::orderBy('nom')->get();
+        $niveauxExp    = NiveauExperience::orderBy('ordre')->get();
+        $niveauxEtude  = NiveauEtude::orderBy('ordre')->get();
+        return view('recruteur.offre-edit', compact('offre', 'typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
     }
 
     public function update(Request $request, Offre $offre)
@@ -168,16 +180,19 @@ class OffreController extends Controller
         $this->authorize('update', $offre);
 
         $request->validate([
-            'titre'        => 'required|string|max:200',
-            'entreprise'   => 'required|string|max:200',
-            'localisation' => 'required|string|max:200',
-            'type'         => 'required|exists:type_contrats,code',
-            'description'  => 'required|string|min:50',
-            'fichier'      => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'titre'             => 'required|string|max:200',
+            'entreprise'        => 'required|string|max:200',
+            'localisation'      => 'required|string|max:200',
+            'type'              => 'required|exists:type_contrats,code',
+            'description'       => 'required|string|min:50',
+            'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'metier'            => 'nullable|string|max:200',
+            'niveau_experience' => 'nullable|exists:niveaux_experience,code',
+            'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
         ]);
 
         $data = array_merge(
-            $request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite']),
+            $request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
             ['secteur' => $request->input('secteur', [])]
         );
 

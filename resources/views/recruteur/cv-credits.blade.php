@@ -57,30 +57,23 @@
   <div class="rec-card__body">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
 
-      @php
-      $packs = [
-          ['credits' => 5,  'prix' => '5 000',  'unit' => '1 000 / CV', 'badge' => null,           'featured' => false],
-          ['credits' => 10, 'prix' => '9 000',  'unit' => '900 / CV',   'badge' => null,           'featured' => false],
-          ['credits' => 25, 'prix' => '20 000', 'unit' => '800 / CV',   'badge' => 'Populaire',    'featured' => false],
-          ['credits' => 50, 'prix' => '35 000', 'unit' => '700 / CV',   'badge' => 'Meilleure valeur', 'featured' => true],
-      ];
-      @endphp
-
-      @foreach($packs as $pack)
-      <div style="border:2px solid {{ $pack['featured'] ? 'transparent' : ($pack['badge'] === 'Populaire' ? '#93c5fd' : '#c9dcf0') }};border-radius:14px;padding:22px 16px;text-align:center;position:relative;background:{{ $pack['featured'] ? 'linear-gradient(145deg,#042C53,#185FA5)' : ($pack['badge'] === 'Populaire' ? '#f0f7ff' : '#f5f9ff') }};box-shadow:{{ $pack['featured'] ? '0 8px 28px rgba(4,44,83,.3)' : '0 2px 10px rgba(4,44,83,.07)' }}">
-        @if($pack['badge'])
-          <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:10px;font-weight:800;padding:2px 12px;border-radius:20px;white-space:nowrap;text-transform:uppercase">{{ $pack['badge'] }}</div>
+      @forelse($packs as $pack)
+      <div style="border:2px solid {{ $pack->featured ? 'transparent' : ($pack->badge ? '#93c5fd' : '#c9dcf0') }};border-radius:14px;padding:22px 16px;text-align:center;position:relative;background:{{ $pack->featured ? 'linear-gradient(145deg,#042C53,#185FA5)' : ($pack->badge ? '#f0f7ff' : '#f5f9ff') }};box-shadow:{{ $pack->featured ? '0 8px 28px rgba(4,44,83,.3)' : '0 2px 10px rgba(4,44,83,.07)' }}">
+        @if($pack->badge)
+          <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#F5C842;color:#042C53;font-size:10px;font-weight:800;padding:2px 12px;border-radius:20px;white-space:nowrap;text-transform:uppercase">{{ $pack->badge }}</div>
         @endif
-        <p style="font-size:2.4rem;font-weight:900;color:{{ $pack['featured'] ? '#F5C842' : '#042C53' }};margin:0;line-height:1">{{ $pack['credits'] }}</p>
-        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:{{ $pack['featured'] ? 'rgba(255,255,255,.5)' : '#94a3b8' }};margin:2px 0 14px">crédits</p>
-        <p style="font-size:1.2rem;font-weight:800;color:{{ $pack['featured'] ? '#fff' : '#042C53' }};margin:0 0 2px">{{ $pack['prix'] }} FCFA</p>
-        <p style="font-size:11px;color:{{ $pack['featured'] ? 'rgba(255,255,255,.45)' : '#94a3b8' }};margin:0 0 18px">{{ $pack['unit'] }}</p>
-        <a href="{{ route('recruteur.cv-credits.confirm', ['credits' => $pack['credits']]) }}"
-           style="display:block;padding:9px 14px;background:{{ $pack['featured'] ? '#F5C842' : '#185FA5' }};color:{{ $pack['featured'] ? '#042C53' : '#fff' }};border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+        <p style="font-size:2.4rem;font-weight:900;color:{{ $pack->featured ? '#F5C842' : '#042C53' }};margin:0;line-height:1">{{ $pack->credits }}</p>
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:{{ $pack->featured ? 'rgba(255,255,255,.5)' : '#94a3b8' }};margin:2px 0 14px">crédits</p>
+        <p style="font-size:1.2rem;font-weight:800;color:{{ $pack->featured ? '#fff' : '#042C53' }};margin:0 0 2px">{{ number_format($pack->prix, 0, ',', ' ') }} FCFA</p>
+        <p style="font-size:11px;color:{{ $pack->featured ? 'rgba(255,255,255,.45)' : '#94a3b8' }};margin:0 0 18px">{{ number_format($pack->prixParCredit(), 0, ',', ' ') }} / CV</p>
+        <a href="{{ route('recruteur.cv-credits.confirm', ['pack' => $pack->id]) }}"
+           style="display:block;padding:9px 14px;background:{{ $pack->featured ? '#F5C842' : '#185FA5' }};color:{{ $pack->featured ? '#042C53' : '#fff' }};border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
           Acheter
         </a>
       </div>
-      @endforeach
+      @empty
+        <p style="color:#94a3b8;font-size:13.5px;padding:20px 0">Aucun pack disponible pour le moment.</p>
+      @endforelse
 
     </div>
   </div>

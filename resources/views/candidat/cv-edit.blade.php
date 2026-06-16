@@ -51,7 +51,7 @@
           <label class="field__label">Pays <span class="req">*</span></label>
           <select class="field__select" name="pays" required>
             <option value="">-- Sélectionnez --</option>
-            @foreach(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','Madagascar','Autre'] as $p)
+            @foreach($paysList as $p)
               <option value="{{ $p }}" {{ old('pays', $cv->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>

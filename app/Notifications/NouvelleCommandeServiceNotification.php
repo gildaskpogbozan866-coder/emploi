@@ -4,11 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Commande;
 use App\Models\Paiement;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NouvelleCommandeServiceNotification extends Notification
+class NouvelleCommandeServiceNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
     public function __construct(
         private Commande $commande,
         private Paiement $paiement,

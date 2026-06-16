@@ -127,7 +127,7 @@
             <label class="field__label">Pays</label>
             <select class="field__select" name="pays">
               <option value="">-- Sélectionnez --</option>
-              @foreach(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','Madagascar','Autre'] as $p)
+              @foreach($paysList as $p)
                 <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
               @endforeach
             </select>

@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Candidature;
 use App\Models\CV;
 use App\Models\Document;
-use App\Models\Notification;
+use App\Events\CandidatureDeposee;
 use App\Models\Offre;
+use App\Models\TypeContrat;
 use App\Notifications\CandidatureRecueNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,11 +37,26 @@ class OffreController extends Controller
         }
 
         if ($request->filled('secteur')) {
-            $query->where('secteur', $request->secteur);
+            $query->where('secteur', 'like', '%' . $request->secteur . '%');
         }
 
         if ($request->filled('competence')) {
             $query->whereHas('competences', fn($q) => $q->where('slug', $request->competence));
+        }
+
+        if ($request->filled('metier')) {
+            $query->where(function ($sq) use ($request) {
+                $sq->where('metier', 'like', '%'.$request->metier.'%')
+                   ->orWhere('titre', 'like', '%'.$request->metier.'%');
+            });
+        }
+
+        if ($request->filled('niveau_experience')) {
+            $query->where('niveau_experience', $request->niveau_experience);
+        }
+
+        if ($request->filled('niveau_etude')) {
+            $query->where('niveau_etude', $request->niveau_etude);
         }
 
         $offres = $query->paginate(12)->withQueryString();
@@ -158,16 +174,10 @@ class OffreController extends Controller
 
         $candidat = Auth::user();
 
-        // Notification in-app au recruteur
-        Notification::create([
-            'user_id' => $offre->recruteur_id,
-            'type'    => 'candidature',
-            'titre'   => 'Nouvelle candidature reçue',
-            'contenu' => $candidat->nom_complet . ' a postulé pour « ' . $offre->titre . ' ».',
-            'lien'    => route('recruteur.candidatures.show', $candidature),
-        ]);
+        // Notifie le recruteur (email + in-app) via Event → Listener en queue
+        event(new CandidatureDeposee($candidature));
 
-        // Email de confirmation au candidat
+        // Email de confirmation au candidat (en queue)
         $candidat->notify(new CandidatureRecueNotification($offre));
 
         return redirect()->route('offre.candidature-succes', $offre);
@@ -213,7 +223,7 @@ class OffreController extends Controller
             'titre'       => 'required|string|max:200',
             'entreprise'  => 'required|string|max:200',
             'localisation'=> 'required|string|max:200',
-            'type'        => 'required|in:CDI,CDD,Stage,Bourse,Freelance,Temps partiel',
+            'type'        => ['required', \Illuminate\Validation\Rule::in(TypeContrat::pluck('code')->toArray())],
             'description' => 'required|string',
             'date_limite' => 'nullable|date|after_or_equal:today',
         ]);

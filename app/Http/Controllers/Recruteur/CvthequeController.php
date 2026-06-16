@@ -5,6 +5,13 @@ namespace App\Http\Controllers\Recruteur;
 use App\Http\Controllers\Controller;
 use App\Models\CV;
 use App\Models\CvDownload;
+use App\Models\Disponibilite;
+use App\Models\Langue;
+use App\Models\Metier;
+use App\Models\NiveauEtude;
+use App\Models\NiveauExperience;
+use App\Models\SecteurActivite;
+use App\Models\TypeContrat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,11 +42,51 @@ class CvthequeController extends Controller
             $query->where('disponibilite', $request->disponibilite);
         }
 
+        if ($request->filled('secteur')) {
+            $query->where('secteur', 'like', '%'.$request->secteur.'%');
+        }
+
+        if ($request->filled('langue')) {
+            $query->where('langues', 'like', '%'.$request->langue.'%');
+        }
+
+        if ($request->filled('metier')) {
+            $query->where(function ($sq) use ($request) {
+                $sq->where('metier', 'like', '%'.$request->metier.'%')
+                   ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
+            });
+        }
+
+        if ($request->filled('niveau_etude')) {
+            $query->where('niveau_etude', $request->niveau_etude);
+        }
+
+        if ($request->filled('type_contrat')) {
+            $query->where('type_contrat', $request->type_contrat);
+        }
+
+        if ($request->filled('niveau_experience')) {
+            $query->where('niveau_experience', $request->niveau_experience);
+        }
+
         $cvs          = $query->paginate(16)->withQueryString();
         $favorisCvIds = Auth::user()->cvsFavoris()->pluck('cvs.id')->toArray();
         $credits      = Auth::user()->cv_credits;
 
-        return view('recruteur.cvtheque', compact('cvs', 'favorisCvIds', 'credits'));
+        $paysList           = DB::table('pays')->where('actif', true)->orderBy('ordre')->pluck('nom');
+        $disponibilitesList = Disponibilite::actifs()->get();
+        $secteursList       = SecteurActivite::orderBy('libelle')->get();
+        $languesList        = Langue::orderBy('nom')->get();
+        $metiersList        = Metier::orderBy('nom')->get();
+        $niveauxEtudeList   = NiveauEtude::orderBy('ordre')->get();
+        $typeContratsList   = TypeContrat::orderBy('libelle')->get();
+        $niveauxExpList     = NiveauExperience::orderBy('ordre')->get();
+
+        return view('recruteur.cvtheque', compact(
+            'cvs', 'favorisCvIds', 'credits',
+            'paysList', 'disponibilitesList', 'secteursList', 'languesList',
+            'metiersList', 'niveauxEtudeList', 'typeContratsList', 'niveauxExpList'
+        ));
     }
 
     public function show(CV $cv)

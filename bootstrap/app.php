@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => route('auth.connexion'));
 
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackVisit::class,
+        ]);
+
         // Endpoints webhook (push serveur-à-serveur) — pas de session, pas de CSRF
         $middleware->validateCsrfTokens(except: [
             'payment/webhook/*',
@@ -54,6 +58,17 @@ return Application::configure(basePath: dirname(__DIR__))
             return back()
                 ->withErrors(['credentials' => 'Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.'])
                 ->withInput($request->except('password', 'mot_de_passe_actuel', 'password_confirmation'));
+        });
+
+        // 403 — Lien de vérification e-mail expiré ou invalide
+        $exceptions->render(function (
+            \Illuminate\Routing\Exceptions\InvalidSignatureException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            if (str_contains($request->path(), 'email/verifier')) {
+                return response()->view('auth.lien-verification-expire', [], 403);
+            }
+            return null;
         });
 
     })->create();
