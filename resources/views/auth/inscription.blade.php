@@ -97,11 +97,13 @@
         <div class="aform__row">
           <div class="aform__field">
             <label class="aform__label" for="prenom">Prénom</label>
-            <input class="aform__input" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Jean" required />
+            <input class="aform__input @error('prenom') aform__input--error @enderror" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Jean" required />
+            @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <div class="aform__field">
             <label class="aform__label" for="nom">Nom</label>
-            <input class="aform__input" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required />
+            <input class="aform__input @error('nom') aform__input--error @enderror" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required />
+            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
@@ -132,12 +134,13 @@
 
         <div class="aform__field">
           <label class="aform__label" for="pays">Pays</label>
-          <select class="aform__input aform__select" id="pays" name="pays" required>
+          <select class="aform__input aform__select @error('pays') aform__input--error @enderror" id="pays" name="pays" required>
             <option value="">-- Sélectionnez votre pays --</option>
             @foreach($paysList as $p)
               <option value="{{ $p }}" {{ old('pays', 'Bénin') === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>
+          @error('pays')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
 
         <div class="aform__field">

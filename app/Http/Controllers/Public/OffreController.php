@@ -231,7 +231,7 @@ class OffreController extends Controller
         $offre = Offre::create([
             ...$request->only(['titre','entreprise','localisation','type','secteur','salaire','description','competences','exigences','date_limite']),
             'recruteur_id' => Auth::id(),
-            'statut'       => 'active',
+            'statut'       => 'en_attente',
             'published_at' => now(),
         ]);
 

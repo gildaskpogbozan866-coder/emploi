@@ -332,6 +332,7 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::get('/paiements',               [CandidatPaiement::class, 'index'])->name('paiements');
     Route::get('/profil',                  [CandidatProfil::class, 'edit'])->name('profil');
     Route::put('/profil',                  [CandidatProfil::class, 'update'])->name('profil.update');
+    Route::post('/profil/avatar',          [CandidatProfil::class, 'updateAvatar'])->name('profil.avatar.update');
     Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
     Route::get('/parametres',              [CandidatProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',              [CandidatProfil::class, 'updateParametres'])->name('parametres.update');

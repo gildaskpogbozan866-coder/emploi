@@ -12,6 +12,7 @@ use App\Models\Langue;
 use App\Models\Metier;
 use App\Models\NiveauEtude;
 use App\Models\NiveauExperience;
+use App\Models\NiveauLangue;
 use App\Models\Pays;
 use App\Models\Region;
 use App\Models\SecteurActivite;
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
             NiveauExperience::class => ['niveauxExpList'],
             NiveauEtude::class    => ['niveauxEtudeList'],
             Langue::class         => ['languesList'],
+            NiveauLangue::class   => ['niveauxLangueList'],
             Metier::class         => ['metiersList'],
             Region::class         => ['regionsList'],
             CreditCvPack::class   => [],
@@ -101,8 +103,9 @@ class AppServiceProvider extends ServiceProvider
             'typeContratsList' => fn () => TypeContrat::orderBy('libelle')->get(),
             'niveauxExpList'   => fn () => NiveauExperience::orderBy('ordre')->get(),
             'niveauxEtudeList' => fn () => NiveauEtude::orderBy('ordre')->get(),
-            'languesList'      => fn () => Langue::orderBy('nom')->get(),
-            'metiersList'      => fn () => Metier::orderBy('nom')->get(),
+            'languesList'        => fn () => Langue::orderBy('nom')->get(),
+            'niveauxLangueList'  => fn () => NiveauLangue::orderBy('ordre')->get(),
+            'metiersList'        => fn () => Metier::orderBy('nom')->get(),
             'regionsList'      => fn () => Region::actifs()->get(),
         ];
 

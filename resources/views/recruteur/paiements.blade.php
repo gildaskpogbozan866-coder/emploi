@@ -46,32 +46,61 @@
 
 {{-- Filtres --}}
 <div class="rec-card" style="margin-bottom:16px">
-  <div class="rec-card__body" style="padding:14px 20px">
-    <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <select name="statut" class="rec-select" style="min-width:150px">
-        <option value="">Tous les statuts</option>
-        <option value="en_attente" {{ request('statut') === 'en_attente' ? 'selected' : '' }}>En attente</option>
-        <option value="confirme"   {{ request('statut') === 'confirme'   ? 'selected' : '' }}>Confirmé</option>
-        <option value="echec"      {{ request('statut') === 'echec'      ? 'selected' : '' }}>Échec</option>
-        <option value="rembourse"  {{ request('statut') === 'rembourse'  ? 'selected' : '' }}>Remboursé</option>
-      </select>
-      <select name="type" class="rec-select" style="min-width:170px">
-        <option value="">Tous les types</option>
-        <option value="abonnement" {{ request('type') === 'abonnement' ? 'selected' : '' }}>Abonnements</option>
-        <option value="cv_credits" {{ request('type') === 'cv_credits' ? 'selected' : '' }}>Crédits CVthèque</option>
-      </select>
-      <select name="gateway" class="rec-select" style="min-width:150px">
-        <option value="">Tous les gateways</option>
-        <option value="fedapay" {{ request('gateway') === 'fedapay' ? 'selected' : '' }}>FedaPay</option>
-        <option value="kkiapay" {{ request('gateway') === 'kkiapay' ? 'selected' : '' }}>KKiaPay</option>
-        <option value="manuel"  {{ request('gateway') === 'manuel'  ? 'selected' : '' }}>Manuel</option>
-      </select>
-      <input type="date" name="date_from" value="{{ request('date_from') }}" class="rec-input" style="width:150px" placeholder="Du">
-      <input type="date" name="date_to"   value="{{ request('date_to') }}"   class="rec-input" style="width:150px" placeholder="Au">
-      <button type="submit" class="rec-btn rec-btn--primary rec-btn--sm">Filtrer</button>
-      @if(request()->hasAny(['statut','type','gateway','date_from','date_to']))
-        <a href="{{ route('recruteur.paiements') }}" class="rec-btn rec-btn--outline rec-btn--sm">Effacer</a>
-      @endif
+  <div class="rec-card__head">
+    <span class="rec-card__title" style="display:inline-flex;align-items:center;gap:8px;font-size:.9rem">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+      Filtres
+    </span>
+    @if(request()->hasAny(['statut','type','gateway','date_from','date_to']))
+      <a href="{{ route('recruteur.paiements') }}" class="rec-btn rec-btn--outline rec-btn--sm">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Effacer les filtres
+      </a>
+    @endif
+  </div>
+  <div class="rec-card__body" style="padding:18px 22px">
+    <form method="GET" class="rec-filter-form">
+      <div class="rec-filter-group">
+        <label for="f-statut">Statut</label>
+        <select id="f-statut" name="statut" class="rec-select">
+          <option value="">Tous les statuts</option>
+          <option value="en_attente" {{ request('statut') === 'en_attente' ? 'selected' : '' }}>En attente</option>
+          <option value="confirme"   {{ request('statut') === 'confirme'   ? 'selected' : '' }}>Confirmé</option>
+          <option value="echec"      {{ request('statut') === 'echec'      ? 'selected' : '' }}>Échec</option>
+          <option value="rembourse"  {{ request('statut') === 'rembourse'  ? 'selected' : '' }}>Remboursé</option>
+        </select>
+      </div>
+      <div class="rec-filter-group">
+        <label for="f-type">Type</label>
+        <select id="f-type" name="type" class="rec-select">
+          <option value="">Tous les types</option>
+          <option value="abonnement" {{ request('type') === 'abonnement' ? 'selected' : '' }}>Abonnements</option>
+          <option value="cv_credits" {{ request('type') === 'cv_credits' ? 'selected' : '' }}>Crédits CVthèque</option>
+        </select>
+      </div>
+      <div class="rec-filter-group">
+        <label for="f-gateway">Gateway</label>
+        <select id="f-gateway" name="gateway" class="rec-select">
+          <option value="">Tous les gateways</option>
+          <option value="fedapay" {{ request('gateway') === 'fedapay' ? 'selected' : '' }}>FedaPay</option>
+          <option value="kkiapay" {{ request('gateway') === 'kkiapay' ? 'selected' : '' }}>KKiaPay</option>
+          <option value="manuel"  {{ request('gateway') === 'manuel'  ? 'selected' : '' }}>Manuel</option>
+        </select>
+      </div>
+      <div class="rec-filter-group">
+        <label for="f-date-from">Du</label>
+        <input id="f-date-from" type="date" name="date_from" value="{{ request('date_from') }}" class="rec-input">
+      </div>
+      <div class="rec-filter-group">
+        <label for="f-date-to">Au</label>
+        <input id="f-date-to" type="date" name="date_to" value="{{ request('date_to') }}" class="rec-input">
+      </div>
+      <div class="rec-filter-actions">
+        <button type="submit" class="rec-btn rec-btn--primary rec-btn--sm" style="height:38px;white-space:nowrap">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+          Filtrer
+        </button>
+      </div>
     </form>
   </div>
 </div>

@@ -127,6 +127,129 @@
   font-style: italic;
 }
 
+/* ═══════════════════════════════════════
+   Tag Input Component (type + Enter)
+   ═══════════════════════════════════════ */
+
+.tag-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.tag-input-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 44px;
+  padding: 7px 10px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: text;
+  box-sizing: border-box;
+  transition: border-color .18s, box-shadow .18s;
+}
+
+.tag-input-box:focus-within {
+  border-color: #185FA5;
+  box-shadow: 0 0 0 3px rgba(24,95,165,.1);
+}
+
+.tag-input-tags {
+  display: contents;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 10px;
+  background: #ebf4fd;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #185FA5;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.tag-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(24,95,165,.15);
+  color: #185FA5;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s;
+}
+
+.tag-chip__remove:hover {
+  background: #185FA5;
+  color: #fff;
+}
+
+.tag-input-text {
+  flex: 1;
+  min-width: 140px;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #042C53;
+  background: transparent;
+  padding: 2px 0;
+}
+
+.tag-input-text::placeholder { color: #94a3b8; }
+
+.tag-suggestions {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #185FA5;
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(4,44,83,.12);
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.tag-suggestions::-webkit-scrollbar { width: 5px; }
+.tag-suggestions::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+.tag-suggestions.ts-open { display: block; }
+
+.tag-suggestions li {
+  padding: 8px 14px;
+  font-size: 13.5px;
+  color: #374151;
+  cursor: pointer;
+  transition: background .1s;
+}
+
+.tag-suggestions li:hover,
+.tag-suggestions li.ts-active {
+  background: #f0f7ff;
+  color: #185FA5;
+}
+
 /* ── Offres sidebar overrides ─────────── */
 .ol-fgroup .ss-btn {
   border: 1px solid #d1d5db;

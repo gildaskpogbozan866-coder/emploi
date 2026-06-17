@@ -480,3 +480,5 @@
   .cp-modal { max-width: 100%; border-radius: 14px 14px 0 0; }
   .cp-modal-overlay { align-items: flex-end; padding: 0; }
 }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

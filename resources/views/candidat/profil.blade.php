@@ -30,20 +30,24 @@
         <div class="cp-hero__banner"></div>
         <div class="cp-hero__body">
 
-            <div class="cp-hero__avatar-wrap">
+            <div class="cp-hero__avatar-wrap" id="avatar-wrap">
                 @if ($user->avatar)
-                    <img src="{{ Storage::url($user->avatar) }}" alt="" class="cp-hero__avatar">
+                    <img src="{{ Storage::url($user->avatar) }}" alt="" class="cp-hero__avatar" id="avatar-preview-img">
+                    <div class="cp-hero__avatar-initials" id="avatar-preview-initials" style="display:none">{{ $user->initiale }}</div>
                 @else
-                    <div class="cp-hero__avatar-initials">{{ $user->initiale }}</div>
+                    <img src="" alt="" class="cp-hero__avatar" id="avatar-preview-img" style="display:none">
+                    <div class="cp-hero__avatar-initials" id="avatar-preview-initials">{{ $user->initiale }}</div>
                 @endif
-                <label for="avatar-input" class="cp-hero__avatar-btn" title="Changer la photo">
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <circle cx="12" cy="13" r="3" />
+                <label for="avatar-upload-input" class="cp-hero__avatar-btn" id="avatar-btn" title="Changer la photo">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <circle cx="12" cy="13" r="3"/>
                     </svg>
                 </label>
+                <input type="file" id="avatar-upload-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+                <div id="avatar-uploading" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:50%;display:none;align-items:center;justify-content:center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </div>
             </div>
 
       <div class="cp-hero__name">{{ $user->nomComplet }}</div>
@@ -750,16 +754,18 @@
         <button class="cp-modal__close" onclick="closeModal('modal-infos')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="cp-modal__body">
-        <form method="POST" action="{{ route('candidat.profil.update') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('candidat.profil.update') }}">
           @csrf @method('PUT')
           <div class="cand-form-grid">
             <div class="cand-form-group">
-              <label class="cand-form-label">Prénom <span class="req">*</span></label>
-              <input type="text" name="prenom" class="cand-form-input" value="{{ old('prenom', $user->prenom) }}" required>
+              <label class="cand-form-label" for="profil-prenom">Prénom <span class="req">*</span></label>
+              <input type="text" id="profil-prenom" name="prenom" class="cand-form-input @error('prenom') field--invalid @enderror" value="{{ old('prenom', $user->prenom) }}" required>
+              @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
             <div class="cand-form-group">
-              <label class="cand-form-label">Nom <span class="req">*</span></label>
-              <input type="text" name="nom" class="cand-form-input" value="{{ old('nom', $user->nom) }}" required>
+              <label class="cand-form-label" for="profil-nom">Nom <span class="req">*</span></label>
+              <input type="text" id="profil-nom" name="nom" class="cand-form-input @error('nom') field--invalid @enderror" value="{{ old('nom', $user->nom) }}" required>
+              @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
           </div>
           <div class="cand-form-group">
@@ -771,21 +777,24 @@
           <div class="cand-form-grid">
             <div class="cand-form-group">
               <label class="cand-form-label">Spécialité / Domaine d'expertise</label>
-              <input type="text" name="specialite" class="cand-form-input"
+              <input type="text" name="specialite" class="cand-form-input @error('specialite') field--invalid @enderror"
                      placeholder="ex: React, Fiscalité, Génie civil..."
                      value="{{ old('specialite', $profil?->specialite) }}">
+              @error('specialite')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
             <div class="cand-form-group">
               <label class="cand-form-label">Années d'expérience</label>
-              <input type="number" name="annees_experience" class="cand-form-input" min="0" max="50"
+              <input type="number" name="annees_experience" class="cand-form-input @error('annees_experience') field--invalid @enderror" min="0" max="50"
                      placeholder="ex: 3"
                      value="{{ old('annees_experience', $profil?->annees_experience) }}">
+              @error('annees_experience')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
           </div>
           <div class="cand-form-group">
             <label class="cand-form-label">Résumé / Bio</label>
-            <textarea name="bio" class="cand-form-textarea" rows="3"
+            <textarea name="bio" class="cand-form-textarea @error('bio') field--invalid @enderror" rows="3"
                       placeholder="Décrivez votre parcours et vos ambitions...">{{ old('bio', $profil?->bio) }}</textarea>
+            @error('bio')<p class="field__server-error">{{ $message }}</p>@enderror
             <div class="cand-form-hint">Max 1000 caractères</div>
           </div>
           <div class="cand-form-group">
@@ -845,27 +854,28 @@
           <div class="cand-form-grid">
             <div class="cand-form-group">
               <label class="cand-form-label">Salaire min (FCFA/mois)</label>
-              <input type="number" name="salaire_min" class="cand-form-input" min="0" value="{{ old('salaire_min', $profil?->salaire_min) }}">
+              <input type="number" name="salaire_min" class="cand-form-input @error('salaire_min') field--invalid @enderror" min="0" value="{{ old('salaire_min', $profil?->salaire_min) }}">
+              @error('salaire_min')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
             <div class="cand-form-group">
               <label class="cand-form-label">Salaire max (FCFA/mois)</label>
-              <input type="number" name="salaire_max" class="cand-form-input" min="0" value="{{ old('salaire_max', $profil?->salaire_max) }}">
+              <input type="number" name="salaire_max" class="cand-form-input @error('salaire_max') field--invalid @enderror" min="0" value="{{ old('salaire_max', $profil?->salaire_max) }}">
+              @error('salaire_max')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
           </div>
           <div class="cand-form-grid">
             <div class="cand-form-group">
               <label class="cand-form-label">LinkedIn</label>
-              <input type="url" name="linkedin" class="cand-form-input" placeholder="https://linkedin.com/in/..." value="{{ old('linkedin', $profil?->linkedin) }}">
+              <input type="url" name="linkedin" class="cand-form-input @error('linkedin') field--invalid @enderror" placeholder="https://linkedin.com/in/..." value="{{ old('linkedin', $profil?->linkedin) }}">
+              @error('linkedin')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
             <div class="cand-form-group">
               <label class="cand-form-label">Portfolio / Site web</label>
-              <input type="url" name="portfolio" class="cand-form-input" placeholder="https://..." value="{{ old('portfolio', $profil?->portfolio) }}">
+              <input type="url" name="portfolio" class="cand-form-input @error('portfolio') field--invalid @enderror" placeholder="https://..." value="{{ old('portfolio', $profil?->portfolio) }}">
+              @error('portfolio')<p class="field__server-error">{{ $message }}</p>@enderror
             </div>
           </div>
           <div class="cand-form-group">
-            <label class="cand-form-label">Photo de profil</label>
-            <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="cand-form-input" style="padding:7px">
-            <div class="cand-form-hint">JPG, PNG ou WebP, max 2 Mo</div>
           </div>
           <div class="cp-modal__actions">
             <button type="button" class="cand-btn cand-btn--outline" onclick="closeModal('modal-infos')">Annuler</button>
@@ -1190,6 +1200,56 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox
                 title: msg
             });
         }
+
+        /* ── Upload avatar immédiat ──────────────────────────── */
+        (function () {
+            const input      = document.getElementById('avatar-upload-input');
+            const img        = document.getElementById('avatar-preview-img');
+            const initials   = document.getElementById('avatar-preview-initials');
+            const spinner    = document.getElementById('avatar-uploading');
+            const btn        = document.getElementById('avatar-btn');
+
+            if (!input) return;
+
+            input.addEventListener('change', async function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                // Preview local immédiat
+                const reader = new FileReader();
+                reader.onload = e => {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    if (initials) initials.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+
+                // Upload AJAX
+                btn.style.pointerEvents = 'none';
+                spinner.style.display   = 'flex';
+
+                const fd = new FormData();
+                fd.append('avatar', file);
+                fd.append('_token', CSRF);
+
+                try {
+                    const res  = await fetch('{{ route("candidat.profil.avatar.update") }}', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (res.ok && data.url) {
+                        img.src = data.url;
+                        showToast('Photo de profil mise à jour !');
+                    } else {
+                        showToast(data.message || 'Erreur lors de l\'upload.', true);
+                    }
+                } catch (e) {
+                    showToast('Erreur réseau.', true);
+                } finally {
+                    spinner.style.display   = 'none';
+                    btn.style.pointerEvents = '';
+                    input.value = '';
+                }
+            });
+        })();
 
         async function ajax(url, method, body) {
             const opts = {

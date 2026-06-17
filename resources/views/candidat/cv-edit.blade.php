@@ -4,6 +4,24 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/depot-cv.css') }}">
 <link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
+<style>
+#langues-builder { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.langue-row { display: flex; gap: 8px; align-items: center; }
+.langue-row__select { flex: 1; margin: 0; }
+.langue-row__remove {
+  flex-shrink: 0; width: 30px; height: 36px;
+  background: #fee2e2; border: none; border-radius: 6px;
+  color: #dc2626; font-size: 16px; cursor: pointer; transition: background .15s;
+}
+.langue-row__remove:hover { background: #fca5a5; }
+.langue-add-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border: 1.5px dashed #93c5fd; border-radius: 8px;
+  background: #eff6ff; color: #185FA5; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s;
+}
+.langue-add-btn:hover { background: #dbeafe; }
+</style>
 @endsection
 
 @section('sidebar')
@@ -68,19 +86,21 @@
       {{-- Poste + Pays --}}
       <div class="form-row form-row--2">
         <div>
-          <label class="field__label">Titre du poste visé <span class="req">*</span></label>
-          <input class="field__input" type="text" name="titre_poste"
+          <label class="field__label" for="edit-titre-poste">Titre du poste visé <span class="req">*</span></label>
+          <input class="field__input @error('titre_poste') field--invalid @enderror" type="text" id="edit-titre-poste" name="titre_poste"
             value="{{ old('titre_poste', $cv->titre_poste) }}" required
             placeholder="Ex : Développeur Web, Comptable…">
+          @error('titre_poste')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
         <div>
-          <label class="field__label">Pays <span class="req">*</span></label>
-          <select class="field__select" name="pays" required data-searchable>
+          <label class="field__label" for="edit-pays">Pays <span class="req">*</span></label>
+          <select class="field__select @error('pays') field--invalid @enderror" id="edit-pays" name="pays" required data-searchable>
             <option value="">-- Sélectionnez --</option>
             @foreach($paysList as $p)
               <option value="{{ $p }}" {{ old('pays', $cv->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>
+          @error('pays')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
       </div>
 
@@ -188,9 +208,54 @@
       <div class="form-row form-row--1">
         <div>
           <label class="field__label">Langues</label>
-          <input class="field__input" type="text" name="langues"
-            value="{{ old('langues', $cv->langues) }}"
-            placeholder="Ex : Français (courant), Anglais (intermédiaire)…">
+          <div id="langues-builder">
+            @php
+              $listeLangues = old('langues_ids')
+                ? array_map(null, old('langues_ids', []), old('niveaux_ids', []))
+                : $languesCandidatActuelles->map(fn($lc) => ['lid' => $lc->langue_id, 'nid' => $lc->niveau_id])->all();
+              $isOld = (bool) old('langues_ids');
+            @endphp
+            @foreach($listeLangues as $li => $pair)
+              @php $lid = $isOld ? ($pair[0] ?? null) : ($pair['lid'] ?? null); @endphp
+              @php $nid = $isOld ? ($pair[1] ?? null) : ($pair['nid'] ?? null); @endphp
+              <div class="langue-row">
+                <select name="langues_ids[]" class="field__select langue-row__select" required>
+                  <option value="">-- Langue --</option>
+                  @foreach($languesList as $l)
+                    <option value="{{ $l->id }}" {{ $lid == $l->id ? 'selected' : '' }}>{{ $l->nom }}</option>
+                  @endforeach
+                </select>
+                <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                  <option value="">-- Niveau --</option>
+                  @foreach($niveauxLangueList as $nl)
+                    <option value="{{ $nl->id }}" {{ $nid == $nl->id ? 'selected' : '' }}>{{ $nl->libelle }} ({{ $nl->code }})</option>
+                  @endforeach
+                </select>
+                <button type="button" class="langue-row__remove" onclick="this.closest('.langue-row').remove()">×</button>
+              </div>
+            @endforeach
+          </div>
+          <button type="button" id="add-langue-row" class="langue-add-btn">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Ajouter une langue
+          </button>
+          <template id="langue-row-tpl">
+            <div class="langue-row">
+              <select name="langues_ids[]" class="field__select langue-row__select" required>
+                <option value="">-- Langue --</option>
+                @foreach($languesList as $l)
+                  <option value="{{ $l->id }}">{{ $l->nom }}</option>
+                @endforeach
+              </select>
+              <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                <option value="">-- Niveau --</option>
+                @foreach($niveauxLangueList as $nl)
+                  <option value="{{ $nl->id }}">{{ $nl->libelle }} ({{ $nl->code }})</option>
+                @endforeach
+              </select>
+              <button type="button" class="langue-row__remove" onclick="this.closest('.langue-row').remove()">×</button>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -305,6 +370,13 @@
     name.textContent = meta.textContent = '-';
   });
 })();
+
+/* ── Langue builder ──────────────────────────── */
+document.getElementById('add-langue-row').addEventListener('click', function () {
+  const tpl   = document.getElementById('langue-row-tpl');
+  const clone = tpl.content.cloneNode(true);
+  document.getElementById('langues-builder').appendChild(clone);
+});
 </script>
 
 @endsection

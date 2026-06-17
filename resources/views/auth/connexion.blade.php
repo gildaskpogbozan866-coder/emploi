@@ -82,10 +82,11 @@
 
         <div class="aform__field">
           <label class="aform__label" for="email">Adresse e-mail</label>
-          <input class="aform__input"
+          <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
                  value="{{ old('email') }}"
                  placeholder="vous@exemple.com" required autocomplete="email" />
+          @error('email')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
 
         <div class="aform__field">
@@ -93,9 +94,10 @@
             Mot de passe
             <a href="{{ route('auth.mot-de-passe-oublie') }}" style="float:right;font-weight:400;font-size:.8rem;color:#185FA5">Mot de passe oublié ?</a>
           </label>
-          <input class="aform__input"
+          <input class="aform__input @error('password') aform__input--error @enderror"
                  type="password" id="password" name="password"
                  placeholder="••••••••" required autocomplete="current-password" />
+          @error('password')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
 
         <label class="aform__check" style="margin-bottom:18px">

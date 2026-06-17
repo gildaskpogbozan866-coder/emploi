@@ -93,26 +93,32 @@
         {{-- Type --}}
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Type de document <span class="req">*</span></label>
-            <select class="field__select" name="type_document_id" required>
+            <label class="field__label" for="depot-type">Type de document <span class="req">*</span></label>
+            <select class="field__select @error('type_document_id') field--invalid @enderror" id="depot-type" name="type_document_id" required>
               <option value="">-- Choisissez --</option>
               @foreach($typesDocuments as $type)
                 <option value="{{ $type->id }}"
-                  {{ old('type_document_id') == $type->id ? 'selected' : '' }}>
+                  {{ old('type_document_id', $typeCVId) == $type->id ? 'selected' : '' }}>
                   {{ $type->nom }}
                 </option>
               @endforeach
             </select>
+            @error('type_document_id')<p class="field__server-error">{{ $message }}</p>@enderror
+            <p style="font-size:12px;color:#185FA5;margin:5px 0 0;font-weight:500">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Seuls les <strong>Curriculum Vitae</strong> apparaissent dans la CVthèque publique.
+            </p>
           </div>
         </div>
 
         {{-- Intitulé universel --}}
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Intitulé <span class="req">*</span></label>
-            <input class="field__input" type="text" name="nom" required
+            <label class="field__label" for="depot-nom">Intitulé <span class="req">*</span></label>
+            <input class="field__input @error('nom') field--invalid @enderror" type="text" id="depot-nom" name="nom" required
               value="{{ old('nom') }}"
               placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023, Certificat AWS…">
+            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
             <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
           </div>
         </div>
@@ -161,15 +167,6 @@
 
         <div class="form-row form-row--2">
           <div>
-            <label class="field__label">Disponibilité</label>
-            <select class="field__select" name="disponibilite">
-              <option value="">-- Sélectionnez --</option>
-              @foreach($disponibilitesList as $d)
-                <option value="{{ $d->code }}" {{ old('disponibilite') === $d->code ? 'selected' : '' }}>{{ $d->libelle }}</option>
-              @endforeach
-            </select>
-          </div>
-          <div>
             <label class="field__label">Secteur d'activité</label>
             <select class="field__select" name="secteur">
               <option value="">-- Sélectionnez --</option>
@@ -178,9 +175,6 @@
               @endforeach
             </select>
           </div>
-        </div>
-
-        <div class="form-row form-row--2">
           <div>
             <label class="field__label">Métier / Poste recherché</label>
             <select class="field__select" name="metier">
@@ -190,6 +184,9 @@
               @endforeach
             </select>
           </div>
+        </div>
+
+        <div class="form-row form-row--2">
           <div>
             <label class="field__label">Niveau d'expérience</label>
             <select class="field__select" name="niveau_experience">
@@ -199,9 +196,6 @@
               @endforeach
             </select>
           </div>
-        </div>
-
-        <div class="form-row form-row--2">
           <div>
             <label class="field__label">Niveau d'études</label>
             <select class="field__select" name="niveau_etude">
@@ -211,6 +205,9 @@
               @endforeach
             </select>
           </div>
+        </div>
+
+        <div class="form-row form-row--2">
           <div>
             <label class="field__label">Type de contrat recherché</label>
             <select class="field__select" name="type_contrat">
@@ -257,16 +254,49 @@
         <div class="form-row form-row--1">
           <div>
             <label class="field__label">Langues</label>
-            <div class="tag-input-wrap" id="lang-wrap">
-              <div class="tag-input-box" id="lang-box">
-                <div class="tag-input-tags" id="lang-tags"></div>
-                <input type="text" class="tag-input-text" id="lang-text"
-                       placeholder="Ex : Français (courant)…" autocomplete="off">
-              </div>
-              <ul class="tag-suggestions" id="lang-suggestions"></ul>
-              <input type="hidden" name="langues" id="lang-hidden" value="{{ old('langues') }}">
+            <div id="langues-builder">
+              @php $oldLangues = old('langues_ids', []); $oldNiveaux = old('niveaux_ids', []); @endphp
+              @if(count($oldLangues))
+                @foreach($oldLangues as $li => $lid)
+                <div class="langue-row">
+                  <select name="langues_ids[]" class="field__select langue-row__select" required>
+                    <option value="">-- Langue --</option>
+                    @foreach($languesList as $l)
+                      <option value="{{ $l->id }}" {{ $lid == $l->id ? 'selected' : '' }}>{{ $l->nom }}</option>
+                    @endforeach
+                  </select>
+                  <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                    <option value="">-- Niveau --</option>
+                    @foreach($niveauxLangueList as $nl)
+                      <option value="{{ $nl->id }}" {{ ($oldNiveaux[$li] ?? '') == $nl->id ? 'selected' : '' }}>{{ $nl->libelle }} ({{ $nl->code }})</option>
+                    @endforeach
+                  </select>
+                  <button type="button" class="langue-row__remove" onclick="this.closest('.langue-row').remove()">×</button>
+                </div>
+                @endforeach
+              @endif
             </div>
-            <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Vous pouvez préciser le niveau : Français (courant), Anglais (intermédiaire)…</p>
+            <button type="button" id="add-langue-row" class="langue-add-btn">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Ajouter une langue
+            </button>
+            <template id="langue-row-tpl">
+              <div class="langue-row">
+                <select name="langues_ids[]" class="field__select langue-row__select" required>
+                  <option value="">-- Langue --</option>
+                  @foreach($languesList as $l)
+                    <option value="{{ $l->id }}">{{ $l->nom }}</option>
+                  @endforeach
+                </select>
+                <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                  <option value="">-- Niveau --</option>
+                  @foreach($niveauxLangueList as $nl)
+                    <option value="{{ $nl->id }}">{{ $nl->libelle }} ({{ $nl->code }})</option>
+                  @endforeach
+                </select>
+                <button type="button" class="langue-row__remove" onclick="this.closest('.langue-row').remove()">×</button>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -307,8 +337,8 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="cv-promo-banner__title">Votre CV vous coûte des opportunités.</div>
-                  <div class="cv-promo-banner__sub">Un recruteur décide en 7 secondes. Nos experts rédigent un CV qui passe tous les filtres, livré sous 48h.</div>
+                  <div class="cv-promo-banner__title">Votre CV vous fait rater des opportunités.</div>
+                  <div class="cv-promo-banner__sub">Un recruteur décide en 7 secondes. Nos experts rédigent un CV qui passe tous les filtres, livré en 30 min à 1h max.</div>
                 </div>
               </div>
               <span class="cv-promo-banner__cta">
@@ -335,48 +365,25 @@
 </div>
 
 <style>
-/* ── Tag input ────────────────────────────────── */
-.tag-input-wrap { position: relative; }
-.tag-input-box {
-  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-  min-height: 76px; padding: 8px 10px;
-  border: 1.5px solid #e2e8f0; border-radius: 8px;
-  background: #fff; cursor: text; transition: border-color .2s, box-shadow .2s;
+/* ── Langue builder ───────────────────────────── */
+#langues-builder { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.langue-row {
+  display: flex; gap: 8px; align-items: center;
 }
-.tag-input-box:focus-within { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,.08); }
-.tag-input-tags { display: contents; }
-.tag-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px 3px 10px; border-radius: 20px;
-  background: #EFF6FF; color: #1D4ED8; font-size: 12px; font-weight: 600;
-  white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+.langue-row__select { flex: 1; margin: 0; }
+.langue-row__remove {
+  flex-shrink: 0; width: 30px; height: 36px;
+  background: #fee2e2; border: none; border-radius: 6px;
+  color: #dc2626; font-size: 16px; cursor: pointer; transition: background .15s;
 }
-.tag-chip__remove {
-  background: none; border: none; padding: 0 2px; cursor: pointer;
-  color: #93C5FD; font-size: 16px; line-height: 1; transition: color .15s;
-  flex-shrink: 0;
+.langue-row__remove:hover { background: #fca5a5; }
+.langue-add-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border: 1.5px dashed #93c5fd; border-radius: 8px;
+  background: #eff6ff; color: #185FA5; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s;
 }
-.tag-chip__remove:hover { color: #1D4ED8; }
-.tag-input-text {
-  flex: 1; min-width: 140px; border: none; outline: none;
-  font-size: 13px; color: #374151; padding: 2px 0; background: transparent;
-  font-family: inherit;
-}
-.tag-input-text::placeholder { color: #94a3b8; }
-.tag-suggestions {
-  position: absolute; left: 0; right: 0; top: calc(100% + 3px);
-  background: #fff; border: 1.5px solid #e2e8f0; border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.1);
-  list-style: none; margin: 0; padding: 4px 0; z-index: 100;
-  max-height: 180px; overflow-y: auto; display: none;
-}
-.tag-suggestions li {
-  padding: 8px 14px; font-size: 13px; color: #374151; cursor: pointer;
-  transition: background .1s;
-}
-.tag-suggestions li:hover, .tag-suggestions li.ts-active { background: #EFF6FF; color: #185FA5; }
-.tag-suggestions.ts-open { display: block; }
-kbd { font-size: 11px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 3px; padding: 1px 5px; }
+.langue-add-btn:hover { background: #dbeafe; }
 </style>
 
 @endsection
@@ -500,7 +507,13 @@ function makeTagInput(wrapId, hiddenId, allSuggestions) {
 }
 
 makeTagInput('comp-wrap', 'comp-hidden', @json($competences));
-makeTagInput('lang-wrap', 'lang-hidden', @json($langues));
+
+/* ── Langue builder ──────────────────────────── */
+document.getElementById('add-langue-row').addEventListener('click', function () {
+  const tpl = document.getElementById('langue-row-tpl');
+  const clone = tpl.content.cloneNode(true);
+  document.getElementById('langues-builder').appendChild(clone);
+});
 
 /* ── Photo preview ───────────────────────────── */
 (function () {

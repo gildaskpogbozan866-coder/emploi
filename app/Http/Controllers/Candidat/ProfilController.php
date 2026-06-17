@@ -102,21 +102,12 @@ class ProfilController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // ── Avatar ────────────────────────────────────────────
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
-        }
-
         // ── Identité ──────────────────────────────────────────
         $user->update([
             'prenom' => $request->prenom,
             'nom'    => $request->nom,
             'tel'    => $request->tel,
             'pays'   => $request->pays,
-            'avatar' => $user->avatar,
         ]);
 
         // ── Profil étendu ─────────────────────────────────────
@@ -163,6 +154,26 @@ class ProfilController extends Controller
         }
 
         return redirect()->route('candidat.profil')->with('success', 'Profil mis à jour avec succès.');
+    }
+
+    // ── Upload avatar AJAX ────────────────────────────────
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|file|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->update(['avatar' => $path]);
+
+        return response()->json(['url' => Storage::url($path)]);
     }
 
     // ── Suppression d'avatar ──────────────────────────────

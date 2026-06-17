@@ -7,10 +7,14 @@ use App\Models\CandidatProfil;
 use App\Models\Competence;
 use App\Models\CV;
 use App\Models\Langue;
+use App\Models\LangueCandidat;
+use App\Models\NiveauLangue;
 use App\Models\TypeDocument;
 use App\Models\User;
+use App\Notifications\NouveauCVDeposeNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CVController extends Controller
@@ -31,10 +35,6 @@ class CVController extends Controller
 
         if ($request->filled('pays')) {
             $query->where('pays', $request->pays);
-        }
-
-        if ($request->filled('disponibilite')) {
-            $query->where('disponibilite', $request->disponibilite);
         }
 
         if ($request->filled('secteur')) {
@@ -65,6 +65,15 @@ class CVController extends Controller
         }
 
         $cvs = $query->paginate(12)->withQueryString();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html'  => view('public.cv._theque_liste', compact('cvs'))->render(),
+                'total' => $cvs->total(),
+                'pages' => $cvs->lastPage(),
+            ]);
+        }
+
         return view('public.cv.theque', compact('cvs'));
     }
 
@@ -106,10 +115,11 @@ class CVController extends Controller
                 ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
         }
 
-        $typesDocuments = TypeDocument::actif()->get();
-        $competences    = Competence::orderBy('nom')->pluck('nom');
-        $langues        = Langue::orderBy('nom')->pluck('nom');
-        return view('public.cv.depot', compact('typesDocuments', 'competences', 'langues', 'quota'));
+        $typesDocuments  = TypeDocument::actif()->get();
+        $competences     = Competence::orderBy('nom')->pluck('nom');
+        $typeCV          = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
+        $typeCVId        = $typeCV?->id ?? 1;
+        return view('public.cv.depot', compact('typesDocuments', 'competences', 'quota', 'typeCVId'));
     }
 
     public function store(Request $request)
@@ -149,7 +159,10 @@ class CVController extends Controller
             'competences'       => 'nullable|string',
             'experience'        => 'nullable|string',
             'formation'         => 'nullable|string',
-            'langues'           => 'nullable|string',
+            'langues_ids'       => 'nullable|array',
+            'langues_ids.*'     => 'nullable|exists:langues,id',
+            'niveaux_ids'       => 'nullable|array',
+            'niveaux_ids.*'     => 'nullable|exists:niveaux_langue,id',
             'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
         ]);
 
@@ -167,7 +180,12 @@ class CVController extends Controller
                 $photoPath = $request->file('photo')->store('cvs/photos', 'public');
             }
 
-            CV::create([
+            [$languesTexte, $languesSync] = $this->buildLanguesData(
+                $request->input('langues_ids', []),
+                $request->input('niveaux_ids', [])
+            );
+
+            $cv = CV::create([
                 'candidat_id'      => Auth::id(),
                 'titre_poste'      => $request->nom,
                 'photo'            => $photoPath,
@@ -182,11 +200,23 @@ class CVController extends Controller
                 'competences'      => $request->competences,
                 'experience'       => $request->experience,
                 'formation'        => $request->formation,
-                'langues'          => $request->langues,
+                'langues'          => $languesTexte,
                 'fichier_path'     => $fichierPath,
                 'plan'             => 'gratuit',
                 'visible'          => true,
             ]);
+
+            // Sync langues vers la table pivot
+            $user->langues()->sync($languesSync);
+
+            // Notifier les admins
+            foreach (User::where('role', 'admin')->get() as $admin) {
+                try {
+                    $admin->notify(new NouveauCVDeposeNotification($cv, $user));
+                } catch (\Throwable $e) {
+                    Log::warning('Notification admin CV non envoyée', ['error' => $e->getMessage()]);
+                }
+            }
 
             // Sync vers le profil utilisateur
             $syncUser = [];
@@ -195,6 +225,9 @@ class CVController extends Controller
             if ($photoPath)                 $syncUser['avatar'] = $photoPath;
             if (!empty($syncUser))          $user->update($syncUser);
 
+            // Sync seulement les champs compatibles avec candidat_profils
+            // Note: disponibilite du formulaire dépôt utilise les codes CVthèque (en_recherche/ouvert/indisponible)
+            // qui sont différents de l'ENUM candidat_profils (immediatement/1_mois/etc.) → ne pas synchroniser
             $profilSync = [];
             if ($request->filled('nom'))   $profilSync['titre_professionnel'] = $request->nom;
             if ($request->filled('ville')) $profilSync['ville']               = $request->ville;
@@ -234,7 +267,7 @@ class CVController extends Controller
         $documents      = $user->documents()->with('type')->latest()->get();
         $typesDocuments = TypeDocument::actif()->get();
         $total          = $cvs->count() + $documents->count();
-        $quota          = $this->cvQuota($user, $total);
+        $quota          = $this->cvQuota($user, $cvs->count());
 
         return view('candidat.cvs', compact('cvs', 'documents', 'typesDocuments', 'total', 'quota'));
     }
@@ -242,7 +275,11 @@ class CVController extends Controller
     public function edit(CV $cv)
     {
         $this->authorize('update', $cv);
-        return view('candidat.cv-edit', compact('cv'));
+        $competences             = Competence::orderBy('nom')->pluck('nom');
+        $languesCandidatActuelles = LangueCandidat::where('candidat_id', $cv->candidat_id)
+                                        ->with(['langue', 'niveau'])
+                                        ->get();
+        return view('candidat.cv-edit', compact('cv', 'competences', 'languesCandidatActuelles'));
     }
 
     public function update(Request $request, CV $cv)
@@ -263,16 +300,25 @@ class CVController extends Controller
             'competences'       => 'nullable|string',
             'experience'        => 'nullable|string',
             'formation'         => 'nullable|string',
-            'langues'           => 'nullable|string',
+            'langues_ids'       => 'nullable|array',
+            'langues_ids.*'     => 'nullable|exists:langues,id',
+            'niveaux_ids'       => 'nullable|array',
+            'niveaux_ids.*'     => 'nullable|exists:niveaux_langue,id',
             'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
         ]);
+
+        [$languesTexte, $languesSync] = $this->buildLanguesData(
+            $request->input('langues_ids', []),
+            $request->input('niveaux_ids', [])
+        );
 
         $data = $request->only([
             'titre_poste', 'pays', 'ville',
             'disponibilite', 'secteur', 'metier',
             'niveau_experience', 'niveau_etude', 'type_contrat',
-            'competences', 'experience', 'formation', 'langues',
+            'competences', 'experience', 'formation',
         ]);
+        $data['langues'] = $languesTexte;
 
         if ($request->hasFile('photo')) {
             if ($cv->photo) Storage::disk('public')->delete($cv->photo);
@@ -286,8 +332,11 @@ class CVController extends Controller
 
         $cv->update($data);
 
+        // Sync langues vers la table pivot
+        $user = Auth::user();
+        $user->langues()->sync($languesSync);
+
         // Sync vers le profil utilisateur
-        $user      = Auth::user();
         $syncUser  = [];
         if ($request->filled('pays'))   $syncUser['pays']   = $request->pays;
         if ($request->filled('metier')) $syncUser['metier'] = $request->metier;
@@ -295,8 +344,9 @@ class CVController extends Controller
         if (!empty($syncUser))          $user->update($syncUser);
 
         $profilSync = [];
-        if ($request->filled('titre_poste')) $profilSync['titre_professionnel'] = $request->titre_poste;
-        if ($request->filled('ville'))       $profilSync['ville']               = $request->ville;
+        if ($request->filled('titre_poste'))   $profilSync['titre_professionnel'] = $request->titre_poste;
+        if ($request->filled('ville'))          $profilSync['ville']               = $request->ville;
+        if ($request->filled('disponibilite')) $profilSync['disponibilite']       = $request->disponibilite;
         if (!empty($profilSync)) {
             CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
         }
@@ -321,11 +371,31 @@ class CVController extends Controller
         return redirect()->route('candidat.cvs')->with('success', 'CV supprimé.');
     }
 
-    // ── Quota helper ──────────────────────────────────────
+    // ── Langues helper ────────────────────────────────────
+    private function buildLanguesData(array $languesIds, array $niveauxIds): array
+    {
+        $textes = [];
+        $sync   = [];
+        // Charger tous les IDs en une seule requête
+        $langueMap  = Langue::whereIn('id', array_filter($languesIds))->pluck('nom', 'id');
+        $niveauMap  = NiveauLangue::whereIn('id', array_filter($niveauxIds))->pluck('libelle', 'id');
+
+        foreach ($languesIds as $i => $langueId) {
+            if (!$langueId) continue;
+            $niveauId = $niveauxIds[$i] ?? null;
+            if (!$niveauId) continue; // niveau requis (NOT NULL en BDD)
+            if (!isset($langueMap[$langueId])) continue;
+            $textes[] = $langueMap[$langueId] . ' (' . ($niveauMap[$niveauId] ?? '') . ')';
+            $sync[$langueId] = ['niveau_id' => $niveauId];
+        }
+        return [implode(', ', $textes), $sync];
+    }
+
+    // ── Quota helper (compte uniquement les CVs, pas les documents) ──
     private function cvQuota(User $user, ?int $alreadyCountedTotal = null): array
     {
         $abonnement = $user->abonnementActif()->with('plan.features')->first();
-        $total      = $alreadyCountedTotal ?? ($user->cvs()->count() + $user->documents()->count());
+        $total      = $alreadyCountedTotal ?? $user->cvs()->count();
         $limit      = $abonnement ? (int) ($abonnement->plan?->getFeature('cv_limit', 1) ?? 1) : 1;
         $unlimited  = $limit === 0;
         return [
