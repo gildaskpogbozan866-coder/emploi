@@ -20,7 +20,7 @@ $villesParPays = [
     'Belgique'                    => ['Bruxelles','Liège','Anvers','Gand','Charleroi'],
 ];
 @endphp
-<select class="field__select" name="ville" data-searchable>
+<select class="field__select" name="ville" required data-searchable>
   <option value="">-- Sélectionnez --</option>
   @foreach($villesParPays as $pays => $villes)
     <optgroup label="{{ $pays }}">
@@ -29,4 +29,7 @@ $villesParPays = [
       @endforeach
     </optgroup>
   @endforeach
+  <optgroup label="―――――――――">
+    <option value="Autre" {{ ($selected ?? '') === 'Autre' ? 'selected' : '' }}>Autre</option>
+  </optgroup>
 </select>
