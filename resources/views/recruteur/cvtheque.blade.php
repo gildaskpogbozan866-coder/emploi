@@ -1,6 +1,10 @@
 @extends('layouts.recruteur')
 @section('title', 'CVthèque')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
+@endsection
+
 @section('sidebar')
 @include('recruteur._sidebar')
 @endsection
@@ -42,7 +46,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Pays</label>
-        <select name="pays" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="pays" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les pays</option>
           @foreach($paysList->reject(fn($p) => $p === 'Autre') as $p)
             <option value="{{ $p }}" {{ request('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -60,7 +64,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:170px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Secteur</label>
-        <select name="secteur" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="secteur" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les secteurs</option>
           @foreach($secteursList as $s)
             <option value="{{ $s->libelle }}" {{ request('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
@@ -69,7 +73,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:150px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Langue</label>
-        <select name="langue" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="langue" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Toutes les langues</option>
           @foreach($languesList as $l)
             <option value="{{ $l->nom }}" {{ request('langue') === $l->nom ? 'selected' : '' }}>{{ $l->nom }}</option>
@@ -78,7 +82,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Métier</label>
-        <select name="metier" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="metier" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les métiers</option>
           @foreach($metiersList as $m)
             <option value="{{ $m->nom }}" {{ request('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
@@ -233,4 +237,8 @@
 @if($cvs->hasPages())
   <div style="margin-top:24px">{{ $cvs->links() }}</div>
 @endif
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/searchable-select.js') }}"></script>
 @endsection

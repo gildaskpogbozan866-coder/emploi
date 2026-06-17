@@ -52,17 +52,22 @@
         </div>
 
         <div class="rec-form-group">
-          <label>Téléphone</label>
-          <input type="tel" name="tel" value="{{ old('tel', $user->tel) }}" placeholder="+229 01 00 00 00">
-        </div>
-        <div class="rec-form-group">
           <label>Pays</label>
-          <select name="pays">
+          <select name="pays" id="rec-pays">
             <option value="">-- Sélectionnez --</option>
             @foreach($paysList as $p)
               <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>
+        </div>
+        <div class="rec-form-group">
+          <label>Téléphone</label>
+          <div style="display:flex;align-items:stretch">
+            <span id="rec-tel-prefix" style="display:flex;align-items:center;justify-content:center;padding:0 12px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-right:none;border-radius:8px 0 0 8px;font-size:13.5px;font-weight:700;color:#042C53;white-space:nowrap;min-width:60px;user-select:none">+229</span>
+            <input type="tel" name="tel" id="rec-tel-input" style="border-radius:0 8px 8px 0!important;flex:1;min-width:0"
+                   value="{{ old('tel', $user->tel) ? preg_replace('/^\+\d+\s*/', '', old('tel', $user->tel)) : '' }}"
+                   placeholder="01 00 00 00">
+          </div>
         </div>
       </div>
 
@@ -77,4 +82,9 @@
     </form>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/tel-field.js') }}"></script>
+<script>initTelField('rec-pays', 'rec-tel-prefix', 'rec-tel-input');</script>
 @endsection

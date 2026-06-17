@@ -3,11 +3,10 @@
 namespace App\Listeners;
 
 use App\Events\CandidatureDeposee;
-use App\Mail\NouvellesCandidatureMail;
 use App\Models\Notification;
+use App\Notifications\NouvellesCandidatureRecruteurNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NotifierRecruteurCandidature implements ShouldQueue
 {
@@ -23,10 +22,9 @@ class NotifierRecruteurCandidature implements ShouldQueue
             return;
         }
 
-        // Email au recruteur
+        // Email au recruteur via le système de notifications
         try {
-            Mail::to($recruteur->email)
-                ->queue(new NouvellesCandidatureMail($candidature));
+            $recruteur->notify(new NouvellesCandidatureRecruteurNotification($candidature));
         } catch (\Throwable $e) {
             Log::warning('Email recruteur candidature non envoyé', [
                 'candidature_id' => $candidature->id,

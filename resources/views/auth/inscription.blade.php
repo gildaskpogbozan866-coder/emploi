@@ -131,18 +131,23 @@
         </div>
 
         <div class="aform__field">
-          <label class="aform__label" for="tel">Téléphone</label>
-          <input class="aform__input" type="tel" id="tel" name="tel" value="{{ old('tel') }}" placeholder="+229 01 00 00 00" />
-        </div>
-
-        <div class="aform__field">
           <label class="aform__label" for="pays">Pays</label>
           <select class="aform__input aform__select" id="pays" name="pays" required>
             <option value="">-- Sélectionnez votre pays --</option>
             @foreach($paysList as $p)
-              <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
+              <option value="{{ $p }}" {{ old('pays', 'Bénin') === $p ? 'selected' : '' }}>{{ $p }}</option>
             @endforeach
           </select>
+        </div>
+
+        <div class="aform__field">
+          <label class="aform__label" for="tel">Téléphone</label>
+          <div class="aform__tel-wrap">
+            <span id="tel-prefix" class="aform__tel-prefix">+229</span>
+            <input class="aform__input aform__input--tel" type="tel" id="tel" name="tel"
+                   value="{{ old('tel') ? preg_replace('/^\+\d+\s*/', '', old('tel')) : '' }}"
+                   placeholder="01 00 00 00" />
+          </div>
         </div>
 
         <div class="aform__field" id="entrepriseField" style="{{ old('role') === 'recruteur' ? '' : 'display:none' }}">
@@ -199,10 +204,13 @@ function selectRole(role) {
   if (urlRole && document.querySelector('.role-card[data-role="' + urlRole + '"]')) {
     selectRole(urlRole);
   } else {
-    // Afficher la bannière pour le rôle déjà sélectionné par défaut
     var current = document.getElementById('roleInput').value;
     if (current) selectRole(current);
   }
 })();
+
+// rôle JS reste ici — tel géré par tel-field.js
 </script>
+<script src="{{ asset('js/tel-field.js') }}"></script>
+<script>initTelField('pays', 'tel-prefix', 'tel');</script>
 @endsection

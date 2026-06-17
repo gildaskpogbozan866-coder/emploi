@@ -788,24 +788,28 @@
                       placeholder="Décrivez votre parcours et vos ambitions...">{{ old('bio', $profil?->bio) }}</textarea>
             <div class="cand-form-hint">Max 1000 caractères</div>
           </div>
-          <div class="cand-form-grid">
-            <div class="cand-form-group">
-              <label class="cand-form-label">Téléphone</label>
-              <input type="text" name="tel" class="cand-form-input" value="{{ old('tel', $user->tel) }}">
-            </div>
-            <div class="cand-form-group">
-              <label class="cand-form-label">Ville</label>
-              <input type="text" name="ville" class="cand-form-input" value="{{ old('ville', $profil?->ville) }}">
-            </div>
-          </div>
           <div class="cand-form-group">
             <label class="cand-form-label">Pays</label>
-            <select name="pays" class="cand-form-select">
+            <select name="pays" id="cand-modal-pays" class="cand-form-select">
               <option value="">-- Sélectionnez --</option>
               @foreach($paysList as $p)
                 <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
               @endforeach
             </select>
+          </div>
+          <div class="cand-form-grid">
+            <div class="cand-form-group">
+              <label class="cand-form-label">Téléphone</label>
+              <div style="display:flex;align-items:stretch">
+                <span id="cand-tel-prefix" style="display:flex;align-items:center;justify-content:center;padding:0 12px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-right:none;border-radius:8px 0 0 8px;font-size:13.5px;font-weight:700;color:#042C53;white-space:nowrap;min-width:60px;user-select:none">+229</span>
+                <input type="text" name="tel" id="cand-tel-input" class="cand-form-input" style="border-radius:0 8px 8px 0!important;flex:1;min-width:0"
+                       value="{{ old('tel', $user->tel) ? preg_replace('/^\+\d+\s*/', '', old('tel', $user->tel)) : '' }}">
+              </div>
+            </div>
+            <div class="cand-form-group">
+              <label class="cand-form-label">Ville</label>
+              <input type="text" name="ville" class="cand-form-input" value="{{ old('ville', $profil?->ville) }}">
+            </div>
           </div>
           <div class="cand-form-grid">
             <div class="cand-form-group">
@@ -1613,4 +1617,7 @@ if(_flash) showToast(_flash.dataset.msg, _flash.dataset.type === 'error');
             transform: rotate(90deg)
         }
     </style>
+
+<script src="{{ asset('js/tel-field.js') }}"></script>
+<script>initTelField('cand-modal-pays', 'cand-tel-prefix', 'cand-tel-input');</script>
 @endsection

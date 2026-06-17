@@ -4,6 +4,7 @@ namespace Tests\Feature\Public;
 
 use App\Models\Competence;
 use App\Models\Offre;
+use App\Models\TypeContrat;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -271,6 +272,7 @@ class OffrePubliqueTest extends TestCase
     public function test_storer_offre_cree_en_attente(): void
     {
         $recruteur = $this->creerRecruteur();
+        TypeContrat::create(['code' => 'CDI', 'libelle' => 'CDI — Contrat à Durée Indéterminée']);
 
         $this->actingAs($recruteur)
             ->post(route('offre.publier.store'), [

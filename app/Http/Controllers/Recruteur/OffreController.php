@@ -11,7 +11,7 @@ use App\Models\Offre;
 use App\Models\ParametreApp;
 use App\Models\TypeContrat;
 use App\Notifications\NouvelleOffreCreee;
-use App\Services\AlerteService;
+use App\Jobs\NotifierAlertesOffreJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -154,7 +154,7 @@ class OffreController extends Controller
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
         $offre->load(['recruteur', 'competences']);
 
-        app(AlerteService::class)->notifierImmediat($offre);
+        NotifierAlertesOffreJob::dispatch($offre);
 
         $adminEmail = ParametreApp::get('admin_notification_email', config('emploi.admin_notification_email'));
         if ($adminEmail) {

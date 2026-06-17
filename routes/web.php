@@ -98,18 +98,20 @@ Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name
 Route::get('/manifest.json', function () {
     return response()->json([
         'name'             => 'Emploi Bouge Bénin',
-        'short_name'       => 'EmploiBénin',
-        'description'      => 'La plateforme d\'emploi numéro 1 au Bénin. Offres vérifiées, CV en ligne, recrutement.',
-        'start_url'        => url('/'),
-        'scope'            => url('/'),
+        'short_name'       => 'Emploi Bénin',
+        'description'      => 'Plateforme emploi au Bénin — offres vérifiées, CV en ligne, recrutement et talents.',
+        'start_url'        => '/',
+        'scope'            => '/',
         'display'          => 'standalone',
         'orientation'      => 'portrait',
-        'background_color' => '#042C53',
+        'background_color' => '#ffffff',
         'theme_color'      => '#042C53',
         'lang'             => 'fr',
         'icons'            => [
-            ['src' => asset('images/Logo.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any maskable'],
-            ['src' => asset('images/Logo.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any maskable'],
+            ['src' => asset('images/pwa-icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => asset('images/pwa-icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'maskable'],
+            ['src' => asset('images/pwa-icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => asset('images/pwa-icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
         ],
         'categories' => ['business', 'productivity'],
     ])->header('Content-Type', 'application/manifest+json');
@@ -192,8 +194,8 @@ Route::prefix('blog')->name('blog.')->group(function () {
 // Webhooks push serveur-à-serveur (CSRF-exempt, voir bootstrap/app.php)
 Route::post('/payment/webhook/fedapay', [WebhookController::class, 'fedapay'])->name('payment.webhook.fedapay');
 
-// Callbacks navigateur (requiert auth)
-Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
+// Paiement — accessible sans compte (sécurisé par token sur le paiement)
+Route::prefix('payment')->name('payment.')->group(function () {
     Route::get('/choisir/{paiement}',          [GatewayController::class, 'choose'])->name('choose');
     Route::post('/lancer/{paiement}',          [GatewayController::class, 'initiate'])->name('initiate');
     Route::get('/callback/fedapay/{paiement}', [CallbackController::class, 'fedapay'])->name('callback.fedapay');

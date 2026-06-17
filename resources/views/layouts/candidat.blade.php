@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@yield('title', 'Espace Candidat') | Emploi Bouge Bénin</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon-64.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
+  <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/candidat/candidat.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
   @yield('css')
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  @include('partials._pwa-head')
 </head>
 <body>
 
@@ -80,5 +84,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
+  @include('partials._pwa-banner')
 </body>
 </html>

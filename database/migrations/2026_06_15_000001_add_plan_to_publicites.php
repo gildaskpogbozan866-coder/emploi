@@ -14,7 +14,9 @@ return new class extends Migration
                   ->constrained('job_publication_plans')->nullOnDelete();
         });
 
-        DB::statement("ALTER TABLE publicites MODIFY COLUMN statut ENUM('brouillon','en_attente','approuve','rejete','expire') DEFAULT 'brouillon'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE publicites MODIFY COLUMN statut ENUM('brouillon','en_attente','approuve','rejete','expire') DEFAULT 'brouillon'");
+        }
     }
 
     public function down(): void
@@ -24,6 +26,8 @@ return new class extends Migration
             $table->dropColumn('plan_id');
         });
 
-        DB::statement("ALTER TABLE publicites MODIFY COLUMN statut ENUM('en_attente','approuve','rejete','expire') DEFAULT 'en_attente'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE publicites MODIFY COLUMN statut ENUM('en_attente','approuve','rejete','expire') DEFAULT 'en_attente'");
+        }
     }
 };

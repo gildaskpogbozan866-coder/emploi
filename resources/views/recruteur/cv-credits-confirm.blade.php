@@ -89,7 +89,7 @@
 
         {{-- Message info --}}
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:#475569;line-height:1.5">
-          Après confirmation de votre demande, un conseiller vous contactera sous <strong>24h</strong> pour finaliser le paiement. Vos crédits seront ajoutés dès réception du paiement.
+          Payez directement avec MTN, Moov, Celtiis ou Carte bancaire. Vos crédits seront ajoutés dans <strong>moins d'1 heure</strong>.
         </div>
 
         @if ($errors->any())

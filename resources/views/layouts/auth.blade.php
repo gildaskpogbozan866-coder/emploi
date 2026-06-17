@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@yield('title', 'Emploi Bouge Bénin')</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon-64.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
+  <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
   @yield('css')
   <style>body { padding-top: 0 !important; }</style>
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  @include('partials._pwa-head')
 </head>
 <body>
 
@@ -17,5 +21,6 @@
 
   @include('partials._form-guard')
   @yield('scripts')
+  @include('partials._pwa-banner')
 </body>
 </html>

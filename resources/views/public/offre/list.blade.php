@@ -19,6 +19,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/offre/list-offre.css') }}">
+<link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
 @endsection
 
 @section('content')
@@ -77,7 +78,7 @@
         {{-- Métier --}}
         <div class="ol-fgroup">
           <label for="f-metier">Métier</label>
-          <select id="f-metier" name="metier" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-metier" name="metier" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Tous les métiers</option>
             @foreach($metiersList as $m)
               <option value="{{ $m->nom }}" {{ request('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
@@ -88,7 +89,7 @@
         {{-- Niveau d'expérience --}}
         <div class="ol-fgroup">
           <label for="f-exp">Niveau d'expérience</label>
-          <select id="f-exp" name="niveau_experience" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-exp" name="niveau_experience" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Toute expérience</option>
             @foreach($niveauxExpList as $ne)
               <option value="{{ $ne->code }}" {{ request('niveau_experience') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
@@ -99,7 +100,7 @@
         {{-- Niveau d'études --}}
         <div class="ol-fgroup">
           <label for="f-etude">Niveau d'études</label>
-          <select id="f-etude" name="niveau_etude" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-etude" name="niveau_etude" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Tous niveaux</option>
             @foreach($niveauxEtudeList as $ne)
               <option value="{{ $ne->code }}" {{ request('niveau_etude') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
@@ -110,7 +111,7 @@
         {{-- Région / Localisation --}}
         <div class="ol-fgroup">
           <label for="f-loc">Région / Ville</label>
-          <select id="f-loc" name="localisation" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-loc" name="localisation" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Toutes les régions</option>
             @foreach($regionsList as $r)
               <option value="{{ $r->nom }}" {{ request('localisation') === $r->nom ? 'selected' : '' }}>{{ $r->nom }}</option>
@@ -121,7 +122,7 @@
         {{-- Secteur d'activité --}}
         <div class="ol-fgroup">
           <label for="f-secteur">Secteur d'activité</label>
-          <select id="f-secteur" name="secteur" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-secteur" name="secteur" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Tous les secteurs</option>
             @foreach($secteursList as $s)
               <option value="{{ $s->libelle }}" {{ request('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
@@ -132,7 +133,7 @@
         {{-- Compétence --}}
         <div class="ol-fgroup">
           <label for="f-comp">Compétence</label>
-          <select id="f-comp" name="competence" class="ol-fselect" onchange="this.form.submit()">
+          <select id="f-comp" name="competence" class="ol-fselect" onchange="this.form.submit()" data-searchable>
             <option value="">Toutes les compétences</option>
             @foreach($competences as $comp)
               <option value="{{ $comp->slug }}" {{ request('competence') === $comp->slug ? 'selected' : '' }}>
@@ -268,4 +269,8 @@
   </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/searchable-select.js') }}"></script>
 @endsection

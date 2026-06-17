@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════
+   Searchable Select Component
+   ═══════════════════════════════════════ */
+
+.ss-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+/* ── Trigger button ──────────────────── */
+.ss-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #94a3b8;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  transition: border-color .18s, box-shadow .18s;
+  text-align: left;
+}
+
+.ss-btn:hover { border-color: #185FA5; }
+.ss-btn:focus { outline: none; border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,.1); }
+.ss-btn--open  { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,.1); }
+
+.ss-btn__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ss-btn__label--val { color: #042C53; }
+
+.ss-chevron {
+  flex-shrink: 0;
+  color: #6b7280;
+  transition: transform .18s;
+}
+
+.ss-btn--open .ss-chevron { transform: rotate(180deg); }
+
+/* ── Dropdown (portalled to body) ─────── */
+.ss-drop {
+  display: none;
+  background: #fff;
+  border: 1.5px solid #185FA5;
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(4,44,83,.15);
+  overflow: hidden;
+}
+
+.ss-drop--open { display: block; }
+
+/* ── Search input ──────────────────────── */
+.ss-search {
+  display: block;
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: none;
+  border-bottom: 1px solid #e4e7ec;
+  font-family: inherit;
+  font-size: 13px;
+  color: #042C53;
+  background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath stroke-linecap='round' d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ss-search::placeholder { color: #94a3b8; }
+.ss-search:focus { background-color: #fff; }
+
+/* ── Options list ──────────────────────── */
+.ss-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.ss-list::-webkit-scrollbar { width: 5px; }
+.ss-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+.ss-option {
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #374151;
+  cursor: pointer;
+  transition: background .1s;
+}
+
+.ss-option:hover { background: #f0f7ff; color: #185FA5; }
+
+.ss-option--sel {
+  background: #ebf4fd;
+  color: #185FA5;
+  font-weight: 600;
+}
+
+.ss-option mark {
+  background: #fef9c3;
+  color: #92400e;
+  padding: 0;
+  border-radius: 2px;
+  font-style: normal;
+}
+
+.ss-empty {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── Offres sidebar overrides ─────────── */
+.ol-fgroup .ss-btn {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  min-height: 38px;
+}
+
+.ol-fgroup .ss-btn:hover,
+.ol-fgroup .ss-btn:focus,
+.ol-fgroup .ss-btn--open { border-color: #185FA5; }
+
+.ol-fgroup .ss-btn__label--val { color: #1a1a1a; }

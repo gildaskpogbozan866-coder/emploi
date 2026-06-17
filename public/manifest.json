@@ -1,26 +1,32 @@
 {
   "name": "Emploi Bouge Bénin",
-  "short_name": "EmploiBénin",
-  "description": "La plateforme d'emploi numéro 1 au Bénin. Offres vérifiées, CV en ligne, recrutement.",
+  "short_name": "Emploi Bénin",
+  "description": "Plateforme emploi au Bénin — offres, CV, recrutement et talents",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#042C53",
+  "background_color": "#ffffff",
   "theme_color": "#042C53",
   "lang": "fr",
   "icons": [
     {
-      "src": "/emploi/public/images/Logo.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/emploi/public/images/Logo.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "categories": ["business", "productivity"],

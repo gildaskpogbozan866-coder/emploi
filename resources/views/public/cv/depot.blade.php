@@ -4,6 +4,7 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
 <link rel="stylesheet" href="{{ asset('css/cv/depot-cv.css') }}">
+<link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
 @endsection
 
 @section('content')
@@ -122,10 +123,30 @@
           <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
         </div>
 
+        {{-- Photo de profil --}}
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px">
+          <div id="photoPreviewWrap" style="position:relative;flex-shrink:0">
+            <div id="photoCircle" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2.5px solid #e2e8f0">
+              <span id="photoInitials" style="color:#fff;font-size:1.4rem;font-weight:800">{{ mb_strtoupper(mb_substr(auth()->user()->prenom ?? '?', 0, 1)) }}</span>
+              <img id="photoPreviewImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+            </div>
+            <label for="photoInput" style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:#185FA5;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
+              <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+            </label>
+          </div>
+          <div>
+            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">Photo de profil</p>
+            <p style="font-size:12.5px;color:#64748b;margin:0 0 8px">JPG, PNG ou WebP · max 2 Mo</p>
+            <label for="photoInput" style="font-size:12.5px;color:#185FA5;font-weight:600;cursor:pointer;text-decoration:underline">Choisir une photo</label>
+            <span id="photoFileName" style="font-size:12px;color:#94a3b8;margin-left:8px"></span>
+          </div>
+          <input type="file" id="photoInput" name="photo" accept=".jpg,.jpeg,.png,.webp" style="display:none">
+        </div>
+
         <div class="form-row form-row--2">
           <div>
             <label class="field__label">Pays</label>
-            <select class="field__select" name="pays">
+            <select class="field__select" name="pays" data-searchable>
               <option value="">-- Sélectionnez --</option>
               @foreach($paysList as $p)
                 <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -134,8 +155,70 @@
           </div>
           <div>
             <label class="field__label">Ville</label>
-            <input class="field__input" type="text" name="ville"
-              value="{{ old('ville') }}" placeholder="Cotonou, Abidjan, Dakar…">
+            @include('_partials.villes-select', ['selected' => old('ville')])
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div>
+            <label class="field__label">Disponibilité</label>
+            <select class="field__select" name="disponibilite">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($disponibilitesList as $d)
+                <option value="{{ $d->code }}" {{ old('disponibilite') === $d->code ? 'selected' : '' }}>{{ $d->libelle }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div>
+            <label class="field__label">Secteur d'activité</label>
+            <select class="field__select" name="secteur">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($secteursList as $s)
+                <option value="{{ $s->libelle }}" {{ old('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div>
+            <label class="field__label">Métier / Poste recherché</label>
+            <select class="field__select" name="metier">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($metiersList as $m)
+                <option value="{{ $m->nom }}" {{ old('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div>
+            <label class="field__label">Niveau d'expérience</label>
+            <select class="field__select" name="niveau_experience">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($niveauxExpList as $ne)
+                <option value="{{ $ne->code }}" {{ old('niveau_experience') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div>
+            <label class="field__label">Niveau d'études</label>
+            <select class="field__select" name="niveau_etude">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($niveauxEtudeList as $ne)
+                <option value="{{ $ne->code }}" {{ old('niveau_etude') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div>
+            <label class="field__label">Type de contrat recherché</label>
+            <select class="field__select" name="type_contrat">
+              <option value="">-- Sélectionnez --</option>
+              @foreach($typeContratsList as $tc)
+                <option value="{{ $tc->code }}" {{ old('type_contrat') === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
 
@@ -299,6 +382,7 @@ kbd { font-size: 11px; background: #f1f5f9; border: 1px solid #e2e8f0; border-ra
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/searchable-select.js') }}"></script>
 <script>
 /* ── Upload preview ──────────────────────────── */
 (function () {
@@ -417,5 +501,26 @@ function makeTagInput(wrapId, hiddenId, allSuggestions) {
 
 makeTagInput('comp-wrap', 'comp-hidden', @json($competences));
 makeTagInput('lang-wrap', 'lang-hidden', @json($langues));
+
+/* ── Photo preview ───────────────────────────── */
+(function () {
+  const input    = document.getElementById('photoInput');
+  const img      = document.getElementById('photoPreviewImg');
+  const initials = document.getElementById('photoInitials');
+  const label    = document.getElementById('photoFileName');
+
+  input.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    label.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+      img.style.display = 'block';
+      initials.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+})();
 </script>
 @endsection

@@ -65,10 +65,13 @@
         <div style="flex:1;min-width:0">
           <p style="font-weight:700;color:#042C53;margin:0 0 8px;font-size:15px">{{ $alerte->nom }}</p>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-            @if($alerte->mots_cles)     <span class="cand-badge cand-badge--gray">{{ $alerte->mots_cles }}</span> @endif
-            @if($alerte->localisation)  <span class="cand-badge cand-badge--gray">{{ $alerte->localisation }}</span> @endif
+            @if($alerte->metier)        <span class="cand-badge cand-badge--blue">{{ $alerte->metier }}</span> @endif
             @if($alerte->type_contrat)  <span class="cand-badge cand-badge--blue">{{ $alerte->type_contrat }}</span> @endif
             @if($alerte->secteur)       <span class="cand-badge cand-badge--gray">{{ $alerte->secteur }}</span> @endif
+            @if($alerte->localisation)  <span class="cand-badge cand-badge--gray">{{ $alerte->localisation }}</span> @endif
+            @if(!$alerte->metier && !$alerte->type_contrat && !$alerte->secteur && !$alerte->localisation)
+              <span class="cand-badge cand-badge--gray">Toutes les offres</span>
+            @endif
           </div>
           <p style="font-size:12px;color:#94a3b8;margin:0">
             Fréquence : <strong>{{ ucfirst($alerte->frequence) }}</strong> ·
@@ -122,32 +125,59 @@
       <form method="POST" action="{{ route('candidat.alertes.store') }}">
         @csrf
         <div class="cand-form-group">
-          <label class="cand-form-label">Nom de l'alerte <span class="req">*</span></label>
-          <input class="cand-form-input" type="text" name="nom" value="{{ old('nom') }}" placeholder="Ex : Dev Web Cotonou" required>
+          <label class="cand-form-label">Nom de l'alerte</label>
+          <input class="cand-form-input" type="text" name="nom" value="{{ old('nom') }}" placeholder="Ex : Dev Web Cotonou (auto-généré si vide)">
         </div>
         <div class="cand-form-group">
-          <label class="cand-form-label">Mots-clés</label>
-          <input class="cand-form-input" type="text" name="mots_cles" value="{{ old('mots_cles') }}" placeholder="Développeur, Marketing…">
+          <label class="cand-form-label">Métier / Poste</label>
+          <select class="cand-form-select" name="metier">
+            <option value="">Tous les métiers</option>
+            @foreach($metiers as $metier)
+              <option value="{{ $metier->nom }}" {{ old('metier') === $metier->nom ? 'selected' : '' }}>
+                {{ $metier->nom }}
+              </option>
+            @endforeach
+          </select>
         </div>
         <div class="cand-form-group">
           <label class="cand-form-label">Localisation</label>
-          <input class="cand-form-input" type="text" name="localisation" value="{{ old('localisation') }}" placeholder="Cotonou, Bénin…">
+          <select class="cand-form-select" name="localisation">
+            <option value="">Toutes les localisations</option>
+            @foreach($regions as $region)
+              <option value="{{ $region->nom }}" {{ old('localisation') === $region->nom ? 'selected' : '' }}>
+                {{ $region->nom }}
+              </option>
+            @endforeach
+          </select>
         </div>
         <div class="cand-form-group">
           <label class="cand-form-label">Type de contrat</label>
           <select class="cand-form-select" name="type_contrat">
             <option value="">Tous les types</option>
-            @foreach(['CDI','CDD','Stage','Bourse','Freelance'] as $t)
-              <option value="{{ $t }}" {{ old('type_contrat') === $t ? 'selected' : '' }}>{{ $t }}</option>
+            @foreach($typeContrats as $tc)
+              <option value="{{ $tc->code }}" {{ old('type_contrat') === $tc->code ? 'selected' : '' }}>
+                {{ $tc->libelle }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+        <div class="cand-form-group">
+          <label class="cand-form-label">Secteur d'activité</label>
+          <select class="cand-form-select" name="secteur">
+            <option value="">Tous les secteurs</option>
+            @foreach($secteurs as $secteur)
+              <option value="{{ $secteur->libelle }}" {{ old('secteur') === $secteur->libelle ? 'selected' : '' }}>
+                {{ $secteur->libelle }}
+              </option>
             @endforeach
           </select>
         </div>
         <div class="cand-form-group">
           <label class="cand-form-label">Fréquence de notification <span class="req">*</span></label>
           <select class="cand-form-select" name="frequence" required>
-            <option value="immediat"     {{ old('frequence') === 'immediat'     ? 'selected' : '' }}>Immédiat</option>
-            <option value="quotidien"    {{ old('frequence', 'quotidien') === 'quotidien'    ? 'selected' : '' }}>Quotidien</option>
-            <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire</option>
+            <option value="immediat"     {{ old('frequence') === 'immediat'     ? 'selected' : '' }}>Immédiat — dès qu'une offre est publiée</option>
+            <option value="quotidien"    {{ old('frequence', 'quotidien') === 'quotidien'    ? 'selected' : '' }}>Quotidien — résumé chaque matin</option>
+            <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire — résumé chaque lundi</option>
           </select>
         </div>
         <div class="cand-form-actions">

@@ -75,11 +75,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Liste des pays — partagée dans toutes les vues
+        $fallbackPays = collect(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','République Démocratique du Congo','Gabon','Madagascar','Maroc','Algérie','Tunisie','France','Belgique','Autre']);
         try {
             $paysList = Cache::remember('pays_list', 3600, fn () => Pays::actifs()->pluck('nom'));
-            View::share('paysList', $paysList);
+            View::share('paysList', $paysList->isNotEmpty() ? $paysList : $fallbackPays);
         } catch (\Throwable) {
-            View::share('paysList', collect(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','Madagascar','Autre']));
+            View::share('paysList', $fallbackPays);
         }
 
         // Liste des disponibilités — partagée dans toutes les vues

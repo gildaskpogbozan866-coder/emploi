@@ -11,21 +11,12 @@ class AlerteService
 {
     public function matcheOffre(Alerte $alerte, Offre $offre): bool
     {
-        // Mots-clés : au moins un doit apparaître dans titre / description / compétences
-        if ($alerte->mots_cles) {
-            $mots     = array_filter(array_map('trim', preg_split('/[,\s]+/', $alerte->mots_cles)));
-            $competenceNoms = $offre->relationLoaded('competences')
-                ? $offre->competences->pluck('nom')->implode(' ')
-                : $offre->competences()->pluck('nom')->implode(' ');
-            $haystack = strtolower($offre->titre.' '.strip_tags($offre->description).' '.$competenceNoms);
-            $trouve   = false;
-            foreach ($mots as $mot) {
-                if (str_contains($haystack, strtolower($mot))) {
-                    $trouve = true;
-                    break;
-                }
+        // Métier : comparé au champ metier de l'offre et au titre
+        if ($alerte->metier) {
+            $haystack = strtolower(($offre->metier ?? '').' '.$offre->titre);
+            if (!str_contains($haystack, strtolower($alerte->metier))) {
+                return false;
             }
-            if (!$trouve) return false;
         }
 
         // Localisation
@@ -40,11 +31,17 @@ class AlerteService
             return false;
         }
 
-        // Secteur
+        // Secteur — offre->secteur est un array JSON (plusieurs secteurs possibles)
         if ($alerte->secteur) {
-            if (!str_contains(strtolower($offre->secteur ?? ''), strtolower($alerte->secteur))) {
-                return false;
+            $secteursOffre = (array) ($offre->secteur ?? []);
+            $found = false;
+            foreach ($secteursOffre as $s) {
+                if (str_contains(strtolower((string) $s), strtolower($alerte->secteur))) {
+                    $found = true;
+                    break;
+                }
             }
+            if (!$found) return false;
         }
 
         return true;

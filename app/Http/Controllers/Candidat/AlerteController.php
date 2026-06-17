@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alerte;
+use App\Models\Metier;
+use App\Models\Region;
+use App\Models\SecteurActivite;
+use App\Models\TypeContrat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +20,15 @@ class AlerteController extends Controller
         $alertLimit = $abonnement ? (int) $abonnement->plan?->getFeature('alert_limit', 0) : 0;
         $alertes    = $user->alertes()->latest()->get();
 
-        return view('candidat.alertes', compact('alertes', 'alertLimit', 'abonnement'));
+        $metiers      = Metier::orderBy('nom')->get();
+        $regions      = Region::orderBy('nom')->get();
+        $typeContrats = TypeContrat::orderBy('libelle')->get();
+        $secteurs     = SecteurActivite::orderBy('libelle')->get();
+
+        return view('candidat.alertes', compact(
+            'alertes', 'alertLimit', 'abonnement',
+            'metiers', 'regions', 'typeContrats', 'secteurs'
+        ));
     }
 
     public function store(Request $request)
@@ -37,17 +49,25 @@ class AlerteController extends Controller
 
         $request->validate([
             'nom'          => 'nullable|string|max:100',
-            'mots_cles'    => 'nullable|string|max:200',
+            'metier'       => 'nullable|string|max:200',
             'localisation' => 'nullable|string|max:100',
             'type_contrat' => 'nullable|string|max:50',
             'secteur'      => 'nullable|string|max:100',
             'frequence'    => 'required|in:immediat,quotidien,hebdomadaire',
         ]);
 
+        $nom = $request->nom
+            ?: implode(' · ', array_filter([
+                $request->metier,
+                $request->type_contrat,
+                $request->localisation,
+            ]))
+            ?: 'Mon alerte';
+
         Alerte::create([
             'user_id'      => Auth::id(),
-            'nom'          => $request->nom ?? ($request->mots_cles ?? 'Mon alerte'),
-            'mots_cles'    => $request->mots_cles,
+            'nom'          => $nom,
+            'metier'       => $request->metier,
             'localisation' => $request->localisation,
             'type_contrat' => $request->type_contrat,
             'secteur'      => $request->secteur,

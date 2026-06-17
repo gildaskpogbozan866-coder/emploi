@@ -13,7 +13,7 @@ class Commande extends Model
     protected $fillable = [
         'user_id', 'service_id', 'reference', 'details_demande',
         'fichier_joint', 'montant', 'statut', 'paiement_statut',
-        'paiement_methode', 'note_admin', 'fichier_livraison',
+        'paiement_methode', 'note_admin', 'fichier_livraison', 'email_contact',
     ];
 
     protected static function booted(): void

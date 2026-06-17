@@ -130,8 +130,8 @@ $featureLabels = [
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
     @foreach([
       ['1', 'Choisissez votre plan', 'Sélectionnez le plan adapté à votre volume de recrutement.'],
-      ['2', 'Paiement Mobile Money', 'Un conseiller vous contacte pour finaliser le paiement (MTN, Moov, Wave).'],
-      ['3', 'Activé après confirmation', 'Dès validation par notre équipe, vos annonces sont publiables.'],
+      ['2', 'Paiement sécurisé', 'Payez en ligne avec MTN Money, Moov Money, Celtiis ou Carte bancaire.'],
+      ['3', 'Activé dans 1h', 'Votre abonnement est activé automatiquement dans moins d\'1 heure après paiement.'],
     ] as [$n, $titre, $desc])
     <div style="display:flex;gap:12px;align-items:flex-start">
       <div style="width:28px;height:28px;border-radius:50%;background:#185FA5;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ $n }}</div>

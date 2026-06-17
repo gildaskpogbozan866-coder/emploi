@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
+use App\Models\CandidatProfil;
 use App\Models\Competence;
 use App\Models\CV;
 use App\Models\Langue;
@@ -10,6 +11,7 @@ use App\Models\TypeDocument;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CVController extends Controller
 {
@@ -133,15 +135,22 @@ class CVController extends Controller
         }
 
         $request->validate([
-            'type_document_id' => 'required|exists:type_documents,id',
-            'nom'              => 'required|string|max:200',
-            'pays'             => 'nullable|string|max:100',
-            'ville'            => 'nullable|string|max:100',
-            'competences'      => 'nullable|string',
-            'experience'       => 'nullable|string',
-            'formation'        => 'nullable|string',
-            'langues'          => 'nullable|string',
-            'fichier_path'     => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
+            'type_document_id'  => 'required|exists:type_documents,id',
+            'nom'               => 'required|string|max:200',
+            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'pays'              => 'nullable|string|max:100',
+            'ville'             => 'nullable|string|max:100',
+            'disponibilite'     => 'nullable|string|max:50',
+            'secteur'           => 'nullable|string|max:150',
+            'metier'            => 'nullable|string|max:150',
+            'niveau_experience' => 'nullable|string|max:100',
+            'niveau_etude'      => 'nullable|string|max:100',
+            'type_contrat'      => 'nullable|string|max:50',
+            'competences'       => 'nullable|string',
+            'experience'        => 'nullable|string',
+            'formation'         => 'nullable|string',
+            'langues'           => 'nullable|string',
+            'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
         ]);
 
         $typeCV = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
@@ -153,19 +162,45 @@ class CVController extends Controller
                 $fichierPath = $request->file('fichier_path')->store('cvs', 'public');
             }
 
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('cvs/photos', 'public');
+            }
+
             CV::create([
-                'candidat_id' => Auth::id(),
-                'titre_poste' => $request->nom,
-                'pays'        => $request->pays,
-                'ville'       => $request->ville,
-                'competences' => $request->competences,
-                'experience'  => $request->experience,
-                'formation'   => $request->formation,
-                'langues'     => $request->langues,
-                'fichier_path'=> $fichierPath,
-                'plan'        => 'gratuit',
-                'visible'     => false,
+                'candidat_id'      => Auth::id(),
+                'titre_poste'      => $request->nom,
+                'photo'            => $photoPath,
+                'pays'             => $request->pays,
+                'ville'            => $request->ville,
+                'disponibilite'    => $request->disponibilite,
+                'secteur'          => $request->secteur,
+                'metier'           => $request->metier,
+                'niveau_experience'=> $request->niveau_experience,
+                'niveau_etude'     => $request->niveau_etude,
+                'type_contrat'     => $request->type_contrat,
+                'competences'      => $request->competences,
+                'experience'       => $request->experience,
+                'formation'        => $request->formation,
+                'langues'          => $request->langues,
+                'fichier_path'     => $fichierPath,
+                'plan'             => 'gratuit',
+                'visible'          => true,
             ]);
+
+            // Sync vers le profil utilisateur
+            $syncUser = [];
+            if ($request->filled('pays'))   $syncUser['pays']   = $request->pays;
+            if ($request->filled('metier')) $syncUser['metier'] = $request->metier;
+            if ($photoPath)                 $syncUser['avatar'] = $photoPath;
+            if (!empty($syncUser))          $user->update($syncUser);
+
+            $profilSync = [];
+            if ($request->filled('nom'))   $profilSync['titre_professionnel'] = $request->nom;
+            if ($request->filled('ville')) $profilSync['ville']               = $request->ville;
+            if (!empty($profilSync)) {
+                CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
+            }
 
             return redirect()->route('candidat.cvs')->with('success', 'Votre CV a été publié avec succès !');
         }
@@ -215,26 +250,56 @@ class CVController extends Controller
         $this->authorize('update', $cv);
 
         $request->validate([
-            'titre_poste'  => 'required|string|max:200',
-            'pays'         => 'required|string|max:100',
-            'ville'        => 'nullable|string|max:100',
-            'competences'  => 'nullable|string',
-            'experience'   => 'nullable|string',
-            'formation'    => 'nullable|string',
-            'langues'      => 'nullable|string',
-            'fichier_path' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
+            'titre_poste'       => 'required|string|max:200',
+            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'pays'              => 'required|string|max:100',
+            'ville'             => 'nullable|string|max:100',
+            'disponibilite'     => 'nullable|string|max:50',
+            'secteur'           => 'nullable|string|max:150',
+            'metier'            => 'nullable|string|max:150',
+            'niveau_experience' => 'nullable|string|max:100',
+            'niveau_etude'      => 'nullable|string|max:100',
+            'type_contrat'      => 'nullable|string|max:50',
+            'competences'       => 'nullable|string',
+            'experience'        => 'nullable|string',
+            'formation'         => 'nullable|string',
+            'langues'           => 'nullable|string',
+            'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
         ]);
 
-        $data = $request->only(['titre_poste','pays','ville','competences','experience','formation','langues']);
+        $data = $request->only([
+            'titre_poste', 'pays', 'ville',
+            'disponibilite', 'secteur', 'metier',
+            'niveau_experience', 'niveau_etude', 'type_contrat',
+            'competences', 'experience', 'formation', 'langues',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            if ($cv->photo) Storage::disk('public')->delete($cv->photo);
+            $data['photo'] = $request->file('photo')->store('cvs/photos', 'public');
+        }
 
         if ($request->hasFile('fichier_path')) {
-            if ($cv->fichier_path) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($cv->fichier_path);
-            }
+            if ($cv->fichier_path) Storage::disk('public')->delete($cv->fichier_path);
             $data['fichier_path'] = $request->file('fichier_path')->store('cvs', 'public');
         }
 
         $cv->update($data);
+
+        // Sync vers le profil utilisateur
+        $user      = Auth::user();
+        $syncUser  = [];
+        if ($request->filled('pays'))   $syncUser['pays']   = $request->pays;
+        if ($request->filled('metier')) $syncUser['metier'] = $request->metier;
+        if (isset($data['photo']))      $syncUser['avatar'] = $data['photo'];
+        if (!empty($syncUser))          $user->update($syncUser);
+
+        $profilSync = [];
+        if ($request->filled('titre_poste')) $profilSync['titre_professionnel'] = $request->titre_poste;
+        if ($request->filled('ville'))       $profilSync['ville']               = $request->ville;
+        if (!empty($profilSync)) {
+            CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
+        }
 
         return redirect()->route('candidat.cvs')->with('success', 'CV mis à jour.');
     }
