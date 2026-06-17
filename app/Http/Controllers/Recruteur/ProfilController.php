@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Recruteur;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProfilController extends Controller
 {
@@ -19,14 +20,18 @@ class ProfilController extends Controller
             'prenom'     => 'required|string|max:100',
             'nom'        => 'required|string|max:100',
             'entreprise' => 'nullable|string|max:200',
-            'tel'        => 'nullable|string|max:20',
+            'tel'        => 'nullable|string|max:30',
             'pays'       => 'nullable|string|max:100',
-            'avatar'     => 'nullable|image|max:2048',
+            'avatar'     => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:2048',
         ]);
 
         $data = $request->only(['prenom','nom','entreprise','tel','pays']);
 
         if ($request->hasFile('avatar')) {
+            $user = Auth::user();
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
