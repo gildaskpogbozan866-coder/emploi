@@ -450,6 +450,7 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
     Route::get('/parametres',    [RecruteurProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
+    Route::delete('/compte',     [RecruteurProfil::class, 'deleteAccount'])->name('compte.delete');
 
     }); // fin recruteur.approuve
 

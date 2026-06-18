@@ -77,10 +77,74 @@
   </div>
   <div class="rec-card__body">
     <p style="font-size:13.5px;color:#64748b;margin:0 0 16px;line-height:1.6">La suppression de votre compte est irréversible. Toutes vos offres, candidatures reçues et données seront définitivement supprimées.</p>
-    <button type="button" onclick="alert('Pour supprimer votre compte recruteur, contactez : support@emploibouge.bj')"
+    <button type="button" onclick="document.getElementById('modal-delete-compte').style.display='flex'"
             class="rec-btn rec-btn--danger">
       Supprimer mon compte recruteur
     </button>
   </div>
 </div>
+
+{{-- Modal confirmation suppression --}}
+<div id="modal-delete-compte"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:32px 28px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;border:2px solid #fca5a5;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    </div>
+    <h3 style="font-family:var(--font-body);font-size:17px;font-weight:800;color:#042C53;text-align:center;margin:0 0 8px">Supprimer votre compte ?</h3>
+    <p style="font-family:var(--font-body);font-size:13px;color:#64748b;text-align:center;line-height:1.6;margin:0 0 20px">
+      Cette action est <strong>irréversible</strong>. Toutes vos offres, candidatures reçues, abonnements et données seront définitivement supprimés.
+    </p>
+    <p style="font-family:var(--font-body);font-size:13px;font-weight:700;color:#374151;margin:0 0 8px">
+      Tapez <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#ef4444">SUPPRIMER</code> pour confirmer :
+    </p>
+    <form method="POST" action="{{ route('recruteur.compte.delete') }}">
+      @csrf
+      @method('DELETE')
+      <input type="text" name="confirmation" id="confirm-input" autocomplete="off"
+             placeholder="SUPPRIMER"
+             style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:var(--font-body);font-size:14px;margin-bottom:6px;box-sizing:border-box;outline:none"
+             oninput="document.getElementById('btn-delete-confirm').disabled = this.value !== 'SUPPRIMER'">
+      @error('confirmation')
+        <p style="font-size:12px;color:#ef4444;margin:0 0 10px">{{ $message }}</p>
+      @enderror
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button type="button"
+                onclick="document.getElementById('modal-delete-compte').style.display='none';document.getElementById('confirm-input').value='';document.getElementById('btn-delete-confirm').disabled=true"
+                style="flex:1;padding:11px;border:1.5px solid #e2e8f0;border-radius:10px;background:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;color:#374151;cursor:pointer">
+          Annuler
+        </button>
+        <button type="submit" id="btn-delete-confirm" disabled
+                style="flex:1;padding:11px;border:none;border-radius:10px;background:#ef4444;font-family:var(--font-body);font-size:14px;font-weight:700;color:#fff;cursor:pointer;opacity:.5;transition:opacity .2s"
+                onmouseover="if(!this.disabled)this.style.opacity='1'"
+                onmouseout="if(!this.disabled)this.style.opacity='.9'"
+                onclick="this.style.opacity='.7'">
+          Supprimer définitivement
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Activer le bouton quand le champ est correct
+document.getElementById('btn-delete-confirm').disabled = true;
+// Fermer la modal en cliquant en dehors
+document.getElementById('modal-delete-compte').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+    document.getElementById('confirm-input').value = '';
+    document.getElementById('btn-delete-confirm').disabled = true;
+    document.getElementById('btn-delete-confirm').style.opacity = '.5';
+  }
+});
+// Synchroniser l'opacité du bouton avec son état
+document.getElementById('confirm-input').addEventListener('input', function() {
+  const btn = document.getElementById('btn-delete-confirm');
+  btn.style.opacity = this.value === 'SUPPRIMER' ? '1' : '.5';
+});
+@if($errors->has('confirmation'))
+document.getElementById('modal-delete-compte').style.display = 'flex';
+@endif
+</script>
 @endsection
