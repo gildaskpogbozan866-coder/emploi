@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Désabonnement newsletter — Emploi Bouge Bénin')
+@section('title', 'Désabonnement newsletter | Emploi Bouge Bénin')
 
 @section('content')
 <section class="section" style="min-height:60vh;display:flex;align-items:center">

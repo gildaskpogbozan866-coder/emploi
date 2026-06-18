@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function lancerRecherche() {
     var q = heroSearch ? heroSearch.value.trim() : '';
-    var url = '/emploi-bouge-benin/public/offres';
+    var url = window.OFFRES_URL || '/offres';
     if (q) url += '?q=' + encodeURIComponent(q);
     window.location.href = url;
   }

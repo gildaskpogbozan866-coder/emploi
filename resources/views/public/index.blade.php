@@ -274,7 +274,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
             Un recruteur décide en <strong>7 secondes</strong>. Nos experts rédigent pour vous un CV percutant et une lettre convaincante <strong>adaptés au marché africain</strong>.
           </p>
           <ul class="formation-card__features">
-            @foreach(['Analyse complète de votre profil et de vos objectifs professionnels','CV structuré, moderne et optimisé pour passer les filtres ATS','Lettre de motivation personnalisée et convaincante','Livraison Word &amp; PDF prêt à l\'emploi sous 48h','1 révision gratuite incluse après livraison'] as $f)
+            @foreach(['Analyse complète de votre profil et de vos objectifs professionnels','CV structuré, moderne et optimisé pour passer les filtres ATS','Lettre de motivation personnalisée et convaincante','Livraison Word &amp; PDF prêt à l\'emploi de 30min à 1h max','1 révision gratuite incluse après livraison'] as $f)
             <li class="formation-card__feature">
               <span class="formation-card__check"><svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               {!! $f !!}
@@ -298,7 +298,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
           </div>
           <div class="formation-card__delivery">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Livré sous 48h
+            Livré en 30min–1h
           </div>
           <div class="formation-card__guarantee">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -328,7 +328,10 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
         <h2 class="section-title" style="margin-top:10px">Dernières offres publiées</h2>
         <p class="section-subtitle">Les offres les plus récentes, mises à jour en continu.</p>
       </div>
-      <a href="{{ route('offre.list') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
+      <a href="{{ route('offre.list') }}"
+         style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);color:#F5C842;font-size:14px;font-weight:700;padding:13px 26px;border-radius:12px;text-decoration:none;box-shadow:0 4px 18px rgba(4,44,83,.22);transition:transform .18s,box-shadow .18s;letter-spacing:.02em"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(4,44,83,.32)'"
+         onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 18px rgba(4,44,83,.22)'">
         Voir toutes les offres
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
@@ -371,7 +374,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
             @if($offre->salaire)
               <span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }}</span>
             @endif
-            <span style="font-size:11.5px;font-weight:700;color:#185FA5;margin-left:auto;display:inline-flex;align-items:center;gap:3px">
+            <span style="font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#042C53,#185FA5);padding:6px 14px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;margin-left:auto;letter-spacing:.02em">
               Voir l'offre
               <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </span>
@@ -396,7 +399,10 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
         <h2 class="section-title" style="margin-top:10px">Derniers profils déposés</h2>
         <p class="section-subtitle">Des candidats actifs, emploi, stage, bourse ou freelance.</p>
       </div>
-      <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
+      <a href="{{ route('cv.public.theque') }}"
+         style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);color:#F5C842;font-size:14px;font-weight:700;padding:13px 26px;border-radius:12px;text-decoration:none;box-shadow:0 4px 18px rgba(4,44,83,.22);transition:transform .18s,box-shadow .18s;letter-spacing:.02em"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(4,44,83,.32)'"
+         onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 18px rgba(4,44,83,.22)'">
         Accéder aux profils
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
@@ -477,7 +483,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
         {{-- CTA --}}
         <div style="margin-top:20px;padding-top:18px;border-top:1px solid #f1f5f9">
           <span style="display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#042C53,#185FA5);color:#fff;font-size:14px;font-weight:700;padding:12px 20px;border-radius:12px">
-            {{ $isDoc ? 'Voir le document' : 'Voir le profil' }}
+            Voir le CV
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </span>
         </div>
@@ -774,5 +780,6 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
 @endsection
 
 @section('scripts')
+<script>window.OFFRES_URL = "{{ route('offre.list') }}";</script>
 <script src="{{ asset('js/index.js') }}" defer></script>
 @endsection

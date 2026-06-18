@@ -48,7 +48,7 @@
      class="ol-tab {{ !request('type') ? 'active' : '' }}">Tous</a>
   @foreach($typeContratsList as $tc)
     @php
-      $tabLabel = Str::before(Str::before($tc->libelle, ' — '), ' / ');
+      $tabLabel = Str::before(Str::before($tc->libelle, ' : '), ' / ');
     @endphp
     <a href="{{ route('offre.list', array_merge(request()->except(['type','page']), ['type' => $tc->code])) }}"
        class="ol-tab {{ request('type') === $tc->code ? 'active' : '' }}">{{ $tabLabel }}</a>
@@ -245,7 +245,7 @@
               $emptySub   = 'De nouvelles offres de ce type sont publiées régulièrement. Revenez bientôt ou consultez toutes les offres disponibles.';
             } elseif (request('localisation')) {
               $emptyTitle = 'Aucune offre à ' . request('localisation') . ' pour l\'instant';
-              $emptySub   = 'Cette ville est en pleine croissance économique ! Revenez bientôt ou explorez les villes voisines — de nombreuses offres sont ouvertes à la mobilité.';
+              $emptySub   = 'Cette ville est en pleine croissance économique ! Revenez bientôt ou explorez les villes voisines, de nombreuses offres sont ouvertes à la mobilité.';
             } elseif (request('secteur')) {
               $emptyTitle = 'Pas encore d\'offres en ' . request('secteur');
               $emptySub   = 'Ce secteur recrute activement au Bénin ! Soyez parmi les premiers à candidater dès la publication. Déposez votre CV pour être visible.';
@@ -259,7 +259,7 @@
               $emptySub   = 'Des offres pour le niveau ' . ($libEtude?->libelle ?? '') . ' arrivent régulièrement. Déposez votre CV pour être parmi les premiers contactés !';
             } elseif (request('competence')) {
               $emptyTitle = 'Aucune offre pour cette compétence pour l\'instant';
-              $emptySub   = 'Cette compétence est précieuse et très recherchée par les recruteurs. Déposez votre CV et mettez-la en avant — les offres ne tarderont pas !';
+              $emptySub   = 'Cette compétence est précieuse et très recherchée par les recruteurs. Déposez votre CV et mettez-la en avant : les offres ne tarderont pas !';
             } else {
               $emptyTitle = 'De nouvelles offres arrivent chaque jour !';
               $emptySub   = 'Notre plateforme est en pleine croissance. Revenez bientôt ou déposez votre CV pour être visible auprès de tous les recruteurs.';

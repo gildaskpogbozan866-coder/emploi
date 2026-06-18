@@ -92,7 +92,7 @@
   @include('components.nav')
 
   {{-- ── CONTENU ── --}}
-  <main>
+  <main style="margin-top:-22px">
     @yield('content')
   </main>
 

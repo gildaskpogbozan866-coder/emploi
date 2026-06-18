@@ -175,9 +175,9 @@
         <div class="cand-form-group">
           <label class="cand-form-label">Fréquence de notification <span class="req">*</span></label>
           <select class="cand-form-select" name="frequence" required>
-            <option value="immediat"     {{ old('frequence') === 'immediat'     ? 'selected' : '' }}>Immédiat — dès qu'une offre est publiée</option>
-            <option value="quotidien"    {{ old('frequence', 'quotidien') === 'quotidien'    ? 'selected' : '' }}>Quotidien — résumé chaque matin</option>
-            <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire — résumé chaque lundi</option>
+            <option value="immediat"     {{ old('frequence') === 'immediat'     ? 'selected' : '' }}>Immédiat : dès qu'une offre est publiée</option>
+            <option value="quotidien"    {{ old('frequence', 'quotidien') === 'quotidien'    ? 'selected' : '' }}>Quotidien : résumé chaque matin</option>
+            <option value="hebdomadaire" {{ old('frequence') === 'hebdomadaire' ? 'selected' : '' }}>Hebdomadaire : résumé chaque lundi</option>
           </select>
         </div>
         <div class="cand-form-actions">

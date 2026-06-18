@@ -386,6 +386,32 @@
 
 .sidebar-cat:hover { color: var(--bleu-clair); }
 
+/* ── Images insérées par l'admin dans le contenu ── */
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 24px auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(4,44,83,.10);
+  object-fit: contain;
+}
+
+.article-content figure {
+  margin: 28px 0;
+  text-align: center;
+}
+
+.article-content figure img {
+  margin: 0 auto 8px;
+}
+
+.article-content figcaption {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .article-layout__inner {

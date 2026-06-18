@@ -184,7 +184,7 @@ class DatabaseSeeder extends Seeder
              'categorie' => 'Entretien', 'temps_lecture' => 7],
             ['titre' => "Trouver un emploi à distance depuis l'Afrique : guide complet",
              'slug'  => 'emploi-remote-afrique',
-             'extrait' => "Plateformes, profils, tarifs — tout ce qu'il faut pour décrocher votre premier job remote.",
+             'extrait' => "Plateformes, profils, tarifs : tout ce qu'il faut pour décrocher votre premier job remote.",
              'categorie' => 'Remote', 'temps_lecture' => 6],
         ];
 
