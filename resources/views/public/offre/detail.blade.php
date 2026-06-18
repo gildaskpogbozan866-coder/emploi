@@ -74,7 +74,13 @@ $breadcrumb = [
       Retour aux offres
     </a>
     <div class="od-hero__head">
-      <div class="od-hero__avatar">{{ strtoupper(substr($offre->entreprise, 0, 2)) }}</div>
+      <div class="od-hero__avatar" style="overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8f0fe,#dbeafe);border:2px solid rgba(255,255,255,.4)">
+        @if($offre->logo)
+          <img src="{{ asset('storage/' . $offre->logo) }}" alt="{{ $offre->entreprise }}" style="width:100%;height:100%;object-fit:contain;padding:6px">
+        @else
+          {{ strtoupper(substr($offre->entreprise, 0, 2)) }}
+        @endif
+      </div>
       <div class="od-hero__info">
         <h1 class="od-hero__title">{{ $offre->titre }}</h1>
         <p class="od-hero__company">{{ $offre->entreprise }}</p>

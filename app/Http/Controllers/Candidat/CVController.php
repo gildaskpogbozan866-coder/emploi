@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CandidatProfil;
 use App\Models\Competence;
 use App\Models\CV;
+use App\Models\Document;
 use App\Models\Langue;
 use App\Models\LangueCandidat;
 use App\Models\NiveauLangue;
@@ -13,6 +14,7 @@ use App\Models\TypeDocument;
 use App\Models\User;
 use App\Notifications\NouveauCVDeposeNotification;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -22,49 +24,75 @@ class CVController extends Controller
     // ── CVthèque publique ─────────────────────────────────
     public function theque(Request $request)
     {
-        $query = CV::visible()->with('candidat')->latest();
+        // ── CVs ──
+        $cvQuery = CV::visible()->with('candidat')->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function ($sq) use ($q) {
+            $cvQuery->where(function ($sq) use ($q) {
                 $sq->where('titre_poste', 'like', "%$q%")
                    ->orWhere('competences', 'like', "%$q%")
                    ->orWhere('secteur', 'like', "%$q%");
             });
         }
+        if ($request->filled('pays'))             $cvQuery->where('pays', $request->pays);
+        if ($request->filled('secteur'))          $cvQuery->where('secteur', 'like', '%'.$request->secteur.'%');
+        if ($request->filled('langue'))           $cvQuery->where('langues', 'like', '%'.$request->langue.'%');
+        if ($request->filled('metier'))           $cvQuery->where(function ($sq) use ($request) {
+            $sq->where('metier', 'like', '%'.$request->metier.'%')
+               ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
+        });
+        if ($request->filled('niveau_etude'))     $cvQuery->where('niveau_etude', $request->niveau_etude);
+        if ($request->filled('type_contrat'))     $cvQuery->where('type_contrat', $request->type_contrat);
+        if ($request->filled('niveau_experience'))$cvQuery->where('niveau_experience', $request->niveau_experience);
 
-        if ($request->filled('pays')) {
-            $query->where('pays', $request->pays);
-        }
+        $cvResults = $cvQuery->get()->map(function ($cv) {
+            $cv->_is_document = false;
+            return $cv;
+        });
 
-        if ($request->filled('secteur')) {
-            $query->where('secteur', 'like', '%'.$request->secteur.'%');
-        }
+        // ── Documents (diplômes, attestations, certificats…) ──
+        $docQuery = Document::with(['user', 'type'])->latest();
 
-        if ($request->filled('langue')) {
-            $query->where('langues', 'like', '%'.$request->langue.'%');
-        }
-
-        if ($request->filled('metier')) {
-            $query->where(function ($sq) use ($request) {
-                $sq->where('metier', 'like', '%'.$request->metier.'%')
-                   ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $docQuery->where(function ($sq) use ($q) {
+                $sq->where('nom', 'like', "%$q%")
+                   ->orWhere('competences', 'like', "%$q%");
             });
         }
+        if ($request->filled('pays'))   $docQuery->where('pays', $request->pays);
+        if ($request->filled('langue')) $docQuery->where('langues', 'like', '%'.$request->langue.'%');
 
-        if ($request->filled('niveau_etude')) {
-            $query->where('niveau_etude', $request->niveau_etude);
-        }
+        $docResults = $docQuery->get()->map(function ($doc) {
+            return (object) [
+                '_is_document' => true,
+                'id'           => $doc->id,
+                'titre_poste'  => $doc->nom,
+                'photo'        => null,
+                'pays'         => $doc->pays,
+                'langues'      => $doc->langues,
+                'competences'  => $doc->competences,
+                'experience'   => $doc->experience,
+                'plan'         => null,
+                'candidat'     => $doc->user,
+                'type_label'   => $doc->type?->nom ?? 'Document',
+                'fichier'      => $doc->fichier,
+                'created_at'   => $doc->created_at,
+            ];
+        });
 
-        if ($request->filled('type_contrat')) {
-            $query->where('type_contrat', $request->type_contrat);
-        }
-
-        if ($request->filled('niveau_experience')) {
-            $query->where('niveau_experience', $request->niveau_experience);
-        }
-
-        $cvs = $query->paginate(12)->withQueryString();
+        // ── Fusion & pagination ──
+        $merged = $cvResults->concat($docResults)->sortByDesc('created_at')->values();
+        $page   = (int) $request->get('page', 1);
+        $perPage = 12;
+        $cvs = new LengthAwarePaginator(
+            $merged->forPage($page, $perPage)->values(),
+            $merged->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -75,6 +103,12 @@ class CVController extends Controller
         }
 
         return view('public.cv.theque', compact('cvs'));
+    }
+
+    public function documentDetail(Document $document)
+    {
+        $document->load(['user', 'type']);
+        return view('public.cv.document-detail', compact('document'));
     }
 
     public function detail(CV $cv)
@@ -90,7 +124,8 @@ class CVController extends Controller
 
     public function tarif()
     {
-        return view('public.cv.tarif');
+        $packs = \App\Models\CreditCvPack::actif()->orderBy('ordre')->orderBy('credits')->get();
+        return view('public.cv.tarif', compact('packs'));
     }
 
     public function depot()

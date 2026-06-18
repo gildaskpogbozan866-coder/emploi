@@ -334,33 +334,44 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
       </a>
     </div>
 
-    <div class="oic-grid">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
       @forelse($offres as $offre)
-        @php $typeKey = strtolower(str_replace([' ', '-'], '', $offre->type)); @endphp
-        <a href="{{ route('offre.detail', $offre) }}" class="oic-card">
+        <a href="{{ route('offre.detail', $offre) }}" style="display:block;background:#fff;border:1.5px solid #e8edf3;border-radius:16px;padding:20px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:0 2px 8px rgba(4,44,83,.06)"
+           onmouseover="this.style.boxShadow='0 8px 28px rgba(4,44,83,.13)';this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'">
 
-          <div class="oic-card__head">
-            <div class="oic-card__avatar">
-              {{ strtoupper(substr($offre->entreprise, 0, 2)) }}
+          {{-- En-tête : logo + titre + entreprise + date --}}
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+            <div style="flex-shrink:0;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#e8f0fe,#dbeafe);border:1.5px solid #c7d7f8;display:flex;align-items:center;justify-content:center;overflow:hidden">
+              @if($offre->logo)
+                <img src="{{ asset('storage/' . $offre->logo) }}" alt="{{ $offre->entreprise }}" style="width:100%;height:100%;object-fit:contain;padding:4px">
+              @else
+                <span style="font-size:1.05rem;font-weight:800;color:#185FA5;letter-spacing:-1px">{{ strtoupper(substr($offre->entreprise, 0, 2)) }}</span>
+              @endif
             </div>
-            <div class="oic-card__info">
-              <div class="oic-card__title">{{ $offre->titre }}</div>
-              <div class="oic-card__company">{{ $offre->entreprise }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:14px;font-weight:700;color:#042C53;line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $offre->titre }}</div>
+              <div style="font-size:12px;color:#185FA5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $offre->entreprise }}</div>
             </div>
+            <div style="flex-shrink:0;font-size:10.5px;color:#94a3b8;white-space:nowrap">{{ $offre->created_at->diffForHumans() }}</div>
           </div>
 
-          <div class="oic-card__loc">
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" stroke-linecap="round"/></svg>
-            {{ $offre->localisation }}
-          </div>
+          {{-- Description --}}
+          <p style="font-size:12.5px;color:#64748b;line-height:1.6;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ Str::limit(strip_tags($offre->description), 110) }}</p>
 
-          <div>
-            <span class="oic-badge oic-badge--{{ $typeKey }}">{{ $offre->type }}</span>
-          </div>
-
-          <div class="oic-card__footer">
-            <span class="oic-card__date">{{ $offre->created_at->diffForHumans() }}</span>
-            <span class="oic-card__cta">
+          {{-- Badges + CTA --}}
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #f1f5f9">
+            @if($offre->type)
+              <span style="font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">{{ $offre->type }}</span>
+            @endif
+            <span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;gap:3px">
+              <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+              {{ $offre->localisation }}
+            </span>
+            @if($offre->salaire)
+              <span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }}</span>
+            @endif
+            <span style="font-size:11.5px;font-weight:700;color:#185FA5;margin-left:auto;display:inline-flex;align-items:center;gap:3px">
               Voir l'offre
               <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </span>
@@ -368,7 +379,7 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
 
         </a>
       @empty
-        <p style="color:#64748b;padding:32px 0;text-align:center">Aucune offre publiée pour l'instant.</p>
+        <p style="color:#64748b;padding:32px 0;text-align:center;grid-column:1/-1">Aucune offre publiée pour l'instant.</p>
       @endforelse
     </div>
   </div>
@@ -382,64 +393,96 @@ echo '<script type="application/ld+json">' . json_encode($orgSchema, JSON_UNESCA
     <div class="offres-header">
       <div>
         <span class="badge badge--yellow">CV récents</span>
-        <h2 class="section-title" style="margin-top:10px">Derniers CV déposés</h2>
+        <h2 class="section-title" style="margin-top:10px">Derniers profils déposés</h2>
         <p class="section-subtitle">Des candidats actifs, emploi, stage, bourse ou freelance.</p>
       </div>
       <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
-        Accéder aux CV
+        Accéder aux profils
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
     </div>
 
-    @php $cvBgs = ['#dbeafe','#fce7f3','#d1fae5','#fef9c3','#ede9fe','#dcfce7']; @endphp
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px">
+      @foreach($cvs as $item)
+      @php
+        $isDoc     = !empty($item->_is_document);
+        $detailUrl = $isDoc ? route('document.public.detail', $item->id) : route('cv.public.detail', $item);
+        $dispo     = !$isDoc && $item->disponibilite ? $disponibilitesList->firstWhere('code', $item->disponibilite) : null;
+        $initiale  = mb_strtoupper(mb_substr($item->candidat?->prenom ?? ($item->user?->prenom ?? '?'), 0, 1));
+      @endphp
+      <a href="{{ $detailUrl }}" style="display:flex;flex-direction:column;background:#fff;border:1.5px solid #e8edf3;border-radius:20px;padding:28px;text-decoration:none;transition:box-shadow .2s,transform .2s;box-shadow:0 4px 16px rgba(4,44,83,.07)"
+         onmouseover="this.style.boxShadow='0 12px 40px rgba(4,44,83,.16)';this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.boxShadow='0 4px 16px rgba(4,44,83,.07)';this.style.transform='none'">
 
-    <div class="lo-list" id="cvGrid">
-      @foreach($cvs as $j => $cv)
-      <div class="cvt-card" onclick="location.href='{{ route('cv.public.detail', $cv) }}'" style="cursor:pointer">
-        <div class="cvt-card__inner">
-          <div class="cvt-card__id">Profil n°{{ str_pad($cv->id, 8, '0', STR_PAD_LEFT) }}</div>
-          <div class="cvt-card__body">
-            <div class="cvt-card__photo" style="background:{{ $cvBgs[$j % count($cvBgs)] }}">
-              <svg class="cvt-card__photo-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.7 0 4.8-2.15 4.8-4.8S14.7 2.4 12 2.4 7.2 4.55 7.2 7.2 9.3 12 12 12zm0 2.4c-3.21 0-9.6 1.61-9.6 4.8v2.4h19.2v-2.4c0-3.19-6.39-4.8-9.6-4.8z"/>
-              </svg>
-            </div>
-            <div class="cvt-card__info">
-              <div class="cvt-card__row">
-                <span class="cvt-card__label">Secteur :</span>
-                <span class="cvt-card__val">{{ $cv->titre_poste }} · {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</span>
-              </div>
-              @if($cv->experience)
-              <div class="cvt-card__row">
-                <span class="cvt-card__label">Expérience :</span>
-                <span class="cvt-card__val">{{ $cv->experience }}</span>
-              </div>
-              @endif
-              @if($cv->formation)
-              <div class="cvt-card__formation-name">{{ Str::limit($cv->formation, 60) }}</div>
-              @endif
-              @if($cv->langues)
-              <div class="cvt-card__row">
-                <span class="cvt-card__label">Langues :</span>
-                <span class="cvt-card__val">{{ $cv->langues }}</span>
-              </div>
-              @endif
-              @if($cv->competences)
-              <div class="cvt-card__row">
-                <span class="cvt-card__label">Compétences :</span>
-                <span class="cvt-card__val">{{ Str::limit($cv->competences, 80) }}</span>
-              </div>
-              @endif
-            </div>
+        {{-- En-tête : grand avatar centré + nom + badge dispo --}}
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:20px">
+          {{-- Avatar 90px --}}
+          <div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid #e8edf3;background:linear-gradient(135deg,#e8f0fe,#dbeafe);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(24,95,165,.12)">
+            @if($isDoc)
+              <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            @elseif(!empty($item->photo))
+              <img src="{{ asset('storage/' . $item->photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;filter:blur(7px);transform:scale(1.12)">
+            @else
+              <span style="font-size:2.2rem;font-weight:800;color:#185FA5">{{ $initiale }}</span>
+            @endif
           </div>
-          <div class="cvt-card__footer">
-            <a href="{{ route('cv.public.detail', $cv) }}" class="cvt-card__btn" onclick="event.stopPropagation()">
-              Voir le CV
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+
+          {{-- Titre poste --}}
+          <div style="font-size:17px;font-weight:800;color:#042C53;line-height:1.3;margin-bottom:8px">
+            {{ $item->titre_poste }}
+          </div>
+
+          {{-- Badge dispo / type doc --}}
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap">
+            @if($isDoc)
+              <span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:#f0f9ff;color:#0284c7;border:1px solid #bae6fd">{{ $item->type_label }}</span>
+            @elseif($dispo)
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:4px 12px;border-radius:20px">
+                <span style="width:9px;height:9px;border-radius:50%;background:{{ $dispo->couleur }};flex-shrink:0"></span>
+                {{ $dispo->libelle }}
+              </span>
+            @endif
+            @if(!$isDoc && isset($item->plan) && $item->plan === 'premium')
+              <span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:#fef9c3;color:#854d0e;border:1px solid #fde68a">★ Premium</span>
+            @endif
           </div>
         </div>
-      </div>
+
+        {{-- Séparateur --}}
+        <div style="height:1px;background:#f1f5f9;margin-bottom:18px"></div>
+
+        {{-- Infos : localisation + compétences + langues --}}
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+          @if($item->pays)
+            <div style="display:flex;align-items:center;gap:7px;font-size:13px;color:#64748b">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+              <span>{{ $item->pays }}{{ !empty($item->ville) ? ', ' . $item->ville : '' }}</span>
+            </div>
+          @endif
+
+          @if($item->competences)
+            <div style="font-size:13px;color:#475569;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">
+              {{ Str::limit($item->competences, 130) }}
+            </div>
+          @endif
+
+          @if(!$isDoc && $item->langues)
+            <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#94a3b8">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+              {{ $item->langues }}
+            </div>
+          @endif
+        </div>
+
+        {{-- CTA --}}
+        <div style="margin-top:20px;padding-top:18px;border-top:1px solid #f1f5f9">
+          <span style="display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#042C53,#185FA5);color:#fff;font-size:14px;font-weight:700;padding:12px 20px;border-radius:12px">
+            {{ $isDoc ? 'Voir le document' : 'Voir le profil' }}
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </span>
+        </div>
+
+      </a>
       @endforeach
     </div>
   </div>

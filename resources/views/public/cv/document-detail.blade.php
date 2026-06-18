@@ -1,27 +1,22 @@
 @extends('layouts.app')
-@section('title', 'Profil CVthèque · ' . $cv->titre_poste . ' | Emploi Bouge Bénin')
-@section('description', Str::limit($cv->resume ?? 'Profil candidat disponible sur Emploi Bouge Bénin.', 160))
+@section('title', ($document->type?->nom ?? 'Document') . ' · ' . $document->nom . ' | Emploi Bouge Bénin')
+@section('description', Str::limit($document->competences ?? 'Document disponible sur Emploi Bouge Bénin.', 160))
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
 @endsection
 
 @section('content')
-@php
-  $dispo = $cv->disponibilite ? $disponibilitesList->firstWhere('code', $cv->disponibilite) : null;
-@endphp
 
 {{-- ══════════ HERO ══════════ --}}
 <section class="section page-hero">
   <div class="container page-hero__inner">
-    <span class="badge badge--blue">CVthèque</span>
-    <h1 class="page-hero__title">{{ $cv->titre_poste }}</h1>
+    <span class="badge badge--blue">{{ $document->type?->nom ?? 'Document' }}</span>
+    <h1 class="page-hero__title">{{ $document->nom }}</h1>
     <p class="page-hero__subtitle">
-      @if($cv->pays){{ $cv->pays }}@endif
-      @if($cv->pays && $cv->secteur) · @endif
-      @if($cv->secteur){{ $cv->secteur }}@endif
-      @if(($cv->pays || $cv->secteur) && $dispo) · @endif
-      @if($dispo){{ $dispo->libelle }}@endif
+      @if($document->pays){{ $document->pays }}@endif
+      @if($document->pays && $document->ville) · @endif
+      @if($document->ville){{ $document->ville }}@endif
     </p>
   </div>
 </section>
@@ -51,39 +46,21 @@
 
       {{-- En-tête gradient --}}
       <div class="cvtd-profile__head">
-        <div class="cvtd-avatar" style="position:relative;overflow:hidden">
-          @if($cv->photo)
-            <img src="{{ asset('storage/' . $cv->photo) }}" alt="{{ $cv->titre_poste }}" style="filter:blur(7px);transform:scale(1.1)">
-          @else
-            <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-          @endif
-          @if($cv->photo)
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,44,83,.25)">
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.9)" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-          @endif
+        <div class="cvtd-avatar" style="display:flex;align-items:center;justify-content:center">
+          <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         </div>
         <div class="cvtd-head-info">
-          <h2 class="cvtd-head-title">{{ $cv->titre_poste }}</h2>
-          @if($cv->pays)
+          <h2 class="cvtd-head-title">{{ $document->nom }}</h2>
+          @if($document->pays)
             <p class="cvtd-head-meta">
               <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-              {{ $cv->pays }}
+              {{ $document->pays }}{{ $document->ville ? ', ' . $document->ville : '' }}
             </p>
           @endif
           <div class="cvtd-head-badges">
-            @if($dispo)
-              <span class="cvtd-dispo-badge">
-                <span class="cvtd-dispo-dot" style="background:{{ $dispo->couleur }}"></span>
-                {{ $dispo->libelle }}
-              </span>
-            @endif
-            @if($cv->plan === 'premium')
-              <span class="cvtd-head-chip">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#F5C842"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Premium
-              </span>
-            @endif
+            <span class="cvtd-head-chip" style="background:rgba(2,132,199,.2);color:#fff">
+              {{ $document->type?->nom ?? 'Document' }}
+            </span>
           </div>
         </div>
       </div>
@@ -91,26 +68,7 @@
       {{-- Corps --}}
       <div class="cvtd-profile__body">
 
-        @if($cv->secteur)
-          <span class="cvtd-sect-tag">
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            {{ $cv->secteur }}
-          </span>
-        @endif
-
-        @if($cv->resume)
-        <div class="cvtd-section">
-          <p class="cvtd-section-label">
-            <span class="cvtd-section-label__icon">
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            </span>
-            Résumé
-          </p>
-          <p class="cvtd-section-text">{{ $cv->resume }}</p>
-        </div>
-        @endif
-
-        @if($cv->competences)
+        @if($document->competences)
         <div class="cvtd-section">
           <p class="cvtd-section-label">
             <span class="cvtd-section-label__icon">
@@ -118,11 +76,11 @@
             </span>
             Compétences
           </p>
-          <p class="cvtd-section-text">{{ $cv->competences }}</p>
+          <p class="cvtd-section-text">{{ $document->competences }}</p>
         </div>
         @endif
 
-        @if($cv->experience)
+        @if($document->experience)
         <div class="cvtd-section">
           <p class="cvtd-section-label">
             <span class="cvtd-section-label__icon">
@@ -130,11 +88,11 @@
             </span>
             Expérience
           </p>
-          <p class="cvtd-section-text">{{ $cv->experience }}</p>
+          <p class="cvtd-section-text">{{ $document->experience }}</p>
         </div>
         @endif
 
-        @if($cv->formation)
+        @if($document->formation)
         <div class="cvtd-section">
           <p class="cvtd-section-label">
             <span class="cvtd-section-label__icon">
@@ -142,11 +100,11 @@
             </span>
             Formation
           </p>
-          <p class="cvtd-section-text">{{ $cv->formation }}</p>
+          <p class="cvtd-section-text">{{ $document->formation }}</p>
         </div>
         @endif
 
-        @if($cv->langues)
+        @if($document->langues)
         <div class="cvtd-section">
           <p class="cvtd-section-label">
             <span class="cvtd-section-label__icon">
@@ -154,7 +112,7 @@
             </span>
             Langues
           </p>
-          <p class="cvtd-section-text">{{ $cv->langues }}</p>
+          <p class="cvtd-section-text">{{ $document->langues }}</p>
         </div>
         @endif
 

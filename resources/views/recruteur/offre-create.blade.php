@@ -129,7 +129,19 @@
           <textarea name="exigences" rows="3" placeholder="Diplôme requis, expérience minimale, conditions particulières…">{{ old('exigences') }}</textarea>
         </div>
 
-        <div class="rec-form-group full">
+        <div class="rec-form-group">
+          <label>Logo de l'entreprise <small style="color:#94a3b8;font-weight:400">(optionnel, JPG, PNG, WebP · max 2 Mo)</small></label>
+          <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp,.svg" id="logo-input-create"
+                 style="width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff;cursor:pointer"
+                 onchange="previewLogo(this,'logo-preview-create')">
+          <div id="logo-preview-create" style="display:none;margin-top:10px">
+            <img src="" alt="Aperçu logo" style="height:60px;width:60px;object-fit:contain;border:1.5px solid #e2e8f0;border-radius:10px;padding:4px;background:#fff">
+          </div>
+          <small style="color:#94a3b8">Affiché sur votre annonce publique.</small>
+          @error('logo')<small style="color:#e53e3e">{{ $message }}</small>@enderror
+        </div>
+
+        <div class="rec-form-group">
           <label>Document joint <small style="color:#94a3b8;font-weight:400">(optionnel, PDF, DOC, DOCX · max 5 Mo)</small></label>
           <input type="file" name="fichier" accept=".pdf,.doc,.docx" style="width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff;cursor:pointer">
           <small style="color:#94a3b8">Utile pour les annonces officielles, appels d'offres ou documents multi-pages.</small>
@@ -151,6 +163,17 @@
 
 @section('scripts')
 <script>
+function previewLogo(input, previewId) {
+  const preview = document.getElementById(previewId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.querySelector('img').src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 (function () {
   function initMetierSelect() {
     if (!window.$ || !$.fn.select2) return;

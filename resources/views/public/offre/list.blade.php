@@ -184,37 +184,51 @@
       {{-- Offres --}}
       <div class="ol-list">
         @forelse($offres as $offre)
-          <a href="{{ route('offre.detail', $offre) }}" class="ol-card">
+          <a href="{{ route('offre.detail', $offre) }}" class="ol-card" style="display:block;background:#fff;border:1.5px solid #e8edf3;border-radius:16px;padding:20px 22px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:0 2px 8px rgba(4,44,83,.06)"
+             onmouseover="this.style.boxShadow='0 8px 28px rgba(4,44,83,.13)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'">
 
-            {{-- Avatar entreprise --}}
-            <div class="ol-card__avatar">
-              {{ strtoupper(substr($offre->entreprise, 0, 2)) }}
-            </div>
-
-            {{-- Corps --}}
-            <div class="ol-card__body">
-              <div class="ol-card__title">{{ $offre->titre }}</div>
-              <div class="ol-card__company">{{ $offre->entreprise }}</div>
-              <p class="ol-card__desc">{{ Str::limit(strip_tags($offre->description), 130) }}</p>
-              <div class="ol-card__meta">
-                <span class="ol-badge ol-badge--type">{{ $offre->type }}</span>
-                <span class="ol-badge ol-badge--loc">
-                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  {{ $offre->localisation }}
-                </span>
-                @if($offre->secteur)
-                  <span class="ol-badge ol-badge--secteur">{{ is_array($offre->secteur) ? implode(', ', $offre->secteur) : $offre->secteur }}</span>
+            {{-- En-tête : logo + titre + entreprise + date --}}
+            <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px">
+              {{-- Logo ou initiales --}}
+              <div style="flex-shrink:0;width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#e8f0fe,#dbeafe);border:1.5px solid #c7d7f8;display:flex;align-items:center;justify-content:center;overflow:hidden">
+                @if($offre->logo)
+                  <img src="{{ asset('storage/' . $offre->logo) }}" alt="{{ $offre->entreprise }}" style="width:100%;height:100%;object-fit:contain;padding:4px">
+                @else
+                  <span style="font-size:1.15rem;font-weight:800;color:#185FA5;letter-spacing:-1px">{{ strtoupper(substr($offre->entreprise, 0, 2)) }}</span>
                 @endif
               </div>
+              {{-- Titre + entreprise --}}
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:700;color:#042C53;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $offre->titre }}</div>
+                <div style="font-size:12.5px;color:#185FA5;font-weight:600">{{ $offre->entreprise }}</div>
+              </div>
+              {{-- Date --}}
+              <div style="flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap">{{ $offre->created_at->diffForHumans() }}</div>
             </div>
 
-            {{-- Colonne droite --}}
-            <div class="ol-card__right">
-              <span class="ol-card__date">{{ $offre->created_at->diffForHumans() }}</span>
-              @if($offre->date_limite)
-                <span class="ol-card__deadline">Expire {{ $offre->date_limite->format('d/m/Y') }}</span>
+            {{-- Description --}}
+            <p style="font-size:13px;color:#64748b;line-height:1.6;margin:0 0 14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ Str::limit(strip_tags($offre->description), 120) }}</p>
+
+            {{-- Badges + CTA --}}
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              @if($offre->type)
+                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">{{ $offre->type }}</span>
               @endif
-              <span class="ol-card__cta">Voir l'offre</span>
+              <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;gap:4px">
+                <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                {{ $offre->localisation }}
+              </span>
+              @if($offre->salaire)
+                <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }}</span>
+              @endif
+              @if($offre->date_limite)
+                <span style="font-size:11px;color:#f59e0b;font-weight:600;margin-left:auto">Expire {{ $offre->date_limite->format('d/m') }}</span>
+              @endif
+              <span style="font-size:12px;font-weight:700;color:#185FA5;margin-left:{{ $offre->date_limite ? '4px' : 'auto' }};display:inline-flex;align-items:center;gap:3px">
+                Voir l'offre
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </span>
             </div>
 
           </a>

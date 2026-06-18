@@ -27,8 +27,12 @@
   {{-- Profil --}}
   <div class="rec-card">
     <div style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:28px 24px;display:flex;align-items:center;gap:18px;border-radius:12px 12px 0 0">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">
-        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.3);overflow:hidden">
+        @if($cv->photo)
+          <img src="{{ asset('storage/' . $cv->photo) }}" alt="{{ $cv->titre_poste }}" style="width:100%;height:100%;object-fit:cover">
+        @else
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        @endif
       </div>
       <div>
         <h2 style="margin:0 0 3px;font-size:1.15rem;color:#fff;font-weight:700">{{ $cv->candidat?->prenom }} {{ $cv->candidat?->nom }}</h2>

@@ -126,6 +126,7 @@ class OffreController extends Controller
             'description'       => 'required|string|min:50',
             'date_limite'       => 'nullable|date|after_or_equal:today',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'logo'              => 'nullable|file|mimes:jpg,jpeg,png,webp,svg|max:2048',
             'metier'            => 'nullable|string|max:200',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
@@ -143,11 +144,16 @@ class OffreController extends Controller
             ? $request->file('fichier')->store('offres/fichiers', 'public')
             : null;
 
+        $logo = $request->hasFile('logo')
+            ? $request->file('logo')->store('offres/logos', 'public')
+            : null;
+
         $offre = Offre::create([
             ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
             'recruteur_id' => Auth::id(),
             'statut'       => 'active',
             'fichier'      => $fichier,
+            'logo'         => $logo,
             'secteur'      => $request->input('secteur', []),
         ]);
 
@@ -186,6 +192,7 @@ class OffreController extends Controller
             'type'              => 'required|exists:type_contrats,code',
             'description'       => 'required|string|min:50',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'logo'              => 'nullable|file|mimes:jpg,jpeg,png,webp,svg|max:2048',
             'metier'            => 'nullable|string|max:200',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
@@ -202,6 +209,14 @@ class OffreController extends Controller
         } elseif ($request->boolean('_supprimer_fichier') && $offre->fichier) {
             Storage::disk('public')->delete($offre->fichier);
             $data['fichier'] = null;
+        }
+
+        if ($request->hasFile('logo')) {
+            if ($offre->logo) Storage::disk('public')->delete($offre->logo);
+            $data['logo'] = $request->file('logo')->store('offres/logos', 'public');
+        } elseif ($request->boolean('_supprimer_logo') && $offre->logo) {
+            Storage::disk('public')->delete($offre->logo);
+            $data['logo'] = null;
         }
 
         $offre->update($data);

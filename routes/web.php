@@ -172,6 +172,8 @@ Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
+Route::get('/documents/{document}', [CVController::class, 'documentDetail'])->name('document.public.detail');
+
 // Services
 Route::prefix('services')->name('service.')->group(function () {
     Route::get('/',                   [ServiceController::class, 'index'])->name('list');
@@ -405,12 +407,14 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
 
     // CVthèque — nécessite view-cvtheque
     Route::middleware('permission:'.Permission::VIEW_CVTHEQUE)->group(function () {
-        Route::get('/cvtheque',                     [CvthequeController::class, 'index'])->name('cvtheque');
-        Route::get('/cvtheque/favoris',             [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
-        Route::get('/cvtheque/{cv}',                [CvthequeController::class, 'show'])->name('cvtheque.show');
-        Route::post('/cvtheque/{cv}/telecharger',   [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
-        Route::get('/cvtheque/{cv}/pdf',            [CvthequeController::class, 'telechargerPdf'])->name('cvtheque.pdf');
-        Route::post('/cvtheque/{cv}/favoris',       [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
+        Route::get('/cvtheque',                                    [CvthequeController::class, 'index'])->name('cvtheque');
+        Route::get('/cvtheque/favoris',                            [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
+        Route::get('/cvtheque/document/{document}',               [CvthequeController::class, 'showDocument'])->name('cvtheque.document.show');
+        Route::post('/cvtheque/document/{document}/telecharger',  [CvthequeController::class, 'telechargerDocument'])->name('cvtheque.document.telecharger');
+        Route::get('/cvtheque/{cv}',                              [CvthequeController::class, 'show'])->name('cvtheque.show');
+        Route::post('/cvtheque/{cv}/telecharger',                 [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
+        Route::get('/cvtheque/{cv}/pdf',                          [CvthequeController::class, 'telechargerPdf'])->name('cvtheque.pdf');
+        Route::post('/cvtheque/{cv}/favoris',                     [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
     });
 
     // Crédits CVthèque
