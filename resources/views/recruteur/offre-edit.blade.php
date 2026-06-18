@@ -54,7 +54,7 @@
           <select name="type" required style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
             <option value="">Sélectionner</option>
             @foreach($typeContrats as $tc)
-              <option value="{{ $tc->code }}" {{ old('type', $offre->type) === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
+              <option value="{{ $tc->id }}" {{ old('type', $offre?->type?->id) === $tc->id ? 'selected' : '' }}>{{ $tc->libelle }}</option>
             @endforeach
           </select>
         </div>

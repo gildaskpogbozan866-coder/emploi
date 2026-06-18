@@ -122,7 +122,7 @@ class OffreController extends Controller
             'titre'             => 'required|string|max:200',
             'entreprise'        => 'required|string|max:200',
             'localisation'      => 'required|string|max:200',
-            'type'              => 'required|exists:type_contrats,code',
+            'type'              => 'required|exists:type_contrats,id',
             'description'       => 'required|string|min:50',
             'date_limite'       => 'nullable|date|after_or_equal:today',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
@@ -149,12 +149,13 @@ class OffreController extends Controller
             : null;
 
         $offre = Offre::create([
-            ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
+            ...$request->only(['titre','entreprise','localisation','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
             'recruteur_id' => Auth::id(),
             'statut'       => 'active',
             'fichier'      => $fichier,
             'logo'         => $logo,
             'secteur'      => $request->input('secteur', []),
+            'type_contrat_id' => $request->type
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));

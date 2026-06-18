@@ -68,7 +68,7 @@
               <div style="font-size:11.5px;color:#94a3b8;margin-top:2px">{{ $offre->localisation }}</div>
             @endif
           </td>
-          <td><span class="rec-badge rec-badge--blue">{{ $offre->type }}</span></td>
+          <td><span class="rec-badge rec-badge--blue">{{ $offre?->type?->libelle }}</span></td>
           <td><strong>{{ $offre->candidatures_count }}</strong></td>
           <td>
             <span class="rec-badge rec-badge--{{ match($offre->statut) {

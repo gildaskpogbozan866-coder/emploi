@@ -80,6 +80,7 @@ class AlerteService
 
         Alerte::where('active', true)
             ->where('frequence', $frequence)
+            ->with('user')
             ->chunkById(100, function ($alertes) use ($offres, &$count) {
                 foreach ($alertes as $alerte) {
                     foreach ($offres as $offre) {

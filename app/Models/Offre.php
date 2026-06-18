@@ -12,6 +12,8 @@ class Offre extends Model
     protected $fillable = [
         'recruteur_id', 'titre', 'entreprise', 'logo', 'localisation',
         'type', 'secteur', 'salaire', 'description',
+        'recruteur_id', 'titre', 'entreprise', 'localisation',
+        'type_contrat_id', 'secteur', 'salaire', 'description',
         'exigences', 'date_limite', 'fichier', 'statut', 'premium', 'vues',
         'publication_plan_id', 'published_at', 'expires_at',
         'niveau_experience', 'niveau_etude', 'metier',
@@ -31,6 +33,10 @@ class Offre extends Model
     public function recruteur()
     {
         return $this->belongsTo(User::class, 'recruteur_id');
+    }
+    public function type()
+    {
+        return $this->belongsTo(TypeContrat::class, 'type_contrat_id');
     }
 
     public function candidatures()
