@@ -32,7 +32,11 @@
 {{-- Filtres --}}
 <div class="cand-card" style="padding:14px 20px;margin-bottom:16px">
   <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <select name="statut" class="cand-select" style="min-width:150px">
+    <select name="statut" class="cand-select" style="padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff
+    
+    
+    
+    ">
       <option value="">Tous les statuts</option>
       <option value="en_attente" {{ request('statut') === 'en_attente' ? 'selected' : '' }}>En attente</option>
       <option value="confirme"   {{ request('statut') === 'confirme'   ? 'selected' : '' }}>Confirmé</option>

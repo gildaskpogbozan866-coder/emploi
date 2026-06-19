@@ -187,7 +187,8 @@
   color: #185FA5;
   text-decoration: none;
   white-space: nowrap;
-  padding: 6px 14px;
+  padding: 10px 14px;
+  min-height: 40px;
   border-radius: 8px;
   border: 1.5px solid #c5d8ee;
   transition: background 0.18s, color 0.18s, border-color 0.18s;

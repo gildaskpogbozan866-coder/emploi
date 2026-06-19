@@ -3,6 +3,10 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/candidat/profil.css') }}">
+    @include('partials._jquery-cdn')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/fr.js"></script>
 @endsection
 
 @php
@@ -24,6 +28,23 @@
             <div class="cand-page-header__sub">Complétez votre profil pour maximiser vos chances</div>
         </div>
     </div>
+
+    @if(session('warning'))
+    <div class="cp-depot-alert">
+        <div class="cp-depot-alert__icon">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+        </div>
+        <div class="cp-depot-alert__body">
+            <div class="cp-depot-alert__title">Remplissez votre profil avant de déposer un CV</div>
+            <div class="cp-depot-alert__text">Les recruteurs voient vos informations de profil. Un profil complet multiplie vos chances d'être contacté.</div>
+        </div>
+        <button onclick="openModal('modal-infos')" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">
+            Compléter maintenant
+        </button>
+    </div>
+    @endif
 
     {{-- Hero --}}
     <div class="cp-hero">
@@ -810,9 +831,9 @@
 
     {{-- Modale Infos perso --}}
     <div class="cp-modal-overlay" id="modal-infos">
-        <div class="cp-modal">
+        <div class="cp-modal cp-modal--wide">
             <div class="cp-modal__head">
-                <div class="cp-modal__title">Informations & préférences</div>
+                <div class="cp-modal__title">Modifier mon profil</div>
                 <button class="cp-modal__close" onclick="closeModal('modal-infos')"><svg width="14" height="14"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -821,84 +842,80 @@
             <div class="cp-modal__body">
                 <form method="POST" action="{{ route('candidat.profil.update') }}">
                     @csrf @method('PUT')
+
+                    {{-- SECTION 1 : Votre identité --}}
+                    <div class="cp-form-section-head">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Votre identité
+                    </div>
+
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
-                            <label class="cand-form-label" for="profil-prenom">Prénom <span
-                                    class="req">*</span></label>
+                            <label class="cand-form-label" for="profil-prenom">Prénom <span class="req">*</span></label>
                             <input type="text" id="profil-prenom" name="prenom"
                                 class="cand-form-input @error('prenom') field--invalid @enderror"
                                 value="{{ old('prenom', $user->prenom) }}" required>
-                            @error('prenom')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                            @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                         <div class="cand-form-group">
                             <label class="cand-form-label" for="profil-nom">Nom <span class="req">*</span></label>
                             <input type="text" id="profil-nom" name="nom"
                                 class="cand-form-input @error('nom') field--invalid @enderror"
                                 value="{{ old('nom', $user->nom) }}" required>
-                            @error('nom')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                     </div>
+
                     <div class="cand-form-group">
-                        <label class="cand-form-label">Titre professionnel</label>
+                        <label class="cand-form-label">
+                            Titre professionnel
+                            <span class="cp-oblig-badge">Obligatoire</span>
+                        </label>
                         <input type="text" name="titre_professionnel" class="cand-form-input"
-                            placeholder="ex: Développeur Full Stack, Comptable..."
+                            placeholder="ex: Développeur Full Stack, Comptable, Juriste..."
                             value="{{ old('titre_professionnel', $profil?->titre_professionnel) }}">
+                        <div class="cand-form-hint">Indique aux recruteurs votre métier en un coup d'œil</div>
                     </div>
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Spécialité / Domaine d'expertise</label>
 
-                            <select name="metiers_ids[]" id="cand-modal-metiers" class="" multiple>
-                                <option value="">-- Sélectionnez --</option>
-
-                                @foreach ($metiers as $p)
-                                    <option value="{{ $p->id }}"
-                                        {{ in_array($p->id, old('metiers_ids', $user->metiers->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
-                                        {{ $p->nom }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            {{-- <input type="text" name="specialite" class="cand-form-input @error('specialite') field--invalid @enderror"
-                     placeholder="ex: React, Fiscalité, Génie civil..."
-                     value="{{ old('specialite', $profil?->specialite) }}"> --}}
-
-                            {{-- @error('specialite')<p class="field__server-error">{{ $message }}</p>@enderror --}}
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Années d'expérience</label>
-                            <input type="number" name="annees_experience"
-                                class="cand-form-input @error('annees_experience') field--invalid @enderror"
-                                min="0" max="50" placeholder="ex: 3"
-                                value="{{ old('annees_experience', $profil?->annees_experience) }}">
-                            @error('annees_experience')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
                     <div class="cand-form-group">
-                        <label class="cand-form-label">Résumé / Bio</label>
-                        <textarea name="bio" class="cand-form-textarea @error('bio') field--invalid @enderror" rows="3"
-                            placeholder="Décrivez votre parcours et vos ambitions...">{{ old('bio', $profil?->bio) }}</textarea>
-                        @error('bio')
-                            <p class="field__server-error">{{ $message }}</p>
-                        @enderror
-                        <div class="cand-form-hint">Max 1000 caractères</div>
+                        <label class="cand-form-label">
+                            Résumé / Bio
+                            <span class="cp-oblig-badge">Obligatoire</span>
+                        </label>
+                        <textarea name="bio" class="cand-form-textarea @error('bio') field--invalid @enderror" rows="4"
+                            placeholder="Présentez votre parcours, vos compétences clés et vos ambitions professionnelles...">{{ old('bio', $profil?->bio) }}</textarea>
+                        @error('bio')<p class="field__server-error">{{ $message }}</p>@enderror
+                        <div class="cand-form-hint">Max 1 000 caractères</div>
                     </div>
+
+                    {{-- SECTION 2 : Localisation & contact --}}
+                    <div class="cp-form-section-head">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <circle cx="12" cy="11" r="3"/>
+                        </svg>
+                        Localisation & contact
+                    </div>
+
                     <div class="cand-form-group">
                         <label class="cand-form-label">Pays</label>
                         <select name="pays" id="cand-modal-pays" class="cand-form-select">
-                            <option value="">-- Sélectionnez --</option>
+                            <option value="">-- Sélectionnez votre pays --</option>
                             @foreach ($paysList as $p)
-                                <option value="{{ $p }}"
-                                    {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
+                                <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
                             @endforeach
                         </select>
                     </div>
+
                     <div class="cand-form-grid">
+                        <div class="cand-form-group">
+                            <label class="cand-form-label">Ville <span class="cp-oblig-badge">Obligatoire</span></label>
+                            <input type="text" name="ville" class="cand-form-input"
+                                placeholder="ex: Cotonou, Abomey-Calavi..."
+                                value="{{ old('ville', $profil?->ville) }}">
+                        </div>
                         <div class="cand-form-group">
                             <label class="cand-form-label">Téléphone</label>
                             <div style="display:flex;align-items:stretch">
@@ -909,17 +926,45 @@
                                     value="{{ old('tel', $user->tel) ? preg_replace('/^\+\d+\s*/', '', old('tel', $user->tel)) : '' }}">
                             </div>
                         </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Ville</label>
-                            <input type="text" name="ville" class="cand-form-input"
-                                value="{{ old('ville', $profil?->ville) }}">
-                        </div>
                     </div>
+
+                    {{-- SECTION 3 : Préférences emploi --}}
+                    <div class="cp-form-section-head">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <rect x="2" y="7" width="20" height="14" rx="2"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+                        </svg>
+                        Préférences emploi
+                    </div>
+
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
-                            <label class="cand-form-label">Disponibilité</label>
+                            <label class="cand-form-label">Domaine / Spécialité</label>
+                            <select name="metiers_ids[]" id="cand-modal-metiers" multiple>
+                                <option value="">-- Sélectionnez --</option>
+                                @foreach ($metiers as $p)
+                                    <option value="{{ $p->id }}"
+                                        {{ in_array($p->id, old('metiers_ids', $user->metiers->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
+                                        {{ $p->nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="cand-form-group">
+                            <label class="cand-form-label">Années d'expérience</label>
+                            <input type="number" name="annees_experience"
+                                class="cand-form-input @error('annees_experience') field--invalid @enderror"
+                                min="0" max="50" placeholder="ex: 3"
+                                value="{{ old('annees_experience', $profil?->annees_experience) }}">
+                            @error('annees_experience')<p class="field__server-error">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+
+                    <div class="cand-form-grid">
+                        <div class="cand-form-group">
+                            <label class="cand-form-label">Disponibilité <span class="cp-oblig-badge">Obligatoire</span></label>
                             <select name="disponibilite" class="cand-form-select">
-                                <option value="">Non définie</option>
+                                <option value="">-- Sélectionnez --</option>
                                 @foreach ($libelles['disponibilite'] as $val => $lab)
                                     <option value="{{ $val }}"
                                         {{ old('disponibilite', $profil?->disponibilite) === $val ? 'selected' : '' }}>
@@ -938,11 +983,12 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="cand-form-group">
-                        <label class="cand-form-label">Types de contrat souhaités</label>
-                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+                        <label class="cand-form-label">Types de contrat souhaités <span class="cp-oblig-badge">Obligatoire</span></label>
+                        <div class="cp-contract-grid">
                             @foreach ($typesContrats as $tc)
-                                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                                <label class="cp-contract-label">
                                     <input type="checkbox" name="types_contrat_ids[]" value="{{ $tc->id }}"
                                         {{ in_array($tc->id, old('types_contrat_ids', $user->typesContrats->pluck('id')->toArray())) ? 'checked' : '' }}>
                                     {{ $tc->libelle }}
@@ -950,53 +996,63 @@
                             @endforeach
                         </div>
                     </div>
+
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
                             <label class="cand-form-label">Salaire min (FCFA/mois)</label>
                             <input type="number" name="salaire_min"
                                 class="cand-form-input @error('salaire_min') field--invalid @enderror" min="0"
+                                placeholder="ex: 150 000"
                                 value="{{ old('salaire_min', $profil?->salaire_min) }}">
-                            @error('salaire_min')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                            @error('salaire_min')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                         <div class="cand-form-group">
                             <label class="cand-form-label">Salaire max (FCFA/mois)</label>
                             <input type="number" name="salaire_max"
                                 class="cand-form-input @error('salaire_max') field--invalid @enderror" min="0"
+                                placeholder="ex: 400 000"
                                 value="{{ old('salaire_max', $profil?->salaire_max) }}">
-                            @error('salaire_max')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                            @error('salaire_max')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                     </div>
+
+                    {{-- SECTION 4 : Liens professionnels --}}
+                    <div class="cp-form-section-head">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                        Liens professionnels
+                    </div>
+
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
-                            <label class="cand-form-label">LinkedIn</label>
+                            <label class="cand-form-label">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5" style="vertical-align:-2px;margin-right:4px"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2" fill="#0077b5"/></svg>
+                                LinkedIn
+                            </label>
                             <input type="url" name="linkedin"
                                 class="cand-form-input @error('linkedin') field--invalid @enderror"
-                                placeholder="https://linkedin.com/in/..."
+                                placeholder="https://linkedin.com/in/votre-profil"
                                 value="{{ old('linkedin', $profil?->linkedin) }}">
-                            @error('linkedin')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                            @error('linkedin')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                         <div class="cand-form-group">
-                            <label class="cand-form-label">Portfolio / Site web</label>
+                            <label class="cand-form-label">
+                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#6b7a8d" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                Portfolio / Site web
+                            </label>
                             <input type="url" name="portfolio"
                                 class="cand-form-input @error('portfolio') field--invalid @enderror"
-                                placeholder="https://..." value="{{ old('portfolio', $profil?->portfolio) }}">
-                            @error('portfolio')
-                                <p class="field__server-error">{{ $message }}</p>
-                            @enderror
+                                placeholder="https://votre-site.com"
+                                value="{{ old('portfolio', $profil?->portfolio) }}">
+                            @error('portfolio')<p class="field__server-error">{{ $message }}</p>@enderror
                         </div>
                     </div>
-                    <div class="cand-form-group">
-                    </div>
+
                     <div class="cp-modal__actions">
                         <button type="button" class="cand-btn cand-btn--outline"
                             onclick="closeModal('modal-infos')">Annuler</button>
-                        <button type="submit" class="cand-btn cand-btn--yellow">Enregistrer</button>
+                        <button type="submit" class="cand-btn cand-btn--yellow">Enregistrer les modifications</button>
                     </div>
                 </form>
             </div>
@@ -1231,6 +1287,12 @@
 
 @section('scripts')
     <script>
+        $('#cand-modal-metiers').select2({
+            language: 'fr',
+            placeholder: 'Rechercher un métier…',
+            allowClear: true,
+            width: '100%',
+        });
         const CSRF = '{{ csrf_token() }}';
         let editingExpId = null,
             editingFormId = null;

@@ -167,8 +167,11 @@ Route::prefix('offres')->name('offre.')->group(function () {
 Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/',          [CVController::class, 'theque'])->name('theque');
     Route::get('/tarif',     [CVController::class, 'tarif'])->name('tarif');
+    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::DEPOSIT_CV])->group(function () {
+
     Route::get('/deposer',   [CVController::class, 'depot'])->name('depot');
     Route::post('/deposer',  [CVController::class, 'store'])->name('depot.store')->middleware('auth');
+    });
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
@@ -318,9 +321,10 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // Abonnement — nécessite manage-abonnement-candidat
     Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_CAN)->group(function () {
-        Route::get('/abonnement',        [CandidatAbonnement::class, 'index'])->name('abonnement');
-        Route::get('/abonnement/plans',  [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
-        Route::post('/abonnement',       [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
+        Route::get('/abonnement',                [CandidatAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans',          [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::get('/abonnement/pourquoi-premium',[CandidatAbonnement::class, 'pourquoiPremium'])->name('abonnement.pourquoi');
+        Route::post('/abonnement',               [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
     });
 
     // Messagerie (accessibles à tous les candidats authentifiés)

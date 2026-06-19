@@ -34,12 +34,14 @@
 
 @php
 $featureLabels = [
-    'cv_limit'         => ['label' => 'CVs publiables',          'bool' => false],
-    'job_apply_limit'  => ['label' => 'Candidatures / offre',    'bool' => false],
-    'featured_profile' => ['label' => 'Profil mis en avant',     'bool' => true],
-    'candidate_search' => ['label' => 'Accès CVthèque recruteurs','bool' => true],
-    'job_post_limit'   => ['label' => 'Offres publiables',        'bool' => false],
-    'featured_jobs'    => ['label' => 'Offres mises en avant',   'bool' => false],
+    'cv_limit'            => ['label' => 'CVs publiables',                  'bool' => false],
+    'job_apply_limit'     => ['label' => 'Candidatures / offre',            'bool' => false],
+    'alert_limit'         => ['label' => 'Alertes emploi',                  'bool' => false],
+    'featured_profile'    => ['label' => 'Profil mis en avant',             'bool' => true],
+    'candidate_search'    => ['label' => 'Accès CVthèque recruteurs',       'bool' => true],
+    'show_profile_views'  => ['label' => 'Voir qui a consulté votre profil','bool' => true],
+    'job_post_limit'      => ['label' => 'Offres publiables',               'bool' => false],
+    'featured_jobs'       => ['label' => 'Offres mises en avant',           'bool' => false],
 ];
 @endphp
 
@@ -85,19 +87,18 @@ $featureLabels = [
         <div style="margin-top:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:11px;text-align:center">
           <span style="font-weight:700;color:#16a34a;font-size:14px">✓ Plan actuel</span>
         </div>
+      @elseif($plan->is_free && $hasUsedFreePlan)
+        <div style="margin-top:16px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:4px">✗ Déjà utilisé</div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;line-height:1.5">Le plan gratuit est limité à une seule utilisation par compte.</p>
+          <a href="{{ route('candidat.abonnement.pourquoi') }}" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center;font-size:13px;padding:10px;display:flex">
+            Passer au Premium →
+          </a>
+        </div>
       @else
         <form method="POST" action="{{ route('candidat.abonnement.store') }}" style="margin-top:16px">
           @csrf
           <input type="hidden" name="plan_id" value="{{ $plan->id }}">
-          @if(!$plan->is_free)
-          <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin-bottom:14px;padding:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
-            <input type="checkbox" name="consent" value="1" required
-                   style="width:15px;height:15px;accent-color:#185FA5;flex-shrink:0;margin-top:2px">
-            <span style="font-size:12px;color:#78350f;line-height:1.5">
-              Je comprends que le dépôt de mon CV ne garantit pas directement un emploi, mais augmente ma visibilité auprès des recruteurs.
-            </span>
-          </label>
-          @endif
           <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center;font-size:14px;padding:12px">
             @if($plan->is_free) Activer gratuitement @else S'abonner @endif
           </button>

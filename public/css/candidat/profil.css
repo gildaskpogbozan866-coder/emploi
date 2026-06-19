@@ -473,12 +473,117 @@
 .cp-alert--success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
 .cp-alert--error   { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
 
+/* ── Bannière "déposer CV → compléter profil" ── */
+.cp-depot-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  border-left: 5px solid #f59e0b;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.cp-depot-alert__icon {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 1px;
+}
+.cp-depot-alert__body { flex: 1; min-width: 0; }
+.cp-depot-alert__title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 800;
+  color: #92400e;
+  margin-bottom: 3px;
+}
+.cp-depot-alert__text {
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+/* ── Section headers dans le modal ── */
+.cp-form-section-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #185FA5;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #dbeafe;
+  margin: 22px 0 14px;
+}
+.cp-form-section-head:first-of-type { margin-top: 0; }
+.cp-form-section-head svg { flex-shrink: 0; color: #378ADD; }
+
+/* ── Badge "Obligatoire" ── */
+.cp-oblig-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Modal élargi ── */
+.cp-modal--wide { max-width: 640px; }
+
+/* ── Grille types de contrat ── */
+.cp-contract-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.cp-contract-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1.5px solid #e2e6ed;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+.cp-contract-label:has(input:checked) {
+  border-color: #378ADD;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.cp-contract-label input[type=checkbox] {
+  width: 15px;
+  height: 15px;
+  accent-color: #185FA5;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .cp-hero__body { padding: 0 16px 20px; }
   .cp-section__head, .cp-section__body { padding-left: 16px; padding-right: 16px; }
   .cp-prefs { grid-template-columns: 1fr 1fr; }
   .cp-modal { max-width: 100%; border-radius: 14px 14px 0 0; }
   .cp-modal-overlay { align-items: flex-end; padding: 0; }
+  .cp-depot-alert { flex-wrap: wrap; gap: 10px; }
+  .cp-depot-alert .cand-btn { width: 100%; justify-content: center; }
+  .cp-contract-grid { gap: 8px; }
+  .cp-contract-label { font-size: 12.5px; padding: 6px 10px; }
 }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

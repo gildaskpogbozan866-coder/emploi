@@ -58,8 +58,18 @@
 <div class="ol-body">
   <div class="ol-wrap">
 
+    {{-- Bouton toggle filtres (mobile uniquement) --}}
+    <button class="ol-filter-toggle" id="ol-filter-toggle" aria-expanded="false">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 .78 1.625L14 13.197V19a1 1 0 0 1-1.447.894l-4-2A1 1 0 0 1 8 17v-3.803L3.22 5.625A1 1 0 0 1 3 4z"/></svg>
+      <span id="ol-toggle-label">Afficher les filtres</span>
+      @php $hasFilters = request()->hasAny(['metier','niveau_experience','niveau_etude','localisation','secteur','competence']); @endphp
+      @if($hasFilters)
+        <span style="margin-left:auto;background:#185FA5;color:#fff;border-radius:99px;padding:2px 8px;font-size:11px">Actifs</span>
+      @endif
+    </button>
+
     {{-- Sidebar filtres --}}
-    <aside class="ol-sidebar">
+    <aside class="ol-sidebar{{ $hasFilters ? ' open' : '' }}" id="ol-sidebar">
       <div class="ol-sidebar__head">
         <svg class="ol-sidebar__head-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 .78 1.625L14 13.197V19a1 1 0 0 1-1.447.894l-4-2A1 1 0 0 1 8 17v-3.803L3.22 5.625A1 1 0 0 1 3 4z"/></svg>
         <span class="ol-sidebar__head-title">Affiner la recherche</span>
@@ -287,4 +297,17 @@
 
 @section('scripts')
 <script src="{{ asset('js/searchable-select.js') }}"></script>
+<script>
+(function(){
+  var btn = document.getElementById('ol-filter-toggle');
+  var sidebar = document.getElementById('ol-sidebar');
+  var label = document.getElementById('ol-toggle-label');
+  if (!btn || !sidebar) return;
+  btn.addEventListener('click', function(){
+    var open = sidebar.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    label.textContent = open ? 'Masquer les filtres' : 'Afficher les filtres';
+  });
+})();
+</script>
 @endsection

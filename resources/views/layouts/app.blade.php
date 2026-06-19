@@ -92,7 +92,7 @@
   @include('components.nav')
 
   {{-- ── CONTENU ── --}}
-  <main style="margin-top:-22px">
+  <main>
     @yield('content')
   </main>
 
@@ -100,20 +100,20 @@
   @include('components.footer')
 
   {{-- ── BANNIÈRE CONSENTEMENT COOKIES ── --}}
-  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;color:#e2e8f0;padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.25)">
-    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:12px">
-      <p style="margin:0;font-size:13.5px;flex:1;min-width:200px;line-height:1.5">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Ce site utilise des cookies pour améliorer votre expérience et mesurer l'audience.
-        <a href="/legale/politique-confidentialite" style="color:#93c5fd;text-decoration:underline;margin-left:4px">En savoir plus</a>
+  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;color:#e2e8f0;padding:12px 16px;box-shadow:0 -4px 20px rgba(0,0,0,.25)">
+    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+      <p style="margin:0;font-size:13px;flex:1;min-width:180px;line-height:1.5">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:5px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Ce site utilise des cookies pour améliorer votre expérience.
+        <a href="/legale/politique-confidentialite" style="color:#93c5fd;text-decoration:underline;margin-left:4px;white-space:nowrap;display:inline-flex;align-items:center;padding:6px 0;min-height:36px">En savoir plus</a>
       </p>
-      <div style="display:flex;gap:8px;flex-shrink:0">
+      <div style="display:flex;gap:8px;flex-shrink:0;width:100%;justify-content:flex-end" id="cookie-actions">
         <button onclick="setCookieConsent('refused')"
-                style="padding:8px 16px;border-radius:7px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer">
+                style="padding:8px 14px;border-radius:7px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;min-height:40px">
           Refuser
         </button>
         <button onclick="setCookieConsent('accepted')"
-                style="padding:8px 16px;border-radius:7px;border:none;background:#F5C842;color:#1e293b;font-size:13px;font-weight:700;cursor:pointer">
+                style="padding:8px 16px;border-radius:7px;border:none;background:#F5C842;color:#1e293b;font-size:13px;font-weight:700;cursor:pointer;min-height:40px">
           Tout accepter
         </button>
       </div>
@@ -121,18 +121,21 @@
   </div>
   <script>
   (function () {
+    var banner = document.getElementById('cookie-banner');
     if (!localStorage.getItem('cookie_consent')) {
-      document.getElementById('cookie-banner').style.display = 'block';
+      banner.style.display = 'block';
+      document.body.style.paddingBottom = (banner.offsetHeight + 8) + 'px';
     }
   })();
   function setCookieConsent(choice) {
     localStorage.setItem('cookie_consent', choice);
     document.getElementById('cookie-banner').style.display = 'none';
+    document.body.style.paddingBottom = '';
   }
   </script>
 
   {{-- ── POPUP PUBLICITAIRE ── --}}
-  <div id="pub-popup" style="display:none;position:fixed;bottom:24px;right:24px;z-index:8888;width:320px;max-width:calc(100vw - 32px);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);background:#fff">
+  <div id="pub-popup" style="display:none;position:fixed;bottom:16px;right:16px;z-index:8888;width:300px;max-width:calc(100vw - 24px);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);background:#fff">
     <div style="background:linear-gradient(135deg,#042C53,#185FA5);padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
       <span style="color:#F5C842;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Publicité</span>
       <button id="pub-close" aria-label="Fermer"

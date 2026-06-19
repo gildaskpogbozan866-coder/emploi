@@ -67,7 +67,21 @@ class AbonnementController extends Controller
                      ->orderBy('price')
                      ->get();
 
-        return view('candidat.abonnement-plans', compact('abonnement', 'plans'));
+        $hasUsedFreePlan = $user->abonnements()
+            ->whereHas('plan', fn($q) => $q->where('is_free', true))
+            ->exists();
+
+        return view('candidat.abonnement-plans', compact('abonnement', 'plans', 'hasUsedFreePlan'));
+    }
+
+    public function pourquoiPremium()
+    {
+        $plan_premium = Plan::where('is_active', true)
+                            ->where('is_premium', true)
+                            ->where('target_type', 'candidat')
+                            ->first();
+
+        return view('candidat.pourquoi-premium', compact('plan_premium'));
     }
 
     public function souscrire(Request $request)
@@ -83,6 +97,14 @@ class AbonnementController extends Controller
             ->update(['status' => 'cancelled']);
 
         if ($plan->is_free) {
+            $alreadyUsed = Auth::user()->abonnements()
+                ->whereHas('plan', fn($q) => $q->where('is_free', true))
+                ->exists();
+
+            if ($alreadyUsed) {
+                return back()->with('error', 'Vous avez déjà utilisé le plan gratuit. Passez au Premium pour continuer.');
+            }
+
             Abonnement::create([
                 'user_id'    => Auth::id(),
                 'plan_id'    => $plan->id,

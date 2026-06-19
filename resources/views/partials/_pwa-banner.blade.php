@@ -1,22 +1,24 @@
 {{-- PWA : bannière d'installation + enregistrement du service worker --}}
 {{-- À inclure juste avant </body> dans tous les layouts --}}
 
-<div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99998;background:#042C53;color:#fff;padding:14px 16px;box-shadow:0 -4px 24px rgba(0,0,0,.3)">
-  <div style="max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px">
-    <img src="{{ asset('images/pwa-icon-192.png') }}" alt="" width="42" height="42" style="border-radius:10px;flex-shrink:0;object-fit:cover">
-    <div style="flex:1;min-width:0">
-      <p style="margin:0;font-size:13.5px;font-weight:700;color:#fff;line-height:1.3">Emploi Bouge Bénin</p>
-      <p style="margin:0;font-size:12px;color:rgba(255,255,255,.75);line-height:1.4" id="pwa-sub">Installez l'application sur votre appareil.</p>
+<div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99998;background:#042C53;color:#fff;padding:10px 14px;box-shadow:0 -4px 24px rgba(0,0,0,.3)">
+  <div style="max-width:600px;margin:0 auto;display:flex;align-items:center;gap:10px">
+    <div style="width:38px;height:38px;border-radius:9px;background:#185FA5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
     </div>
-    <div style="display:flex;gap:8px;flex-shrink:0;align-items:center">
-      <button id="pwa-install-btn" style="display:none;padding:10px 20px;background:#F5C842;color:#042C53;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">
-        Installer l'application
+    <div style="flex:1;min-width:0">
+      <p style="margin:0;font-size:13px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Emploi Bouge Bénin</p>
+      <p style="margin:0;font-size:11.5px;color:rgba(255,255,255,.7);line-height:1.3" id="pwa-sub">Installez l'app gratuitement</p>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+      <button id="pwa-install-btn" style="display:none;padding:8px 14px;background:#F5C842;color:#042C53;border:none;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;white-space:nowrap">
+        Installer
       </button>
-      <button id="pwa-ios-btn" style="display:none;padding:10px 16px;background:#F5C842;color:#042C53;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">
-        Installer l'application
+      <button id="pwa-ios-btn" style="display:none;padding:8px 14px;background:#F5C842;color:#042C53;border:none;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;white-space:nowrap">
+        Installer
       </button>
-      <button id="pwa-close-btn" aria-label="Fermer" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:4px;display:flex;align-items:center">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button id="pwa-close-btn" aria-label="Fermer" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:4px;display:flex;align-items:center;min-width:32px;min-height:32px;justify-content:center">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
   </div>

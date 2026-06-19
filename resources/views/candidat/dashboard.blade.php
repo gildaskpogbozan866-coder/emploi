@@ -59,79 +59,16 @@
                 @endif
             </div>
 
-            @if ($quotas)
-                {{-- Quotas --}}
-                <div style="display:flex;flex-wrap:wrap;gap:18px">
 
-                    {{-- CVs --}}
-                    <div style="min-width:140px">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-                            <span
-                                style="font-size:12px;font-weight:600;color:{{ $isPremium ? 'rgba(255,255,255,.7)' : '#374151' }}">CVs
-                                déposés</span>
-                            <span style="font-size:12px;font-weight:700;color:{{ $isPremium ? '#fff' : '#042C53' }}">
-                                {{ $quotas['cvs']['used'] }}{{ $quotas['cvs']['unlimited'] ? '' : ' / ' . $quotas['cvs']['limit'] }}
-                            </span>
-                        </div>
-                        @if (!$quotas['cvs']['unlimited'])
-                            <div
-                                style="height:6px;background:{{ $isPremium ? 'rgba(255,255,255,.15)' : '#e2e8f0' }};border-radius:10px;overflow:hidden">
-                                <div
-                                    style="height:100%;width:{{ $cvPct }}%;background:{{ $cvColor }};border-radius:10px;transition:width .4s">
-                                </div>
-                            </div>
-                        @else
-                            <p
-                                style="font-size:11px;color:{{ $isPremium ? 'rgba(255,255,255,.45)' : '#94a3b8' }};margin:2px 0 0">
-                                Illimité</p>
-                        @endif
-                    </div>
-
-                    {{-- Candidatures --}}
-                    <div style="min-width:140px">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-                            <span
-                                style="font-size:12px;font-weight:600;color:{{ $isPremium ? 'rgba(255,255,255,.7)' : '#374151' }}">Candidatures</span>
-                            <span style="font-size:12px;font-weight:700;color:{{ $isPremium ? '#fff' : '#042C53' }}">
-                                {{ $quotas['candidatures']['used'] }}{{ $quotas['candidatures']['unlimited'] ? '' : ' / ' . $quotas['candidatures']['limit'] }}
-                            </span>
-                        </div>
-                        @if (!$quotas['candidatures']['unlimited'])
-                            <div
-                                style="height:6px;background:{{ $isPremium ? 'rgba(255,255,255,.15)' : '#e2e8f0' }};border-radius:10px;overflow:hidden">
-                                <div
-                                    style="height:100%;width:{{ $appPct }}%;background:{{ $appColor }};border-radius:10px;transition:width .4s">
-                                </div>
-                            </div>
-                        @else
-                            <p
-                                style="font-size:11px;color:{{ $isPremium ? 'rgba(255,255,255,.45)' : '#94a3b8' }};margin:2px 0 0">
-                                Illimitées</p>
-                        @endif
-                    </div>
-
-                    {{-- Profil mis en avant --}}
-                    <div style="min-width:120px;display:flex;flex-direction:column;gap:4px">
-                        <span
-                            style="font-size:12px;font-weight:600;color:{{ $isPremium ? 'rgba(255,255,255,.7)' : '#374151' }}">Profil
-                            en avant</span>
-                        @if ($quotas['featured_profile'])
-                            <span style="font-size:12px;font-weight:700;color:#16a34a">✓ Activé</span>
-                        @else
-                            <span style="font-size:12px;color:#94a3b8">Non inclus</span>
-                        @endif
-                    </div>
-                </div>
-            @endif
 
             @if (!$isPremium)
-                <a href="{{ route('candidat.abonnement.plans') }}"
+                <a href="{{ route('candidat.abonnement.pourquoi') }}"
                     style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap">
                     <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
-                    Passer Premium
+                    Découvrir les avantages →
                 </a>
             @endif
         </div>
@@ -144,66 +81,80 @@
             $abonnement && $abonnement->plan && $abonnement->plan->getFeature('show_profile_views', '0') === '1';
     @endphp
     <div class="cand-stats">
-        <div class="cand-stat">
-            <div class="cand-stat__icon cand-stat__icon--blue">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path
-                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L7.91 8.76A16 16 0 0 0 12 12a16 16 0 0 0 3.24 1.91l1.91-1.91a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 24 14.21v2.71Z" />
-                </svg>
-            </div>
-            <div>
-                <div class="cand-stat__val">{{ $stats['candidatures'] }}</div>
-                <div class="cand-stat__label">Candidatures envoyées</div>
-            </div>
-        </div>
+        <a href="{{ route('candidat.candidatures') }}" class="" style="text-decoration: none;">
 
-        <div class="cand-stat">
-            <div class="cand-stat__icon cand-stat__icon--dark">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                </svg>
+            <div class="cand-stat">
+                <div class="cand-stat__icon cand-stat__icon--blue">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L7.91 8.76A16 16 0 0 0 12 12a16 16 0 0 0 3.24 1.91l1.91-1.91a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 24 14.21v2.71Z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="cand-stat__val">{{ $stats['candidatures'] }}</div>
+                    <div class="cand-stat__label">Candidatures envoyées</div>
+                </div>
             </div>
-            <div>
-                <div class="cand-stat__val">{{ $stats['cvs'] }}</div>
-                <div class="cand-stat__label">Documents déposés</div>
-            </div>
-        </div>
+        </a>
 
-        <div class="cand-stat">
-            <div class="cand-stat__icon cand-stat__icon--yellow">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                </svg>
-            </div>
-            <div>
-                @if ($canSeeViews)
-                    <div class="cand-stat__val">{{ $stats['offres_vues'] }}</div>
-                @else
-                    <a href="{{ route('candidat.abonnement.plans') }}"
-                        style="display:inline-flex;align-items:center;gap:5px;background:#fef9c3;color:#92400e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;text-decoration:none;border:1px solid #fde68a">🔒
-                        Premium</a>
-                @endif
-                <div class="cand-stat__label">Vues par recruteurs</div>
-            </div>
-        </div>
+        <a href="{{ route('candidat.cvs') }}" class=""  style="text-decoration: none;">
 
-        <div class="cand-stat">
-            <div class="cand-stat__icon cand-stat__icon--green">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
+            <div class="cand-stat">
+                <div class="cand-stat__icon cand-stat__icon--dark">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="cand-stat__val">{{ $stats['cvs'] }}</div>
+                    <div class="cand-stat__label">Cv & diplôme</div>
+                </div>
             </div>
-            <div>
-                <div class="cand-stat__val" style="color:#38A169">{{ $stats['retenues'] }}</div>
-                <div class="cand-stat__label">Retenues</div>
+        </a>
+
+        
+            <div class="cand-stat">
+                <div class="cand-stat__icon cand-stat__icon--yellow">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </div>
+                <div>
+                    @if ($canSeeViews)
+                        <div class="cand-stat__val">{{ $stats['offres_vues'] }}</div>
+                    @else
+                        <a href="{{ route('candidat.abonnement.plans') }}"
+                            style="display:inline-flex;align-items:center;gap:5px;background:#fef9c3;color:#92400e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;text-decoration:none;border:1px solid #fde68a">🔒
+                            Premium</a>
+                    @endif
+                    <div class="cand-stat__label">Vues par recruteurs</div>
+                </div>
             </div>
-        </div>
+
+  
+
+        <a href="{{ route('candidat.candidatures') }}?q=&statut=retenue" class=""  style="text-decoration: none;">
+
+
+            <div class="cand-stat">
+                <div class="cand-stat__icon cand-stat__icon--green">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="cand-stat__val" style="color:#38A169">{{ $stats['retenues'] }}</div>
+                    <div class="cand-stat__label">Retenues</div>
+                </div>
+            </div>
+
+        </a>
     </div>
 
     {{-- Actions rapides --}}
@@ -280,7 +231,7 @@
                     <span style="font-size:11px;font-weight:400;color:#c2410c">Limite atteinte, Upgrader</span>
                 </a>
             @else
-                <a href="{{ route('cv.public.depot') }}"
+                <a href="{{ route('candidat.cvs') }}"
                     style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s"
                     onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'"
                     onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
@@ -290,11 +241,8 @@
                         <polyline points="17 8 12 3 7 8" />
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    Déposer un CV
-                    @if ($quotas && !$quotas['cvs']['unlimited'])
-                        <span style="font-size:11px;font-weight:400;color:#64748b">{{ $quotas['cvs']['used'] }} /
-                            {{ $quotas['cvs']['limit'] }} utilisés</span>
-                    @endif
+                    Déposer un CV & attestation
+                    
                 </a>
             @endif
 
@@ -454,7 +402,8 @@
                 <div
                     style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;margin-bottom:20px;text-align:center">
                     <div style="font-size:1.6rem;font-weight:900;color:#F5C842;line-height:1"> {{ $plan_premium->price }}
-                        <span style="font-size:.9rem;font-weight:700">FCFA</span></div>
+                        <span style="font-size:.9rem;font-weight:700">FCFA</span>
+                    </div>
                     <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:3px">par mois seulement</div>
                 </div>
 
@@ -482,30 +431,20 @@
                 </ul>
 
                 {{-- CTA --}}
-                <form method="POST" action="{{ route('candidat.abonnement.store') }}" style="margin-top:16px">
-                    @csrf
-                    <input type="hidden" name="plan_id" value="{{ $plan_premium->id }}">
-                    @if (!$plan_premium->is_free)
-                        <label
-                            style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin-bottom:14px;padding:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
-                            <input type="checkbox" name="consent" value="1" required
-                                style="width:15px;height:15px;accent-color:#185FA5;flex-shrink:0;margin-top:2px">
-                            <span style="font-size:12px;color:#78350f;line-height:1.5">
-                                Je comprends que le dépôt de mon CV ne garantit pas directement un emploi, mais augmente ma
-                                visibilité auprès des recruteurs.
-                            </span>
-                        </label>
-                    @endif
-                    <button type="submit" class="cand-btn cand-btn--yellow"
-                        style="width:100%;justify-content:center;font-size:14px;padding:12px">
-                        @if ($plan_premium->is_free)
-                            Activer gratuitement
-                        @else
-                            S'abonner
-                        @endif
-                    </button>
-                    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);margin:10px 0 0">Sans engagement
-                        · Résiliable à tout moment</p>
+                <div style="margin-top:16px">
+                    <a href="{{ route('candidat.abonnement.pourquoi') }}"
+                        style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;background:#F5C842;color:#042C53;border-radius:10px;font-weight:800;font-size:14px;text-decoration:none;transition:background .18s,transform .18s"
+                        onmouseover="this.style.background='#f0bc1e';this.style.transform='translateY(-1px)'"
+                        onmouseout="this.style.background='#F5C842';this.style.transform='none'">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Voir pourquoi passer Premium
+                    </a>
+                    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);margin:10px 0 0">1 500 FCFA/mois
+                        · Sans engagement · Résiliable à tout moment</p>
+                </div>
             </div>
         </div>
 

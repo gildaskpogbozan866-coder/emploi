@@ -92,7 +92,7 @@
         <div class="aform__field">
           <label class="aform__label" for="password">
             Mot de passe
-            <a href="{{ route('auth.mot-de-passe-oublie') }}" style="float:right;font-weight:400;font-size:.8rem;color:#185FA5">Mot de passe oublié ?</a>
+            <a href="{{ route('auth.mot-de-passe-oublie') }}" class="aform__forgot">Mot de passe oublié ?</a>
           </label>
           <input class="aform__input @error('password') aform__input--error @enderror"
                  type="password" id="password" name="password"
