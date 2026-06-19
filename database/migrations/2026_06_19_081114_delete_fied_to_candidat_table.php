@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('candidat_profils', function (Blueprint $table) {
-            $table->dropColumn(['specialite', '']);
+            $table->dropColumn(['specialite']);
         });
     }
 

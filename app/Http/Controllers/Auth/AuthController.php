@@ -82,7 +82,7 @@ class AuthController extends Controller
     }
 
     // ── Inscription ───────────────────────────────────────
-    public function inscrire(IncripStionRequest $request)
+    public function inscrire(IncriptionRequest $request)
     {
         if ($this->recaptchaActif()) {
             $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [

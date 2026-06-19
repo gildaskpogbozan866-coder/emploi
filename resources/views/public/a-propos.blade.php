@@ -5,6 +5,45 @@
 
 @section('content')
 
+<style>
+.ap-mission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.ap-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.ap-founder-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .ap-mission-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .ap-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .ap-founder-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ap-founder-actions a {
+    text-align: center;
+  }
+}
+</style>
+
 {{-- Hero --}}
 <section style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:72px 20px 64px;text-align:center">
   <span style="display:inline-block;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:4px 14px;border-radius:99px;margin-bottom:20px">À propos</span>
@@ -20,7 +59,7 @@
 
 {{-- Mission + chiffres --}}
 <section style="padding:64px 20px;max-width:1000px;margin:0 auto">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+  <div class="ap-mission-grid">
     <div>
       <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#185FA5">Notre mission</span>
       <h2 style="font-size:1.75rem;font-weight:800;color:#042C53;margin:10px 0 16px;line-height:1.25">Rendre l'emploi accessible à tous</h2>
@@ -31,7 +70,7 @@
         Notre conviction : chaque talent mérite d'être vu, chaque recruteur mérite de trouver la bonne personne.
       </p>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="ap-stats-grid">
       @foreach([['3 rôles','Candidat, Recruteur, Talent'],['100%','Offres vérifiées'],['24/7','Plateforme disponible'],['Gratuit','Inscription ouverte']] as [$n,$l])
       <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:20px 16px;text-align:center">
         <div style="font-size:1.5rem;font-weight:800;color:#185FA5">{{ $n }}</div>
@@ -81,7 +120,7 @@
   <p style="font-size:14.5px;color:#475569;line-height:1.75;margin:0 0 24px;max-width:580px;margin-left:auto;margin-right:auto">
     Jeune entrepreneur béninois passionné par l'emploi et l'éducation, il a bâti Emploi Bouge Bénin pour offrir à chaque jeune les outils nécessaires pour réussir, en ville ou en zone rurale, débutant ou expérimenté.
   </p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+  <div class="ap-founder-actions">
     <a href="{{ route('contact') }}" style="padding:10px 22px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13.5px;text-decoration:none">Nous contacter</a>
     <a href="https://whatsapp.com/channel/0029VbCGlUo5q08ZH1bnm11F" target="_blank" rel="noopener noreferrer"
        style="padding:10px 22px;background:#25D366;color:#fff;border-radius:8px;font-weight:700;font-size:13.5px;text-decoration:none">Notre chaîne WhatsApp</a>

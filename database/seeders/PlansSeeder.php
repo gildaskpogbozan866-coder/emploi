@@ -40,6 +40,7 @@ class PlansSeeder extends Seeder
                 'duration_days' => 30,
                 'is_free'       => false,
                 'is_active'     => true,
+                'is_premium'     => true,
                 'features'      => [
                     'cv_limit'           => '5',
                     'job_apply_limit'    => '100',

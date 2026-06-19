@@ -117,10 +117,11 @@ class ProfilController extends Controller
 
     // ── Infos personnelles + préférences ──────────────────
     public function update(ProfilRequest $request)
-    {
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+    try {
         DB::transaction(function () use ($request, $user) {
 
             // ── Identité ──────────────────────────────────────────
@@ -149,40 +150,70 @@ class ProfilController extends Controller
                 ]
             );
 
-            // ── Pivots many-to-many (sync remplace tout) ──────────
-            if ($request->has('v')) {
-                $user->typesContrats()->sync($request->input('types_contrat_ids', []));
-            }
-            if ($request->has('secteurs_ids')) {
-                $user->secteursActivite()->sync($request->input('secteurs_ids', []));
-            }
-            if ($request->has('metiers_ids')) {
-                $user->metiers()->sync($request->metiers_ids);
+            // ── Pivots many-to-many ───────────────────────────────
+            if ($request->has('types_contrat_ids')) {
+                $user->typesContrats()->sync(
+                    $request->input('types_contrat_ids', [])
+                );
             }
 
-            // ── Niveau d'étude (scalaire, 1 seul par candidat) ───
+            if ($request->has('secteurs_ids')) {
+                $user->secteursActivite()->sync(
+                    $request->input('secteurs_ids', [])
+                );
+            }
+
+            if ($request->has('metiers_ids')) {
+                $user->metiers()->sync(
+                    $request->input('metiers_ids', [])
+                );
+            }
+
+            // ── Niveau d'étude ────────────────────────────────────
             if ($request->filled('niveau_etude_id')) {
                 NiveauEtudeCandidat::updateOrCreate(
-                    ['candidat_id'    => $user->id],
+                    ['candidat_id' => $user->id],
                     ['niveau_etude_id' => $request->niveau_etude_id]
                 );
             } else {
-                NiveauEtudeCandidat::where('candidat_id', $user->id)->delete();
+                NiveauEtudeCandidat::where(
+                    'candidat_id',
+                    $user->id
+                )->delete();
             }
 
-            // ── Niveau d'expérience (scalaire, 1 seul par candidat) ─
+            // ── Niveau d'expérience ───────────────────────────────
             if ($request->filled('niveau_experience_id')) {
                 NiveauExperienceCandidat::updateOrCreate(
-                    ['candidat_id'         => $user->id],
+                    ['candidat_id' => $user->id],
                     ['niveau_experience_id' => $request->niveau_experience_id]
                 );
             } else {
-                NiveauExperienceCandidat::where('candidat_id', $user->id)->delete();
+                NiveauExperienceCandidat::where(
+                    'candidat_id',
+                    $user->id
+                )->delete();
             }
-
-            return redirect()->route('candidat.profil')->with('success', 'Profil mis à jour avec succès.');
         });
+
+        return redirect()
+            ->route('candidat.profil')
+            ->with('success', 'Profil mis à jour avec succès.');
+
+    } catch (\Throwable $e) {
+
+        // Affiche l'erreur complète en développement
+        dd([
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        // En production :
+        // Log::error($e);
+        // return back()->withErrors($e->getMessage());
     }
+}
 
     // ── Upload avatar AJAX ────────────────────────────────
     public function updateAvatar(Request $request)
