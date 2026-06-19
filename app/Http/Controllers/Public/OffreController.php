@@ -29,7 +29,7 @@ class OffreController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('type_contrat_id', $request->type);
         }
 
         if ($request->filled('localisation')) {
@@ -90,7 +90,7 @@ class OffreController extends Controller
             ->where('id', '!=', $offre->id)
             ->where(function ($q) use ($offre, $competenceIds) {
                 $q->where('secteur', $offre->secteur)
-                  ->orWhere('type', $offre->type)
+                  ->orWhere('type_contrat_id', $offre->type)
                   ->orWhere('localisation', 'like', '%' . explode(',', $offre->localisation)[0] . '%');
                 if ($competenceIds->isNotEmpty()) {
                     $q->orWhereHas('competences', fn($sq) => $sq->whereIn('competences.id', $competenceIds));

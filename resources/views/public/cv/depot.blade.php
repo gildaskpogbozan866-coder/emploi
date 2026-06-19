@@ -124,13 +124,13 @@
         </div>
 
         {{-- Détails complémentaires (CV) --}}
-        <div class="form-section-label" style="margin-top:20px">
+        {{-- <div class="form-section-label" style="margin-top:20px">
           Détails complémentaires
           <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
-        </div>
+        </div> --}}
 
         {{-- Photo de profil --}}
-        <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px">
+        {{-- <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px">
           <div id="photoPreviewWrap" style="position:relative;flex-shrink:0">
             <div id="photoCircle" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2.5px solid #e2e8f0">
               <span id="photoInitials" style="color:#fff;font-size:1.4rem;font-weight:800">{{ mb_strtoupper(mb_substr(auth()->user()->prenom ?? '?', 0, 1)) }}</span>
@@ -147,9 +147,9 @@
             <span id="photoFileName" style="font-size:12px;color:#94a3b8;margin-left:8px"></span>
           </div>
           <input type="file" id="photoInput" name="photo" accept=".jpg,.jpeg,.png,.webp" style="display:none">
-        </div>
+        </div> --}}
 
-        <div class="form-row form-row--2">
+        {{-- <div class="form-row form-row--2">
           <div>
             <label class="field__label">Pays</label>
             <select class="field__select" name="pays" data-searchable>
@@ -298,7 +298,7 @@
               </div>
             </template>
           </div>
-        </div>
+        </div> --}}
 
         {{-- Upload --}}
         <div class="form-section-label" style="margin-top:20px">Votre fichier (CV ou document)</div>

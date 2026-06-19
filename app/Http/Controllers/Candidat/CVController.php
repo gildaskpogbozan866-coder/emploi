@@ -31,20 +31,20 @@ class CVController extends Controller
             $q = $request->q;
             $cvQuery->where(function ($sq) use ($q) {
                 $sq->where('titre_poste', 'like', "%$q%")
-                   ->orWhere('competences', 'like', "%$q%")
-                   ->orWhere('secteur', 'like', "%$q%");
+                    ->orWhere('competences', 'like', "%$q%")
+                    ->orWhere('secteur', 'like', "%$q%");
             });
         }
         if ($request->filled('pays'))             $cvQuery->where('pays', $request->pays);
-        if ($request->filled('secteur'))          $cvQuery->where('secteur', 'like', '%'.$request->secteur.'%');
-        if ($request->filled('langue'))           $cvQuery->where('langues', 'like', '%'.$request->langue.'%');
+        if ($request->filled('secteur'))          $cvQuery->where('secteur', 'like', '%' . $request->secteur . '%');
+        if ($request->filled('langue'))           $cvQuery->where('langues', 'like', '%' . $request->langue . '%');
         if ($request->filled('metier'))           $cvQuery->where(function ($sq) use ($request) {
-            $sq->where('metier', 'like', '%'.$request->metier.'%')
-               ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
+            $sq->where('metier', 'like', '%' . $request->metier . '%')
+                ->orWhere('titre_poste', 'like', '%' . $request->metier . '%');
         });
         if ($request->filled('niveau_etude'))     $cvQuery->where('niveau_etude', $request->niveau_etude);
         if ($request->filled('type_contrat'))     $cvQuery->where('type_contrat', $request->type_contrat);
-        if ($request->filled('niveau_experience'))$cvQuery->where('niveau_experience', $request->niveau_experience);
+        if ($request->filled('niveau_experience')) $cvQuery->where('niveau_experience', $request->niveau_experience);
 
         $cvResults = $cvQuery->get()->map(function ($cv) {
             $cv->_is_document = false;
@@ -58,11 +58,11 @@ class CVController extends Controller
             $q = $request->q;
             $docQuery->where(function ($sq) use ($q) {
                 $sq->where('nom', 'like', "%$q%")
-                   ->orWhere('competences', 'like', "%$q%");
+                    ->orWhere('competences', 'like', "%$q%");
             });
         }
         if ($request->filled('pays'))   $docQuery->where('pays', $request->pays);
-        if ($request->filled('langue')) $docQuery->where('langues', 'like', '%'.$request->langue.'%');
+        if ($request->filled('langue')) $docQuery->where('langues', 'like', '%' . $request->langue . '%');
 
         $docResults = $docQuery->get()->map(function ($doc) {
             return (object) [
@@ -111,6 +111,37 @@ class CVController extends Controller
         return view('public.cv.document-detail', compact('document'));
     }
 
+    public function candidatDetails(int $id)
+    {
+       
+        $candidat = User::where('id', $id)
+            ->where('role', 'candidat')
+            ->with([
+                'candidatProfil',
+                'experiences'   => fn($q) => $q->orderByDesc('en_cours')->orderByDesc('date_debut'),
+                'formations'    => fn($q) => $q->orderByDesc('en_cours')->orderByDesc('date_debut'),
+                'competences',
+                'metiers',
+                'niveauExperience.niveauExperience',
+                'typesContrats',
+                'secteursActivite',
+                'languesCandidats.langue',
+                'languesCandidats.niveau',
+                'attestations',
+                'realisations',
+                'documents.type',
+                'cvs'
+            ])
+            ->firstOrFail();
+
+        // Sécurité : profil doit exister
+        abort_if(is_null($candidat->candidatProfil), 404);
+
+        $libelles = \App\Models\CandidatProfil::libelles();
+
+        return view('public.cv.candidat-detail', compact('candidat', 'libelles'));
+    }
+
     public function detail(CV $cv)
     {
         if (!$cv->visible) {
@@ -135,7 +166,7 @@ class CVController extends Controller
         }
 
         if (!Auth::user()->hasRole('candidat')) {
-            return redirect()->route(match(Auth::user()->role) {
+            return redirect()->route(match (Auth::user()->role) {
                 'recruteur' => 'recruteur.dashboard',
                 'admin'     => 'admin.dashboard',
                 default     => 'home',
@@ -164,7 +195,7 @@ class CVController extends Controller
         }
 
         if (!Auth::user()->hasRole('candidat')) {
-            return redirect()->route(match(Auth::user()->role) {
+            return redirect()->route(match (Auth::user()->role) {
                 'recruteur' => 'recruteur.dashboard',
                 'admin'     => 'admin.dashboard',
                 default     => 'home',
@@ -222,20 +253,7 @@ class CVController extends Controller
 
             $cv = CV::create([
                 'candidat_id'      => Auth::id(),
-                'titre_poste'      => $request->nom,
-                'photo'            => $photoPath,
-                'pays'             => $request->pays,
-                'ville'            => $request->ville,
-                'disponibilite'    => $request->disponibilite,
-                'secteur'          => $request->secteur,
-                'metier'           => $request->metier,
-                'niveau_experience'=> $request->niveau_experience,
-                'niveau_etude'     => $request->niveau_etude,
-                'type_contrat'     => $request->type_contrat,
-                'competences'      => $request->competences,
-                'experience'       => $request->experience,
-                'formation'        => $request->formation,
-                'langues'          => $languesTexte,
+
                 'fichier_path'     => $fichierPath,
                 'plan'             => 'gratuit',
                 'visible'          => true,
@@ -312,8 +330,8 @@ class CVController extends Controller
         $this->authorize('update', $cv);
         $competences             = Competence::orderBy('nom')->pluck('nom');
         $languesCandidatActuelles = LangueCandidat::where('candidat_id', $cv->candidat_id)
-                                        ->with(['langue', 'niveau'])
-                                        ->get();
+            ->with(['langue', 'niveau'])
+            ->get();
         return view('candidat.cv-edit', compact('cv', 'competences', 'languesCandidatActuelles'));
     }
 
@@ -348,10 +366,18 @@ class CVController extends Controller
         );
 
         $data = $request->only([
-            'titre_poste', 'pays', 'ville',
-            'disponibilite', 'secteur', 'metier',
-            'niveau_experience', 'niveau_etude', 'type_contrat',
-            'competences', 'experience', 'formation',
+            'titre_poste',
+            'pays',
+            'ville',
+            'disponibilite',
+            'secteur',
+            'metier',
+            'niveau_experience',
+            'niveau_etude',
+            'type_contrat',
+            'competences',
+            'experience',
+            'formation',
         ]);
         $data['langues'] = $languesTexte;
 

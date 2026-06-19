@@ -57,10 +57,10 @@ class DashboardController extends Controller
 
         // Offres par type de contrat
         $offresParType = DB::table('offres')
-            ->select('type', DB::raw('COUNT(*) as total'))
-            ->whereNotNull('type')
-            ->where('type', '!=', '')
-            ->groupBy('type')
+            ->select('type_contrat_id', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('type_contrat_id')
+            ->where('type_contrat_id', '!=', '')
+            ->groupBy('type_contrat_id')
             ->orderByDesc('total')
             ->get();
 

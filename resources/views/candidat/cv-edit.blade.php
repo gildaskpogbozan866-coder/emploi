@@ -84,7 +84,7 @@
       </div>
 
       {{-- Poste + Pays --}}
-      <div class="form-row form-row--2">
+      {{-- <div class="form-row form-row--2">
         <div>
           <label class="field__label" for="edit-titre-poste">Titre du poste visé <span class="req">*</span></label>
           <input class="field__input @error('titre_poste') field--invalid @enderror" type="text" id="edit-titre-poste" name="titre_poste"
@@ -102,18 +102,18 @@
           </select>
           @error('pays')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
-      </div>
+      </div> --}}
 
       {{-- Ville --}}
-      <div class="form-row form-row--1">
+      {{-- <div class="form-row form-row--1">
         <div>
           <label class="field__label">Ville</label>
           @include('_partials.villes-select', ['selected' => old('ville', $cv->ville)])
         </div>
-      </div>
+      </div> --}}
 
       {{-- Profil CVthèque --}}
-      <div class="form-section-label">Profil CVthèque</div>
+      {{-- <div class="form-section-label">Profil CVthèque</div>
 
       <div class="form-row form-row--2">
         <div>
@@ -155,9 +155,9 @@
             @endforeach
           </select>
         </div>
-      </div>
+      </div> --}}
 
-      <div class="form-row form-row--2">
+      {{-- <div class="form-row form-row--2">
         <div>
           <label class="field__label">Niveau d'études</label>
           <select class="field__select" name="niveau_etude">
@@ -176,10 +176,10 @@
             @endforeach
           </select>
         </div>
-      </div>
+      </div> --}}
 
       {{-- Compétences --}}
-      <div class="form-section-label">Compétences & profil</div>
+      {{-- <div class="form-section-label">Compétences & profil</div>
 
       <div class="form-row form-row--1">
         <div>
@@ -257,7 +257,7 @@
             </div>
           </template>
         </div>
-      </div>
+      </div> --}}
 
       {{-- Fichier --}}
       <div class="form-section-label">Fichier CV</div>

@@ -8,61 +8,19 @@
 
 @section('content')
 
-{{-- ═══════════════════════════════════════════
-     HERO
-═══════════════════════════════════════════ --}}
-<section class="svc-hero">
-  <div class="svc-hero__bg-deco" aria-hidden="true">
-    <div class="svc-hero__circle svc-hero__circle--1"></div>
-    <div class="svc-hero__circle svc-hero__circle--2"></div>
-    <div class="svc-hero__circle svc-hero__circle--3"></div>
-  </div>
-  <div class="container">
-    <div class="svc-hero__inner">
-      <div class="svc-hero__badge">
-        Emploi Bouge Bénin
-      </div>
-      <h1 class="svc-hero__title">Votre partenaire <span>digital</span><br>pour réussir au Bénin</h1>
-      <p class="svc-hero__sub">Création web, design, marketing, formation informatique et accompagnement : nous vous accompagnons à chaque étape de votre projet.</p>
-      <div class="svc-hero__pills">
-        <span class="svc-hero__pill">Sites web</span>
-        <span class="svc-hero__pill">Réseaux sociaux</span>
-        <span class="svc-hero__pill">Marketing digital</span>
-        <span class="svc-hero__pill">SEO Google</span>
-        <span class="svc-hero__pill">Formation</span>
-        <span class="svc-hero__pill">CV Pro</span>
-      </div>
-      <div class="svc-hero__actions">
-        <a href="#nos-services" class="svc-hero__btn--primary">
-          Découvrir nos services
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </a>
-        <a href="{{ route('contact') }}" class="svc-hero__btn--ghost">Nous contacter</a>
-      </div>
-      <div class="svc-hero__stats">
-        <div class="svc-hero__stat">
-          <span class="svc-hero__stat-num">10</span>
-          <span class="svc-hero__stat-label">Services</span>
-        </div>
-        <div class="svc-hero__stat-sep"></div>
-        <div class="svc-hero__stat">
-          <span class="svc-hero__stat-num">500+</span>
-          <span class="svc-hero__stat-label">Clients satisfaits</span>
-        </div>
-        <div class="svc-hero__stat-sep"></div>
-        <div class="svc-hero__stat">
-          <span class="svc-hero__stat-num">30min</span>
-          <span class="svc-hero__stat-label">Délai de réponse</span>
-        </div>
-        <div class="svc-hero__stat-sep"></div>
-        <div class="svc-hero__stat">
-          <span class="svc-hero__stat-num">100%</span>
-          <span class="svc-hero__stat-label">Satisfaction garantie</span>
-        </div>
-      </div>
+  {{-- ═══════════════════════════════════════════
+       PAGE HERO
+  ═══════════════════════════════════════════ --}}
+  <section class="section page-hero">
+    <div class="container page-hero__inner">
+        <span style="display:inline-block;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:4px 14px;border-radius:99px;margin-bottom:20px">À propos</span>
+      <h1 class="page-hero__title">Nos services d'accompagnement</h1>
+      <p class="page-hero__subtitle">
+        Des outils concrets pour vous aider à trouver un emploi, développer vos
+        compétences et connecter avec les meilleures opportunités en Afrique.
+      </p>
     </div>
-  </div>
-</section>
+  </section>
 
 {{-- ═══════════════════════════════════════════
      CARTE CV PREMIUM (Service phare)

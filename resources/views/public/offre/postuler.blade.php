@@ -48,7 +48,7 @@
           <span style="color:#cbd5e0">·</span>
           <span>{{ $offre->localisation }}</span>
           <span style="color:#cbd5e0">·</span>
-          <span style="background:#dbeafe;color:#1e40af;font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:20px">{{ $offre->type }}</span>
+          <span style="background:#dbeafe;color:#1e40af;font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:20px">{{ $offre?->type?->libelle }}</span>
         </p>
       </div>
     </div>

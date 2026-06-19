@@ -132,7 +132,7 @@
           </div>
         </div>
 
-        <div class="aform__field">
+        {{-- <div class="aform__field">
           <label class="aform__label" for="pays">Pays</label>
           <select class="aform__input aform__select @error('pays') aform__input--error @enderror" id="pays" name="pays" required>
             <option value="">-- Sélectionnez votre pays --</option>
@@ -151,7 +151,7 @@
                    value="{{ old('tel') ? preg_replace('/^\+\d+\s*/', '', old('tel')) : '' }}"
                    placeholder="01 00 00 00" />
           </div>
-        </div>
+        </div> --}}
 
         <div class="aform__field" id="entrepriseField" style="{{ old('role') === 'recruteur' ? '' : 'display:none' }}">
           <label class="aform__label" for="entreprise">Nom de l'entreprise</label>

@@ -29,7 +29,7 @@ class IncriptionRequest extends FormRequest
             'password'             => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string',
             'tel'                  => 'nullable|string|max:20',
-            'pays'                 => 'required|string|max:100',
+            'pays'                 => 'nullable|string|max:100',
             'role'                 => 'required|in:candidat,recruteur,annonceur',
             'entreprise'           => 'nullable|string|max:200',
             'metier'               => 'nullable|string|max:200',
@@ -47,7 +47,7 @@ class IncriptionRequest extends FormRequest
             'password.min'                 => 'Le mot de passe doit contenir au moins 8 caractères.',
             'password.confirmed'           => 'Les mots de passe ne correspondent pas.',
             'password_confirmation.required' => 'Veuillez confirmer votre mot de passe.',
-            'pays.required'                => 'Le pays est requis.',
+            // 'pays.required'                => 'Le pays est requis.',
             'role.required'                => 'Le rôle est requis.',
             'role.in'                      => 'Le rôle doit être : candidat, recruteur ou annonceur.',
         ];

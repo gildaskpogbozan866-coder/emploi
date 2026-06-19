@@ -67,7 +67,7 @@
       </div>
 
       {{-- Détails complémentaires --}}
-      <div class="form-section-label" style="margin-top:20px">
+      {{-- <div class="form-section-label" style="margin-top:20px">
         Détails complémentaires
         <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
       </div>
@@ -103,9 +103,9 @@
           <textarea class="field__textarea" name="experience" rows="4"
             placeholder="Décrivez vos expériences (poste, entreprise, durée, missions…)">{{ old('experience', $document->experience) }}</textarea>
         </div>
-      </div>
+      </div> --}}
 
-      <div class="form-row form-row--1">
+      {{-- <div class="form-row form-row--1">
         <div>
           <label class="field__label">Formation</label>
           <textarea class="field__textarea" name="formation" rows="3"
@@ -120,7 +120,7 @@
             value="{{ old('langues', $document->langues) }}"
             placeholder="Ex : Français (courant), Anglais (intermédiaire)…">
         </div>
-      </div>
+      </div> --}}
 
       {{-- Fichier --}}
       <div class="form-section-label" style="margin-top:20px">Fichier</div>

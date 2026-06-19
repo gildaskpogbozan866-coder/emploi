@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidat;
 use App\Http\Controllers\Controller;
 use App\Models\Candidature;
 use App\Models\Offre;
+use App\Models\TypeContrat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,8 +48,9 @@ class CandidatureController extends Controller
         }
 
         $offres = $query->paginate(15)->withQueryString();
+        $contrats = TypeContrat::all();
 
-        return view('candidat.offres-sauvegardees', compact('offres'));
+        return view('candidat.offres-sauvegardees', compact('offres', 'contrats'));
     }
 
     public function sauvegarder(Offre $offre)

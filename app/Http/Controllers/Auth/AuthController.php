@@ -82,7 +82,7 @@ class AuthController extends Controller
     }
 
     // ── Inscription ───────────────────────────────────────
-    public function inscrire(IncriptionRequest $request)
+    public function inscrire(IncripStionRequest $request)
     {
         if ($this->recaptchaActif()) {
             $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
@@ -102,8 +102,8 @@ class AuthController extends Controller
             'nom'        => $request->nom,
             'email'      => $request->email,
             'password'   => Hash::make($request->password),
-            'tel'        => $request->tel,
-            'pays'       => $request->pays,
+            // 'tel'        => $request->tel,
+            // 'pays'       => $request->pays,
             'role'       => $role,
             'entreprise' => $request->entreprise,
             'metier'     => $request->metier,

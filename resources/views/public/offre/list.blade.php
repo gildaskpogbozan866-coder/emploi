@@ -213,14 +213,14 @@
             {{-- Badges + CTA --}}
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
               @if($offre->type)
-                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">{{ $offre->type }}</span>
+                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">{{ $offre?->type?->libelle }}</span>
               @endif
               <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;gap:4px">
                 <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                 {{ $offre->localisation }}
               </span>
               @if($offre->salaire)
-                <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }}</span>
+                <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }} Fcfa</span>
               @endif
               @if($offre->date_limite)
                 <span style="font-size:11px;color:#f59e0b;font-weight:600;margin-left:auto">Expire {{ $offre->date_limite->format('d/m') }}</span>

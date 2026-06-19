@@ -18,7 +18,7 @@ $jobPosting = [
     'url'            => route('offre.detail', $offre),
     'datePosted'     => $offre->created_at->toDateString(),
     'dateModified'   => $offre->updated_at->toDateString(),
-    'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre->type ?? 'OTHER')),
+    'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre?->type?->libelle ?? 'OTHER')),
     'jobLocationType'=> 'TELECOMMUTE',
     'hiringOrganization' => [
         '@type'  => 'Organization',
@@ -86,7 +86,7 @@ $breadcrumb = [
         <p class="od-hero__company">{{ $offre->entreprise }}</p>
         <div class="od-hero__badges">
           @if($offre->type)
-            <span class="od-badge od-badge--type">{{ $offre->type }}</span>
+            <span class="od-badge od-badge--type">{{ $offre?->type?->libelle }}</span>
           @endif
           @if($offre->localisation)
             <span class="od-badge od-badge--loc">
@@ -94,12 +94,12 @@ $breadcrumb = [
               {{ $offre->localisation }}
             </span>
           @endif
-          @foreach((array)$offre->secteur as $s)
+          {{-- @foreach((array)$offre->secteur as $s)
             @if($s)<span class="od-badge od-badge--sect">{{ $s }}</span>@endif
-          @endforeach
-          @if($offre->salaire)
-            <span class="od-badge od-badge--sal">{{ $offre->salaire }}</span>
-          @endif
+          @endforeach --}}
+          {{-- @if($offre->salaire)
+            <span class="od-badge od-badge--sal">{{ $offre->salaire }} Fa</span>
+          @endif --}}
         </div>
       </div>
     </div>
@@ -227,7 +227,7 @@ $breadcrumb = [
           </div>
           <div>
             <p class="od-info-row__label">Type de contrat</p>
-            <p class="od-info-row__value">{{ $offre->type }}</p>
+            <p class="od-info-row__value">{{ $offre?->type?->libelle }}</p>
           </div>
         </div>
         @endif
@@ -298,7 +298,7 @@ $breadcrumb = [
           </div>
           <div>
             <p class="od-info-row__label">Publiée</p>
-            <p class="od-info-row__value">{{ $offre->created_at->diffForHumans() }}</p>
+            <p class="od-info-row__value">{{ \Carbon\Carbon::parse($offre->created_at)->format('d M Y') }}</p>
           </div>
         </div>
 
@@ -383,7 +383,7 @@ $breadcrumb = [
           </div>
         </div>
         <div class="od-sim-card__meta">
-          @if($s->type)<span class="od-sim-badge od-sim-badge--type">{{ $s->type }}</span>@endif
+          @if($s->type)<span class="od-sim-badge od-sim-badge--type">{{ $s?->type?->libelle }}</span>@endif
           @if($s->localisation)<span class="od-sim-badge od-sim-badge--loc">{{ $s->localisation }}</span>@endif
         </div>
         <p class="od-sim-card__date">{{ $s->created_at->diffForHumans() }}</p>

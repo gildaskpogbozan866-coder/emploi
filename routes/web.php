@@ -172,7 +172,8 @@ Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
-Route::get('/documents/{document}', [CVController::class, 'documentDetail'])->name('document.public.detail');
+Route::get('/documents/{document}', [CVController::class, 'candidatDetails'])->name('document.public.detail');
+Route::get('/candidat/{$id}/profil', [CVController::class, 'documentDetail'])->name('public.candidat.detail');
 
 // Services
 Route::prefix('services')->name('service.')->group(function () {

@@ -29,7 +29,7 @@
       </div>
       <div class="cand-card__body">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type de contrat</p><p style="font-weight:600;color:#042C53;margin:0">{{ $candidature->offre->type }}</p></div>
+          <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type de contrat</p><p style="font-weight:600;color:#042C53;margin:0">{{ $candidature->offre?->type?->libelle }}</p></div>
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Date de candidature</p><p style="font-weight:600;color:#042C53;margin:0">{{ $candidature->created_at->format('d/m/Y') }}</p></div>
         </div>
 
