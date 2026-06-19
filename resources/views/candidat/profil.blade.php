@@ -1758,8 +1758,225 @@
             openModal('modal-infos');
             showToast({{ Js::from(implode(', ', $errors->all())) }}, true);
         @endif
+
+        // ── Multi-select : Spécialité / Domaine d'expertise ──────────────
+        (function () {
+            function msEsc(str) {
+                const d = document.createElement('div');
+                d.appendChild(document.createTextNode(String(str)));
+                return d.innerHTML;
+            }
+
+            const select  = document.getElementById('cand-modal-metiers');
+            const wrap    = document.getElementById('ms-metiers-wrap');
+            const trigger = document.getElementById('ms-metiers-trigger');
+            const chips   = document.getElementById('ms-metiers-chips');
+            const ph      = document.getElementById('ms-metiers-ph');
+            if (!select || !wrap) return;
+
+            // Dropdown porté dans <body> pour passer au-dessus du modal
+            const drop = document.createElement('div');
+            drop.className = 'ms-drop ss-drop';
+            drop.innerHTML =
+                '<input type="text" class="ss-search" placeholder="Rechercher un métier…" autocomplete="off">' +
+                '<ul class="ss-list" role="listbox"></ul>';
+            document.body.appendChild(drop);
+            const srch = drop.querySelector('.ss-search');
+            const list = drop.querySelector('.ss-list');
+
+            let isOpen = false;
+
+            function getSelected() {
+                return Array.from(select.options).filter(o => o.selected);
+            }
+
+            function renderChips() {
+                chips.innerHTML = '';
+                const sel = getSelected();
+                ph.style.display = sel.length ? 'none' : '';
+                sel.forEach(opt => {
+                    const chip = document.createElement('span');
+                    chip.className = 'tag-chip';
+                    chip.innerHTML =
+                        msEsc(opt.textContent.trim()) +
+                        '<button type="button" class="tag-chip__remove ms-remove" data-val="' + opt.value + '" aria-label="Retirer">' +
+                        '<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+                        '</button>';
+                    chips.appendChild(chip);
+                });
+            }
+
+            function buildList(q) {
+                list.innerHTML = '';
+                q = (q || '').toLowerCase().trim();
+                let count = 0;
+                Array.from(select.options).forEach(opt => {
+                    const txt = opt.textContent.trim();
+                    if (q && txt.toLowerCase().indexOf(q) === -1) return;
+                    const li = document.createElement('li');
+                    const sel = opt.selected;
+                    li.className = 'ss-option ms-option' + (sel ? ' ss-option--sel' : '');
+                    li.setAttribute('role', 'option');
+                    li.setAttribute('aria-selected', sel);
+                    const checkSvg = sel
+                        ? '<svg class="ms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>'
+                        : '<svg class="ms-check ms-check--empty" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>';
+                    if (q) {
+                        const i = txt.toLowerCase().indexOf(q);
+                        li.innerHTML = checkSvg + msEsc(txt.slice(0, i)) + '<mark>' + msEsc(txt.slice(i, i + q.length)) + '</mark>' + msEsc(txt.slice(i + q.length));
+                    } else {
+                        li.innerHTML = checkSvg + msEsc(txt);
+                    }
+                    li.addEventListener('mousedown', e => {
+                        e.preventDefault();
+                        opt.selected = !opt.selected;
+                        renderChips();
+                        buildList(srch.value);
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                    list.appendChild(li);
+                    count++;
+                });
+                if (!count) {
+                    const emp = document.createElement('li');
+                    emp.className = 'ss-empty';
+                    emp.textContent = 'Aucun résultat';
+                    list.appendChild(emp);
+                }
+            }
+
+            function positionDrop() {
+                const r = wrap.getBoundingClientRect();
+                Object.assign(drop.style, {
+                    position: 'fixed',
+                    zIndex:   '9999',
+                    top:      (r.bottom + 4) + 'px',
+                    left:     r.left + 'px',
+                    width:    r.width + 'px',
+                    minWidth: '220px',
+                });
+            }
+
+            function open() {
+                if (isOpen) return;
+                isOpen = true;
+                positionDrop();
+                drop.classList.add('ss-drop--open');
+                trigger.classList.add('ms-trigger--open');
+                trigger.setAttribute('aria-expanded', 'true');
+                srch.value = '';
+                buildList('');
+                setTimeout(() => srch.focus(), 0);
+            }
+
+            function close() {
+                if (!isOpen) return;
+                isOpen = false;
+                drop.classList.remove('ss-drop--open');
+                trigger.classList.remove('ms-trigger--open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', e => {
+                if (e.target.closest('.ms-remove')) return;
+                isOpen ? close() : open();
+            });
+
+            chips.addEventListener('click', e => {
+                const btn = e.target.closest('.ms-remove');
+                if (!btn) return;
+                const opt = Array.from(select.options).find(o => o.value === btn.dataset.val);
+                if (opt) opt.selected = false;
+                renderChips();
+                if (isOpen) buildList(srch.value);
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+
+            trigger.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+                if (e.key === 'Escape') close();
+                if (e.key === 'ArrowDown' && !isOpen) open();
+            });
+
+            srch.addEventListener('keydown', e => {
+                if (e.key === 'Escape') { close(); trigger.focus(); }
+            });
+            srch.addEventListener('input', () => buildList(srch.value));
+
+            document.addEventListener('click', e => {
+                if (!wrap.contains(e.target) && !drop.contains(e.target)) close();
+            });
+            document.addEventListener('focusin', e => {
+                if (!wrap.contains(e.target) && !drop.contains(e.target)) close();
+            });
+            window.addEventListener('scroll', () => { if (isOpen) positionDrop(); }, { passive: true });
+            window.addEventListener('resize', () => { if (isOpen) positionDrop(); });
+
+            // Fermer le dropdown quand n'importe quel modal se ferme
+            const _origCloseModal = window.closeModal;
+            window.closeModal = function (id) {
+                _origCloseModal(id);
+                close();
+            };
+
+            renderChips();
+        })();
     </script>
     <style>
+        /* ── Multi-select métiers ── */
+        .ms-wrap { position: relative; width: 100%; }
+
+        .ms-trigger {
+            cursor: pointer;
+            min-height: 40px;
+            align-items: flex-start;
+            padding: 6px 10px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .ms-trigger--open {
+            border-color: #185FA5;
+            box-shadow: 0 0 0 3px rgba(24,95,165,.1);
+        }
+        .ms-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            flex: 1;
+        }
+        .ms-placeholder {
+            color: #94a3b8;
+            font-size: 13.5px;
+            line-height: 1.8;
+            flex: 1;
+        }
+        .ms-chevron {
+            flex-shrink: 0;
+            color: #6b7280;
+            margin-left: 4px;
+            margin-top: 5px;
+            transition: transform .18s;
+            align-self: flex-start;
+        }
+        .ms-trigger--open .ms-chevron { transform: rotate(180deg); }
+
+        .ms-drop { background: #fff; }
+        .ms-drop .ss-list { background: #fff; }
+        .ms-drop .ss-option {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ms-drop .ss-option:hover { background: #f0f7ff; color: #185FA5; }
+        .ms-drop .ss-option--sel { background: #ebf4fd; color: #185FA5; }
+        .ms-check {
+            flex-shrink: 0;
+            color: #185FA5;
+        }
+        .ms-check--empty { color: #cbd5e1; }
+        .ss-option--sel .ms-check--empty { display: none; }
+
         /* Spécialité hero */
         .cp-hero__specialite {
             font-size: 13px;

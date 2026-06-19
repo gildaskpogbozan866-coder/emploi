@@ -288,8 +288,8 @@ Route::middleware('auth')->group(function () {
 Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
     Route::get('/tableau-de-bord', [CandidatDashboard::class, 'index'])->name('dashboard');
 
-    // CVs — nécessite permission deposit-cv
-    Route::middleware('permission:'.Permission::DEPOSIT_CV)->group(function () {
+    // CVs — nécessite permission deposit-cv + profil complet
+    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::DEPOSIT_CV])->group(function () {
         Route::get('/mes-cvs',                        [CVController::class, 'index'])->name('cvs');
         Route::get('/mes-cvs/modifier/{cv}',          [CVController::class, 'edit'])->name('cvs.edit');
         Route::put('/mes-cvs/{cv}',                   [CVController::class, 'update'])->name('cvs.update');
@@ -297,8 +297,8 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
         Route::patch('/mes-cvs/{cv}/visibilite',      [CVController::class, 'toggleVisibilite'])->name('cvs.visibilite');
     });
 
-    // Candidatures — nécessite apply-offre
-    Route::middleware('permission:'.Permission::APPLY_OFFRE)->group(function () {
+    // Candidatures — nécessite apply-offre + profil complet
+    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::APPLY_OFFRE])->group(function () {
         Route::get('/mes-candidatures',               [CandidatureController::class, 'index'])->name('candidatures');
         Route::get('/mes-candidatures/{candidature}', [CandidatureController::class, 'detail'])->name('candidatures.detail');
     });

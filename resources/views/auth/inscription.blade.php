@@ -160,7 +160,7 @@
 
         <label class="aform__check">
           <input type="checkbox" required />
-          J'accepte les <a href="/legale/cgv">conditions d'utilisation</a> et la <a href="/legale/politique-confidentialite">politique de confidentialité</a>.
+          J'accepte les <a href="/legale/conditions-generales-utilisation" target="__blank">conditions d'utilisation</a> et la <a href="/legale/politique-confidentialite" target="__blank">politique de confidentialité</a>.
         </label>
 
         @if($recaptchaActif)
