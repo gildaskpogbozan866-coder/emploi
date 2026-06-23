@@ -82,6 +82,12 @@
           <span class="cand-badge cand-badge--{{ $alerte->active ? 'green' : 'gray' }}">
             {{ $alerte->active ? 'Active' : 'Désactivée' }}
           </span>
+          <form method="POST" action="{{ route('candidat.alertes.toggle', $alerte) }}">
+            @csrf @method('PATCH')
+            <button type="submit" class="cand-btn cand-btn--sm" style="background:#f1f5f9;color:#374151;border:1.5px solid #e2e8f0">
+              {{ $alerte->active ? 'Désactiver' : 'Activer' }}
+            </button>
+          </form>
           <form method="POST" action="{{ route('candidat.alertes.destroy', $alerte) }}" data-confirm="Supprimer cette alerte ?" data-confirm-btn="Supprimer">
             @csrf @method('DELETE')
             <button type="submit" class="cand-btn cand-btn--danger cand-btn--sm">Supprimer</button>
@@ -130,7 +136,7 @@
         </div>
         <div class="cand-form-group">
           <label class="cand-form-label">Métier / Poste</label>
-          <select class="cand-form-select" name="metier">
+          <select class="cand-form-select @error('metier') cand-form-input--error @enderror" name="metier">
             <option value="">Tous les métiers</option>
             @foreach($metiers as $metier)
               <option value="{{ $metier->nom }}" {{ old('metier') === $metier->nom ? 'selected' : '' }}>
@@ -138,6 +144,9 @@
               </option>
             @endforeach
           </select>
+          @error('metier')
+            <p style="color:#dc2626;font-size:12px;margin:4px 0 0">{{ $message }}</p>
+          @enderror
         </div>
         <div class="cand-form-group">
           <label class="cand-form-label">Localisation</label>

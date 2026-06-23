@@ -314,9 +314,10 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // Alertes — nécessite create-alerte
     Route::middleware('permission:'.Permission::CREATE_ALERTE)->group(function () {
-        Route::get('/mes-alertes',              [AlerteController::class, 'index'])->name('alertes');
-        Route::post('/mes-alertes',             [AlerteController::class, 'store'])->name('alertes.store');
-        Route::delete('/mes-alertes/{alerte}',  [AlerteController::class, 'destroy'])->name('alertes.destroy');
+        Route::get('/mes-alertes',                      [AlerteController::class, 'index'])->name('alertes');
+        Route::post('/mes-alertes',                     [AlerteController::class, 'store'])->name('alertes.store');
+        Route::patch('/mes-alertes/{alerte}/toggle',    [AlerteController::class, 'toggle'])->name('alertes.toggle');
+        Route::delete('/mes-alertes/{alerte}',          [AlerteController::class, 'destroy'])->name('alertes.destroy');
     });
 
     // Abonnement — nécessite manage-abonnement-candidat
@@ -406,6 +407,7 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     // Candidatures — nécessite view-candidatures
     Route::middleware('permission:'.Permission::VIEW_CANDIDATURES)->group(function () {
         Route::get('/candidatures',                   [RecruteurCandidature::class, 'index'])->name('candidatures');
+        Route::get('/candidatures/export',            [RecruteurCandidature::class, 'export'])->name('candidatures.export');
         Route::get('/candidatures/{candidature}',     [RecruteurCandidature::class, 'show'])->name('candidatures.show');
         Route::patch('/candidatures/{candidature}/statut', [RecruteurCandidature::class, 'updateStatut'])->name('candidatures.statut');
     });

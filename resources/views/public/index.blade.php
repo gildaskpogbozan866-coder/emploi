@@ -513,9 +513,9 @@
                                 </svg>
                                 {{ $offre->localisation }}
                             </span>
-                            @if ($offre->salaire)
+                            @if ($offre->salaireFormate())
                                 <span
-                                    style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaire }}</span>
+                                    style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaireFormate() }}</span>
                             @endif
                             <span
                                 style="font-size:11.5px;font-weight:700;color:#185FA5;margin-left:auto;display:inline-flex;align-items:center;gap:3px">

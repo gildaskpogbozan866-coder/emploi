@@ -13,7 +13,7 @@ class AlerteService
     {
         // Métier : comparé au champ metier de l'offre et au titre
         if ($alerte->metier) {
-            $haystack = strtolower(($offre->metier ?? '').' '.$offre->titre);
+            $haystack = strtolower(($offre->metier?->nom ?? '').' '.$offre->titre);
             if (!str_contains($haystack, strtolower($alerte->metier))) {
                 return false;
             }
@@ -26,8 +26,8 @@ class AlerteService
             }
         }
 
-        // Type de contrat
-        if ($alerte->type_contrat && $alerte->type_contrat !== $offre->type) {
+        // Type de contrat — $offre->type est une relation (TypeContrat), on compare les codes
+        if ($alerte->type_contrat && $alerte->type_contrat !== ($offre->type?->code)) {
             return false;
         }
 
@@ -70,8 +70,8 @@ class AlerteService
         };
 
         $offres = Offre::where('statut', 'active')
-            ->where('updated_at', '>=', $depuis)
-            ->with('competences')
+            ->where('published_at', '>=', $depuis)
+            ->with(['competences', 'type', 'metier'])
             ->get();
 
         if ($offres->isEmpty()) return 0;

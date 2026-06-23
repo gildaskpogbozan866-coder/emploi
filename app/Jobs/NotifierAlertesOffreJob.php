@@ -21,7 +21,7 @@ class NotifierAlertesOffreJob implements ShouldQueue
 
     public function handle(AlerteService $service): void
     {
-        $this->offre->loadMissing('competences');
+        $this->offre->loadMissing(['competences', 'type', 'metier']);
         $service->notifierImmediat($this->offre);
     }
 }

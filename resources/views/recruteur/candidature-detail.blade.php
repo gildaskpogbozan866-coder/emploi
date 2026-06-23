@@ -19,13 +19,8 @@
     <div class="rec-card" style="margin-bottom:20px">
       <div class="rec-card__head">
         <span class="rec-card__title">Message de motivation</span>
-        <span class="rec-badge rec-badge--{{ match($candidature->statut) {
-          'retenue'   => 'green',
-          'refusee'   => 'red',
-          'entretien' => 'green',
-          'vue'       => 'blue',
-          default     => 'gray'
-        } }}">{{ ucfirst(str_replace('_',' ',$candidature->statut)) }}</span>
+        @php $statut = \App\Enums\StatutCandidature::tryFrom($candidature->statut) @endphp
+        <span class="rec-badge rec-badge--{{ $statut?->couleur() ?? 'gray' }}">{{ $statut?->label() ?? ucfirst($candidature->statut) }}</span>
       </div>
       <div class="rec-card__body">
         @if($candidature->message_motivation)
@@ -63,20 +58,6 @@
               @endif
             </div>
           </div>
-        @elseif($candidature->cv_path)
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
-            <div style="width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#64748b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-            </div>
-            <div style="flex:1;min-width:0">
-              <p style="font-weight:600;color:#042C53;margin:0 0 2px;font-size:14px">Fichier CV joint</p>
-              <p style="font-size:12px;color:#64748b;margin:0">{{ basename($candidature->cv_path) }}</p>
-            </div>
-            <a href="{{ asset('storage/' . $candidature->cv_path) }}" target="_blank"
-               style="font-size:13px;font-weight:700;color:#185FA5;text-decoration:none;white-space:nowrap;flex-shrink:0;padding:7px 14px;border:1.5px solid #bfdbfe;border-radius:7px;background:#f0f7ff">
-              Télécharger
-            </a>
-          </div>
         @else
           <p style="font-size:13.5px;color:#64748b;font-style:italic;margin:0">Le candidat n'a pas joint de CV à cette candidature.</p>
         @endif
@@ -93,8 +74,8 @@
           <div>
             <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Nouveau statut</label>
             <select name="statut" class="rec-select" style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px">
-              @foreach(['envoyee' => 'Envoyée','vue' => 'Vue','retenue' => 'Retenue (passé en entretien)','entretien' => 'Entretien planifié','refusee' => 'Refusée'] as $val => $label)
-                <option value="{{ $val }}" {{ $candidature->statut === $val ? 'selected' : '' }}>{{ $label }}</option>
+              @foreach(\App\Enums\StatutCandidature::cases() as $case)
+                <option value="{{ $case->value }}" {{ $candidature->statut === $case->value ? 'selected' : '' }}>{{ $case->label() }}</option>
               @endforeach
             </select>
           </div>

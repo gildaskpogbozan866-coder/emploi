@@ -34,7 +34,7 @@
       <div style="display:flex;flex-wrap:wrap;gap:6px">
         <span class="cand-badge cand-badge--blue">{{ $offre?->type?->libelle }}</span>
         <span class="cand-badge cand-badge--gray">{{ $offre->localisation }}</span>
-        @if($offre->salaire)<span class="cand-badge cand-badge--green">{{ $offre->salaire }}</span>@endif
+        @if($offre->salaireFormate())<span class="cand-badge cand-badge--green">{{ $offre->salaireFormate() }}</span>@endif
       </div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">

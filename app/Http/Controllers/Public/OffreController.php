@@ -29,34 +29,48 @@ class OffreController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type_contrat_id', $request->type);
+            $types = (array) $request->type;
+            $query->whereHas('type', fn($q) => $q->whereIn('code', $types));
         }
 
         if ($request->filled('localisation')) {
-            $query->where('localisation', 'like', '%' . $request->localisation . '%');
+            $locs = (array) $request->localisation;
+            $query->where(function ($sq) use ($locs) {
+                foreach ($locs as $loc) {
+                    $sq->orWhere('localisation', 'like', '%'.$loc.'%');
+                }
+            });
         }
 
         if ($request->filled('secteur')) {
-            $query->where('secteur', 'like', '%' . $request->secteur . '%');
+            $sects = (array) $request->secteur;
+            $query->where(function ($sq) use ($sects) {
+                foreach ($sects as $s) {
+                    $sq->orWhere('secteur', 'like', '%'.$s.'%');
+                }
+            });
         }
 
         if ($request->filled('competence')) {
-            $query->whereHas('competences', fn($q) => $q->where('slug', $request->competence));
+            $query->whereHas('competences', fn($q) => $q->whereIn('slug', (array) $request->competence));
         }
 
         if ($request->filled('metier')) {
-            $query->where(function ($sq) use ($request) {
-                $sq->where('metier', 'like', '%'.$request->metier.'%')
-                   ->orWhere('titre', 'like', '%'.$request->metier.'%');
+            $metiers = (array) $request->metier;
+            $query->where(function ($sq) use ($metiers) {
+                foreach ($metiers as $m) {
+                    $sq->orWhereHas('metier', fn($q) => $q->where('nom', 'like', '%'.$m.'%'))
+                       ->orWhere('titre', 'like', '%'.$m.'%');
+                }
             });
         }
 
         if ($request->filled('niveau_experience')) {
-            $query->where('niveau_experience', $request->niveau_experience);
+            $query->whereIn('niveau_experience', (array) $request->niveau_experience);
         }
 
         if ($request->filled('niveau_etude')) {
-            $query->where('niveau_etude', $request->niveau_etude);
+            $query->whereIn('niveau_etude', (array) $request->niveau_etude);
         }
 
         $offres = $query->paginate(12)->withQueryString();

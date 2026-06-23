@@ -111,28 +111,43 @@
 ══════════════════════════════════════ */
 .ol-sidebar {
   background: #fff;
-  border-radius: 10px;
-  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  border: 1.5px solid #dde3ec;
   overflow: hidden;
   position: sticky;
   top: 20px;
+  box-shadow: 0 4px 24px rgba(4,44,83,.08);
 }
 .ol-sidebar__head {
-  padding: 14px 18px;
-  border-bottom: 1px solid #f0f2f5;
+  padding: 15px 18px;
+  background: linear-gradient(135deg, #eef5ff 0%, #e4effa 100%);
+  border-bottom: 1.5px solid #d5e3f5;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 }
 .ol-sidebar__head-icon {
   color: #185FA5;
   flex-shrink: 0;
+  width: 17px;
+  height: 17px;
 }
 .ol-sidebar__head-title {
   font-family: var(--font-body);
   font-size: 13.5px;
+  font-weight: 800;
+  color: #042C53;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+.ol-sidebar__head-count {
+  background: #185FA5;
+  color: #fff;
+  border-radius: 99px;
+  padding: 1px 9px;
+  font-size: 11px;
   font-weight: 700;
-  color: #1e293b;
+  flex-shrink: 0;
 }
 .ol-fgroup {
   padding: 14px 18px;
@@ -174,10 +189,11 @@
   cursor: pointer;
 }
 .ol-sidebar__actions {
-  padding: 14px 18px;
+  padding: 14px 18px 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-top: 1.5px solid #eef1f6;
 }
 .ol-btn-apply {
   width: 100%;
@@ -196,21 +212,28 @@
 .ol-btn-apply:hover { background: #0d4a8a; }
 .ol-btn-reset {
   width: 100%;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 9px 16px;
-  background: transparent;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-  border-radius: 7px;
+  background: #fff5f5;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  border-radius: 8px;
   font-family: var(--font-body);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  transition: border-color .18s, color .18s;
+  transition: background .15s, border-color .15s, color .15s;
 }
-.ol-btn-reset:hover { border-color: #185FA5; color: #185FA5; }
+.ol-btn-reset:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #b91c1c;
+}
 
 /* ══════════════════════════════════════
    BARRE DE RÉSULTATS

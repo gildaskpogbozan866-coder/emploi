@@ -154,9 +154,13 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0">
         <div style="padding:16px 20px;border-right:1px solid #e2e8f0">
           <p style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px">Facturé à</p>
-        
-          <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">{{ $user->nom . ' ' .$user->prenom }}</p>
-          <p style="font-size:12px;color:#64748b;margin:0;word-break:break-all">{{ $user->email }}</p>
+          @if($user)
+            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">{{ $user->nom . ' ' . $user->prenom }}</p>
+            <p style="font-size:12px;color:#64748b;margin:0;word-break:break-all">{{ $user->email }}</p>
+          @else
+            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">Invité</p>
+            <p style="font-size:12px;color:#64748b;margin:0;word-break:break-all">{{ $paiement->payable?->email_contact ?? '—' }}</p>
+          @endif
         </div>
         <div style="padding:16px 20px">
           <p style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px">Payable à</p>
