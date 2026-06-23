@@ -284,18 +284,22 @@
 }
 .notif-bell__dropdown {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 320px;
+  position: fixed;
+  top: 70px;
+  right: 24px;
+  width: 340px;
+  max-height: calc(100vh - 80px);
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(4,44,83,0.16), 0 2px 8px rgba(0,0,0,0.08);
-  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(4,44,83,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  z-index: 99999;
   overflow: hidden;
   border: 1px solid #e8edf4;
+  flex-direction: column;
 }
-.notif-bell__dropdown.open { display: block; }
+.notif-bell__dropdown.open {
+  display: flex;
+}
 .notif-bell__header {
   display: flex;
   align-items: center;
@@ -320,7 +324,7 @@
   padding: 0;
 }
 .notif-bell__markall:hover { text-decoration: underline; }
-.notif-bell__list { max-height: 320px; overflow-y: auto; }
+.notif-bell__list { flex: 1; overflow-y: auto; max-height: calc(100vh - 160px); }
 .notif-bell__item {
   display: flex;
   gap: 10px;
@@ -391,6 +395,14 @@
   transition: background 0.15s;
 }
 .notif-bell__seeall:hover { background: #f0f7ff; }
+
+@media (max-width: 480px) {
+  .notif-bell__dropdown {
+    width: calc(100vw - 20px);
+    right: 10px !important;
+    left: 10px !important;
+  }
+}
 
 /* ── Messagerie chat ─────────────────────────────────── */
 .msg-wrap { display:flex;flex-direction:column;margin-bottom:2px }

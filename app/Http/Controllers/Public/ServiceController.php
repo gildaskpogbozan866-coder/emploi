@@ -30,12 +30,12 @@ class ServiceController extends Controller
     public function storerCommande(Request $request, Service $service)
     {
         $rules = [
-            'details_demande' => 'required|string|min:20',
-            'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt|max:10240',
+            'details_demande' => 'nullable|string|max:5000',
+            'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt,jpg,jpeg,png|max:10240',
         ];
 
         if (!Auth::check()) {
-            $rules['email_contact'] = 'required|email|max:191';
+            $rules['email_contact'] = 'required|email:rfc,dns|max:191';
         }
 
         $request->validate($rules);

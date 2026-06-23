@@ -19,8 +19,8 @@
     : ($isService ? 'Commande de service' : 'Abonnement');
 @endphp
 
-<div style="min-height:80vh;background:#f0f4f8;display:flex;align-items:center;justify-content:center;padding:40px 20px">
-  <div style="width:100%;max-width:560px">
+<div class="pay-page">
+  <div class="pay-wrap">
 
     {{-- En-tête --}}
     <div style="text-align:center;margin-bottom:28px">
@@ -32,15 +32,15 @@
     </div>
 
     {{-- Récapitulatif montant --}}
-    <div style="background:linear-gradient(135deg,#042C53,#185FA5);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <p style="font-size:11.5px;color:rgba(255,255,255,.55);margin:0 0 3px;text-transform:uppercase;letter-spacing:.07em">{{ $typeLabel }}</p>
-        <p style="font-size:1rem;font-weight:700;color:#fff;margin:0">{{ $description }}</p>
+    <div class="pay-recap">
+      <div class="pay-recap__left">
+        <p class="pay-recap__label">{{ $typeLabel }}</p>
+        <p class="pay-recap__desc">{{ $description }}</p>
       </div>
-      <div style="text-align:right">
-        <p style="font-size:11.5px;color:rgba(255,255,255,.55);margin:0 0 2px">À payer</p>
-        <p style="font-size:1.7rem;font-weight:900;color:#F5C842;margin:0;letter-spacing:-0.02em">
-          {{ number_format($total, 0, ',', ' ') }}<span style="font-size:1rem;font-weight:600;margin-left:4px">FCFA</span>
+      <div class="pay-recap__right">
+        <p class="pay-recap__alabel">À payer</p>
+        <p class="pay-recap__amount">
+          {{ number_format($total, 0, ',', ' ') }}<span>FCFA</span>
         </p>
       </div>
     </div>
@@ -151,21 +151,21 @@
       </div>
 
       {{-- Facturé à / Payable à --}}
-      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0">
-        <div style="padding:16px 20px;border-right:1px solid #e2e8f0">
-          <p style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px">Facturé à</p>
+      <div class="pay-billing">
+        <div class="pay-billing__cell pay-billing__cell--left">
+          <p class="pay-billing__head">Facturé à</p>
           @if($user)
-            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">{{ $user->nom . ' ' . $user->prenom }}</p>
-            <p style="font-size:12px;color:#64748b;margin:0;word-break:break-all">{{ $user->email }}</p>
+            <p class="pay-billing__name">{{ trim(($user->nom ?? '') . ' ' . ($user->prenom ?? '')) ?: $user->email }}</p>
+            <p class="pay-billing__email">{{ $user->email }}</p>
           @else
-            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">Invité</p>
-            <p style="font-size:12px;color:#64748b;margin:0;word-break:break-all">{{ $paiement->payable?->email_contact ?? '—' }}</p>
+            <p class="pay-billing__name">Commande invité</p>
+            <p class="pay-billing__email">{{ $paiement->payable?->email_contact ?? '—' }}</p>
           @endif
         </div>
-        <div style="padding:16px 20px">
-          <p style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px">Payable à</p>
-          <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">Emploi Bouge Bénin</p>
-          <p style="font-size:12px;color:#64748b;margin:0;line-height:1.6">Cotonou<br>+229 · BÉNIN</p>
+        <div class="pay-billing__cell">
+          <p class="pay-billing__head">Payable à</p>
+          <p class="pay-billing__name">Emploi Bouge Bénin</p>
+          <p class="pay-billing__email">Cotonou · BÉNIN</p>
         </div>
       </div>
 
@@ -234,6 +234,72 @@
 </div>
 
 <style>
+/* ── Page ── */
+.pay-page {
+  min-height: 80vh;
+  background: #f0f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.pay-wrap {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* ── Récap montant ── */
+.pay-recap {
+  background: linear-gradient(135deg, #042C53, #185FA5);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pay-recap__label {
+  font-size: 11.5px; color: rgba(255,255,255,.55);
+  margin: 0 0 3px; text-transform: uppercase; letter-spacing: .07em;
+}
+.pay-recap__desc {
+  font-size: 1rem; font-weight: 700; color: #fff; margin: 0;
+}
+.pay-recap__right { text-align: right; flex-shrink: 0; }
+.pay-recap__alabel {
+  font-size: 11.5px; color: rgba(255,255,255,.55); margin: 0 0 2px;
+}
+.pay-recap__amount {
+  font-size: 1.7rem; font-weight: 900;
+  color: #F5C842; margin: 0; letter-spacing: -0.02em; line-height: 1;
+}
+.pay-recap__amount span { font-size: 1rem; font-weight: 600; margin-left: 4px; }
+
+/* ── Facturation ── */
+.pay-billing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #e2e8f0;
+}
+.pay-billing__cell {
+  padding: 16px 20px;
+}
+.pay-billing__cell--left {
+  border-right: 1px solid #e2e8f0;
+}
+.pay-billing__head {
+  font-size: 10.5px; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: .07em; margin: 0 0 8px;
+}
+.pay-billing__name {
+  font-size: 13px; font-weight: 700; color: #042C53; margin: 0 0 3px;
+}
+.pay-billing__email {
+  font-size: 12px; color: #64748b; margin: 0; word-break: break-all;
+}
+
 /* ── Grille de méthodes ── */
 .pay-grid {
   display: grid;
@@ -335,6 +401,43 @@
 }
 #btn-payer:not([disabled]):active {
   transform: translateY(0);
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media (max-width: 600px) {
+  .pay-page { padding: 24px 12px 48px; align-items: flex-start; }
+
+  /* Récap */
+  .pay-recap { padding: 14px 16px; gap: 10px; }
+  .pay-recap__desc { font-size: .9rem; }
+  .pay-recap__amount { font-size: 1.4rem; }
+  .pay-recap__amount span { font-size: .85rem; }
+
+  /* Méthodes */
+  .pay-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .pay-col { padding: 14px 8px 12px; gap: 8px; }
+  .pay-col__icon { width: 46px; height: 46px; border-radius: 10px; }
+  .pay-col__icon img { width: 32px !important; height: 32px !important; }
+  .pay-col__name { font-size: 11px; }
+
+  /* Facturation : empiler les deux colonnes */
+  .pay-billing { grid-template-columns: 1fr; }
+  .pay-billing__cell--left {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .pay-billing__cell { padding: 12px 16px; }
+
+  /* Tableau description/montant */
+  table td, table th { padding: 10px 14px !important; font-size: 12.5px !important; }
+}
+
+@media (max-width: 400px) {
+  .pay-recap { flex-direction: column; }
+  .pay-recap__right { text-align: left; }
+  .pay-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 

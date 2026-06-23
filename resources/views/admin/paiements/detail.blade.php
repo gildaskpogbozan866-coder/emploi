@@ -100,6 +100,15 @@
           <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Rôle</p>
           <p style="font-weight:600;color:#042C53;margin:0">{{ ucfirst($paiement->user->role ?? '-') }}</p>
         </div>
+      @elseif($paiement->payable?->email_contact)
+        <div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom complet</p>
+          <p style="font-weight:600;color:#042C53;margin:0">Invité</p>
+        </div>
+        <div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p>
+          <p style="font-weight:600;color:#042C53;margin:0">{{ $paiement->payable->email_contact }}</p>
+        </div>
       @else
         <p style="color:#94a3b8;font-style:italic;margin:0">Utilisateur supprimé.</p>
       @endif

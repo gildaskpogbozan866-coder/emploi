@@ -69,8 +69,8 @@
       const sidebar = document.getElementById('candSidebar');
       const overlay = document.getElementById('candOverlay');
       const closeBtn = document.getElementById('candClose');
-      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
       burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
       closeBtn?.addEventListener('click', closeSidebar);
       overlay?.addEventListener('click', closeSidebar);

@@ -15,17 +15,23 @@
     <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Client</h3>
     </div>
+    @php
+      $clientNom   = $commande->user?->nom_complet ?? 'Invité';
+      $clientEmail = $commande->user?->email ?? $commande->email_contact ?? '—';
+      $clientPrenom = $commande->user?->prenom ?? '';
+      $clientTel   = $commande->user?->tel ?? null;
+    @endphp
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $commande->user->nom_complet }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $commande->user->email }}</p></div>
-      @if($commande->user->tel)
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Téléphone</p><p style="font-weight:600;color:#042C53;margin:0">{{ $commande->user->tel }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $clientNom }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $clientEmail }}</p></div>
+      @if($clientTel)
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Téléphone</p><p style="font-weight:600;color:#042C53;margin:0">{{ $clientTel }}</p></div>
       @endif
-      @if($commande->user->tel)
+      @if($clientTel)
       @php
-        $telWa = preg_replace('/[^0-9]/', '', $commande->user->tel);
+        $telWa = preg_replace('/[^0-9]/', '', $clientTel);
         if (strlen($telWa) === 8) $telWa = '229' . $telWa;
-        $msgWa = urlencode('Bonjour ' . ($commande->user->prenom ?? '') . ', nous avons bien reçu votre commande « ' . $commande->service->nom . ' » (réf. ' . $commande->reference . '). Notre équipe va vous contacter très prochainement.');
+        $msgWa = urlencode('Bonjour ' . $clientPrenom . ', nous avons bien reçu votre commande « ' . $commande->service->nom . ' » (réf. ' . $commande->reference . '). Notre équipe va vous contacter très prochainement.');
       @endphp
       <div style="padding-top:4px">
         <a href="https://wa.me/{{ $telWa }}?text={{ $msgWa }}"
