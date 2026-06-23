@@ -548,6 +548,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         Route::get('/{article}/modifier', [AdminBlog::class, 'edit'])->name('edit');
         Route::put('/{article}',          [AdminBlog::class, 'update'])->name('update');
         Route::delete('/{article}',       [AdminBlog::class, 'destroy'])->name('destroy');
+        Route::post('/generer-ia',         [AdminBlog::class, 'genererIA'])->name('generer-ia');
     });
 
     // Gestion services & commandes

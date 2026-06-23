@@ -73,8 +73,8 @@
       const sidebar  = document.getElementById('recSidebar');
       const overlay  = document.getElementById('recOverlay');
       const closeBtn = document.getElementById('recClose');
-      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
       burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
       closeBtn?.addEventListener('click', closeSidebar);
       overlay?.addEventListener('click', closeSidebar);

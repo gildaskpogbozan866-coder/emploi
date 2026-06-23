@@ -11,7 +11,7 @@
 
 {{-- KPIs --}}
 <div class="adm-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:28px">
-  <div class="adm-stat">
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.utilisateurs.list') }}">
     <div class="adm-stat__icon adm-stat__icon--blue">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
     </div>
@@ -19,8 +19,8 @@
       <div class="adm-stat__val">{{ $totaux['users'] }}</div>
       <div class="adm-stat__label">Utilisateurs</div>
     </div>
-  </div>
-  <div class="adm-stat">
+  </a>
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.offres.list') }}">
     <div class="adm-stat__icon adm-stat__icon--orange">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
     </div>
@@ -28,8 +28,8 @@
       <div class="adm-stat__val">{{ $totaux['offres'] }}</div>
       <div class="adm-stat__label">Offres publiées</div>
     </div>
-  </div>
-  <div class="adm-stat">
+  </a>
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.offres.list') }}">
     <div class="adm-stat__icon adm-stat__icon--violet">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
@@ -37,8 +37,8 @@
       <div class="adm-stat__val">{{ $totaux['candidatures'] }}</div>
       <div class="adm-stat__label">Candidatures</div>
     </div>
-  </div>
-  <div class="adm-stat">
+  </a>
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}">
     <div class="adm-stat__icon adm-stat__icon--yellow">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
     </div>
@@ -46,8 +46,8 @@
       <div class="adm-stat__val">{{ $totaux['cvs'] }}</div>
       <div class="adm-stat__label">CVs déposés</div>
     </div>
-  </div>
-  <div class="adm-stat">
+  </a>
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.commandes.list') }}">
     <div class="adm-stat__icon adm-stat__icon--orange">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
     </div>
@@ -55,8 +55,8 @@
       <div class="adm-stat__val">{{ $totaux['commandes'] }}</div>
       <div class="adm-stat__label">Commandes</div>
     </div>
-  </div>
-  <div class="adm-stat">
+  </a>
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.paiements.list') }}">
     <div class="adm-stat__icon adm-stat__icon--green">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     </div>
@@ -64,7 +64,7 @@
       <div class="adm-stat__val" style="color:#38A169;font-size:1rem">{{ number_format($totaux['revenus_30j'],0,',',' ') }}</div>
       <div class="adm-stat__label">FCFA / 30 jours</div>
     </div>
-  </div>
+  </a>
   <div class="adm-stat" style="border:2px solid #e0f2fe">
     <div class="adm-stat__icon" style="background:#e0f2fe">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
@@ -79,7 +79,7 @@
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
 
   {{-- Offres par type --}}
-  <div class="adm-card">
+  <div class="adm-card" style="grid-column:1/-1">
     <div class="adm-card__header"><h2>Offres par type de contrat</h2></div>
     <div class="adm-card__body">
       @php $totalOffres = $offresParType->sum('total') ?: 1; @endphp
@@ -99,7 +99,7 @@
   </div>
 
   {{-- Offres par statut --}}
-  <div class="adm-card">
+  <div class="adm-card" style="grid-column:1/-1">
     <div class="adm-card__header"><h2>Offres par statut</h2></div>
     <div class="adm-card__body">
       @foreach($offresParStatut as $item)
@@ -115,7 +115,7 @@
   </div>
 
   {{-- Candidatures par statut --}}
-  <div class="adm-card">
+  <div class="adm-card" style="grid-column:1/-1">
     <div class="adm-card__header"><h2>Candidatures par statut</h2></div>
     <div class="adm-card__body">
       @php
@@ -138,7 +138,7 @@
   </div>
 
   {{-- Top 5 offres par vues --}}
-  <div class="adm-card">
+  <div class="adm-card" style="grid-column:1/-1">
     <div class="adm-card__header"><h2>Top 5 offres les plus vues</h2></div>
     <div class="adm-card__body">
       @foreach($topOffresVues as $i => $offre)

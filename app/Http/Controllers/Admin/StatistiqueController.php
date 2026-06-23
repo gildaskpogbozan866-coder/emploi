@@ -41,8 +41,10 @@ class StatistiqueController extends Controller
             ->get();
 
         // Offres par type
-        $offresParType = Offre::select('type', DB::raw('COUNT(*) as total'))
-            ->groupBy('type')
+        $offresParType = Offre::select('type_contrats.code as type', DB::raw('COUNT(*) as total'))
+            ->join('type_contrats', 'offres.type_contrat_id', '=', 'type_contrats.id')
+            ->whereNotNull('offres.type_contrat_id')
+            ->groupBy('type_contrats.id', 'type_contrats.code')
             ->get();
 
         // Offres par statut

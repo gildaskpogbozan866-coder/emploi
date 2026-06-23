@@ -3,14 +3,14 @@
    Partagé par : talent · candidat · recruteur · admin
 ═══════════════════════════════════════════════ */
 
-/* ── Reset (annule style.css — overflow-x:hidden sur html casse position:sticky) ── */
+/* ── Reset ── */
 html {
   overflow-x: visible;
 }
 body {
   padding-top: 0 !important;
   margin: 0;
-  overflow-x: hidden;
+  /* NE PAS mettre overflow-x:hidden ici — ça casse position:fixed sur mobile */
 }
 
 :root {
@@ -27,7 +27,7 @@ body {
   padding: 0 24px;
   position: sticky;
   top: 0;
-  z-index: 300;
+  z-index: 600;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
@@ -381,16 +381,24 @@ body {
    RESPONSIVE
 ════════════════════════════════════════ */
 @media (max-width: 900px) {
+  .dash-header           { padding: 0 14px; gap: 8px; }
   .dash-header__burger   { display: flex; }
   .dash-header__username { display: none; }
   .dash-header__space    { display: none; }
   .dash-header__divider  { display: none; }
+  .dash-header__right    { gap: 8px; }
+  .dash-header__user     { padding: 4px 8px 4px 4px; gap: 6px; }
   .dash-header__logout span { display: none; }
-  .dash-header__logout   { padding: 8px 10px; gap: 0; }
-  .dash-header           { padding: 0 14px; }
+  .dash-header__logout   { padding: 7px 9px; gap: 0; border-radius: 8px; }
 
-  .dash-footer__copy { display: none; }
+  .dash-footer__copy  { display: none; }
   .dash-footer__inner { justify-content: center; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .dash-header__right    { gap: 6px; }
+  .dash-header__user     { background: transparent; border: none; padding: 0; }
+  .dash-header__logo img { height: 26px; }
 }
 
 @media (max-width: 480px) {

@@ -28,7 +28,7 @@
 
 /* ─── RESET ─── */
 html {
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -41,8 +41,8 @@ html {
 body {
   font-family: var(--font-body);
   background: var(--blanc);
-  overflow-x: hidden;
-  padding-top: 80px;
+  /* overflow-x: hidden; */
+  /* padding-top: 80px; */
 }
 
 img, video {
@@ -55,7 +55,7 @@ img, video {
 ═══════════════════════════════════════════════════════════ */
 
 .site-header {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -476,12 +476,13 @@ img, video {
 }
 
 @media (max-width: 860px) {
-  body { padding-top: 90px; }
+  /* body { padding-top: 90px; } */
   .nav {
     height: 90px;
   }
 
   .nav__logo-mark {
+
     width: 88px;
     height: 88px;
   }

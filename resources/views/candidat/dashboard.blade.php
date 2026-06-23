@@ -394,14 +394,14 @@
 
                 {{-- Titre --}}
                 <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.3">
-                    {{ $plan_premium->name }} </h3>
+                    {{ $plan_premium?->name ?? 'Premium' }} </h3>
                 <p style="font-size:12px;color:rgba(255,255,255,.65);margin:0 0 20px;line-height:1.6">
-                    {{ $plan_premium->description }} </p>
+                    {{ $plan_premium?->description ?? 'Accédez à toutes les fonctionnalités premium.' }} </p>
 
                 {{-- Prix --}}
                 <div
                     style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;margin-bottom:20px;text-align:center">
-                    <div style="font-size:1.6rem;font-weight:900;color:#F5C842;line-height:1"> {{ $plan_premium->price }}
+                    <div style="font-size:1.6rem;font-weight:900;color:#F5C842;line-height:1"> {{ $plan_premium?->price ?? '1 500' }}
                         <span style="font-size:.9rem;font-weight:700">FCFA</span>
                     </div>
                     <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:3px">par mois seulement</div>
