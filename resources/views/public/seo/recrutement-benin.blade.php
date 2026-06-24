@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Recrutement Bénin | Trouvez les meilleurs talents béninois | Emploi Bouge Bénin')
 @section('description', 'Recrutez au Bénin avec Emploi Bouge Bénin : publiez vos annonces, accédez à notre CVthèque et trouvez les meilleurs candidats à Cotonou et dans tout le Bénin.')
 @section('canonical', route('seo.recrutement-benin'))

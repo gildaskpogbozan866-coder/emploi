@@ -1,4 +1,4 @@
-﻿@extends('layouts.candidat')
+@extends('layouts.candidat')
 @section('title', 'Mes alertes emploi')
 
 @section('sidebar')

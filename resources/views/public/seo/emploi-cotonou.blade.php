@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Emploi Cotonou | Offres d\'emploi à Cotonou, Bénin | Emploi Bouge Bénin')
 @section('description', 'Trouvez un emploi à Cotonou : CDI, CDD, stages et freelance. Toutes les offres d\'emploi à Cotonou vérifiées et mises à jour quotidiennement sur Emploi Bouge Bénin.')
 @section('canonical', route('seo.emploi-cotonou'))

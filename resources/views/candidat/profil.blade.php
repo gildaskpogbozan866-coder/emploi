@@ -1,4 +1,4 @@
-﻿@extends('layouts.candidat')
+@extends('layouts.candidat')
 @section('title', 'Mon profil | Emploi Bouge Bénin')
 
 @section('css')

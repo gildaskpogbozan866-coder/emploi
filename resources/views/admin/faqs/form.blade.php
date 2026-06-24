@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', isset($faq) ? 'Modifier la question' : 'Nouvelle question')
 
 @section('css')

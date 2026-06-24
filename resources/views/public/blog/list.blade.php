@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Blog Emploi Bénin | Conseils carrière, CV & recrutement | Emploi Bouge Bénin')
 @section('description', 'Conseils pratiques pour trouver un emploi au Bénin : rédiger un CV, réussir un entretien, se reconvertir. Guides emploi pour candidats et recruteurs béninois.')
 

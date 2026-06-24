@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Stage au Bénin | Offres de stage à Cotonou & tout le Bénin | Emploi Bouge Bénin')
 @section('description', 'Trouvez un stage au Bénin : stages rémunérés, stages de fin d\'études, stages d\'observation à Cotonou et dans tout le Bénin. Candidatez gratuitement sur Emploi Bouge Bénin.')
 @section('canonical', route('seo.stage-benin'))

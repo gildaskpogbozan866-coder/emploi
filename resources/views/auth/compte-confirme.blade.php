@@ -1,4 +1,4 @@
-﻿@extends('layouts.auth')
+@extends('layouts.auth')
 @section('title', 'Compte confirmé | Emploi Bouge Bénin')
 
 @section('css')

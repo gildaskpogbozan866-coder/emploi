@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Offres d\'emploi au Bénin, CDI, CDD, Stage, Bourse à Cotonou | Emploi Bouge Bénin')
 @section('description', 'Consultez toutes les offres d\'emploi au Bénin : CDI, CDD, stages, bourses et freelance à Cotonou et dans tout le Bénin. Annonces vérifiées, mise à jour quotidienne.')
 @section('og_title', 'Offres d\'emploi au Bénin, Annonces CDI, CDD, Stages | Emploi Bouge Bénin')

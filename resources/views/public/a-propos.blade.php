@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'À propos | Emploi Bouge Bénin, la plateforme emploi #1 au Bénin')
 @section('description', 'Emploi Bouge Bénin connecte candidats, recruteurs et freelances au Bénin. Découvrez notre mission : faciliter l\'accès à l\'emploi à Cotonou et dans tout le Bénin.')
 @section('canonical', route('a-propos'))

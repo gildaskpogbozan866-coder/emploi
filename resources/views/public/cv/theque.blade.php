@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'CVthèque Bénin | Recrutez des talents béninois | Emploi Bouge Bénin')
 @section('description', 'Accédez à la CVthèque de talents au Bénin. Recruteurs : consultez des CV vérifiés de candidats qualifiés à Cotonou et dans tout le Bénin. Déposez votre CV gratuitement.')
 

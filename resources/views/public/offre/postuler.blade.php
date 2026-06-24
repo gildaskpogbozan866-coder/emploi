@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Postuler | ' . $offre->titre)
 
 @section('content')

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Nouveau plan de publication | Administration')
 
 @section('content')

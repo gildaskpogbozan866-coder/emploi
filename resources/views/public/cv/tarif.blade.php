@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Packs crédits CVthèque | Emploi Bouge Bénin')
 
 @section('css')

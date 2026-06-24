@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Confirmer l\'achat, ' . $pack->credits . ' crédits CVthèque')
 
 @section('sidebar')

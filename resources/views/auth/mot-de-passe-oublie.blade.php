@@ -1,4 +1,4 @@
-﻿@extends('layouts.auth')
+@extends('layouts.auth')
 @section('title', 'Mot de passe oublié | Emploi Bouge Bénin')
 
 @section('css')

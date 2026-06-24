@@ -1,4 +1,4 @@
-﻿<a href="{{ route('home') }}" class="rec-sidebar__logo">
+<a href="{{ route('home') }}" class="rec-sidebar__logo">
   <span>Emploi Bouge</span>
   <small>Bénin · Recruteur</small>
 </a>

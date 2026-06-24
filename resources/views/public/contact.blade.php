@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Contact | Emploi Bouge Bénin')
 @section('description', 'Contactez Emploi Bouge Bénin pour toute question, partenariat ou collaboration.')
 

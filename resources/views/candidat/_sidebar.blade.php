@@ -1,4 +1,4 @@
-﻿@php
+@php
   $abActifCand = auth()->user()->abonnementActif()->with('plan')->first();
   $estPremiumCand = $abActifCand && !($abActifCand->plan?->is_free ?? true);
 @endphp
