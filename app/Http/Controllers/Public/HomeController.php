@@ -41,17 +41,21 @@ class HomeController extends Controller
         //     });
         // $cvs = $cvsRaw->concat($docsRaw)->sortByDesc('created_at')->take(6)->values();
 
-       $candidats = User::where('role', 'candidat')
-    ->whereHas('candidatProfil')
-    ->with([
-        'candidatProfil',
-        'competences',
-        'secteursActivite',
-        'languesCandidats.langue',
-        'languesCandidats.niveau',
-        'formations' => fn($q) => $q->orderByDesc('en_cours')->orderByDesc('date_debut')->limit(1),
-    ])
-    ->get();
+        $candidats = User::where('role', 'candidat')
+            ->whereHas('candidatProfil')
+            ->whereHas('cvs', fn($q) => $q->where('visible', true)->whereNotNull('publie_le'))
+            ->with([
+                'candidatProfil',
+                'competences',
+                'secteursActivite',
+                'languesCandidats.langue',
+                'languesCandidats.niveau',
+                'formations' => fn($q) => $q->orderByDesc('en_cours')->orderByDesc('date_debut')->limit(1),
+                'cvs'        => fn($q) => $q->where('visible', true)->whereNotNull('publie_le')->latest()->limit(1),
+            ])
+            ->limit(9)
+            ->latest()
+            ->get();
         $plansCandidats  = Plan::where('is_active', true)
             ->whereIn('target_type', ['candidat', 'both'])
             ->with('features')->orderBy('price')->get();

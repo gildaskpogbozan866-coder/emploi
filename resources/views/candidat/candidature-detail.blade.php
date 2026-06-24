@@ -56,8 +56,8 @@
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
               <div style="flex:1;min-width:0">
-                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $candidature->cv->titre_poste }}</p>
-                <p style="font-size:12px;color:#64748b;margin:0">{{ $candidature->cv->pays }}{{ $candidature->cv->ville ? ' · '.$candidature->cv->ville : '' }}</p>
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $candidature->cv->metier }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $candidature->cv->ville }}</p>
               </div>
               <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Profil</span>
             </div>

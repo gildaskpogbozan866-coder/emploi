@@ -61,7 +61,7 @@
           <label class="field__label">Intitulé <span class="req">*</span></label>
           <input class="field__input" type="text" name="nom" required
             value="{{ old('nom', $document->nom) }}"
-            placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023…">
+            placeholder="Ex : Licence en Gestion UAC 2022, BTS Commerce ENEAM, Attestation stage MTN Bénin…">
           <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
         </div>
       </div>

@@ -157,6 +157,37 @@
         </a>
     </div>
 
+    {{-- Alerte upload si aucun document --}}
+    @if($user->cvs->isEmpty() && $user->documents->isEmpty())
+    <div style="display:flex;align-items:flex-start;gap:14px;background:#fff7ed;border:1.5px solid #fdba74;border-radius:14px;padding:18px 20px;margin-bottom:22px">
+        <span style="flex-shrink:0;width:38px;height:38px;border-radius:10px;background:#ffedd5;display:flex;align-items:center;justify-content:center">
+            <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#ea580c" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        </span>
+        <div style="flex:1">
+            <p style="font-size:13.5px;font-weight:700;color:#9a3412;margin:0 0 4px">Aucun document déposé</p>
+            <p style="font-size:12.5px;color:#c2410c;margin:0 0 12px;line-height:1.5">Déposez votre CV, diplôme ou attestation pour être visible auprès des recruteurs. C'est obligatoire pour postuler.</p>
+            <a href="{{ route('candidat.profil') }}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:#ea580c;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Déposer mon CV maintenant
+            </a>
+        </div>
+    </div>
+    @endif
+
+    {{-- Bloc CV Professionnel --}}
+    <div style="display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);border-radius:14px;padding:20px 24px;margin-bottom:22px">
+        <span style="flex-shrink:0;width:44px;height:44px;border-radius:12px;background:rgba(245,200,66,.15);display:flex;align-items:center;justify-content:center">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </span>
+        <div style="flex:1;min-width:0">
+            <p style="font-size:13px;font-weight:800;color:#F5C842;margin:0 0 3px;text-transform:uppercase;letter-spacing:.05em">CV Professionnel</p>
+            <p style="font-size:13px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">Faites rédiger votre CV par nos experts · Livraison en <strong style="color:#fff">30 min à 1h</strong> · <strong style="color:#F5C842">2 500 FCFA</strong></p>
+        </div>
+        <a href="{{ route('service.commande', 'cv-professionnel') }}" style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap">
+            Commander →
+        </a>
+    </div>
+
     {{-- Actions rapides --}}
     @php
         $cvBloque = $quotas && !$quotas['cvs']['unlimited'] && $quotas['cvs']['used'] >= $quotas['cvs']['limit'];
@@ -231,7 +262,7 @@
                     <span style="font-size:11px;font-weight:400;color:#c2410c">Limite atteinte, Upgrader</span>
                 </a>
             @else
-                <a href="{{ route('candidat.cvs') }}"
+                <a href="{{ route('candidat.profil') }}"
                     style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s"
                     onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'"
                     onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">

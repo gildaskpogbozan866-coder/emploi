@@ -53,7 +53,7 @@
           <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
                  value="{{ old('email', $email) }}"
-                 placeholder="vous@exemple.com" required autocomplete="email" />
+                 placeholder="vous@exemple.bj" required autocomplete="email" />
           @error('email')
             <p class="aform__error">{{ $message }}</p>
           @enderror

@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap');
+﻿﻿@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
 /* ─── VARIABLES ─── */
 :root {
@@ -463,6 +463,9 @@ img, video {
   .nav__actions .nav__btn-filled {
     display: none;
   }
+
+
+  
 
   .nav__hamburger {
     display: flex;

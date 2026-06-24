@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MetiersSeeder::class);
         $this->call(CompetencesSeeder::class);
         $this->call(MetierCompetenceSeeder::class);
+        $this->call(MetiersBeninoiseSeeder::class);
         $this->call(TypeDocumentSeeder::class);
         $this->call(PlansSeeder::class);
         $this->call(JobPublicationPlansSeeder::class);

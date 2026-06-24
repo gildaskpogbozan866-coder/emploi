@@ -16,7 +16,7 @@
 
         <div style="margin-bottom:18px">
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Titre du poste <span style="color:#e53e3e">*</span></label>
-          <input type="text" name="titre" value="{{ old('titre') }}" required placeholder="Ex: Développeur Web Junior"
+          <input type="text" name="titre" value="{{ old('titre') }}" required placeholder="Ex : Comptable junior, Infirmier, Gestionnaire RH, Agent de sécurité..."
                  style="width:100%;padding:10px 14px;border:1.5px solid {{ $errors->has('titre') ? '#e53e3e' : '#d1d5db' }};border-radius:8px;font-size:14px;box-sizing:border-box">
           @error('titre') <p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p> @enderror
         </div>

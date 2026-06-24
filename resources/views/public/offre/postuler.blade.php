@@ -69,8 +69,25 @@
       </div>
       @endif
 
+      @php
+        $hasAny = $cvs->isNotEmpty() || $documents->isNotEmpty();
+        $reqDocs = collect();
+        if ($offre->exige_cv)     $reqDocs->push('un CV');
+        if ($offre->exige_lettre) $reqDocs->push('une lettre de motivation');
+      @endphp
+
       <form method="POST" action="{{ route('offre.postuler.store', $offre) }}" enctype="multipart/form-data">
         @csrf
+
+        {{-- Badges exigences --}}
+        @if($offre->exige_cv || $offre->exige_lettre)
+        <div style="background:#fef9ec;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:24px;display:flex;gap:10px;align-items:flex-start">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p style="font-size:13px;color:#92400e;margin:0;line-height:1.6">
+            Ce recruteur exige : <strong>{{ $reqDocs->join(' et ') }}</strong>. Ces champs sont obligatoires.
+          </p>
+        </div>
+        @endif
 
         {{-- Message de motivation --}}
         <div style="margin-bottom:24px">
@@ -80,17 +97,17 @@
           </label>
           <textarea name="message_motivation" rows="7"
                     placeholder="Expliquez en quelques mots pourquoi vous correspondez à ce poste, vos motivations et vos points forts…"
-                    style="width:100%;padding:14px 16px;border:1.5px solid #d1d5db;border-radius:10px;font-size:14px;font-family:inherit;color:#1e293b;resize:vertical;box-sizing:border-box;line-height:1.65;outline:none"
+                    style="width:100%;padding:14px 16px;border:1.5px solid {{ $errors->has('message_motivation') ? '#dc2626' : '#d1d5db' }};border-radius:10px;font-size:14px;font-family:inherit;color:#1e293b;resize:vertical;box-sizing:border-box;line-height:1.65;outline:none"
                     onfocus="this.style.borderColor='#185FA5';this.style.boxShadow='0 0 0 3px rgba(24,95,165,.1)'"
                     onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'">{{ old('message_motivation') }}</textarea>
         </div>
 
-        {{-- Document à joindre --}}
-        @php $hasAny = $cvs->isNotEmpty() || $documents->isNotEmpty(); @endphp
+        {{-- ── CV requis ─────────────────────────────────────────── --}}
+        @if($offre->exige_cv)
         <div style="margin-bottom:28px">
           <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
-            Document à joindre
-            <span style="font-weight:400;color:#64748b;font-size:12px">optionnel</span>
+            CV <span style="color:#e53e3e">*</span>
+            <span style="font-weight:400;color:#64748b;font-size:12px">Sélectionnez un CV existant ou téléversez-en un</span>
           </label>
 
           <input type="hidden" name="cv_id"       id="selectedCvId"  value="{{ old('cv_id') }}">
@@ -98,8 +115,6 @@
 
           @if($hasAny)
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px" id="docCards">
-
-            {{-- CVs structurés --}}
             @foreach($cvs as $cv)
             <div onclick="selectItem('cv', {{ $cv->id }})"
                  id="item-card-cv-{{ $cv->id }}"
@@ -109,14 +124,13 @@
                 @if(old('cv_id') == $cv->id)<div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>@endif
               </div>
               <div style="flex:1;min-width:0">
-                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $cv->titre_poste }}</p>
-                <p style="font-size:12px;color:#64748b;margin:0">{{ $cv->pays }}{{ $cv->ville ? ' · '.$cv->ville : '' }}</p>
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $cv->metier ?? $cv->titre_poste ?? 'Mon CV' }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $cv->ville }}</p>
               </div>
               <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">CV</span>
             </div>
             @endforeach
 
-            {{-- Autres documents (diplômes, attestations…) --}}
             @foreach($documents as $doc)
             <div onclick="selectItem('doc', {{ $doc->id }})"
                  id="item-card-doc-{{ $doc->id }}"
@@ -132,45 +146,68 @@
               <span style="font-size:11px;background:#f3e8ff;color:#7c3aed;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">{{ $doc->type?->nom ?? 'Document' }}</span>
             </div>
             @endforeach
-
           </div>
 
-          <button type="button" id="toggleFileBtn"
-                  onclick="toggleFileSection()"
+          <button type="button" id="toggleFileBtn" onclick="toggleFileSection()"
                   style="font-size:13px;color:#185FA5;font-weight:600;background:none;border:none;cursor:pointer;padding:4px 0;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px">
-            <svg id="toggleFileIcon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-            </svg>
-            <span id="toggleFileTxt">Ou joindre un nouveau fichier</span>
+            <svg id="toggleFileIcon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <span id="toggleFileTxt">Ou téléverser un nouveau CV</span>
           </button>
           <div id="fileUploadSection" style="display:none">
           @endif
 
-            <label id="dropzone"
-                   style="display:flex;align-items:center;gap:14px;padding:18px 20px;border:2px dashed #cbd5e0;border-radius:12px;cursor:pointer;background:#fafafa;transition:all .2s"
-                   onmouseover="this.style.borderColor='#185FA5';this.style.background='#f0f7ff'"
-                   onmouseout="this.style.borderColor='#cbd5e0';this.style.background='#fafafa'">
-              <div style="width:42px;height:42px;border-radius:10px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                </svg>
-              </div>
-              <div style="flex:1;min-width:0">
-                <p id="fileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre un fichier</p>
-                <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX, 5 Mo maximum</p>
-              </div>
-              <input type="file" name="cv_file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none"
-                     onchange="onFileChosen(this)">
-            </label>
-            @error('cv_file')
-              <p style="color:#dc2626;font-size:12.5px;margin:6px 0 0">{{ $message }}</p>
-            @enderror
+          <label id="dropzone-cv"
+                 style="display:flex;align-items:center;gap:14px;padding:18px 20px;border:2px dashed {{ $errors->has('cv_file') ? '#dc2626' : '#cbd5e0' }};border-radius:12px;cursor:pointer;background:#fafafa;transition:all .2s"
+                 onmouseover="this.style.borderColor='#185FA5';this.style.background='#f0f7ff'"
+                 onmouseout="this.style.borderColor='{{ $errors->has('cv_file') ? '#dc2626' : '#cbd5e0' }}';this.style.background='#fafafa'">
+            <div style="width:42px;height:42px;border-radius:10px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <p id="cvFileLabel" style="font-size:14px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre votre CV</p>
+              <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX — max 5 Mo</p>
+            </div>
+            <input type="file" name="cv_file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none"
+                   onchange="onFileChosen(this,'cvFileLabel','cvFileInput')">
+          </label>
+          @error('cv_file')
+            <p style="color:#dc2626;font-size:12.5px;margin:6px 0 0">{{ $message }}</p>
+          @enderror
 
           @if($hasAny)
           </div>{{-- /fileUploadSection --}}
           @endif
+        </div>
+        @endif
+        {{-- ── /CV requis ──────────────────────────────────────────── --}}
 
-        </div>{{-- /Document section --}}
+        {{-- ── Lettre de motivation requise ───────────────────────── --}}
+        @if($offre->exige_lettre)
+        <div style="margin-bottom:28px">
+          <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
+            Lettre de motivation <span style="color:#e53e3e">*</span>
+            <span style="font-weight:400;color:#64748b;font-size:12px">Fichier PDF ou Word uniquement</span>
+          </label>
+          <label id="dropzone-lettre"
+                 style="display:flex;align-items:center;gap:14px;padding:18px 20px;border:2px dashed {{ $errors->has('lettre_file') ? '#dc2626' : '#cbd5e0' }};border-radius:12px;cursor:pointer;background:#fafafa;transition:all .2s"
+                 onmouseover="this.style.borderColor='#185FA5';this.style.background='#f0f7ff'"
+                 onmouseout="this.style.borderColor='{{ $errors->has('lettre_file') ? '#dc2626' : '#cbd5e0' }}';this.style.background='#fafafa'">
+            <div style="width:42px;height:42px;border-radius:10px;background:#fce7f3;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#be185d" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <p id="lettreFileLabel" style="font-size:14px;font-weight:600;color:#be185d;margin:0">Cliquer pour joindre votre lettre de motivation</p>
+              <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX — max 5 Mo</p>
+            </div>
+            <input type="file" name="lettre_file" id="lettreFileInput" accept=".pdf,.doc,.docx" style="display:none"
+                   onchange="onFileChosen(this,'lettreFileLabel','lettreFileInput')">
+          </label>
+          @error('lettre_file')
+            <p style="color:#dc2626;font-size:12.5px;margin:6px 0 0">{{ $message }}</p>
+          @enderror
+        </div>
+        @endif
+        {{-- ── /Lettre de motivation ──────────────────────────────── --}}
 
         {{-- Info --}}
         <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px 18px;margin-bottom:26px;display:flex;gap:10px;align-items:flex-start">
@@ -215,25 +252,24 @@ function clearAllItems() {
     el.style.background = 'transparent';
     el.innerHTML = '';
   });
-  document.getElementById('selectedCvId').value  = '';
-  document.getElementById('selectedDocId').value = '';
+  const selCv  = document.getElementById('selectedCvId');
+  const selDoc = document.getElementById('selectedDocId');
+  if (selCv)  selCv.value  = '';
+  if (selDoc) selDoc.value = '';
 }
 
 function selectItem(type, id) {
   clearAllItems();
-
   const card = document.getElementById('item-card-' + type + '-' + id);
   const dot  = document.getElementById('item-dot-'  + type + '-' + id);
   if (card) { card.style.border = '2px solid #185FA5'; card.style.background = '#f0f7ff'; }
   if (dot)  { dot.style.border = '2px solid #185FA5'; dot.style.background = '#185FA5'; dot.innerHTML = '<div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>'; }
-
-  if (type === 'cv')  document.getElementById('selectedCvId').value  = id;
-  if (type === 'doc') document.getElementById('selectedDocId').value = id;
-
+  if (type === 'cv')  { const el = document.getElementById('selectedCvId');  if (el) el.value = id; }
+  if (type === 'doc') { const el = document.getElementById('selectedDocId'); if (el) el.value = id; }
   const fileSection = document.getElementById('fileUploadSection');
   const cvFileInput = document.getElementById('cvFileInput');
   if (fileSection) { fileSection.style.display = 'none'; fileOpen = false; updateToggleBtn(); }
-  if (cvFileInput) { cvFileInput.value = ''; document.getElementById('fileLabel').textContent = 'Cliquer pour joindre un fichier'; }
+  if (cvFileInput) { cvFileInput.value = ''; const lbl = document.getElementById('cvFileLabel'); if (lbl) lbl.textContent = 'Cliquer pour joindre votre CV'; }
 }
 
 function toggleFileSection() {
@@ -250,20 +286,22 @@ function updateToggleBtn() {
   if (!icon || !txt) return;
   if (fileOpen) {
     icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/>';
-    txt.textContent = 'Masquer le fichier';
+    txt.textContent = 'Masquer';
   } else {
     icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>';
-    txt.textContent = 'Ou joindre un nouveau fichier';
+    txt.textContent = 'Ou téléverser un nouveau CV';
   }
 }
 
-function onFileChosen(input) {
-  const label = document.getElementById('fileLabel');
+function onFileChosen(input, labelId, inputId) {
+  const label = document.getElementById(labelId);
   if (input.files[0]) {
-    label.textContent = input.files[0].name;
-    clearAllItems();
+    if (label) label.textContent = input.files[0].name;
+    if (labelId === 'cvFileLabel') clearAllItems();
   } else {
-    label.textContent = 'Cliquer pour joindre un fichier';
+    if (label) label.textContent = input.name === 'lettre_file'
+      ? 'Cliquer pour joindre votre lettre de motivation'
+      : 'Cliquer pour joindre votre CV';
   }
 }
 </script>

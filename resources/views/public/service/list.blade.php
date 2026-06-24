@@ -220,9 +220,8 @@
   border-bottom: 2px solid #f1f5f9;
 }
 .svc-cat-head__ico {
-  font-size: 1.4rem;
   width: 42px; height: 42px;
-  background: #f8fafc;
+  background: #f0f6ff;
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -287,7 +286,14 @@
   padding: 3px 8px;
   border-radius: 50px;
 }
-.svc-card__icon { font-size: 2rem; line-height: 1; }
+.svc-card__icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: #f0f6ff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.svc-card--hot .svc-card__icon { background: rgba(245,200,66,.12); }
 .svc-card__name {
   font-size: .93rem;
   font-weight: 800;
@@ -346,7 +352,13 @@
   padding: 16px 20px;
 }
 .svc-trust__item + .svc-trust__item { border-left: 1px solid rgba(255,255,255,.1); }
-.svc-trust__item > span   { font-size: 1.8rem; line-height: 1; }
+.svc-trust__ico {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center;
+}
 .svc-trust__item > strong { font-size: .88rem; color: #fff; font-weight: 800; display: block; }
 .svc-trust__item > em     { font-size: .74rem; color: rgba(255,255,255,.5); font-style: normal; display: block; }
 
@@ -431,7 +443,7 @@
   .svc-trust { padding: 28px 0; }
   .svc-trust__inner { grid-template-columns: 1fr 1fr; }
   .svc-trust__item { padding: 14px 10px; }
-  .svc-trust__item > span   { font-size: 1.4rem; }
+  .svc-trust__ico  { width: 36px; height: 36px; }
   .svc-trust__item > strong { font-size: .78rem; }
   .svc-trust__item > em     { font-size: .68rem; }
   .svc-cta { padding: 44px 0; }
@@ -472,7 +484,10 @@
         <div class="svc-stat__sep"></div>
         <div class="svc-stat"><span class="svc-stat__n">30min</span><span class="svc-stat__l">Délai min.</span></div>
       </div>
-      <a href="#services" class="svc-hero__btn">Voir les services ↓</a>
+      <a href="#services" class="svc-hero__btn">
+        Voir les services
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </a>
     </div>
     <div class="svc-hero__illus" aria-hidden="true">
       <svg viewBox="0 0 460 380" fill="none" xmlns="http://www.w3.org/2000/svg" class="svc-hero__svg">
@@ -542,9 +557,13 @@
 <div class="svc-feat-wrap">
   <div class="svc-feat">
     <div class="svc-feat__card">
-      <div class="svc-feat__ico">📄</div>
+      <div class="svc-feat__ico">
+        <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="1.75">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
       <div class="svc-feat__body">
-        <span class="svc-feat__badge">⭐ Service n°1 · Le plus commandé</span>
+        <span class="svc-feat__badge">Service n°1 · Le plus commandé</span>
         <h2 class="svc-feat__title">{{ $star->nom }}</h2>
         <p class="svc-feat__desc">{{ $star->description ?? 'Un recruteur décide en 7 secondes. Notre équipe rédige un CV optimisé qui passe les filtres ATS et retient l\'attention des recruteurs.' }}</p>
         <ul class="svc-feat__list">
@@ -570,20 +589,50 @@
 {{-- ════════════════════ TOUS LES SERVICES ════════════════════ --}}
 @php
 $cats = [
-  ['emoji'=>'💼','label'=>'Carrière & Emploi',         'slugs'=>['cv-professionnel','lettre-de-motivation','preparation-entretien','linkedin-optimise','coaching-entretien','creation-cv-documents']],
-  ['emoji'=>'📝','label'=>'Documents & Rédaction',      'slugs'=>['traduction-documents','redaction-rapport-memoire']],
-  ['emoji'=>'💻','label'=>'Digital & Web',               'slugs'=>['creation-sites-web','creation-logo','gestion-reseaux-sociaux','marketing-digital','referencement-seo','developpement-applications']],
-  ['emoji'=>'🎓','label'=>'Formation & Accompagnement', 'slugs'=>['formation-informatique','accompagnement-digital']],
+  [
+    'label' => 'Carrière & Emploi',
+    'slugs' => ['cv-professionnel','lettre-de-motivation','preparation-entretien','linkedin-optimise','coaching-entretien','creation-cv-documents'],
+    'svg'   => '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>',
+  ],
+  [
+    'label' => 'Documents & Rédaction',
+    'slugs' => ['traduction-documents','redaction-rapport-memoire'],
+    'svg'   => '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+  ],
+  [
+    'label' => 'Digital & Web',
+    'slugs' => ['creation-sites-web','creation-logo','gestion-reseaux-sociaux','marketing-digital','referencement-seo','developpement-applications'],
+    'svg'   => '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#0891b2" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 17v4"/></svg>',
+  ],
+  [
+    'label' => 'Formation & Accompagnement',
+    'slugs' => ['formation-informatique','accompagnement-digital'],
+    'svg'   => '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#059669" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0v4m-4 2h8"/></svg>',
+  ],
 ];
 $bySlug = $services->keyBy('slug');
-$icons  = [
-  'cv-professionnel'=>'📄','lettre-de-motivation'=>'✉️','preparation-entretien'=>'🎯',
-  'linkedin-optimise'=>'🔗','coaching-entretien'=>'🧑‍💼','creation-cv-documents'=>'📋',
-  'traduction-documents'=>'🌐','redaction-rapport-memoire'=>'📚',
-  'creation-sites-web'=>'🖥️','creation-logo'=>'🎨','gestion-reseaux-sociaux'=>'📱',
-  'marketing-digital'=>'📈','referencement-seo'=>'🔍','developpement-applications'=>'⚙️',
-  'formation-informatique'=>'🖱️','accompagnement-digital'=>'🤝',
+
+/* SVG path d= par service (stroke, viewBox 0 0 24 24) */
+$svcPaths = [
+  'cv-professionnel'          => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  'lettre-de-motivation'      => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  'preparation-entretien'     => 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z',
+  'linkedin-optimise'         => 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71',
+  'coaching-entretien'        => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
+  'creation-cv-documents'     => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+  'traduction-documents'      => 'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129',
+  'redaction-rapport-memoire' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+  'creation-sites-web'        => 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  'creation-logo'             => 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+  'gestion-reseaux-sociaux'   => 'M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z',
+  'marketing-digital'         => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
+  'referencement-seo'         => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0',
+  'developpement-applications'=> 'M10 20l4-16M5 12.5L1 12l4-.5M19 12l4 .5-4 .5',
+  'formation-informatique'    => 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  'accompagnement-digital'    => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
 ];
+$defaultSvcPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+
 $hot = ['cv-professionnel','creation-logo'];
 @endphp
 
@@ -594,7 +643,7 @@ $hot = ['cv-professionnel','creation-logo'];
       @if($items->count())
       <div class="svc-cat-block">
         <div class="svc-cat-head">
-          <div class="svc-cat-head__ico">{{ $cat['emoji'] }}</div>
+          <div class="svc-cat-head__ico">{!! $cat['svg'] !!}</div>
           <h2 class="svc-cat-head__title">{{ $cat['label'] }}</h2>
           <span class="svc-cat-head__count">{{ $items->count() }}</span>
         </div>
@@ -602,8 +651,12 @@ $hot = ['cv-professionnel','creation-logo'];
           @foreach($items as $svc)
           @php $isHot = in_array($svc->slug, $hot); @endphp
           <a href="{{ route('service.detail', $svc->slug) }}" class="svc-card{{ $isHot ? ' svc-card--hot' : '' }}">
-            @if($isHot)<span class="svc-card__hot-badge">🔥 Populaire</span>@endif
-            <div class="svc-card__icon">{{ $icons[$svc->slug] ?? '📌' }}</div>
+            @if($isHot)<span class="svc-card__hot-badge">Populaire</span>@endif
+            <div class="svc-card__icon">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.75">
+                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $svcPaths[$svc->slug] ?? $defaultSvcPath }}"/>
+              </svg>
+            </div>
             <h3 class="svc-card__name">{{ $svc->nom }}</h3>
             @if($svc->description)
               <p class="svc-card__desc">{{ Str::limit($svc->description, 90) }}</p>
@@ -628,10 +681,30 @@ $hot = ['cv-professionnel','creation-logo'];
 {{-- ════════════════════ RÉASSURANCE ════════════════════ --}}
 <div class="svc-trust">
   <div class="svc-trust__inner">
-    <div class="svc-trust__item"><span>⚡</span><strong>Livraison rapide</strong><em>30min à 48h</em></div>
-    <div class="svc-trust__item"><span>🔒</span><strong>Paiement sécurisé</strong><em>MTN · Moov · Celtiis</em></div>
-    <div class="svc-trust__item"><span>✅</span><strong>1 révision offerte</strong><em>Satisfaction garantie</em></div>
-    <div class="svc-trust__item"><span>💬</span><strong>Support WhatsApp</strong><em>Réponse en &lt; 1h</em></div>
+    <div class="svc-trust__item">
+      <div class="svc-trust__ico">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+      </div>
+      <strong>Livraison rapide</strong><em>30min à 48h</em>
+    </div>
+    <div class="svc-trust__item">
+      <div class="svc-trust__ico">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <strong>Paiement sécurisé</strong><em>MTN · Moov · Celtiis</em>
+    </div>
+    <div class="svc-trust__item">
+      <div class="svc-trust__ico">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <strong>1 révision offerte</strong><em>Satisfaction garantie</em>
+    </div>
+    <div class="svc-trust__item">
+      <div class="svc-trust__ico">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      </div>
+      <strong>Support WhatsApp</strong><em>Réponse en &lt; 1h</em>
+    </div>
   </div>
 </div>
 

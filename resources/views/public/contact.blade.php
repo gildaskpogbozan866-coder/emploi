@@ -103,14 +103,14 @@
               <input class="contact-form__input {{ $errors->has('prenom') ? 'contact-form__input--error' : '' }}"
                      type="text" id="prenom" name="prenom"
                      value="{{ old('prenom', auth()->user()?->prenom) }}"
-                     placeholder="Jean" required />
+                     placeholder="Kokou" required />
             </div>
             <div class="contact-form__field">
               <label class="contact-form__label" for="nom">Nom</label>
               <input class="contact-form__input"
                      type="text" id="nom" name="nom"
                      value="{{ old('nom', auth()->user()?->nom) }}"
-                     placeholder="Dupont" />
+                     placeholder="Amoussou" />
             </div>
           </div>
 
@@ -119,7 +119,7 @@
             <input class="contact-form__input {{ $errors->has('email') ? 'contact-form__input--error' : '' }}"
                    type="email" id="email" name="email"
                    value="{{ old('email', auth()->user()?->email) }}"
-                   placeholder="jean@exemple.com" required />
+                   placeholder="kokou@exemple.bj" required />
           </div>
 
           <div class="contact-form__field">

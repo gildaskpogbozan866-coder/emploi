@@ -167,16 +167,13 @@ Route::prefix('offres')->name('offre.')->group(function () {
 Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/',          [CVController::class, 'theque'])->name('theque');
     Route::get('/tarif',     [CVController::class, 'tarif'])->name('tarif');
-    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::DEPOSIT_CV])->group(function () {
-
-    Route::get('/deposer',   [CVController::class, 'depot'])->name('depot');
-    Route::post('/deposer',  [CVController::class, 'store'])->name('depot.store')->middleware('auth');
-    });
+    Route::get('/deposer',  fn() => redirect()->route('candidat.profil'))->name('depot');
+    Route::post('/deposer', fn() => redirect()->route('candidat.profil'))->name('depot.store');
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
-Route::get('/documents/{document}', [CVController::class, 'candidatDetails'])->name('document.public.detail');
-Route::get('/candidat/{$id}/profil', [CVController::class, 'documentDetail'])->name('public.candidat.detail');
+Route::get('/documents/{document}', [CVController::class, 'documentDetail'])->name('document.public.detail');
+Route::get('/candidat/{id}/profil', [CVController::class, 'candidatDetails'])->name('public.candidat.detail');
 
 // Services
 Route::prefix('services')->name('service.')->group(function () {
@@ -342,6 +339,8 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::put('/profil',                  [CandidatProfil::class, 'update'])->name('profil.update');
     Route::post('/profil/avatar',          [CandidatProfil::class, 'updateAvatar'])->name('profil.avatar.update');
     Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
+    Route::post('/profil/fichier-cv',      [CandidatProfil::class, 'updateFichierCv'])->name('profil.fichier-cv');
+    Route::post('/profil/publier',         [CandidatProfil::class, 'publier'])->name('profil.publier');
     Route::get('/parametres',              [CandidatProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',              [CandidatProfil::class, 'updateParametres'])->name('parametres.update');
 
@@ -531,9 +530,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     // Gestion CVs & Documents
     Route::middleware('permission:'.Permission::MANAGE_CVS)->group(function () {
         Route::prefix('cvs')->name('cvs.')->group(function () {
-            Route::get('/',        [AdminCV::class, 'index'])->name('list');
-            Route::get('/{cv}',    [AdminCV::class, 'show'])->name('detail');
-            Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
+            Route::get('/',              [AdminCV::class, 'index'])->name('list');
+            Route::get('/{cv}',          [AdminCV::class, 'show'])->name('detail');
+            Route::patch('/{cv}/toggle', [AdminCV::class, 'toggleVisible'])->name('toggle');
+            Route::delete('/{cv}',       [AdminCV::class, 'destroy'])->name('destroy');
         });
         Route::prefix('documents')->name('documents.')->group(function () {
             Route::get('/',             [AdminDocument::class, 'index'])->name('list');

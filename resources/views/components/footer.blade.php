@@ -1,4 +1,4 @@
-<footer class="footer">
+﻿<footer class="footer">
   <div class="container">
     <div class="footer__grid">
 
@@ -36,23 +36,11 @@
           <li><a href="{{ route('service.list') }}">Services</a></li>
           <li><a href="{{ route('blog.list') }}">Blog &amp; Conseils</a></li>
           @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-            <li><a href="{{ route('cv.public.depot') }}">Déposer mon CV</a></li>
+            <li><a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}">Déposer mon CV</a></li>
           @endif
           @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
             <li><a href="{{ route('offre.publier') }}">Publier une offre</a></li>
           @endif
-        </ul>
-      </div>
-
-      {{-- Colonne SEO --}}
-      <div class="footer-col">
-        <p class="footer__col-title">Emploi au Bénin</p>
-        <ul class="footer__nav-list">
-          <li><a href="{{ route('seo.emploi-cotonou') }}">Emploi à Cotonou</a></li>
-          <li><a href="{{ route('seo.recrutement-benin') }}">Recrutement au Bénin</a></li>
-          <li><a href="{{ route('seo.stage-benin') }}">Stages au Bénin</a></li>
-          <li><a href="{{ route('offre.list', ['type' => 'CDI']) }}">CDI au Bénin</a></li>
-          <li><a href="{{ route('offre.list', ['type' => 'CDD']) }}">CDD au Bénin</a></li>
         </ul>
       </div>
 

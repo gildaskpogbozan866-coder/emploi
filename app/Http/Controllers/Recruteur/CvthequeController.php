@@ -31,19 +31,13 @@ class CvthequeController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $cvQuery->where(function ($sq) use ($q) {
-                $sq->where('titre_poste', 'like', "%$q%")
-                   ->orWhere('competences', 'like', "%$q%")
-                   ->orWhere('secteur', 'like', "%$q%");
+                $sq->where('competences', 'like', "%$q%")
+                   ->orWhere('metier', 'like', "%$q%")
+                   ->orWhere('resume', 'like', "%$q%");
             });
         }
-        if ($request->filled('pays'))              $cvQuery->where('pays', $request->pays);
-        if ($request->filled('disponibilite'))     $cvQuery->where('disponibilite', $request->disponibilite);
-        if ($request->filled('secteur'))           $cvQuery->where('secteur', 'like', '%'.$request->secteur.'%');
         if ($request->filled('langue'))            $cvQuery->where('langues', 'like', '%'.$request->langue.'%');
-        if ($request->filled('metier'))            $cvQuery->where(function ($sq) use ($request) {
-            $sq->where('metier', 'like', '%'.$request->metier.'%')
-               ->orWhere('titre_poste', 'like', '%'.$request->metier.'%');
-        });
+        if ($request->filled('metier'))            $cvQuery->where('metier', 'like', '%'.$request->metier.'%');
         if ($request->filled('niveau_etude'))      $cvQuery->where('niveau_etude', $request->niveau_etude);
         if ($request->filled('type_contrat'))      $cvQuery->where('type_contrat', $request->type_contrat);
         if ($request->filled('niveau_experience')) $cvQuery->where('niveau_experience', $request->niveau_experience);
@@ -178,7 +172,7 @@ class CvthequeController extends Controller
 
         // Construire un nom de fichier propre avec l'extension d'origine
         $ext      = strtolower(pathinfo($cv->fichier_path, PATHINFO_EXTENSION));
-        $slug     = Str::slug($cv->titre_poste ?: 'cv');
+        $slug     = Str::slug($cv->metier ?: 'cv');
         $filename = $slug . '-cv.' . $ext;
 
         $fullPath = Storage::disk('public')->path($cv->fichier_path);
@@ -290,8 +284,8 @@ class CvthequeController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sq) use ($q) {
-                $sq->where('titre_poste', 'like', "%$q%")
-                   ->orWhere('competences', 'like', "%$q%");
+                $sq->where('competences', 'like', "%$q%")
+                   ->orWhere('metier', 'like', "%$q%");
             });
         }
 

@@ -9,7 +9,12 @@ class CandidatProfilComplet
 {
     public function handle(Request $request, Closure $next)
     {
-        $user   = $request->user();
+        $user = $request->user();
+
+        if (!$user) {
+            return redirect()->route('auth.connexion');
+        }
+
         $profil = $user->candidatProfil;
 
         $profilComplet = $user->prenom

@@ -136,7 +136,7 @@
         <p style="font-weight:700;color:#042C53;margin:0;font-size:14px">
           {{ $item->candidat->prenom ?? '' }} {{ substr($item->candidat->nom ?? '', 0, 1) }}.
         </p>
-        <p style="font-size:12.5px;color:{{ $isDoc ? '#0284c7' : '#185FA5' }};margin:2px 0 0;font-weight:600">{{ $item->titre_poste }}</p>
+        <p style="font-size:12.5px;color:{{ $isDoc ? '#0284c7' : '#185FA5' }};margin:2px 0 0;font-weight:600">{{ $isDoc ? ($item->titre_poste ?? '') : ($item->metier ?? '') }}</p>
       </div>
       @if($isDoc)
         <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0f9ff;color:#0284c7;border:1px solid #bae6fd;white-space:nowrap">{{ $item->type_label }}</span>
@@ -155,17 +155,14 @@
         </div>
         @endif
       @endif
-      @if($item->pays || $item->ville)
+      @if(!empty($item->ville) || !empty($item->pays))
       <p style="font-size:12.5px;color:#94a3b8;margin:0 0 6px">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        {{ $item->pays }}{{ $item->ville ? ', '.$item->ville : '' }}
+        {{ $item->ville ?? $item->pays }}
       </p>
       @endif
       @if($item->competences)
         <p style="font-size:12.5px;color:#475569;margin:0 0 4px;line-height:1.5">{{ Str::limit($item->competences, 80) }}</p>
-      @endif
-      @if(!$isDoc && $item->secteur)
-        <span style="font-size:11px;background:#f0f9ff;color:#0284c7;border-radius:4px;padding:2px 8px;font-weight:600">{{ $item->secteur }}</span>
       @endif
     </div>
 

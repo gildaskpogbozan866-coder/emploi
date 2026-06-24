@@ -342,6 +342,15 @@
   transition: border-color .2s;
   outline: none;
 }
+.cand-form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%236b7a8d' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
 .cand-form-input:focus,
 .cand-form-select:focus,
 .cand-form-textarea:focus { border-color: #378ADD; box-shadow: 0 0 0 3px rgba(55,138,221,0.10); }
@@ -353,6 +362,41 @@
   gap: 10px;
   padding-top: 8px;
   flex-wrap: wrap;
+}
+
+/* ── Pill radio / sélecteur visuel ── */
+.cp-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 2px 0;
+}
+.cp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 7px 15px;
+  border-radius: 99px;
+  border: 1.5px solid #d0d7e2;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b7a8d;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color .15s, background .15s, color .15s, box-shadow .15s;
+  user-select: none;
+  white-space: nowrap;
+}
+.cp-pill input[type=radio] { display: none; }
+.cp-pill:hover { border-color: #378ADD; color: #185FA5; background: #f0f7ff; }
+.cp-pill:has(input[type=radio]:checked) {
+  border-color: #185FA5;
+  background: #185FA5;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(24,95,165,.18);
+}
+@media (max-width: 600px) {
+  .cp-pill { font-size: 12px; padding: 6px 12px; }
 }
 
 /* ── Empty state ── */
@@ -510,6 +554,173 @@
   -webkit-backdrop-filter: blur(1px);
 }
 .cand-overlay.active { display: block; }
+
+/* ── Section Upload Fichier CV ── */
+.cp-upload-cv {
+  background: #fff;
+  border: 2px dashed #c8d6e8;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  transition: border-color .2s;
+}
+.cp-upload-cv:has(#cv-dropzone:hover),
+.cp-upload-cv:focus-within { border-color: #185FA5; }
+.cp-upload-cv__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.cp-upload-cv__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #042C53, #185FA5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cp-upload-cv__title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #042C53;
+  margin-bottom: 3px;
+}
+.cp-upload-cv__sub { font-size: 12.5px; color: #6b7a8d; line-height: 1.5; }
+.cp-upload-cv__current {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.cp-upload-cv__current-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cp-upload-cv__current-info { flex: 1; min-width: 0; }
+.cp-upload-cv__current-name { font-size: 13px; font-weight: 700; color: #042C53; }
+.cp-upload-cv__current-sub  { font-size: 11.5px; color: #6b7a8d; }
+.cp-upload-cv__dropzone {
+  border: 1.5px dashed #d0d7e2;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+.cp-upload-cv__dropzone-inner {
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.cp-upload-cv__dropzone-label {
+  font-size: 13.5px;
+  color: #6b7a8d;
+  font-weight: 500;
+}
+.cp-upload-cv__dropzone-label span { color: #185FA5; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.cp-upload-cv__dropzone-hint { font-size: 11.5px; color: #94a3b8; }
+.cp-upload-cv__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cand-btn--lg {
+  padding: 13px 28px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 10px;
+}
+.cand-btn--primary {
+  background: linear-gradient(135deg, #042C53, #185FA5);
+  color: #fff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+.cand-btn--primary:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+.cand-btn--primary:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 640px) {
+  .cp-upload-cv { padding: 16px; }
+  .cp-upload-cv__actions { flex-direction: column; align-items: stretch; }
+  .cp-upload-cv__actions .cand-btn--primary { justify-content: center; }
+}
+
+/* ── Carte Statut CV ── */
+.cp-cv-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1.5px solid;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.cp-cv-status--visible {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.cp-cv-status--hidden {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.cp-cv-status__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.cp-cv-status--visible .cp-cv-status__icon { background: #dcfce7; color: #16a34a; }
+.cp-cv-status--hidden  .cp-cv-status__icon { background: #ffedd5; color: #ea580c; }
+.cp-cv-status__body { flex: 1; min-width: 0; }
+.cp-cv-status__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #042C53;
+  margin-bottom: 2px;
+}
+.cp-cv-status--hidden .cp-cv-status__title { color: #9a3412; }
+.cp-cv-status__sub {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.45;
+}
+.cp-cv-status__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .cp-cv-status { flex-direction: column; align-items: flex-start; }
+  .cp-cv-status__actions { width: 100%; }
+}
 
 /* ── Grille 2 colonnes responsive ── */
 .cand-2col {

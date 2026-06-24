@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Packs crédits CVthèque | Emploi Bouge Bénin')
 
 @section('css')
@@ -22,7 +22,7 @@
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link active">Packs crédits</a>
     @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ route('cv.public.depot') }}" class="cvt-subnav__link">Déposer un CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>

@@ -112,10 +112,24 @@ class CandidatureController extends Controller
 
     public function show(Candidature $candidature)
     {
-        $candidature->load(['candidat', 'offre', 'cv']);
         $this->authorize('view', $candidature);
 
-        // Marquer comme vue si elle vient d'être ouverte
+        $candidature->load([
+            'offre',
+            'cv',
+            'candidat.candidatProfil',
+            'candidat.competences',
+            'candidat.experiences',
+            'candidat.formations',
+            'candidat.languesCandidats.langue',
+            'candidat.languesCandidats.niveau',
+            'candidat.typesContrats',
+            'candidat.niveauEtude.niveauEtude',
+            'candidat.niveauExperience.niveauExperience',
+            'candidat.documents.type',
+            'candidat.cvs',
+        ]);
+
         if ($candidature->statut === 'envoyee') {
             $candidature->update(['statut' => 'vue']);
         }

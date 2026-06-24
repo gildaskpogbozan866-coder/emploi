@@ -15,16 +15,19 @@ class Offre extends Model
         'exigences', 'date_limite', 'fichier', 'statut', 'premium', 'vues',
         'publication_plan_id', 'published_at', 'expires_at',
         'niveau_experience', 'niveau_etude', 'metier_id',
+        'exige_cv', 'exige_lettre',
     ];
 
     protected function casts(): array
     {
         return [
-            'date_limite'  => 'date',
-            'premium'      => 'boolean',
-            'published_at' => 'datetime',
-            'expires_at'   => 'datetime',
-            'secteur'      => 'array',
+            'date_limite'   => 'date',
+            'premium'       => 'boolean',
+            'exige_cv'      => 'boolean',
+            'exige_lettre'  => 'boolean',
+            'published_at'  => 'datetime',
+            'expires_at'    => 'datetime',
+            'secteur'       => 'array',
         ];
     }
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Emploi Bénin | Offres d\'emploi, recrutement & stages au Bénin | Emploi Bouge Bénin')
 @section('description', 'Trouvez un emploi au Bénin sur Emploi Bouge Bénin : offres CDI, CDD, stages, bourses à Cotonou
     et partout au Bénin. Déposez votre CV gratuitement et soyez visible des recruteurs.')
@@ -116,7 +116,7 @@
                         Parcourir les offres
                     </a>
                     @if (!auth()->check() || auth()->user()->hasRole('candidat'))
-                        <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription') . '?role=candidat' }}"
+                        <a href="{{ auth()->check() ? auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' : route('auth.inscription') . '?role=candidat' }}"
                             class="btn-hero-cv">
                             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 stroke-width="2.5">
@@ -223,7 +223,7 @@
                 publicité, une seule plateforme pour tout.</p>
             <div class="split-cta-btns">
                 @if (!auth()->check() || auth()->user()->hasRole('candidat'))
-                    <a href="{{ auth()->check() ? route('cv.public.depot') : route('auth.inscription') . '?role=candidat' }}"
+                    <a href="{{ auth()->check() ? auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' : route('auth.inscription') . '?role=candidat' }}"
                         class="split-cta-btn split-cta-btn--candidat">
                         <span class="split-cta-btn__icon"><svg width="26" height="26" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -563,9 +563,11 @@
                         $profil = $item->candidatProfil;
                         $formation = $item->formations->first();
                         $libelles = \App\Models\CandidatProfil::libelles();
+                        $cvItem = $item->cvs->first();
+                        $cvUrl  = $cvItem ? route('cv.public.detail', $cvItem) : route('cv.public.theque');
                     @endphp
 
-                    <a href="{{route('document.public.detail', $item->id)}}"
+                    <a href="{{ $cvUrl }}"
                         style="display:flex;flex-direction:column;background:#fff;border:1.5px solid #e8edf3;border-radius:20px;padding:28px;text-decoration:none;transition:box-shadow .2s,transform .2s;box-shadow:0 4px 16px rgba(4,44,83,.07)"
                         onmouseover="this.style.boxShadow='0 12px 40px rgba(4,44,83,.16)';this.style.transform='translateY(-3px)'"
                         onmouseout="this.style.boxShadow='0 4px 16px rgba(4,44,83,.07)';this.style.transform='none'">

@@ -25,23 +25,18 @@ class CVController extends Controller
     public function theque(Request $request)
     {
         // ── CVs ──
-        $cvQuery = CV::visible()->with('candidat')->latest();
+        $cvQuery = CV::visible()->whereHas('candidat', fn($q) => $q->where('actif', true))->with('candidat')->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
             $cvQuery->where(function ($sq) use ($q) {
-                $sq->where('titre_poste', 'like', "%$q%")
-                    ->orWhere('competences', 'like', "%$q%")
-                    ->orWhere('secteur', 'like', "%$q%");
+                $sq->where('competences', 'like', "%$q%")
+                    ->orWhere('metier', 'like', "%$q%")
+                    ->orWhere('resume', 'like', "%$q%");
             });
         }
-        if ($request->filled('pays'))             $cvQuery->where('pays', $request->pays);
-        if ($request->filled('secteur'))          $cvQuery->where('secteur', 'like', '%' . $request->secteur . '%');
         if ($request->filled('langue'))           $cvQuery->where('langues', 'like', '%' . $request->langue . '%');
-        if ($request->filled('metier'))           $cvQuery->where(function ($sq) use ($request) {
-            $sq->where('metier', 'like', '%' . $request->metier . '%')
-                ->orWhere('titre_poste', 'like', '%' . $request->metier . '%');
-        });
+        if ($request->filled('metier'))           $cvQuery->where('metier', 'like', '%' . $request->metier . '%');
         if ($request->filled('niveau_etude'))     $cvQuery->where('niveau_etude', $request->niveau_etude);
         if ($request->filled('type_contrat'))     $cvQuery->where('type_contrat', $request->type_contrat);
         if ($request->filled('niveau_experience')) $cvQuery->where('niveau_experience', $request->niveau_experience);
@@ -340,12 +335,8 @@ class CVController extends Controller
         $this->authorize('update', $cv);
 
         $request->validate([
-            'titre_poste'       => 'required|string|max:200',
             'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'pays'              => 'required|string|max:100',
             'ville'             => 'nullable|string|max:100',
-            'disponibilite'     => 'nullable|string|max:50',
-            'secteur'           => 'nullable|string|max:150',
             'metier'            => 'nullable|string|max:150',
             'niveau_experience' => 'nullable|string|max:100',
             'niveau_etude'      => 'nullable|string|max:100',
@@ -366,11 +357,7 @@ class CVController extends Controller
         );
 
         $data = $request->only([
-            'titre_poste',
-            'pays',
             'ville',
-            'disponibilite',
-            'secteur',
             'metier',
             'niveau_experience',
             'niveau_etude',
@@ -399,15 +386,12 @@ class CVController extends Controller
 
         // Sync vers le profil utilisateur
         $syncUser  = [];
-        if ($request->filled('pays'))   $syncUser['pays']   = $request->pays;
         if ($request->filled('metier')) $syncUser['metier'] = $request->metier;
         if (isset($data['photo']))      $syncUser['avatar'] = $data['photo'];
         if (!empty($syncUser))          $user->update($syncUser);
 
         $profilSync = [];
-        if ($request->filled('titre_poste'))   $profilSync['titre_professionnel'] = $request->titre_poste;
-        if ($request->filled('ville'))          $profilSync['ville']               = $request->ville;
-        if ($request->filled('disponibilite')) $profilSync['disponibilite']       = $request->disponibilite;
+        if ($request->filled('ville')) $profilSync['ville'] = $request->ville;
         if (!empty($profilSync)) {
             CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
         }

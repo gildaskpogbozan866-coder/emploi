@@ -97,12 +97,12 @@
         <div class="aform__row">
           <div class="aform__field">
             <label class="aform__label" for="prenom">Prénom</label>
-            <input class="aform__input @error('prenom') aform__input--error @enderror" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Jean" required />
+            <input class="aform__input @error('prenom') aform__input--error @enderror" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Kokou" required />
             @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <div class="aform__field">
             <label class="aform__label" for="nom">Nom</label>
-            <input class="aform__input @error('nom') aform__input--error @enderror" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required />
+            <input class="aform__input @error('nom') aform__input--error @enderror" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Amoussou" required />
             @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
@@ -111,7 +111,7 @@
           <label class="aform__label" for="email">Adresse e-mail</label>
           <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
-                 value="{{ old('email') }}" placeholder="vous@exemple.com" required />
+                 value="{{ old('email') }}" placeholder="vous@exemple.bj" required />
           @error('email')<p class="aform__error">{{ $message }}</p>@enderror
         </div>
 

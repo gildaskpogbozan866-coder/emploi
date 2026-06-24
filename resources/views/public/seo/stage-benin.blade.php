@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Stage au Bénin | Offres de stage à Cotonou & tout le Bénin | Emploi Bouge Bénin')
 @section('description', 'Trouvez un stage au Bénin : stages rémunérés, stages de fin d\'études, stages d\'observation à Cotonou et dans tout le Bénin. Candidatez gratuitement sur Emploi Bouge Bénin.')
 @section('canonical', route('seo.stage-benin'))
@@ -72,7 +72,7 @@
     </ul>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a href="{{ route('offre.list', ['type' => 'Stage']) }}" style="padding:10px 22px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Offres de stage</a>
-      <a href="{{ route('cv.public.depot') }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
     </div>
   </div>
 </section>

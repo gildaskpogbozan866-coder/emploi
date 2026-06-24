@@ -42,8 +42,9 @@ class CVController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sq) use ($q) {
-                $sq->where('titre_poste', 'like', "%$q%")
-                   ->orWhere('pays', 'like', "%$q%");
+                $sq->where('metier', 'like', "%$q%")
+                   ->orWhere('competences', 'like', "%$q%")
+                   ->orWhere('ville', 'like', "%$q%");
             });
         }
 
@@ -60,7 +61,20 @@ class CVController extends Controller
     public function show(CV $cv)
     {
         $cv->load('candidat');
+
+        // Marquer comme vu par l'admin
+        if (!$cv->vu_admin) {
+            $cv->update(['vu_admin' => true]);
+        }
+
         return view('admin.cvs.detail', compact('cv'));
+    }
+
+    public function toggleVisible(CV $cv)
+    {
+        $cv->update(['visible' => !$cv->visible]);
+        $etat = $cv->visible ? 'affiché' : 'masqué';
+        return back()->with('success', "CV {$etat} avec succès.");
     }
 
     public function destroy(CV $cv)

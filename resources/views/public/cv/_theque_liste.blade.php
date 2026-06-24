@@ -3,7 +3,7 @@
 @forelse($cvs as $item)
   @php
     $isDoc  = !empty($item->_is_document);
-    $dispo  = !$isDoc && $item->disponibilite ? $disponibilitesList->firstWhere('code', $item->disponibilite) : null;
+    $dispo  = null;
     $url    = $isDoc ? route('document.public.detail', $item->id) : route('cv.public.detail', $item);
   @endphp
 
@@ -28,7 +28,7 @@
       {{-- Titre + badge --}}
       <div style="flex:1;min-width:0">
         <div style="font-size:14.5px;font-weight:700;color:#042C53;line-height:1.3;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-          {{ $item->titre_poste }}
+          {{ $isDoc ? ($item->titre_poste ?? '') : ($item->metier ?? 'Profil candidat') }}
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
           @if($isDoc)
@@ -50,10 +50,10 @@
 
     {{-- Infos --}}
     <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px">
-      @if($item->pays)
+      @if(!empty($item->pays) || !empty($item->ville))
         <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:#64748b">
           <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-          {{ $item->pays }}{{ !empty($item->ville) ? ', ' . $item->ville : '' }}
+          {{ $item->ville ?? $item->pays }}
         </div>
       @endif
       @if($item->competences)

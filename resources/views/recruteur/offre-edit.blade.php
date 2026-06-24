@@ -129,6 +129,27 @@
       </div>
 
       <div style="margin-bottom:24px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">Documents à fournir par le candidat</label>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">
+          @php $exigeCv     = old('exige_cv',     $offre->exige_cv     ? '1' : '0') == '1'; @endphp
+          @php $exigeLettre = old('exige_lettre',  $offre->exige_lettre ? '1' : '0') == '1'; @endphp
+          <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid {{ $exigeCv ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:{{ $exigeCv ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+            <input type="checkbox" name="exige_cv" value="1" {{ $exigeCv ? 'checked' : '' }}
+                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Exiger un CV (PDF / Word)
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid {{ $exigeLettre ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:{{ $exigeLettre ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+            <input type="checkbox" name="exige_lettre" value="1" {{ $exigeLettre ? 'checked' : '' }}
+                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Exiger une lettre de motivation (PDF / Word)
+          </label>
+        </div>
+        <small style="color:#94a3b8;margin-top:6px;display:block">Si coché, le champ sera obligatoire pour les candidats lors de la soumission.</small>
+      </div>
+
+      <div style="margin-bottom:24px">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">
           Logo de l'entreprise <small style="font-weight:400;color:#94a3b8">(JPG, PNG, WebP · max 2 Mo)</small>
         </label>

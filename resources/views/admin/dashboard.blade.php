@@ -70,7 +70,12 @@
       <div class="adm-stat__label">Candidatures</div>
     </div>
   </a>
-  <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}">
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}" style="position:relative">
+    @if($stats['cvs_nouveaux'] > 0)
+    <span style="position:absolute;top:10px;right:10px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;line-height:1.4">
+      {{ $stats['cvs_nouveaux'] }} nouveau{{ $stats['cvs_nouveaux'] > 1 ? 'x' : '' }}
+    </span>
+    @endif
     <div class="adm-stat__icon adm-stat__icon--orange">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
     </div>
@@ -207,6 +212,63 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    {{-- Derniers CVs déposés --}}
+    <div class="adm-card" style="grid-column:1/-1">
+      <div class="adm-card__header">
+        <h2>Derniers CVs déposés</h2>
+        <a href="{{ route('admin.cvs.list') }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir tout</a>
+      </div>
+      @if($derniers_cvs->isEmpty())
+        <div class="adm-empty" style="padding:24px 22px">
+          <p style="font-size:13.5px;color:#64748b">Aucun CV déposé pour l'instant.</p>
+        </div>
+      @else
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr><th>Candidat</th><th>Métier</th><th>Ville</th><th>Visible</th><th>Déposé le</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              @foreach($derniers_cvs as $cv)
+              <tr>
+                <td>
+                  <div style="font-weight:600;color:#042C53;display:flex;align-items:center;gap:6px">
+                    {{ $cv->candidat?->nom_complet ?? '—' }}
+                    @if(!$cv->vu_admin && $cv->publie_le)
+                    <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:1px 6px;text-transform:uppercase;letter-spacing:.04em">Nouveau</span>
+                    @endif
+                  </div>
+                  <div style="font-size:11px;color:#94a3b8">{{ $cv->candidat?->email }}</div>
+                </td>
+                <td style="color:#374151">{{ $cv->metier ?: '—' }}</td>
+                <td style="color:#64748b">{{ $cv->ville ?: '—' }}</td>
+                <td>
+                  <span class="adm-badge adm-badge--{{ $cv->visible ? 'green' : 'red' }}">
+                    {{ $cv->visible ? 'Visible' : 'Masqué' }}
+                  </span>
+                </td>
+                <td style="color:#94a3b8;font-size:12px;white-space:nowrap">
+                  {{ $cv->publie_le ? $cv->publie_le->format('d/m/Y') : ($cv->created_at->format('d/m/Y').' (non publié)') }}
+                </td>
+                <td>
+                  <div class="actions">
+                    <a href="{{ route('admin.cvs.detail', $cv) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
+                    <form method="POST" action="{{ route('admin.cvs.toggle', $cv) }}">
+                      @csrf @method('PATCH')
+                      <button type="submit" class="adm-btn adm-btn--sm adm-btn--{{ $cv->visible ? 'danger' : 'primary' }}">
+                        {{ $cv->visible ? 'Masquer' : 'Afficher' }}
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+      @endif
     </div>
 
     {{-- Signalements --}}

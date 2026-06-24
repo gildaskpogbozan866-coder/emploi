@@ -408,22 +408,19 @@
 
 @php
 /* ── Données contextuelles ── */
-$icons = ['cv-professionnel'=>'📄','lettre-de-motivation'=>'✉️','preparation-entretien'=>'🎯','linkedin-optimise'=>'🔗','coaching-entretien'=>'🧑‍💼','creation-cv-documents'=>'📋','traduction-documents'=>'🌐','redaction-rapport-memoire'=>'📚','creation-sites-web'=>'🖥️','creation-logo'=>'🎨','gestion-reseaux-sociaux'=>'📱','marketing-digital'=>'📈','referencement-seo'=>'🔍','developpement-applications'=>'⚙️','formation-informatique'=>'🖱️','accompagnement-digital'=>'🤝'];
-$svcIcon = $icons[$service->slug] ?? '📌';
-
 $cats = ['cv-professionnel'=>'Carrière & Emploi','lettre-de-motivation'=>'Carrière & Emploi','preparation-entretien'=>'Carrière & Emploi','linkedin-optimise'=>'Carrière & Emploi','coaching-entretien'=>'Carrière & Emploi','creation-cv-documents'=>'Carrière & Emploi','traduction-documents'=>'Documents & Rédaction','redaction-rapport-memoire'=>'Documents & Rédaction','creation-sites-web'=>'Digital & Web','creation-logo'=>'Digital & Web','gestion-reseaux-sociaux'=>'Digital & Web','marketing-digital'=>'Digital & Web','referencement-seo'=>'Digital & Web','developpement-applications'=>'Digital & Web','formation-informatique'=>'Formation','accompagnement-digital'=>'Formation'];
 $catLabel = $cats[$service->slug] ?? 'Service';
 
 $chips = match($service->slug) {
-  'cv-professionnel','creation-cv-documents' => [['⏱️','30min à 1h'],['✅','Format Word & PDF'],['🔄','1 révision offerte']],
-  'lettre-de-motivation'    => [['⏱️','30min à 1h'],['✅','Personnalisée'],['🔄','1 révision offerte']],
-  'linkedin-optimise'       => [['⏱️','1h à 2h'],['✅','Profil optimisé ATS'],['🔑','Mots-clés recruteurs']],
-  'coaching-entretien','preparation-entretien' => [['⏱️','1h de session'],['✅','Feedback détaillé'],['📋','Plan d\'action']],
-  'traduction-documents'    => [['⏱️','1h'],['🌐','FR ↔ EN'],['✅','Certifiée']],
-  'redaction-rapport-memoire'=> [['⏱️','12h à 24h'],['✅','Selon normes'],['🔄','Révision incluse']],
-  'creation-logo'           => [['⏱️','24h à 48h'],['🎨','Fichiers HD'],['✅','Charte graphique']],
-  'creation-sites-web'      => [['📱','Responsive'],['🔍','SEO inclus'],['🛡️','1 mois de support']],
-  default                   => [['✅','Service professionnel'],['⭐','Équipe experte'],['⏱️','Réponse rapide']],
+  'cv-professionnel','creation-cv-documents' => ['30min à 1h','Format Word & PDF','1 révision offerte'],
+  'lettre-de-motivation'    => ['30min à 1h','Personnalisée','1 révision offerte'],
+  'linkedin-optimise'       => ['1h à 2h','Profil optimisé ATS','Mots-clés recruteurs'],
+  'coaching-entretien','preparation-entretien' => ['1h de session','Feedback détaillé','Plan d\'action'],
+  'traduction-documents'    => ['Délai : 1h','FR ↔ EN','Document certifié'],
+  'redaction-rapport-memoire'=> ['12h à 24h','Selon normes','Révision incluse'],
+  'creation-logo'           => ['24h à 48h','Fichiers HD livrés','Charte graphique'],
+  'creation-sites-web'      => ['Responsive','SEO inclus','1 mois de support'],
+  default                   => ['Service professionnel','Équipe experte','Réponse rapide'],
 };
 
 $steps = match(true) {
@@ -469,14 +466,17 @@ $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
     </a>
     <div class="sdp-hero__inner">
       <div>
-        <span class="sdp-hero__tag">{{ $svcIcon }} {{ $catLabel }}</span>
+        <span class="sdp-hero__tag">{{ $catLabel }}</span>
         <h1 class="sdp-hero__title">{{ $service->nom }}</h1>
         @if($service->description)
           <p class="sdp-hero__desc">{{ $service->description }}</p>
         @endif
         <div class="sdp-hero__chips">
-          @foreach($chips as [$ico,$txt])
-            <span class="sdp-hero__chip">{{ $ico }} {{ $txt }}</span>
+          @foreach($chips as $chip)
+            <span class="sdp-hero__chip">
+              <svg width="7" height="7" fill="#F5C842" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
+              {{ $chip }}
+            </span>
           @endforeach
         </div>
       </div>
@@ -507,7 +507,7 @@ $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
           Commander maintenant
         </a>
         @endif
-        <p class="sdp-hero__pcard-trust">✓ Réponse garantie sous 1h &nbsp;·&nbsp; ✓ Paiement sécurisé</p>
+        <p class="sdp-hero__pcard-trust">Réponse garantie sous 1h &nbsp;·&nbsp; Paiement sécurisé</p>
       </div>
     </div>
   </div>

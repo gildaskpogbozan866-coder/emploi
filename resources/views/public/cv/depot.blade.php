@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Ajouter un CV ou document | Emploi Bouge Bénin')
 
 @section('css')
@@ -14,7 +14,7 @@
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs CV</a>
-    <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link active">Ajouter un CV / Document</a>
+    <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link active">Ajouter un CV / Document</a>
   </div>
 </div>
 
@@ -117,7 +117,7 @@
             <label class="field__label" for="depot-nom">Intitulé <span class="req">*</span></label>
             <input class="field__input @error('nom') field--invalid @enderror" type="text" id="depot-nom" name="nom" required
               value="{{ old('nom') }}"
-              placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023, Certificat AWS…">
+              placeholder="Ex : Comptable, Licence en Gestion UAC 2022, Attestation stage SONEB, BTS Commerce ENEAM…">
             @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
             <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
           </div>

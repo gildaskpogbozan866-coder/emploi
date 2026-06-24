@@ -6,7 +6,7 @@
   <div class="adm-topbar__left">
     <a href="{{ route('admin.cvs.list') }}" class="adm-btn adm-btn--outline adm-btn--sm" style="margin-bottom:8px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour</a>
     <h1>CV de {{ $cv->candidat->nom_complet }}</h1>
-    <p>{{ $cv->titre_poste }} · Déposé le {{ $cv->created_at->format('d/m/Y') }}</p>
+    <p>{{ $cv->metier }} · Déposé le {{ $cv->created_at->format('d/m/Y') }}</p>
   </div>
   <div>
     <form method="POST" action="{{ route('admin.cvs.destroy', $cv) }}" data-confirm="Supprimer définitivement ce CV ?" data-confirm-btn="Supprimer">
@@ -32,8 +32,8 @@
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Informations CV</h3>
     </div>
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Poste visé</p><p style="font-weight:600;color:#042C53;margin:0">{{ $cv->titre_poste }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Localisation</p><p style="font-weight:600;color:#042C53;margin:0">{{ $cv->ville ? $cv->ville.', ' : '' }}{{ $cv->pays }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Métier</p><p style="font-weight:600;color:#042C53;margin:0">{{ $cv->metier }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Localisation</p><p style="font-weight:600;color:#042C53;margin:0">{{ $cv->ville }}</p></div>
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Plan</p>
         <span class="adm-badge adm-badge--{{ $cv->plan === 'premium' ? 'yellow' : 'gray' }}">{{ ucfirst($cv->plan) }}</span>
       </div>

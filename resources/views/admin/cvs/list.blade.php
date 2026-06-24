@@ -60,17 +60,22 @@
     @if($type === 'cvs')
     <table class="adm-table">
       <thead>
-        <tr><th>Candidat</th><th>Poste visé</th><th>Pays</th><th>Plan</th><th>Vues</th><th>Visible</th><th>Déposé le</th><th>Actions</th></tr>
+        <tr><th>Candidat</th><th>Métier</th><th>Ville</th><th>Plan</th><th>Vues</th><th>Visible</th><th>Déposé le</th><th>Actions</th></tr>
       </thead>
       <tbody>
         @forelse($items as $cv)
         <tr>
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $cv->candidat->nom_complet }}</div>
+            <div style="font-weight:600;color:#042C53;display:flex;align-items:center;gap:6px">
+              {{ $cv->candidat->nom_complet }}
+              @if(!$cv->vu_admin && $cv->publie_le)
+              <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:1px 6px;text-transform:uppercase;letter-spacing:.04em">Nouveau</span>
+              @endif
+            </div>
             <div style="font-size:12px;color:#94a3b8">{{ $cv->candidat->email }}</div>
           </td>
-          <td style="font-weight:500;color:#042C53">{{ $cv->titre_poste }}</td>
-          <td style="color:#64748b">{{ $cv->pays }}</td>
+          <td style="font-weight:500;color:#042C53">{{ $cv->metier }}</td>
+          <td style="color:#64748b">{{ $cv->ville }}</td>
           <td>
             <span class="adm-badge adm-badge--{{ $cv->plan === 'premium' ? 'yellow' : 'gray' }}">{{ ucfirst($cv->plan) }}</span>
           </td>
@@ -82,6 +87,12 @@
           <td>
             <div class="actions">
               <a href="{{ route('admin.cvs.detail', $cv) }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir</a>
+              <form method="POST" action="{{ route('admin.cvs.toggle', $cv) }}">
+                @csrf @method('PATCH')
+                <button type="submit" class="adm-btn adm-btn--sm adm-btn--{{ $cv->visible ? 'warning' : 'primary' }}">
+                  {{ $cv->visible ? 'Masquer' : 'Afficher' }}
+                </button>
+              </form>
               <form method="POST" action="{{ route('admin.cvs.destroy', $cv) }}" data-confirm="Supprimer ce CV ?" data-confirm-btn="Supprimer">
                 @csrf @method('DELETE')
                 <button type="submit" class="adm-btn adm-btn--danger adm-btn--sm">Supprimer</button>

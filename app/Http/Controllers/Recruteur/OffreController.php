@@ -182,6 +182,8 @@ class OffreController extends Controller
             'logo'            => $logo,
             'secteur'         => $request->input('secteur', []),
             'type_contrat_id' => $request->type,
+            'exige_cv'        => $request->boolean('exige_cv'),
+            'exige_lettre'    => $request->boolean('exige_lettre'),
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
@@ -229,7 +231,12 @@ class OffreController extends Controller
 
         $data = array_merge(
             $request->only(['titre','entreprise','localisation','salaire_min','salaire_max','description','exigences','date_limite','metier_id','niveau_experience','niveau_etude']),
-            ['secteur' => $request->input('secteur', []), 'type_contrat_id' => $request->type]
+            [
+                'secteur'         => $request->input('secteur', []),
+                'type_contrat_id' => $request->type,
+                'exige_cv'        => $request->boolean('exige_cv'),
+                'exige_lettre'    => $request->boolean('exige_lettre'),
+            ]
         );
 
         if ($request->hasFile('fichier')) {

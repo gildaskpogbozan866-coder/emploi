@@ -45,7 +45,7 @@
       <div class="rec-form-grid">
         <div class="rec-form-group">
           <label>Titre du poste <span style="color:#e53e3e">*</span></label>
-          <input type="text" name="titre" value="{{ old('titre') }}" placeholder="Ex : Développeur Web Full Stack" required>
+          <input type="text" name="titre" value="{{ old('titre') }}" placeholder="Ex : Comptable, Caissier, Agent commercial, Juriste d'entreprise..." required>
           @error('titre')<small style="color:#e53e3e">{{ $message }}</small>@enderror
         </div>
         <div class="rec-form-group">
@@ -131,6 +131,29 @@
         <div class="rec-form-group full">
           <label>Exigences & conditions</label>
           <textarea name="exigences" rows="3" placeholder="Diplôme requis, expérience minimale, conditions particulières…">{{ old('exigences') }}</textarea>
+        </div>
+
+        <div class="rec-form-group full">
+          <label style="margin-bottom:10px;display:block">Documents à fournir par le candidat</label>
+          <div style="display:flex;flex-wrap:wrap;gap:16px">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid #d1d5db;border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:#f9fafb;transition:border-color .15s"
+                   id="lbl-exige-cv-create">
+              <input type="checkbox" name="exige_cv" value="1" id="chk-exige-cv-create"
+                     {{ old('exige_cv') ? 'checked' : '' }}
+                     onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Exiger un CV (PDF / Word)
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid #d1d5db;border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:#f9fafb;transition:border-color .15s"
+                   id="lbl-exige-lettre-create">
+              <input type="checkbox" name="exige_lettre" value="1" id="chk-exige-lettre-create"
+                     {{ old('exige_lettre') ? 'checked' : '' }}
+                     onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Exiger une lettre de motivation (PDF / Word)
+            </label>
+          </div>
+          <small style="color:#94a3b8;margin-top:6px;display:block">Si coché, le champ sera obligatoire pour les candidats lors de la soumission.</small>
         </div>
 
         <div class="rec-form-group">

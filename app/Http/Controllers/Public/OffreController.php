@@ -156,26 +156,53 @@ class OffreController extends Controller
             return back()->with('error_duplicate', true);
         }
 
-        $request->validate([
+        $rules = [
             'message_motivation' => 'nullable|string|max:3000',
             'cv_id'              => 'nullable|integer|exists:cvs,id',
             'document_id'        => 'nullable|integer|exists:documents,id',
             'cv_file'            => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'lettre_file'        => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ];
+
+        // Validation conditionnelle selon les exigences de l'offre
+        if ($offre->exige_cv) {
+            $rules['cv_file'] = [
+                function ($attribute, $value, $fail) use ($request) {
+                    $hasCv = $request->filled('cv_id') || $request->filled('document_id') || $request->hasFile('cv_file');
+                    if (!$hasCv) {
+                        $fail('Un CV est requis pour postuler à cette offre.');
+                    }
+                },
+            ];
+        }
+
+        if ($offre->exige_lettre) {
+            $rules['lettre_file'] = 'required|file|mimes:pdf,doc,docx|max:5120';
+        }
+
+        $request->validate($rules, [
+            'lettre_file.required' => 'Une lettre de motivation est requise pour postuler à cette offre.',
+            'lettre_file.file'     => 'La lettre de motivation doit être un fichier valide.',
+            'lettre_file.mimes'    => 'La lettre doit être au format PDF, DOC ou DOCX.',
+            'lettre_file.max'      => 'La lettre ne doit pas dépasser 5 Mo.',
         ]);
 
-        $cvId   = null;
-        $cvPath = null;
+        $cvId      = null;
+        $cvPath    = null;
+        $lettrePath = null;
 
         if ($request->filled('cv_id')) {
-            // CV structuré du profil
             $cv   = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
             $cvId = $cv?->id;
         } elseif ($request->filled('document_id')) {
-            // Document déposé (diplôme, attestation, etc.)
             $doc    = Document::where('id', $request->document_id)->where('user_id', Auth::id())->first();
             $cvPath = $doc?->fichier;
         } elseif ($request->hasFile('cv_file')) {
-            $cvPath = $request->file('cv_file')->store('candidatures', 'public');
+            $cvPath = $request->file('cv_file')->store('candidatures/cvs', 'public');
+        }
+
+        if ($request->hasFile('lettre_file')) {
+            $lettrePath = $request->file('lettre_file')->store('candidatures/lettres', 'public');
         }
 
         $candidature = Candidature::create([
@@ -184,6 +211,7 @@ class OffreController extends Controller
             'message_motivation' => $request->message_motivation,
             'cv_id'              => $cvId,
             'cv_path'            => $cvPath,
+            'lettre_path'        => $lettrePath,
         ]);
 
         $candidat = Auth::user();

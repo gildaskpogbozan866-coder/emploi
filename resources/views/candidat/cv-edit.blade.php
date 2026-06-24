@@ -33,7 +33,7 @@
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <h1 class="cand-page-header__title">Modifier mon CV</h1>
-    <p class="cand-page-header__sub">{{ $cv->titre_poste }}, {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</p>
+    <p class="cand-page-header__sub">{{ $cv->metier }}{{ $cv->ville ? ' — '.$cv->ville : '' }}</p>
   </div>
   <div class="cand-page-header__actions">
     <a href="{{ route('candidat.cvs') }}" class="cand-btn cand-btn--outline">

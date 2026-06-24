@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'CVthèque Bénin | Recrutez des talents béninois | Emploi Bouge Bénin')
 @section('description', 'Accédez à la CVthèque de talents au Bénin. Recruteurs : consultez des CV vérifiés de candidats qualifiés à Cotonou et dans tout le Bénin. Déposez votre CV gratuitement.')
 
@@ -36,7 +36,7 @@
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link active">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs crédits</a>
     @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link">Déposer un CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>
