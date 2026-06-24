@@ -36,16 +36,16 @@ class CallbackController extends Controller
                 ]);
                 PaymentConfirmed::dispatch($paiement);
             }
-            return redirect()->route('payment.success', ['paiement' => $paiement->id]);
+            return redirect()->route('payment.success', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
         }
 
         if ($verified && in_array($verified['status'], ['declined', 'canceled'])) {
             $paiement->update(['statut' => 'echec', 'gateway_status' => $verified['status']]);
-            return redirect()->route('payment.failed', ['paiement' => $paiement->id]);
+            return redirect()->route('payment.failed', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
         }
 
         // Statut encore en attente — rediriger vers la page d'attente
-        return redirect()->route('payment.pending', ['paiement' => $paiement->id]);
+        return redirect()->route('payment.pending', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
     }
 
     /**
@@ -56,12 +56,18 @@ class CallbackController extends Controller
         $request->validate([
             'transactionId' => 'required|string',
             'paiement_id'   => 'required|integer',
+            'methode'       => 'nullable|string|max:50',
         ]);
 
         $paiement = $kkiaPay->handleCallback(
             $request->transactionId,
             (int) $request->paiement_id
         );
+
+        // Enregistrer la méthode choisie (mtn_money, moov_money, celtiis_money)
+        if ($paiement && $request->filled('methode')) {
+            $paiement->update(['methode' => $request->methode]);
+        }
 
         if (!$paiement) {
             return response()->json(['success' => false, 'message' => 'Vérification échouée.'], 422);
@@ -71,9 +77,9 @@ class CallbackController extends Controller
             PaymentConfirmed::dispatch($paiement);
             $redirect = $this->successRedirect($paiement);
         } elseif ($paiement->statut === 'echec') {
-            $redirect = route('payment.failed', ['paiement' => $paiement->id]);
+            $redirect = route('payment.failed', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
         } else {
-            $redirect = route('payment.pending', ['paiement' => $paiement->id]);
+            $redirect = route('payment.pending', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
         }
 
         return response()->json(['success' => $paiement->statut === 'confirme', 'redirect' => $redirect]);
@@ -81,6 +87,6 @@ class CallbackController extends Controller
 
     private function successRedirect(Paiement $paiement): string
     {
-        return route('payment.success', ['paiement' => $paiement->id]);
+        return route('payment.success', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
     }
 }

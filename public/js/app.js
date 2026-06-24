@@ -1,12 +1,16 @@
 /* ─── app.js — version Laravel (sans localStorage) ─── */
 
-// Hamburger menu
-document.addEventListener('DOMContentLoaded', function () {
+// Hamburger menu — placé en dehors de DOMContentLoaded pour s'enregistrer
+// avant les scripts de page (defer exécute app.js en premier car il est plus
+// tôt dans le document). stopImmediatePropagation empêche les doublons de JS
+// de pages qui ajoutent le même handler.
+(function () {
   var hamburger  = document.getElementById('hamburger');
   var mobileMenu = document.getElementById('mobileMenu');
 
   if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', function () {
+    hamburger.addEventListener('click', function (e) {
+      e.stopImmediatePropagation();
       var isOpen = mobileMenu.classList.toggle('open');
       hamburger.classList.toggle('open', isOpen);
       hamburger.setAttribute('aria-expanded', String(isOpen));
@@ -20,7 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+})();
 
+document.addEventListener('DOMContentLoaded', function () {
   // Auth modals (connexion / inscription)
   var overlayConnexion   = document.getElementById('overlayConnexion');
   var overlayInscription = document.getElementById('overlayInscription');

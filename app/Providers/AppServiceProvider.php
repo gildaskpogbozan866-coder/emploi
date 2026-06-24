@@ -12,6 +12,7 @@ use App\Models\Langue;
 use App\Models\Metier;
 use App\Models\NiveauEtude;
 use App\Models\NiveauExperience;
+use App\Models\NiveauLangue;
 use App\Models\Pays;
 use App\Models\Region;
 use App\Models\SecteurActivite;
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
             NiveauExperience::class => ['niveauxExpList'],
             NiveauEtude::class    => ['niveauxEtudeList'],
             Langue::class         => ['languesList'],
+            NiveauLangue::class   => ['niveauxLangueList'],
             Metier::class         => ['metiersList'],
             Region::class         => ['regionsList'],
             CreditCvPack::class   => [],
@@ -75,11 +77,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Liste des pays — partagée dans toutes les vues
+        $fallbackPays = collect(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','République Démocratique du Congo','Gabon','Madagascar','Maroc','Algérie','Tunisie','France','Belgique','Autre']);
         try {
             $paysList = Cache::remember('pays_list', 3600, fn () => Pays::actifs()->pluck('nom'));
-            View::share('paysList', $paysList);
+            View::share('paysList', $paysList->isNotEmpty() ? $paysList : $fallbackPays);
         } catch (\Throwable) {
-            View::share('paysList', collect(['Bénin','Côte d\'Ivoire','Sénégal','Cameroun','Togo','Mali','Burkina Faso','Niger','Guinée','Congo','Madagascar','Autre']));
+            View::share('paysList', $fallbackPays);
         }
 
         // Liste des disponibilités — partagée dans toutes les vues
@@ -100,8 +103,9 @@ class AppServiceProvider extends ServiceProvider
             'typeContratsList' => fn () => TypeContrat::orderBy('libelle')->get(),
             'niveauxExpList'   => fn () => NiveauExperience::orderBy('ordre')->get(),
             'niveauxEtudeList' => fn () => NiveauEtude::orderBy('ordre')->get(),
-            'languesList'      => fn () => Langue::orderBy('nom')->get(),
-            'metiersList'      => fn () => Metier::orderBy('nom')->get(),
+            'languesList'        => fn () => Langue::orderBy('nom')->get(),
+            'niveauxLangueList'  => fn () => NiveauLangue::orderBy('ordre')->get(),
+            'metiersList'        => fn () => Metier::orderBy('nom')->get(),
             'regionsList'      => fn () => Region::actifs()->get(),
         ];
 

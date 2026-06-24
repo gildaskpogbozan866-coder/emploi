@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Offre;
-use App\Services\AlerteService;
+use App\Jobs\NotifierAlertesOffreJob;
 use Illuminate\Http\Request;
 
 class OffreController extends Controller
@@ -42,8 +42,7 @@ class OffreController extends Controller
         $offre->update(['statut' => $request->statut]);
 
         if ($ancienStatut !== 'active' && $request->statut === 'active') {
-            $offre->load('competences');
-            app(AlerteService::class)->notifierImmediat($offre);
+            NotifierAlertesOffreJob::dispatch($offre);
         }
 
         return back()->with('success', 'Statut de l\'offre mis à jour.');

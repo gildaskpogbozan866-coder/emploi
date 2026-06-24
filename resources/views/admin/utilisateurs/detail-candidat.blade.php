@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Profil candidat | Administration')
 
 @section('content')
@@ -52,8 +52,8 @@
     <div style="padding:20px 24px">
       @forelse($user->cvs as $cv)
         <div style="padding:10px 0;border-bottom:1px solid #f1f5f9">
-          <p style="font-weight:600;color:#042C53;margin:0 0 2px">{{ $cv->titre_poste }}</p>
-          <p style="font-size:12px;color:#94a3b8;margin:0">{{ $cv->pays }}{{ $cv->ville ? ' · '.$cv->ville : '' }} · {{ ucfirst($cv->plan) }}</p>
+          <p style="font-weight:600;color:#042C53;margin:0 0 2px">{{ $cv->metier ?? 'CV' }}</p>
+          <p style="font-size:12px;color:#94a3b8;margin:0">{{ $cv->ville }} · {{ ucfirst($cv->plan) }}</p>
         </div>
       @empty
         <p style="color:#94a3b8;font-size:13.5px">Aucun CV déposé.</p>

@@ -1,6 +1,10 @@
 @extends('layouts.recruteur')
 @section('title', 'CVthèque')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
+@endsection
+
 @section('sidebar')
 @include('recruteur._sidebar')
 @endsection
@@ -9,7 +13,7 @@
 <div class="rec-topbar">
   <div class="rec-topbar__left">
     <h1>CVthèque</h1>
-    <p>{{ $cvs->total() }} CV{{ $cvs->total() > 1 ? 's' : '' }} disponible{{ $cvs->total() > 1 ? 's' : '' }} sur la plateforme</p>
+    <p>{{ $cvs->total() }} profil{{ $cvs->total() > 1 ? 's' : '' }} disponible{{ $cvs->total() > 1 ? 's' : '' }} sur la plateforme</p>
   </div>
   <div class="rec-topbar__right" style="display:flex;align-items:center;gap:10px">
     <div style="display:flex;align-items:center;gap:8px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:8px 16px">
@@ -42,7 +46,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Pays</label>
-        <select name="pays" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="pays" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les pays</option>
           @foreach($paysList->reject(fn($p) => $p === 'Autre') as $p)
             <option value="{{ $p }}" {{ request('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -60,7 +64,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:170px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Secteur</label>
-        <select name="secteur" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="secteur" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les secteurs</option>
           @foreach($secteursList as $s)
             <option value="{{ $s->libelle }}" {{ request('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
@@ -69,7 +73,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:150px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Langue</label>
-        <select name="langue" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="langue" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Toutes les langues</option>
           @foreach($languesList as $l)
             <option value="{{ $l->nom }}" {{ request('langue') === $l->nom ? 'selected' : '' }}>{{ $l->nom }}</option>
@@ -78,7 +82,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;min-width:160px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Métier</label>
-        <select name="metier" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
+        <select name="metier" onchange="this.form.submit()" data-searchable style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
           <option value="">Tous les métiers</option>
           @foreach($metiersList as $m)
             <option value="{{ $m->nom }}" {{ request('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
@@ -121,64 +125,71 @@
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
-  @forelse($cvs as $cv)
+  @forelse($cvs as $item)
+  @php $isDoc = !empty($item->_is_document); @endphp
   <div class="rec-offer-card" style="flex-direction:column;align-items:flex-start;gap:14px">
     <div style="display:flex;gap:12px;align-items:center;width:100%">
-      <div style="width:46px;height:46px;border-radius:50%;background:rgba(55,138,221,0.12);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:#185FA5;flex-shrink:0">
-        {{ strtoupper(substr($cv->candidat->prenom ?? '?', 0, 1)) }}
+      <div style="width:46px;height:46px;border-radius:50%;background:{{ $isDoc ? 'rgba(2,132,199,0.1)' : 'rgba(55,138,221,0.12)' }};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:{{ $isDoc ? '#0284c7' : '#185FA5' }};flex-shrink:0">
+        {{ strtoupper(substr($item->candidat->prenom ?? '?', 0, 1)) }}
       </div>
       <div style="flex:1;min-width:0">
         <p style="font-weight:700;color:#042C53;margin:0;font-size:14px">
-          {{ $cv->candidat->prenom ?? '' }} {{ substr($cv->candidat->nom ?? '', 0, 1) }}.
+          {{ $item->candidat->prenom ?? '' }} {{ substr($item->candidat->nom ?? '', 0, 1) }}.
         </p>
-        <p style="font-size:12.5px;color:#185FA5;margin:2px 0 0;font-weight:600">{{ $cv->titre_poste }}</p>
+        <p style="font-size:12.5px;color:{{ $isDoc ? '#0284c7' : '#185FA5' }};margin:2px 0 0;font-weight:600">{{ $isDoc ? ($item->titre_poste ?? '') : ($item->metier ?? '') }}</p>
       </div>
-      @if($cv->plan === 'premium')
+      @if($isDoc)
+        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0f9ff;color:#0284c7;border:1px solid #bae6fd;white-space:nowrap">{{ $item->type_label }}</span>
+      @elseif($item->plan === 'premium')
         <span class="rec-badge rec-badge--yellow">Premium</span>
       @endif
     </div>
 
     <div style="width:100%">
-      @if($cv->disponibilite)
-      @php $dispo = $disponibilitesList->firstWhere('code', $cv->disponibilite) @endphp
-      @if($dispo)
-      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;background:#f8fafc;border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600;color:#475569">
-        <span style="width:6px;height:6px;border-radius:50%;background:{{ $dispo->couleur }}"></span>
-        {{ $dispo->libelle }}
-      </div>
+      @if(!$isDoc && $item->disponibilite)
+        @php $dispo = $disponibilitesList->firstWhere('code', $item->disponibilite) @endphp
+        @if($dispo)
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;background:#f8fafc;border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600;color:#475569">
+          <span style="width:6px;height:6px;border-radius:50%;background:{{ $dispo->couleur }}"></span>
+          {{ $dispo->libelle }}
+        </div>
+        @endif
       @endif
-      @endif
+      @if(!empty($item->ville) || !empty($item->pays))
       <p style="font-size:12.5px;color:#94a3b8;margin:0 0 6px">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        {{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}
+        {{ $item->ville ?? $item->pays }}
       </p>
-      @if($cv->competences)
-        <p style="font-size:12.5px;color:#475569;margin:0 0 4px;line-height:1.5">{{ Str::limit($cv->competences, 80) }}</p>
       @endif
-      @if($cv->secteur)
-        <span style="font-size:11px;background:#f0f9ff;color:#0284c7;border-radius:4px;padding:2px 8px;font-weight:600">{{ $cv->secteur }}</span>
+      @if($item->competences)
+        <p style="font-size:12.5px;color:#475569;margin:0 0 4px;line-height:1.5">{{ Str::limit($item->competences, 80) }}</p>
       @endif
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:8px;border-top:1px solid #f0f2f5;padding-top:12px">
-      <span style="font-size:11.5px;color:#94a3b8">{{ $cv->vues }} vue{{ $cv->vues > 1 ? 's' : '' }}</span>
+      <span style="font-size:11.5px;color:#94a3b8">
+        @if(!$isDoc){{ $item->vues }} vue{{ $item->vues > 1 ? 's' : '' }}@else&nbsp;@endif
+      </span>
       <div style="display:flex;gap:8px;align-items:center">
-        {{-- Bouton favori --}}
-        <form method="POST" action="{{ route('recruteur.cvtheque.favoris', $cv) }}" style="margin:0">
-          @csrf
-          @php $isFavori = in_array($cv->id, $favorisCvIds); @endphp
-          <button type="submit"
-                  title="{{ $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
-                  style="padding:5px 8px;background:{{ $isFavori ? '#fef9c3' : '#f1f5f9' }};border:1.5px solid {{ $isFavori ? '#fde68a' : '#e2e8f0' }};border-radius:6px;cursor:pointer;font-size:14px;line-height:1">
-            @if($isFavori)
-              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            @else
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            @endif
-          </button>
-        </form>
-        {{-- Voir profil --}}
-        <a href="{{ route('recruteur.cvtheque.show', $cv) }}" class="rec-btn rec-btn--outline rec-btn--sm">Voir profil</a>
+        @if(!$isDoc)
+          {{-- Bouton favori (CV uniquement) --}}
+          <form method="POST" action="{{ route('recruteur.cvtheque.favoris', $item) }}" style="margin:0">
+            @csrf
+            @php $isFavori = in_array($item->id, $favorisCvIds); @endphp
+            <button type="submit"
+                    title="{{ $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                    style="padding:5px 8px;background:{{ $isFavori ? '#fef9c3' : '#f1f5f9' }};border:1.5px solid {{ $isFavori ? '#fde68a' : '#e2e8f0' }};border-radius:6px;cursor:pointer;font-size:14px;line-height:1">
+              @if($isFavori)
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              @else
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              @endif
+            </button>
+          </form>
+          <a href="{{ route('recruteur.cvtheque.show', $item) }}" class="rec-btn rec-btn--outline rec-btn--sm">Voir profil</a>
+        @else
+          <a href="{{ route('recruteur.cvtheque.document.show', $item->id) }}" class="rec-btn rec-btn--outline rec-btn--sm">Voir document</a>
+        @endif
       </div>
     </div>
   </div>
@@ -233,4 +244,8 @@
 @if($cvs->hasPages())
   <div style="margin-top:24px">{{ $cvs->links() }}</div>
 @endif
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/searchable-select.js') }}"></script>
 @endsection

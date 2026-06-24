@@ -51,7 +51,7 @@
         Mettre à niveau
       </a>
     @else
-      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" class="cand-btn cand-btn--yellow">
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Ajouter
         @if(!$quota['unlimited'])
@@ -70,7 +70,7 @@
       </div>
       <p class="cand-empty__title">Aucun document pour l'instant</p>
       <p class="cand-empty__text">Ajoutez votre CV, vos diplômes, attestations ou certificats.</p>
-      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">Ajouter mon premier document</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" class="cand-btn cand-btn--yellow">Ajouter mon premier document</a>
     </div>
   </div>
 @else
@@ -103,8 +103,8 @@
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         </div>
         <div style="flex:1;min-width:0">
-          <p style="font-weight:700;color:#042C53;margin:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $cv->titre_poste }}</p>
-          <p style="font-size:12px;color:#64748b;margin:2px 0 4px">{{ $cv->pays }}{{ $cv->ville ? ', '.$cv->ville : '' }}</p>
+          <p style="font-weight:700;color:#042C53;margin:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $cv->metier ?? 'Curriculum Vitae' }}</p>
+          <p style="font-size:12px;color:#64748b;margin:2px 0 4px">{{ $cv->ville }}</p>
           <span style="display:inline-block;font-size:11px;background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 7px;font-weight:600">Curriculum Vitae</span>
         </div>
       </div>

@@ -11,6 +11,7 @@ class CompetenceController extends Controller
 {
     public function store(CompetenceRequest $request)
     {
+        // La validation métier/compétence est dans CompetenceRequest::withValidator()
         $user = Auth::user();
 
         if ($user->competences()->count() >= 30) {
@@ -26,8 +27,8 @@ class CompetenceController extends Controller
         }
 
         $pivot = CompetenceCandidat::create([
-            'candidat_id'      => $user->id,
-            'competence_id'    => $request->competence_id,
+            'candidat_id'       => $user->id,
+            'competence_id'     => $request->competence_id,
             'annees_experience' => $request->annees_experience,
         ]);
 
@@ -36,8 +37,8 @@ class CompetenceController extends Controller
         return response()->json([
             'success'    => true,
             'competence' => [
-                'id'               => $pivot->id,
-                'nom'              => $pivot->competence->nom,
+                'id'                => $pivot->id,
+                'nom'               => $pivot->competence->nom,
                 'annees_experience' => $pivot->annees_experience,
             ],
         ], 201);

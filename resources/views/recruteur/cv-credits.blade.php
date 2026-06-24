@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Crédits CVthèque')
 
 @section('sidebar')

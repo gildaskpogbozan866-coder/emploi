@@ -24,7 +24,6 @@ class ProfilRequest extends FormRequest
             'nom'                 => 'required|string|max:100',
             'tel'                 => 'nullable|string|max:20',
             'pays'                => 'nullable|string|max:100',
-            'avatar'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             // ── Profil étendu ──────────────────────────────────────
             'titre_professionnel' => 'nullable|string|max:200',
@@ -65,10 +64,6 @@ class ProfilRequest extends FormRequest
             'nom.max'                      => 'Le nom ne doit pas dépasser 100 caractères.',
             'tel.max'                      => 'Le téléphone ne doit pas dépasser 20 caractères.',
             'pays.max'                     => 'Le pays ne doit pas dépasser 100 caractères.',
-            'avatar.image'                 => 'L\'avatar doit être une image.',
-            'avatar.mimes'                 => 'Formats acceptés : jpg, jpeg, png, webp.',
-            'avatar.max'                   => 'L\'avatar ne doit pas dépasser 2 Mo.',
-
             // Profil étendu
             'titre_professionnel.max'      => 'Le titre professionnel ne doit pas dépasser 200 caractères.',
             'bio.max'                      => 'La biographie ne doit pas dépasser 1000 caractères.',

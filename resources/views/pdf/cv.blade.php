@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -227,14 +227,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1e293b; ba
       </td>
       <td class="hero-info-cell">
         <div class="hero-name">{{ $cv->candidat?->prenom }} {{ $cv->candidat?->nom }}</div>
-        <div class="hero-titre">{{ $cv->titre_poste }}</div>
-        @if($cv->disponibilite)
-          @php
-            $dispClass = ['en_recherche' => '', 'ouvert' => 'ouvert', 'indisponible' => 'indisponible'][$cv->disponibilite] ?? '';
-            $dispLabel = ['en_recherche' => 'En recherche active', 'ouvert' => 'Ouvert aux opportunités', 'indisponible' => 'Non disponible'][$cv->disponibilite] ?? '';
-          @endphp
-          <span class="hero-dispo {{ $dispClass }}">{{ $dispLabel }}</span>
-        @endif
+        <div class="hero-titre">{{ $cv->metier }}</div>
       </td>
     </tr>
   </table>
@@ -276,18 +269,10 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1e293b; ba
         @if($cv->ville)
         <td class="contact-item">
           <div class="contact-label">Ville</div>
-          <div class="contact-value">{{ $cv->ville }}{{ $cv->pays ? ', ' . $cv->pays : '' }}</div>
+          <div class="contact-value">{{ $cv->ville }}</div>
         </td>
         @endif
       </tr>
-      @if($cv->secteur)
-      <tr>
-        <td class="contact-item" colspan="2">
-          <div class="contact-label">Secteur</div>
-          <div class="contact-value">{{ $cv->secteur }}</div>
-        </td>
-      </tr>
-      @endif
     </table>
   </div>
 

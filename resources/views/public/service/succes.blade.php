@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Commande confirmée | Emploi Bouge Bénin')
 
 @section('content')
@@ -11,7 +11,7 @@
     </div>
     <h1 style="font-size:2rem;font-weight:800;color:#042C53;margin:0 0 14px">Commande reçue !</h1>
     <p style="font-size:1.05rem;color:#64748b;line-height:1.65;margin:0 0 32px">
-      Votre demande a bien été enregistrée. Notre équipe va la traiter dans les plus brefs délais et vous contactera par email pour confirmer et vous livrer le résultat.
+      Votre paiement a bien été reçu. Vous recevrez votre service dans <strong>moins d'1 heure</strong>.
     </p>
 
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 24px;margin-bottom:28px;text-align:left">

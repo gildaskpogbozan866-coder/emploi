@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MetiersSeeder::class);
         $this->call(CompetencesSeeder::class);
         $this->call(MetierCompetenceSeeder::class);
+        $this->call(MetiersBeninoiseSeeder::class);
         $this->call(TypeDocumentSeeder::class);
         $this->call(PlansSeeder::class);
         $this->call(JobPublicationPlansSeeder::class);
@@ -103,38 +104,30 @@ class DatabaseSeeder extends Seeder
 
         // ── ÉTAPE 3 : Données métier ─────────────────────────
         CV::firstOrCreate(
-            ['candidat_id' => $candidat1->id, 'titre_poste' => 'Développeur Web Junior'],
+            ['candidat_id' => $candidat1->id],
             [
-                'pays'        => 'Bénin',
-                'ville'       => 'Cotonou',
-                'competences' => 'HTML, CSS, JavaScript, PHP',
-                'experience'  => '1 an',
-                'formation'   => 'Licence Informatique - UAC Bénin 2024',
+               
                 'plan'        => 'gratuit',
                 'visible'     => true,
             ]
         );
 
         CV::firstOrCreate(
-            ['candidat_id' => $candidat2->id, 'titre_poste' => 'Comptable confirmée'],
+            ['candidat_id' => $candidat2->id, ],
             [
-                'pays'        => "Côte d'Ivoire",
-                'ville'       => 'Abidjan',
-                'competences' => 'Comptabilité, Excel, Sage, Analyse financière',
-                'experience'  => '3 ans',
-                'formation'   => "Master CCA - Université d'Abidjan 2022",
+                
                 'plan'        => 'gratuit',
                 'visible'     => true,
             ]
         );
 
         $offresData = [
-            ['titre' => 'Développeur Web Full Stack',     'type' => 'CDI',   'secteur' => 'Informatique', 'salaire' => '150 000 - 250 000 FCFA'],
-            ['titre' => 'Chargé(e) de Marketing Digital', 'type' => 'CDD',   'secteur' => 'Marketing',    'salaire' => '120 000 FCFA'],
-            ['titre' => 'Stage en Comptabilité',          'type' => 'Stage', 'secteur' => 'Finance',      'salaire' => '50 000 FCFA/mois'],
-            ['titre' => 'Responsable Ressources Humaines','type' => 'CDI',   'secteur' => 'RH',           'salaire' => '200 000 - 300 000 FCFA'],
-            ['titre' => 'Bourse de formation Data Science','type'=> 'Bourse','secteur' => 'Formation',    'salaire' => 'Gratuit + Allocation'],
-            ['titre' => 'Commercial terrain B2B',         'type' => 'CDI',   'secteur' => 'Ventes',       'salaire' => 'Fixe + Commissions'],
+            ['titre' => 'Développeur Web Full Stack',     'type_contrat_id' => 1,   'secteur' => 'Informatique', 'salaire' => '150 000 - 250 000 FCFA'],
+            ['titre' => 'Chargé(e) de Marketing Digital', 'type_contrat_id' => 1,   'secteur' => 'Marketing',    'salaire' => '120 000 FCFA'],
+            ['titre' => 'Stage en Comptabilité',          'type_contrat_id' => 2, 'secteur' => 'Finance',      'salaire' => '50 000 FCFA/mois'],
+            ['titre' => 'Responsable Ressources Humaines','type_contrat_id' => 3,   'secteur' => 'RH',           'salaire' => '200 000 - 300 000 FCFA'],
+            ['titre' => 'Bourse de formation Data Science','type_contrat_id'=> 3,'secteur' => 'Formation',    'salaire' => 'Gratuit + Allocation'],
+            ['titre' => 'Commercial terrain B2B',         'type_contrat_id' => 3,   'secteur' => 'Ventes',       'salaire' => 'Fixe + Commissions'],
         ];
 
         foreach ($offresData as $i => $data) {
@@ -144,7 +137,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'entreprise'   => ($i % 2 === 0) ? 'TechBénin SARL' : 'SenServices SA',
                     'localisation' => ($i % 2 === 0) ? 'Cotonou, Bénin' : 'Dakar, Sénégal',
-                    'type'         => $data['type'],
+                    'type_contrat_id'         => $data['type_contrat_id'],
                     'secteur'      => $data['secteur'],
                     'salaire'      => $data['salaire'],
                     'description'  => "Nous recherchons un(e) {$data['titre']} motivé(e) pour rejoindre notre équipe. Venez contribuer à nos projets dans un environnement stimulant.",
@@ -184,7 +177,7 @@ class DatabaseSeeder extends Seeder
              'categorie' => 'Entretien', 'temps_lecture' => 7],
             ['titre' => "Trouver un emploi à distance depuis l'Afrique : guide complet",
              'slug'  => 'emploi-remote-afrique',
-             'extrait' => "Plateformes, profils, tarifs — tout ce qu'il faut pour décrocher votre premier job remote.",
+             'extrait' => "Plateformes, profils, tarifs : tout ce qu'il faut pour décrocher votre premier job remote.",
              'categorie' => 'Remote', 'temps_lecture' => 6],
         ];
 

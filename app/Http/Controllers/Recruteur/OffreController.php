@@ -11,7 +11,7 @@ use App\Models\Offre;
 use App\Models\ParametreApp;
 use App\Models\TypeContrat;
 use App\Notifications\NouvelleOffreCreee;
-use App\Services\AlerteService;
+use App\Jobs\NotifierAlertesOffreJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -80,7 +80,12 @@ class OffreController extends Controller
 
     public function index(Request $request)
     {
-        $query = Auth::user()->offres()->withCount('candidatures')->latest();
+        $query = Auth::user()->offres()
+            ->withCount([
+                'candidatures',
+                'candidatures as candidatures_nouvelles_count' => fn($q) => $q->where('statut', 'envoyee'),
+            ])
+            ->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -90,8 +95,27 @@ class OffreController extends Controller
             $query->where('statut', $request->statut);
         }
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->whereHas('type', fn($q) => $q->where('code', $request->type));
         }
+        if ($request->filled('salaire_min')) {
+            $query->where('salaire_max', '>=', (int) $request->salaire_min);
+        }
+        if ($request->filled('salaire_max')) {
+            $query->where('salaire_min', '<=', (int) $request->salaire_max);
+        }
+
+        $tri = $request->input('tri', 'recent');
+        $query->reorder()->orderBy(match($tri) {
+            'salaire_asc'        => 'salaire_min',
+            'salaire_desc'       => 'salaire_min',
+            'candidatures_desc'  => 'candidatures_count',
+            'date_limite'        => 'date_limite',
+            default              => 'created_at',
+        }, match($tri) {
+            'salaire_asc'  => 'asc',
+            'date_limite'  => 'asc',
+            default        => 'desc',
+        });
 
         $offres          = $query->paginate(15)->withQueryString();
         $miseEnAvantInfo = $this->infoMiseEnAvant();
@@ -122,11 +146,14 @@ class OffreController extends Controller
             'titre'             => 'required|string|max:200',
             'entreprise'        => 'required|string|max:200',
             'localisation'      => 'required|string|max:200',
-            'type'              => 'required|exists:type_contrats,code',
+            'type'              => 'required|exists:type_contrats,id',
             'description'       => 'required|string|min:50',
             'date_limite'       => 'nullable|date|after_or_equal:today',
+            'salaire_min'       => 'nullable|integer|min:0',
+            'salaire_max'       => 'nullable|integer|min:0|gte:salaire_min',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'metier'            => 'nullable|string|max:200',
+            'logo'              => 'nullable|file|mimes:jpg,jpeg,png,webp,svg|max:2048',
+            'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
         ]);
@@ -143,18 +170,26 @@ class OffreController extends Controller
             ? $request->file('fichier')->store('offres/fichiers', 'public')
             : null;
 
+        $logo = $request->hasFile('logo')
+            ? $request->file('logo')->store('offres/logos', 'public')
+            : null;
+
         $offre = Offre::create([
-            ...$request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
-            'recruteur_id' => Auth::id(),
-            'statut'       => 'active',
-            'fichier'      => $fichier,
-            'secteur'      => $request->input('secteur', []),
+            ...$request->only(['titre','entreprise','localisation','salaire_min','salaire_max','description','exigences','date_limite','metier_id','niveau_experience','niveau_etude']),
+            'recruteur_id'    => Auth::id(),
+            'statut'          => 'active',
+            'fichier'         => $fichier,
+            'logo'            => $logo,
+            'secteur'         => $request->input('secteur', []),
+            'type_contrat_id' => $request->type,
+            'exige_cv'        => $request->boolean('exige_cv'),
+            'exige_lettre'    => $request->boolean('exige_lettre'),
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
         $offre->load(['recruteur', 'competences']);
 
-        app(AlerteService::class)->notifierImmediat($offre);
+        NotifierAlertesOffreJob::dispatch($offre);
 
         $adminEmail = ParametreApp::get('admin_notification_email', config('emploi.admin_notification_email'));
         if ($adminEmail) {
@@ -183,17 +218,25 @@ class OffreController extends Controller
             'titre'             => 'required|string|max:200',
             'entreprise'        => 'required|string|max:200',
             'localisation'      => 'required|string|max:200',
-            'type'              => 'required|exists:type_contrats,code',
+            'type'              => 'required|exists:type_contrats,id',
             'description'       => 'required|string|min:50',
+            'salaire_min'       => 'nullable|integer|min:0',
+            'salaire_max'       => 'nullable|integer|min:0|gte:salaire_min',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'metier'            => 'nullable|string|max:200',
+            'logo'              => 'nullable|file|mimes:jpg,jpeg,png,webp,svg|max:2048',
+            'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
         ]);
 
         $data = array_merge(
-            $request->only(['titre','entreprise','localisation','type','salaire','description','exigences','date_limite','metier','niveau_experience','niveau_etude']),
-            ['secteur' => $request->input('secteur', [])]
+            $request->only(['titre','entreprise','localisation','salaire_min','salaire_max','description','exigences','date_limite','metier_id','niveau_experience','niveau_etude']),
+            [
+                'secteur'         => $request->input('secteur', []),
+                'type_contrat_id' => $request->type,
+                'exige_cv'        => $request->boolean('exige_cv'),
+                'exige_lettre'    => $request->boolean('exige_lettre'),
+            ]
         );
 
         if ($request->hasFile('fichier')) {
@@ -202,6 +245,14 @@ class OffreController extends Controller
         } elseif ($request->boolean('_supprimer_fichier') && $offre->fichier) {
             Storage::disk('public')->delete($offre->fichier);
             $data['fichier'] = null;
+        }
+
+        if ($request->hasFile('logo')) {
+            if ($offre->logo) Storage::disk('public')->delete($offre->logo);
+            $data['logo'] = $request->file('logo')->store('offres/logos', 'public');
+        } elseif ($request->boolean('_supprimer_logo') && $offre->logo) {
+            Storage::disk('public')->delete($offre->logo);
+            $data['logo'] = null;
         }
 
         $offre->update($data);

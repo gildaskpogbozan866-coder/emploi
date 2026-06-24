@@ -63,23 +63,23 @@ class AlerteServiceTest extends TestCase
 
     // ── matcheOffre ───────────────────────────────────────
 
-    public function test_matcheoffre_retourne_true_si_mot_cle_dans_titre(): void
+    public function test_matcheoffre_retourne_true_si_metier_dans_titre(): void
     {
-        $candidat = $this->creerCandidat();
+        $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $alerte   = $this->creerAlerte($candidat, ['mots_cles' => 'Laravel']);
-        $offre    = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel Senior']);
+        $alerte    = $this->creerAlerte($candidat, ['metier' => 'Développeur']);
+        $offre     = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel Senior']);
 
         $service = app(AlerteService::class);
         $this->assertTrue($service->matcheOffre($alerte, $offre));
     }
 
-    public function test_matcheoffre_retourne_false_si_aucun_mot_cle_present(): void
+    public function test_matcheoffre_retourne_false_si_metier_absent(): void
     {
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $alerte    = $this->creerAlerte($candidat, ['mots_cles' => 'Python Django']);
-        $offre     = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel', 'description' => 'PHP uniquement']);
+        $alerte    = $this->creerAlerte($candidat, ['metier' => 'Comptable']);
+        $offre     = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel', 'metier' => 'Développeur Backend']);
 
         $service = app(AlerteService::class);
         $this->assertFalse($service->matcheOffre($alerte, $offre));
@@ -137,7 +137,7 @@ class AlerteServiceTest extends TestCase
 
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $this->creerAlerte($candidat, ['mots_cles' => 'Laravel']);
+        $this->creerAlerte($candidat, ['metier' => 'Développeur']);
         $offre = $this->creerOffre($recruteur, [
             'titre'       => 'Développeur Laravel',
             'description' => 'Travail en Laravel avancé',
@@ -157,7 +157,7 @@ class AlerteServiceTest extends TestCase
 
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $this->creerAlerte($candidat, ['mots_cles' => 'Laravel']);
+        $this->creerAlerte($candidat, ['metier' => 'Développeur']);
         $offre = $this->creerOffre($recruteur, [
             'titre'       => 'Développeur Laravel',
             'description' => 'Maîtrise Laravel requise',
@@ -178,7 +178,7 @@ class AlerteServiceTest extends TestCase
 
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $this->creerAlerte($candidat, ['mots_cles' => 'Laravel', 'active' => false]);
+        $this->creerAlerte($candidat, ['metier' => 'Développeur', 'active' => false]);
         $offre = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel']);
 
         app(AlerteService::class)->notifierImmediat($offre);
@@ -228,7 +228,7 @@ class AlerteServiceTest extends TestCase
 
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
-        $this->creerAlerte($candidat, ['mots_cles' => 'Comptable']);
+        $this->creerAlerte($candidat, ['metier' => 'Comptable']);
         $offre = $this->creerOffre($recruteur, [
             'titre'       => 'Comptable senior',
             'description' => 'Poste de comptable',

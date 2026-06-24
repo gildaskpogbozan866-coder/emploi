@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\StatutCandidature;
 use App\Models\Candidature;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,14 +12,6 @@ use Illuminate\Notifications\Notification;
 class CandidatureStatutNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-
-    private const LABELS = [
-        'envoyee'   => 'Envoyée',
-        'vue'       => 'Vue par le recruteur',
-        'retenue'   => 'Retenue ✓',
-        'entretien' => 'Convoqué(e) en entretien',
-        'refusee'   => 'Non retenue',
-    ];
 
     public function __construct(
         public readonly Candidature $candidature,
@@ -34,7 +27,7 @@ class CandidatureStatutNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $offre  = $this->candidature->offre;
-        $statut = self::LABELS[$this->statut] ?? ucfirst($this->statut);
+        $statut = StatutCandidature::tryFrom($this->statut)?->label() ?? ucfirst($this->statut);
         $url    = route('candidat.candidatures.detail', $this->candidature);
 
         $mail = (new MailMessage)

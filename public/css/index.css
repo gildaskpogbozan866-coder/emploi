@@ -1,4 +1,4 @@
-﻿﻿/* ══════════════════════════════════════════
+﻿/* ══════════════════════════════════════════
        BARRE DE RECHERCHE HERO — VERSION 2
     ══════════════════════════════════════════ */
     @keyframes hs2-shimmer {
@@ -825,7 +825,8 @@
   color: var(--bleu-clair);
   text-decoration: none;
   white-space: nowrap;
-  padding-bottom: 4px;
+  padding: 8px 4px;
+  min-height: 40px;
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s, gap 0.2s;
   flex-shrink: 0;

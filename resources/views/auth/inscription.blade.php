@@ -1,4 +1,4 @@
-﻿@extends('layouts.auth')
+@extends('layouts.auth')
 @section('title', 'Inscription | Emploi Bouge Bénin')
 
 @section('css')
@@ -97,11 +97,13 @@
         <div class="aform__row">
           <div class="aform__field">
             <label class="aform__label" for="prenom">Prénom</label>
-            <input class="aform__input" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Jean" required />
+            <input class="aform__input @error('prenom') aform__input--error @enderror" type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Kokou" required />
+            @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <div class="aform__field">
             <label class="aform__label" for="nom">Nom</label>
-            <input class="aform__input" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required />
+            <input class="aform__input @error('nom') aform__input--error @enderror" type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Amoussou" required />
+            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
@@ -109,7 +111,7 @@
           <label class="aform__label" for="email">Adresse e-mail</label>
           <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
-                 value="{{ old('email') }}" placeholder="vous@exemple.com" required />
+                 value="{{ old('email') }}" placeholder="vous@exemple.bj" required />
           @error('email')<p class="aform__error">{{ $message }}</p>@enderror
         </div>
 
@@ -130,20 +132,26 @@
           </div>
         </div>
 
-        <div class="aform__field">
-          <label class="aform__label" for="tel">Téléphone</label>
-          <input class="aform__input" type="tel" id="tel" name="tel" value="{{ old('tel') }}" placeholder="+229 01 00 00 00" />
+        {{-- <div class="aform__field">
+          <label class="aform__label" for="pays">Pays</label>
+          <select class="aform__input aform__select @error('pays') aform__input--error @enderror" id="pays" name="pays" required>
+            <option value="">-- Sélectionnez votre pays --</option>
+            @foreach($paysList as $p)
+              <option value="{{ $p }}" {{ old('pays', 'Bénin') === $p ? 'selected' : '' }}>{{ $p }}</option>
+            @endforeach
+          </select>
+          @error('pays')<p class="field__server-error">{{ $message }}</p>@enderror
         </div>
 
         <div class="aform__field">
-          <label class="aform__label" for="pays">Pays</label>
-          <select class="aform__input aform__select" id="pays" name="pays" required>
-            <option value="">-- Sélectionnez votre pays --</option>
-            @foreach($paysList as $p)
-              <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
-            @endforeach
-          </select>
-        </div>
+          <label class="aform__label" for="tel">Téléphone</label>
+          <div class="aform__tel-wrap">
+            <span id="tel-prefix" class="aform__tel-prefix">+229</span>
+            <input class="aform__input aform__input--tel" type="tel" id="tel" name="tel"
+                   value="{{ old('tel') ? preg_replace('/^\+\d+\s*/', '', old('tel')) : '' }}"
+                   placeholder="01 00 00 00" />
+          </div>
+        </div> --}}
 
         <div class="aform__field" id="entrepriseField" style="{{ old('role') === 'recruteur' ? '' : 'display:none' }}">
           <label class="aform__label" for="entreprise">Nom de l'entreprise</label>
@@ -152,7 +160,7 @@
 
         <label class="aform__check">
           <input type="checkbox" required />
-          J'accepte les <a href="/legale/cgv">conditions d'utilisation</a> et la <a href="/legale/politique-confidentialite">politique de confidentialité</a>.
+          J'accepte les <a href="/legale/conditions-generales-utilisation" target="__blank">conditions d'utilisation</a> et la <a href="/legale/politique-confidentialite" target="__blank">politique de confidentialité</a>.
         </label>
 
         @if($recaptchaActif)
@@ -199,10 +207,13 @@ function selectRole(role) {
   if (urlRole && document.querySelector('.role-card[data-role="' + urlRole + '"]')) {
     selectRole(urlRole);
   } else {
-    // Afficher la bannière pour le rôle déjà sélectionné par défaut
     var current = document.getElementById('roleInput').value;
     if (current) selectRole(current);
   }
 })();
+
+// rôle JS reste ici — tel géré par tel-field.js
 </script>
+<script src="{{ asset('js/tel-field.js') }}"></script>
+<script>initTelField('pays', 'tel-prefix', 'tel');</script>
 @endsection

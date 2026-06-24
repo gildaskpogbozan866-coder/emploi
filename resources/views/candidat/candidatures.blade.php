@@ -41,7 +41,7 @@
             <a href="{{ route('offre.detail', $c->offre) }}" style="color:#185FA5;font-weight:600;text-decoration:none">{{ $c->offre->titre }}</a>
           </td>
           <td style="color:#6b7a8d">{{ $c->offre->entreprise }}</td>
-          <td><span class="cand-badge cand-badge--gray">{{ $c->offre->type }}</span></td>
+          <td><span class="cand-badge cand-badge--gray">{{ $c->offre->type?->libelle }}</span></td>
           <td>
             <span class="cand-badge cand-badge--{{ match($c->statut) {
               'envoyee'   => 'blue',

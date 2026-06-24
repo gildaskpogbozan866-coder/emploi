@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Mon espace Recruteur')
 
 @section('sidebar')
@@ -110,7 +110,7 @@
             @foreach($dernieres_offres as $offre)
             <tr>
               <td style="font-weight:600;color:#042C53">{{ $offre->titre }}</td>
-              <td><span class="rec-badge rec-badge--blue">{{ $offre->type }}</span></td>
+              <td><span class="rec-badge rec-badge--blue">{{ $offre->type?->libelle }}</span></td>
               <td>
                 <strong>{{ $offre->candidatures_count }}</strong>
                 <span style="color:#94a3b8;font-size:12px"> candidature{{ $offre->candidatures_count > 1 ? 's' : '' }}</span>

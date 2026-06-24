@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -31,6 +32,9 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $plan_premium = Plan::where('is_active', 1)->where('is_premium', 1)->where("target_type", 'candidat')->first();
+      
+        
         // Abonnement actif + quotas
         $abonnement = $user->abonnementActif()->with('plan.features')->first();
         $quotas     = null;
@@ -58,6 +62,6 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('candidat.dashboard', compact('user', 'stats', 'dernieres_candidatures', 'abonnement', 'quotas'));
+        return view('candidat.dashboard', compact('user', 'stats', 'dernieres_candidatures', 'abonnement', 'quotas', 'plan_premium'));
     }
 }

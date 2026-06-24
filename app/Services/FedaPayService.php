@@ -38,14 +38,18 @@ class FedaPayService
 
         $user = $paiement->user;
 
+        $email = $user?->email
+            ?? $paiement->payable?->email_contact
+            ?? 'client@emploibouge.bj';
+
         $customer = [
-            'firstname' => $user->prenom ?: 'Client',
-            'lastname'  => $user->nom    ?: 'Inconnu',
-            'email'     => $user->email,
+            'firstname' => $user?->prenom ?: 'Client',
+            'lastname'  => $user?->nom    ?: 'Inconnu',
+            'email'     => $email,
         ];
 
         // FedaPay refuse un numéro vide ou mal formaté — on ne l'inclut que s'il est valide
-        $phone = $this->sanitizePhone($user->telephone ?? '');
+        $phone = $this->sanitizePhone($user?->telephone ?? '');
         if ($phone !== '') {
             $customer['phone_number'] = ['number' => $phone, 'country' => 'BJ'];
         }

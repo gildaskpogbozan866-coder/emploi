@@ -3,6 +3,7 @@
     $flashError   = session('error');
     $flashWarning = session('warning');
     $flashInfo    = session('info');
+    $flashCvPublie = session('cv_publie');
     $sessionError = $errors->first('session');
 
     $clesIgnorees = ['session','credentials','email','password','mot_de_passe_actuel',
@@ -38,10 +39,25 @@ document.addEventListener('submit', function(e) {
 });
 </script>
 
-@if($flashSuccess || $flashError || $flashWarning || $flashInfo || $sessionError || !empty($autresErreurs))
+@if($flashSuccess || $flashError || $flashWarning || $flashInfo || $flashCvPublie || $sessionError || !empty($autresErreurs))
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    @if($flashSuccess)
+    @if($flashCvPublie)
+    Swal.fire({
+        icon: 'success',
+        title: 'Profil enregistré !',
+        html: '<p style="font-size:15px;color:#374151;margin:0 0 12px">Votre CV est maintenant <strong style="color:#16a34a">visible dans la CVthèque</strong>.<br>Les recruteurs peuvent vous trouver et vous contacter.</p>'
+            + '<p style="font-size:13px;color:#6b7280;margin:0">Complétez votre profil à 100&nbsp;% pour apparaître en tête des résultats.</p>',
+        confirmButtonText: 'Voir mon CV',
+        confirmButtonColor: '#185FA5',
+        showCancelButton: true,
+        cancelButtonText: 'Continuer',
+        cancelButtonColor: '#6b7280',
+        reverseButtons: true,
+    }).then(function(r) {
+        if (r.isConfirmed) window.location.href = '{{ route("candidat.cvs") }}';
+    });
+    @elseif($flashSuccess)
     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: {{ Js::from($flashSuccess) }}, showConfirmButton: false, timer: 3000, timerProgressBar: true });
     @endif
     @if($flashWarning)

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Paiements | Administration')
 
 @section('content')
@@ -243,8 +243,11 @@
             @if($paiement->user)
               <div style="font-weight:600;color:#042C53">{{ $paiement->user->nom_complet }}</div>
               <div style="font-size:12px;color:#94a3b8">{{ $paiement->user->email }}</div>
+            @elseif($paiement->payable?->email_contact)
+              <div style="font-weight:600;color:#042C53">Invité</div>
+              <div style="font-size:12px;color:#94a3b8">{{ $paiement->payable->email_contact }}</div>
             @else
-              <span style="color:#cbd5e1">Utilisateur supprimé</span>
+              <span style="color:#cbd5e1">—</span>
             @endif
           </td>
 

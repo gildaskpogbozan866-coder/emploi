@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', ($plan->exists ? 'Modifier' : 'Créer') . ' un plan, Administration')
 
 @section('content')

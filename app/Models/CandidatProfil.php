@@ -12,7 +12,7 @@ class CandidatProfil extends Model
         'user_id', 'titre_professionnel', 'bio', 'ville',
         'disponibilite', 'salaire_min', 'salaire_max',
         'remote', 'linkedin', 'portfolio',
-        'specialite', 'annees_experience',
+ 'annees_experience',
     ];
 
     public function user()

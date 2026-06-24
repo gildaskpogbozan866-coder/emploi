@@ -29,34 +29,48 @@ class OffreController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $types = (array) $request->type;
+            $query->whereHas('type', fn($q) => $q->whereIn('code', $types));
         }
 
         if ($request->filled('localisation')) {
-            $query->where('localisation', 'like', '%' . $request->localisation . '%');
+            $locs = (array) $request->localisation;
+            $query->where(function ($sq) use ($locs) {
+                foreach ($locs as $loc) {
+                    $sq->orWhere('localisation', 'like', '%'.$loc.'%');
+                }
+            });
         }
 
         if ($request->filled('secteur')) {
-            $query->where('secteur', 'like', '%' . $request->secteur . '%');
+            $sects = (array) $request->secteur;
+            $query->where(function ($sq) use ($sects) {
+                foreach ($sects as $s) {
+                    $sq->orWhere('secteur', 'like', '%'.$s.'%');
+                }
+            });
         }
 
         if ($request->filled('competence')) {
-            $query->whereHas('competences', fn($q) => $q->where('slug', $request->competence));
+            $query->whereHas('competences', fn($q) => $q->whereIn('slug', (array) $request->competence));
         }
 
         if ($request->filled('metier')) {
-            $query->where(function ($sq) use ($request) {
-                $sq->where('metier', 'like', '%'.$request->metier.'%')
-                   ->orWhere('titre', 'like', '%'.$request->metier.'%');
+            $metiers = (array) $request->metier;
+            $query->where(function ($sq) use ($metiers) {
+                foreach ($metiers as $m) {
+                    $sq->orWhereHas('metier', fn($q) => $q->where('nom', 'like', '%'.$m.'%'))
+                       ->orWhere('titre', 'like', '%'.$m.'%');
+                }
             });
         }
 
         if ($request->filled('niveau_experience')) {
-            $query->where('niveau_experience', $request->niveau_experience);
+            $query->whereIn('niveau_experience', (array) $request->niveau_experience);
         }
 
         if ($request->filled('niveau_etude')) {
-            $query->where('niveau_etude', $request->niveau_etude);
+            $query->whereIn('niveau_etude', (array) $request->niveau_etude);
         }
 
         $offres = $query->paginate(12)->withQueryString();
@@ -90,7 +104,7 @@ class OffreController extends Controller
             ->where('id', '!=', $offre->id)
             ->where(function ($q) use ($offre, $competenceIds) {
                 $q->where('secteur', $offre->secteur)
-                  ->orWhere('type', $offre->type)
+                  ->orWhere('type_contrat_id', $offre->type)
                   ->orWhere('localisation', 'like', '%' . explode(',', $offre->localisation)[0] . '%');
                 if ($competenceIds->isNotEmpty()) {
                     $q->orWhereHas('competences', fn($sq) => $sq->whereIn('competences.id', $competenceIds));
@@ -142,26 +156,53 @@ class OffreController extends Controller
             return back()->with('error_duplicate', true);
         }
 
-        $request->validate([
+        $rules = [
             'message_motivation' => 'nullable|string|max:3000',
             'cv_id'              => 'nullable|integer|exists:cvs,id',
             'document_id'        => 'nullable|integer|exists:documents,id',
             'cv_file'            => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'lettre_file'        => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ];
+
+        // Validation conditionnelle selon les exigences de l'offre
+        if ($offre->exige_cv) {
+            $rules['cv_file'] = [
+                function ($attribute, $value, $fail) use ($request) {
+                    $hasCv = $request->filled('cv_id') || $request->filled('document_id') || $request->hasFile('cv_file');
+                    if (!$hasCv) {
+                        $fail('Un CV est requis pour postuler à cette offre.');
+                    }
+                },
+            ];
+        }
+
+        if ($offre->exige_lettre) {
+            $rules['lettre_file'] = 'required|file|mimes:pdf,doc,docx|max:5120';
+        }
+
+        $request->validate($rules, [
+            'lettre_file.required' => 'Une lettre de motivation est requise pour postuler à cette offre.',
+            'lettre_file.file'     => 'La lettre de motivation doit être un fichier valide.',
+            'lettre_file.mimes'    => 'La lettre doit être au format PDF, DOC ou DOCX.',
+            'lettre_file.max'      => 'La lettre ne doit pas dépasser 5 Mo.',
         ]);
 
-        $cvId   = null;
-        $cvPath = null;
+        $cvId      = null;
+        $cvPath    = null;
+        $lettrePath = null;
 
         if ($request->filled('cv_id')) {
-            // CV structuré du profil
             $cv   = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
             $cvId = $cv?->id;
         } elseif ($request->filled('document_id')) {
-            // Document déposé (diplôme, attestation, etc.)
             $doc    = Document::where('id', $request->document_id)->where('user_id', Auth::id())->first();
             $cvPath = $doc?->fichier;
         } elseif ($request->hasFile('cv_file')) {
-            $cvPath = $request->file('cv_file')->store('candidatures', 'public');
+            $cvPath = $request->file('cv_file')->store('candidatures/cvs', 'public');
+        }
+
+        if ($request->hasFile('lettre_file')) {
+            $lettrePath = $request->file('lettre_file')->store('candidatures/lettres', 'public');
         }
 
         $candidature = Candidature::create([
@@ -170,6 +211,7 @@ class OffreController extends Controller
             'message_motivation' => $request->message_motivation,
             'cv_id'              => $cvId,
             'cv_path'            => $cvPath,
+            'lettre_path'        => $lettrePath,
         ]);
 
         $candidat = Auth::user();
@@ -232,6 +274,7 @@ class OffreController extends Controller
             ...$request->only(['titre','entreprise','localisation','type','secteur','salaire','description','competences','exigences','date_limite']),
             'recruteur_id' => Auth::id(),
             'statut'       => 'en_attente',
+            'published_at' => now(),
         ]);
 
         return redirect()->route('offre.publiee-succes', $offre);

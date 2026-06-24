@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Affichages Publicitaires | Emploi Bouge Bénin')
 @section('description', 'Découvrez les annonces et affichages publicitaires des entreprises partenaires sur Emploi Bouge Bénin.')
 

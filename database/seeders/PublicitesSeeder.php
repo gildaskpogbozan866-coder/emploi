@@ -76,7 +76,7 @@ class PublicitesSeeder extends Seeder
         imagestring($img, $fontSize, $x, $y, $text, $fgColor);
 
         // Sous-texte
-        $sub = 'Emploi Bouge Bénin — Annonce publicitaire';
+        $sub = 'Emploi Bouge Bénin : Annonce publicitaire';
         $sw  = imagefontwidth(2) * strlen($sub);
         imagestring($img, 2, (int)(($w - $sw) / 2), $y + 24, $sub, $fgColor);
 

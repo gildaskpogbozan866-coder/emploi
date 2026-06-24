@@ -25,6 +25,7 @@ class DashboardController extends Controller
             'offres'         => Offre::count(),
             'offres_actives' => Offre::where('statut', 'active')->count(),
             'cvs'            => CV::count(),
+            'cvs_nouveaux'   => CV::whereNotNull('publie_le')->where('vu_admin', false)->count(),
             'documents'      => Document::count(),
             'candidatures'   => Candidature::count(),
             'commandes'      => Commande::count(),
@@ -37,6 +38,7 @@ class DashboardController extends Controller
         $dernieres_offres      = Offre::with('recruteur')->latest()->limit(10)->get();
         $dernieres_commandes   = Commande::with(['user', 'service'])->latest()->limit(10)->get();
         $derniers_signalements = Signalement::with('user')->where('statut', 'en_attente')->latest()->limit(10)->get();
+        $derniers_cvs          = CV::with('candidat')->latest()->limit(10)->get();
 
         // Tendances sur 6 mois
         $moisLabels    = [];
@@ -57,10 +59,10 @@ class DashboardController extends Controller
 
         // Offres par type de contrat
         $offresParType = DB::table('offres')
-            ->select('type', DB::raw('COUNT(*) as total'))
-            ->whereNotNull('type')
-            ->where('type', '!=', '')
-            ->groupBy('type')
+            ->select('type_contrat_id', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('type_contrat_id')
+            ->where('type_contrat_id', '!=', '')
+            ->groupBy('type_contrat_id')
             ->orderByDesc('total')
             ->get();
 
@@ -119,7 +121,7 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'stats', 'derniers_utilisateurs', 'dernieres_offres',
-            'dernieres_commandes', 'derniers_signalements',
+            'dernieres_commandes', 'derniers_signalements', 'derniers_cvs',
             'chartData', 'topRecruteurs', 'tauxConversion'
         ));
     }

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Recrutement Bénin | Trouvez les meilleurs talents béninois | Emploi Bouge Bénin')
 @section('description', 'Recrutez au Bénin avec Emploi Bouge Bénin : publiez vos annonces, accédez à notre CVthèque et trouvez les meilleurs candidats à Cotonou et dans tout le Bénin.')
 @section('canonical', route('seo.recrutement-benin'))
@@ -37,13 +37,12 @@
   <p style="text-align:center;color:#64748b;font-size:14px;margin:0 0 32px">La plateforme de recrutement de référence au Bénin</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px">
     @foreach([
-      ['📢','Diffusion maximale','Vos annonces sont visibles par des milliers de candidats actifs au Bénin.'],
-      ['✅','Candidats vérifiés','Accédez à notre CVthèque de talents qualifiés à Cotonou et dans tout le pays.'],
-      ['⚡','Publication rapide','Publiez votre offre en moins de 5 minutes. Première candidature en 24h.'],
-      ['🎯','Ciblage précis','Filtrez par localisation, secteur, type de contrat et niveau d\'expérience.'],
-    ] as [$icon, $titre, $texte])
+      ['Diffusion maximale','Vos annonces sont visibles par des milliers de candidats actifs au Bénin.'],
+      ['Candidats vérifiés','Accédez à notre CVthèque de talents qualifiés à Cotonou et dans tout le pays.'],
+      ['Publication rapide','Publiez votre offre en moins de 5 minutes. Première candidature en 24h.'],
+      ['Ciblage précis','Filtrez par localisation, secteur, type de contrat et niveau d\'expérience.'],
+    ] as [$titre, $texte])
     <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:22px 18px">
-      <div style="font-size:24px;margin-bottom:10px">{{ $icon }}</div>
       <h3 style="font-size:14px;font-weight:700;color:#042C53;margin:0 0 6px">{{ $titre }}</h3>
       <p style="font-size:13px;color:#64748b;line-height:1.6;margin:0">{{ $texte }}</p>
     </div>

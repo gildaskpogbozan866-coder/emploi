@@ -34,5 +34,5 @@ class AdminSeeder extends Seeder
         $this->command->line('   Password : Admin@2026');
 
 
-        }
+      }
 }

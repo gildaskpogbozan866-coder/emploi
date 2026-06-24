@@ -36,7 +36,7 @@
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link active">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs crédits</a>
     @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link">Déposer un CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>
@@ -64,38 +64,12 @@
             @foreach($paysList->reject(fn($p) => $p === 'Autre') as $p)
               <label class="cvt-filter-opt">
                 <input type="radio" name="pays" value="{{ $p }}" {{ request('pays') === $p ? 'checked' : '' }}
-                       onchange="this.form.submit()">
+                       onchange="cvtFilter()">
                 <span>{{ $p }}</span>
               </label>
             @endforeach
             @if(request('pays'))
               <a href="{{ route('cv.public.theque', request('q') ? ['q' => request('q')] : []) }}" class="cvt-filter-reset"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline-block;vertical-align:-1px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Effacer</a>
-            @endif
-          </div>
-        </div>
-
-        {{-- Disponibilité --}}
-        <div class="cvt-filter-item">
-          <button type="button" class="cvt-filter-btn" data-target="f-dispo">
-            <span class="cvt-filter-btn__label">Disponibilité</span>
-            <span class="cvt-filter-btn__icon">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </span>
-          </button>
-          <div class="cvt-filter-body {{ request('disponibilite') ? 'open' : '' }}" id="f-dispo">
-            @foreach($disponibilitesList as $d)
-              <label class="cvt-filter-opt">
-                <input type="radio" name="disponibilite" value="{{ $d->code }}"
-                       {{ request('disponibilite') === $d->code ? 'checked' : '' }}
-                       onchange="this.form.submit()">
-                <span style="display:inline-flex;align-items:center;gap:6px">
-                  <span style="width:8px;height:8px;border-radius:50%;background:{{ $d->couleur }};flex-shrink:0"></span>
-                  {{ $d->libelle }}
-                </span>
-              </label>
-            @endforeach
-            @if(request('disponibilite'))
-              <a href="{{ route('cv.public.theque', array_filter(request()->only(['q','pays','secteur','langue']))) }}" class="cvt-filter-reset"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline-block;vertical-align:-1px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Effacer</a>
             @endif
           </div>
         </div>
@@ -109,7 +83,7 @@
             </span>
           </button>
           <div class="cvt-filter-body {{ request('secteur') ? 'open' : '' }}" id="f-secteur">
-            <select name="secteur" onchange="this.form.submit()" style="width:100%;padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-family:inherit;font-size:13px;color:#042C53;background:#fff;outline:none">
+            <select name="secteur" onchange="cvtFilter()" style="width:100%;padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-family:inherit;font-size:13px;color:#042C53;background:#fff;outline:none">
               <option value="">Tous les secteurs</option>
               @foreach($secteursList as $s)
                 <option value="{{ $s->libelle }}" {{ request('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
@@ -131,7 +105,7 @@
               <label class="cvt-filter-opt">
                 <input type="radio" name="langue" value="{{ $l->nom }}"
                        {{ request('langue') === $l->nom ? 'checked' : '' }}
-                       onchange="this.form.submit()">
+                       onchange="cvtFilter()">
                 <span>{{ $l->nom }}</span>
               </label>
             @endforeach
@@ -148,7 +122,7 @@
             <span class="cvt-filter-btn__icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
           </button>
           <div class="cvt-filter-body {{ request('metier') ? 'open' : '' }}" id="f-metier">
-            <select name="metier" onchange="this.form.submit()" style="width:100%;padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-family:inherit;font-size:13px;color:#042C53;background:#fff;outline:none">
+            <select name="metier" onchange="cvtFilter()" style="width:100%;padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-family:inherit;font-size:13px;color:#042C53;background:#fff;outline:none">
               <option value="">Tous les métiers</option>
               @foreach($metiersList as $m)
                 <option value="{{ $m->nom }}" {{ request('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
@@ -168,7 +142,7 @@
               <label class="cvt-filter-opt">
                 <input type="radio" name="niveau_etude" value="{{ $ne->code }}"
                        {{ request('niveau_etude') === $ne->code ? 'checked' : '' }}
-                       onchange="this.form.submit()">
+                       onchange="cvtFilter()">
                 <span>{{ $ne->libelle }}</span>
               </label>
             @endforeach
@@ -189,7 +163,7 @@
               <label class="cvt-filter-opt">
                 <input type="radio" name="type_contrat" value="{{ $tc->code }}"
                        {{ request('type_contrat') === $tc->code ? 'checked' : '' }}
-                       onchange="this.form.submit()">
+                       onchange="cvtFilter()">
                 <span>{{ $tc->libelle }}</span>
               </label>
             @endforeach
@@ -210,7 +184,7 @@
               <label class="cvt-filter-opt">
                 <input type="radio" name="niveau_experience" value="{{ $ne->code }}"
                        {{ request('niveau_experience') === $ne->code ? 'checked' : '' }}
-                       onchange="this.form.submit()">
+                       onchange="cvtFilter()">
                 <span>{{ $ne->libelle }}</span>
               </label>
             @endforeach
@@ -221,8 +195,7 @@
         </div>
 
         <div class="cvt-filter-actions">
-          <button type="submit" class="cvt-filter-apply">Rechercher</button>
-          @if(request()->hasAny(['q','pays','disponibilite','secteur','langue','metier','niveau_etude','type_contrat','niveau_experience']))
+          @if(request()->hasAny(['q','pays','secteur','langue','metier','niveau_etude','type_contrat','niveau_experience']))
             <a href="{{ route('cv.public.theque') }}" class="cvt-filter-clear">Tout effacer</a>
           @endif
         </div>
@@ -239,138 +212,27 @@
       </div>
 
       <div class="cvt-count-bar">
-        <span class="cvt-count-bar__title">
+        <span class="cvt-count-bar__title" id="cvt-count">
           {{ $cvs->total() }} profil{{ $cvs->total() > 1 ? 's' : '' }}
-          @if(request('q')) · <em>"{{ request('q') }}"</em>@endif
-          @if(request('pays')) · <em>{{ request('pays') }}</em>@endif
         </span>
-        <form method="GET" action="{{ route('cv.public.theque') }}" class="cvt-count-bar__search">
+        <div class="cvt-count-bar__search">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher un profil, compétence…">
-          @if(request('pays'))<input type="hidden" name="pays" value="{{ request('pays') }}">@endif
-        </form>
+          <input type="text" id="cvt-q-top" value="{{ request('q') }}" placeholder="Rechercher un profil, compétence…">
+        </div>
       </div>
 
-      {{-- Cards CV --}}
-      <div class="cvt-list">
-      @forelse($cvs as $cv)
-        <div class="cvt-card">
-          <div class="cvt-card__inner">
-            <div class="cvt-card__body">
-
-              {{-- Photo / Avatar --}}
-              <div class="cvt-card__photo">
-                @if($cv->photo)
-                  <img src="{{ asset('storage/' . $cv->photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
-                @else
-                  <span style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:#185FA5;">
-                    {{ mb_strtoupper(mb_substr($cv->candidat?->prenom ?? '?', 0, 1)) }}
-                  </span>
-                @endif
-              </div>
-
-              {{-- Infos --}}
-              <div class="cvt-card__info">
-                <div class="cvt-card__row">
-                  <span class="cvt-card__label">Poste :</span>
-                  <span class="cvt-card__val">{{ $cv->titre_poste }}</span>
-                  @if($cv->plan === 'premium')
-                    <span class="cvt-card__premium-badge">Premium</span>
-                  @endif
-                </div>
-
-                @if($cv->pays)
-                <div class="cvt-card__row">
-                  <span class="cvt-card__label">Pays :</span>
-                  <span class="cvt-card__val">{{ $cv->pays }}</span>
-                </div>
-                @endif
-
-                @if($cv->langues)
-                <div class="cvt-card__row">
-                  <span class="cvt-card__label">Langues :</span>
-                  <span class="cvt-card__val">{{ $cv->langues }}</span>
-                </div>
-                @endif
-
-                @if($cv->competences)
-                <div class="cvt-card__row">
-                  <span class="cvt-card__label">Compétences :</span>
-                  <span class="cvt-card__val">{{ Str::limit($cv->competences, 90) }}</span>
-                </div>
-                @endif
-
-                @if($cv->experience)
-                <div class="cvt-card__row">
-                  <span class="cvt-card__label">Expérience :</span>
-                  <span class="cvt-card__val">{{ Str::limit($cv->experience, 80) }}</span>
-                </div>
-                @endif
-              </div>
-
-            </div>
-
-            <div class="cvt-card__footer">
-              <a href="{{ route('cv.public.detail', $cv) }}" class="cvt-card__btn">
-                Voir ce CV
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      @empty
-        @php
-          if (request('metier')) {
-            $emptyTitle = 'Aucun profil "' . request('metier') . '" pour l\'instant';
-            $emptySub   = 'Ce métier est très recherché ! De nouveaux candidats s\'inscrivent chaque semaine. Revenez bientôt ou élargissez votre recherche.';
-          } elseif (request('q')) {
-            $emptyTitle = 'Aucun résultat pour « ' . request('q') . ' »';
-            $emptySub   = 'Ce poste ou cette compétence n\'est pas encore très représenté(e), mais notre base grandit chaque jour. Essayez un mot-clé proche !';
-          } elseif (request('secteur')) {
-            $emptyTitle = 'Pas encore de profils en ' . request('secteur');
-            $emptySub   = 'Ce secteur est en plein essor sur Emploi Bouge Bénin ! Des candidats de ce domaine rejoignent la plateforme régulièrement. Revenez bientôt.';
-          } elseif (request('pays')) {
-            $emptyTitle = 'Aucun candidat au ' . request('pays') . ' pour l\'instant';
-            $emptySub   = 'Notre communauté s\'étend rapidement dans ce pays. En attendant, explorez les profils d\'autres pays ou invitez des talents à s\'inscrire.';
-          } elseif (request('disponibilite')) {
-            $libDispo = $disponibilitesList->firstWhere('code', request('disponibilite'));
-            $emptyTitle = 'Aucun candidat "' . ($libDispo?->libelle ?? request('disponibilite')) . '" en ce moment';
-            $emptySub   = 'Les disponibilités changent souvent ! Revenez dans quelques jours ou consultez les profils avec d\'autres statuts de disponibilité.';
-          } elseif (request('langue')) {
-            $emptyTitle = 'Aucun profil parlant ' . request('langue') . ' trouvé';
-            $emptySub   = 'Rare et précieux ! Ce profil linguistique rejoindra bientôt la plateforme. En attendant, explorez les profils multilingues disponibles.';
-          } elseif (request('niveau_etude')) {
-            $libEtude = $niveauxEtudeList->firstWhere('code', request('niveau_etude'));
-            $emptyTitle = 'Aucun profil avec ce niveau d\'études pour l\'instant';
-            $emptySub   = 'Les candidats de niveau ' . ($libEtude?->libelle ?? request('niveau_etude')) . ' sont très demandés ! Modifiez le filtre pour découvrir plus de profils, ou revenez bientôt.';
-          } elseif (request('type_contrat')) {
-            $libContrat = $typeContratsList->firstWhere('code', request('type_contrat'));
-            $emptyTitle = 'Aucun candidat cherchant un ' . ($libContrat?->libelle ?? request('type_contrat'));
-            $emptySub   = 'De nombreux candidats sont ouverts à ce type de contrat. Déposez votre offre et les bons profils viendront à vous !';
-          } elseif (request('niveau_experience')) {
-            $libExp = $niveauxExpList->firstWhere('code', request('niveau_experience'));
-            $emptyTitle = 'Aucun profil avec ce niveau d\'expérience pour l\'instant';
-            $emptySub   = 'Les talents de niveau ' . ($libExp?->libelle ?? request('niveau_experience')) . ' sont très recherchés. Publiez une offre et attirez directement les meilleurs profils !';
-          } else {
-            $emptyTitle = 'La CVthèque se remplit chaque jour !';
-            $emptySub   = 'Soyez parmi les premiers recruteurs à découvrir les nouveaux talents. Revenez bientôt ou déposez une offre pour attirer les candidats.';
-          }
-        @endphp
-        <div class="cvt-empty">
-          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <p class="cvt-empty__title">{{ $emptyTitle }}</p>
-          <p class="cvt-empty__sub">{{ $emptySub }}</p>
-          <a href="{{ route('cv.public.theque') }}" class="cvt-card__btn" style="display:inline-flex;margin-top:16px;">Voir tous les profils</a>
-        </div>
-      @endforelse
+      {{-- Spinner chargement --}}
+      <div id="cvt-loading" style="display:none;text-align:center;padding:48px 0">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2.5" style="animation:cvt-spin 0.8s linear infinite">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+        </svg>
+        <p style="margin-top:10px;font-size:13.5px;color:#64748b">Chargement des profils…</p>
       </div>
 
-      {{-- Pagination --}}
-      @if($cvs->hasPages())
-        <div class="cvt-pagination">
-          {{ $cvs->withQueryString()->links() }}
-        </div>
-      @endif
+      {{-- Résultats (initial server-side, puis AJAX) --}}
+      <div id="cvt-results">
+        @include('public.cv._theque_liste', ['cvs' => $cvs])
+      </div>
 
     </div>
   </div>
@@ -379,7 +241,11 @@
 @endsection
 
 @section('scripts')
+<style>
+@keyframes cvt-spin { to { transform: rotate(360deg); } }
+</style>
 <script>
+/* ── Filtres accordion ───────────────────────────── */
 document.querySelectorAll('.cvt-filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const body = document.getElementById(btn.dataset.target);
@@ -389,5 +255,95 @@ document.querySelectorAll('.cvt-filter-btn').forEach(btn => {
     if (icon) icon.style.transform = open ? 'rotate(45deg)' : '';
   });
 });
+
+/* ── Filtres AJAX dynamiques ─────────────────────── */
+const form      = document.getElementById('filterForm');
+const results   = document.getElementById('cvt-results');
+const loading   = document.getElementById('cvt-loading');
+const countEl   = document.getElementById('cvt-count');
+const heroSub   = document.querySelector('.page-hero__subtitle');
+
+/* Synchronise le champ de recherche du header → sidebar */
+const qTop = document.getElementById('cvt-q-top');
+const qSide = form ? form.querySelector('input[name="q"]') : null;
+if (qTop && qSide) {
+  qTop.addEventListener('input', () => { qSide.value = qTop.value; cvtFilter(); });
+}
+if (qSide && qTop) {
+  qSide.addEventListener('input', () => { qTop.value = qSide.value; });
+}
+
+let debounceTimer = null;
+
+function cvtFilter() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(doFetch, 280);
+}
+
+function doFetch() {
+  const params = new URLSearchParams(new FormData(form));
+
+  // Mettre à jour l'URL sans recharger la page
+  const newUrl = '{{ route("cv.public.theque") }}?' + params.toString();
+  history.replaceState(null, '', newUrl);
+
+  results.style.opacity = '0.4';
+  loading.style.display = 'block';
+
+  fetch('{{ route("cv.public.theque") }}?' + params.toString(), {
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    results.innerHTML = data.html;
+    results.style.opacity = '1';
+    loading.style.display = 'none';
+
+    // Mettre à jour compteur
+    const n = data.total;
+    if (countEl) countEl.textContent = n + ' profil' + (n > 1 ? 's' : '');
+    if (heroSub) heroSub.textContent = n + ' CV' + (n > 1 ? 's' : '') + ' de candidats disponibles, mis à jour en continu';
+
+    // Réattacher la pagination (liens classiques)
+    results.querySelectorAll('.cvt-pagination a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const url = new URL(a.href);
+        url.searchParams.forEach((v, k) => {
+          const el = form.querySelector('[name="' + k + '"]');
+          if (el) el.value = v;
+        });
+        const page = url.searchParams.get('page');
+        if (page) fetchPage(page);
+      });
+    });
+  })
+  .catch(() => { results.style.opacity = '1'; loading.style.display = 'none'; });
+}
+
+function fetchPage(page) {
+  const params = new URLSearchParams(new FormData(form));
+  params.set('page', page);
+  history.replaceState(null, '', '{{ route("cv.public.theque") }}?' + params.toString());
+  results.style.opacity = '0.4';
+  loading.style.display = 'block';
+  fetch('{{ route("cv.public.theque") }}?' + params.toString(), {
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    results.innerHTML = data.html;
+    results.style.opacity = '1';
+    loading.style.display = 'none';
+    window.scrollTo({ top: results.offsetTop - 80, behavior: 'smooth' });
+  })
+  .catch(() => { results.style.opacity = '1'; loading.style.display = 'none'; });
+}
+
+/* ── Champ recherche sidebar déclenche AJAX ──────── */
+if (qSide) qSide.addEventListener('input', cvtFilter);
+
+/* ── Selects déclenchent immédiatement ──────────── */
+if (form) form.querySelectorAll('select').forEach(sel => sel.addEventListener('change', cvtFilter));
 </script>
 @endsection

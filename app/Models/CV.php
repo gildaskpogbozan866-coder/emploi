@@ -12,16 +12,19 @@ class CV extends Model
     protected $table = 'cvs';
 
     protected $fillable = [
-        'candidat_id', 'titre_poste', 'pays', 'ville', 'competences',
+        'candidat_id', 'ville', 'competences',
         'experience', 'formation', 'langues', 'fichier_path',
-        'photo', 'plan', 'visible', 'vues', 'disponibilite', 'resume', 'secteur',
+        'photo', 'plan', 'visible', 'vues', 'resume',
         'metier', 'niveau_etude', 'type_contrat', 'niveau_experience',
+        'publie_le', 'vu_admin',
     ];
 
     protected function casts(): array
     {
         return [
-            'visible' => 'boolean',
+            'visible'   => 'boolean',
+            'vu_admin'  => 'boolean',
+            'publie_le' => 'datetime',
         ];
     }
 

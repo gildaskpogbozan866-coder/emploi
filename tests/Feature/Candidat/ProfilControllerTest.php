@@ -296,12 +296,11 @@ class ProfilControllerTest extends TestCase
         $candidat = $this->creerCandidat();
 
         $this->actingAs($candidat)
-            ->put(route('candidat.profil.update'), [
-                'prenom' => $candidat->prenom,
-                'nom'    => $candidat->nom,
+            ->post(route('candidat.profil.avatar.update'), [
                 'avatar' => UploadedFile::fake()->image('photo.jpg', 200, 200),
             ])
-            ->assertRedirect(route('candidat.profil'));
+            ->assertOk()
+            ->assertJsonStructure(['url']);
 
         $this->assertNotNull($candidat->fresh()->avatar);
         Storage::disk('public')->assertExists($candidat->fresh()->avatar);
@@ -312,12 +311,12 @@ class ProfilControllerTest extends TestCase
         $candidat = $this->creerCandidat();
 
         $this->actingAs($candidat)
-            ->put(route('candidat.profil.update'), [
-                'prenom' => $candidat->prenom,
-                'nom'    => $candidat->nom,
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('candidat.profil.avatar.update'), [
                 'avatar' => UploadedFile::fake()->create('document.pdf', 500, 'application/pdf'),
             ])
-            ->assertSessionHasErrors('avatar');
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('avatar');
     }
 
     public function test_suppression_avatar(): void

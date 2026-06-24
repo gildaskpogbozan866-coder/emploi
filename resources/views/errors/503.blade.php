@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Site en maintenance | Emploi Bouge Bénin')
 
 @section('content')

@@ -12,19 +12,26 @@
       Votre paiement n'a pas pu être traité. Aucun montant n'a été débité.
     </p>
     @php
-      $dashRoute = match(auth()->user()->role) {
-        'recruteur' => route('recruteur.dashboard'),
-        'annonceur' => route('annonceur.dashboard'),
-        'admin'     => route('admin.dashboard'),
-        default     => route('candidat.dashboard'),
-      };
+      $user = auth()->user();
+      if ($user) {
+        $dashRoute = match($user->role) {
+          'recruteur' => route('recruteur.dashboard'),
+          'annonceur' => route('annonceur.dashboard'),
+          'admin'     => route('admin.dashboard'),
+          default     => route('candidat.dashboard'),
+        };
+        $retryUrl = route('payment.choose', $paiement);
+      } else {
+        $dashRoute = route('home');
+        $retryUrl  = route('payment.choose', ['paiement' => $paiement->id, 'token' => $paiement->reference]);
+      }
     @endphp
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <a href="{{ route('payment.choose', $paiement) }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
+      <a href="{{ $retryUrl }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
         Réessayer
       </a>
       <a href="{{ $dashRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
-        Tableau de bord
+        {{ $user ? 'Tableau de bord' : 'Retour à l\'accueil' }}
       </a>
     </div>
     <p style="margin-top:20px;font-size:12px;color:#94a3b8">Référence : <code>{{ $paiement->reference }}</code></p>

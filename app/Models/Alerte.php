@@ -10,7 +10,7 @@ class Alerte extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'nom', 'mots_cles', 'localisation',
+        'user_id', 'nom', 'metier', 'localisation',
         'type_contrat', 'secteur', 'frequence', 'active',
     ];
 

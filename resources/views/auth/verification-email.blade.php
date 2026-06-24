@@ -1,4 +1,4 @@
-﻿@extends('layouts.auth')
+@extends('layouts.auth')
 @section('title', 'Vérification OTP | Emploi Bouge Bénin')
 
 @section('css')

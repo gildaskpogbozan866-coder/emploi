@@ -81,7 +81,7 @@ class CVControllerTest extends TestCase
             'titre_poste' => 'Développeur',
             'pays'        => 'Bénin',
             'plan'        => 'gratuit',
-            'visible'     => false,
+            'visible'     => true,
         ], $attrs));
     }
 
@@ -156,7 +156,7 @@ class CVControllerTest extends TestCase
 
     // ── Création via dépôt public (store) ─────────────────
 
-    public function test_store_cree_cv_avec_plan_gratuit_et_visible_false(): void
+    public function test_store_cree_cv_avec_plan_gratuit_et_visible_true(): void
     {
         Storage::fake('public');
         $candidat = $this->creerCandidat();
@@ -179,7 +179,7 @@ class CVControllerTest extends TestCase
             'candidat_id' => $candidat->id,
             'titre_poste' => 'Développeur Web',
             'plan'        => 'gratuit',
-            'visible'     => false,
+            'visible'     => true,
         ]);
     }
 

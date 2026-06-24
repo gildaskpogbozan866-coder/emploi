@@ -1,4 +1,4 @@
-﻿@extends('layouts.candidat')
+@extends('layouts.candidat')
 @section('title', 'Modifier le document')
 
 @section('css')
@@ -61,13 +61,13 @@
           <label class="field__label">Intitulé <span class="req">*</span></label>
           <input class="field__input" type="text" name="nom" required
             value="{{ old('nom', $document->nom) }}"
-            placeholder="Ex : Développeur Web Full Stack, Licence en Droit, UAC 2023…">
+            placeholder="Ex : Licence en Gestion UAC 2022, BTS Commerce ENEAM, Attestation stage MTN Bénin…">
           <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
         </div>
       </div>
 
       {{-- Détails complémentaires --}}
-      <div class="form-section-label" style="margin-top:20px">
+      {{-- <div class="form-section-label" style="margin-top:20px">
         Détails complémentaires
         <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
       </div>
@@ -103,9 +103,9 @@
           <textarea class="field__textarea" name="experience" rows="4"
             placeholder="Décrivez vos expériences (poste, entreprise, durée, missions…)">{{ old('experience', $document->experience) }}</textarea>
         </div>
-      </div>
+      </div> --}}
 
-      <div class="form-row form-row--1">
+      {{-- <div class="form-row form-row--1">
         <div>
           <label class="field__label">Formation</label>
           <textarea class="field__textarea" name="formation" rows="3"
@@ -120,7 +120,7 @@
             value="{{ old('langues', $document->langues) }}"
             placeholder="Ex : Français (courant), Anglais (intermédiaire)…">
         </div>
-      </div>
+      </div> --}}
 
       {{-- Fichier --}}
       <div class="form-section-label" style="margin-top:20px">Fichier</div>

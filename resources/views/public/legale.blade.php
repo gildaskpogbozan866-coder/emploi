@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', $page->titre . ', Emploi Bouge Bénin')
 
 @section('css')

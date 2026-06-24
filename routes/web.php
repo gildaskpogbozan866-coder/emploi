@@ -98,18 +98,20 @@ Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name
 Route::get('/manifest.json', function () {
     return response()->json([
         'name'             => 'Emploi Bouge Bénin',
-        'short_name'       => 'EmploiBénin',
-        'description'      => 'La plateforme d\'emploi numéro 1 au Bénin. Offres vérifiées, CV en ligne, recrutement.',
-        'start_url'        => url('/'),
-        'scope'            => url('/'),
+        'short_name'       => 'Emploi Bénin',
+        'description'      => 'Plateforme emploi au Bénin — offres vérifiées, CV en ligne, recrutement et talents.',
+        'start_url'        => '/',
+        'scope'            => '/',
         'display'          => 'standalone',
         'orientation'      => 'portrait',
-        'background_color' => '#042C53',
+        'background_color' => '#ffffff',
         'theme_color'      => '#042C53',
         'lang'             => 'fr',
         'icons'            => [
-            ['src' => asset('images/Logo.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any maskable'],
-            ['src' => asset('images/Logo.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any maskable'],
+            ['src' => asset('images/pwa-icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => asset('images/pwa-icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'maskable'],
+            ['src' => asset('images/pwa-icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => asset('images/pwa-icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
         ],
         'categories' => ['business', 'productivity'],
     ])->header('Content-Type', 'application/manifest+json');
@@ -165,10 +167,13 @@ Route::prefix('offres')->name('offre.')->group(function () {
 Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/',          [CVController::class, 'theque'])->name('theque');
     Route::get('/tarif',     [CVController::class, 'tarif'])->name('tarif');
-    Route::get('/deposer',   [CVController::class, 'depot'])->name('depot');
-    Route::post('/deposer',  [CVController::class, 'store'])->name('depot.store')->middleware('auth');
+    Route::get('/deposer',  fn() => redirect()->route('candidat.profil'))->name('depot');
+    Route::post('/deposer', fn() => redirect()->route('candidat.profil'))->name('depot.store');
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
+
+Route::get('/documents/{document}', [CVController::class, 'documentDetail'])->name('document.public.detail');
+Route::get('/candidat/{id}/profil', [CVController::class, 'candidatDetails'])->name('public.candidat.detail');
 
 // Services
 Route::prefix('services')->name('service.')->group(function () {
@@ -192,8 +197,8 @@ Route::prefix('blog')->name('blog.')->group(function () {
 // Webhooks push serveur-à-serveur (CSRF-exempt, voir bootstrap/app.php)
 Route::post('/payment/webhook/fedapay', [WebhookController::class, 'fedapay'])->name('payment.webhook.fedapay');
 
-// Callbacks navigateur (requiert auth)
-Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
+// Paiement — accessible sans compte (sécurisé par token sur le paiement)
+Route::prefix('payment')->name('payment.')->group(function () {
     Route::get('/choisir/{paiement}',          [GatewayController::class, 'choose'])->name('choose');
     Route::post('/lancer/{paiement}',          [GatewayController::class, 'initiate'])->name('initiate');
     Route::get('/callback/fedapay/{paiement}', [CallbackController::class, 'fedapay'])->name('callback.fedapay');
@@ -283,8 +288,8 @@ Route::middleware('auth')->group(function () {
 Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 'spatie.role:'.Role::CANDIDAT])->group(function () {
     Route::get('/tableau-de-bord', [CandidatDashboard::class, 'index'])->name('dashboard');
 
-    // CVs — nécessite permission deposit-cv
-    Route::middleware('permission:'.Permission::DEPOSIT_CV)->group(function () {
+    // CVs — nécessite permission deposit-cv + profil complet
+    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::DEPOSIT_CV])->group(function () {
         Route::get('/mes-cvs',                        [CVController::class, 'index'])->name('cvs');
         Route::get('/mes-cvs/modifier/{cv}',          [CVController::class, 'edit'])->name('cvs.edit');
         Route::put('/mes-cvs/{cv}',                   [CVController::class, 'update'])->name('cvs.update');
@@ -292,8 +297,8 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
         Route::patch('/mes-cvs/{cv}/visibilite',      [CVController::class, 'toggleVisibilite'])->name('cvs.visibilite');
     });
 
-    // Candidatures — nécessite apply-offre
-    Route::middleware('permission:'.Permission::APPLY_OFFRE)->group(function () {
+    // Candidatures — nécessite apply-offre + profil complet
+    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::APPLY_OFFRE])->group(function () {
         Route::get('/mes-candidatures',               [CandidatureController::class, 'index'])->name('candidatures');
         Route::get('/mes-candidatures/{candidature}', [CandidatureController::class, 'detail'])->name('candidatures.detail');
     });
@@ -306,16 +311,18 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // Alertes — nécessite create-alerte
     Route::middleware('permission:'.Permission::CREATE_ALERTE)->group(function () {
-        Route::get('/mes-alertes',              [AlerteController::class, 'index'])->name('alertes');
-        Route::post('/mes-alertes',             [AlerteController::class, 'store'])->name('alertes.store');
-        Route::delete('/mes-alertes/{alerte}',  [AlerteController::class, 'destroy'])->name('alertes.destroy');
+        Route::get('/mes-alertes',                      [AlerteController::class, 'index'])->name('alertes');
+        Route::post('/mes-alertes',                     [AlerteController::class, 'store'])->name('alertes.store');
+        Route::patch('/mes-alertes/{alerte}/toggle',    [AlerteController::class, 'toggle'])->name('alertes.toggle');
+        Route::delete('/mes-alertes/{alerte}',          [AlerteController::class, 'destroy'])->name('alertes.destroy');
     });
 
     // Abonnement — nécessite manage-abonnement-candidat
     Route::middleware('permission:'.Permission::MANAGE_ABONNEMENT_CAN)->group(function () {
-        Route::get('/abonnement',        [CandidatAbonnement::class, 'index'])->name('abonnement');
-        Route::get('/abonnement/plans',  [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
-        Route::post('/abonnement',       [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
+        Route::get('/abonnement',                [CandidatAbonnement::class, 'index'])->name('abonnement');
+        Route::get('/abonnement/plans',          [CandidatAbonnement::class, 'choisirPlan'])->name('abonnement.plans');
+        Route::get('/abonnement/pourquoi-premium',[CandidatAbonnement::class, 'pourquoiPremium'])->name('abonnement.pourquoi');
+        Route::post('/abonnement',               [CandidatAbonnement::class, 'souscrire'])->name('abonnement.store');
     });
 
     // Messagerie (accessibles à tous les candidats authentifiés)
@@ -330,7 +337,10 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::get('/paiements',               [CandidatPaiement::class, 'index'])->name('paiements');
     Route::get('/profil',                  [CandidatProfil::class, 'edit'])->name('profil');
     Route::put('/profil',                  [CandidatProfil::class, 'update'])->name('profil.update');
+    Route::post('/profil/avatar',          [CandidatProfil::class, 'updateAvatar'])->name('profil.avatar.update');
     Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
+    Route::post('/profil/fichier-cv',      [CandidatProfil::class, 'updateFichierCv'])->name('profil.fichier-cv');
+    Route::post('/profil/publier',         [CandidatProfil::class, 'publier'])->name('profil.publier');
     Route::get('/parametres',              [CandidatProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',              [CandidatProfil::class, 'updateParametres'])->name('parametres.update');
 
@@ -396,18 +406,21 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     // Candidatures — nécessite view-candidatures
     Route::middleware('permission:'.Permission::VIEW_CANDIDATURES)->group(function () {
         Route::get('/candidatures',                   [RecruteurCandidature::class, 'index'])->name('candidatures');
+        Route::get('/candidatures/export',            [RecruteurCandidature::class, 'export'])->name('candidatures.export');
         Route::get('/candidatures/{candidature}',     [RecruteurCandidature::class, 'show'])->name('candidatures.show');
         Route::patch('/candidatures/{candidature}/statut', [RecruteurCandidature::class, 'updateStatut'])->name('candidatures.statut');
     });
 
     // CVthèque — nécessite view-cvtheque
     Route::middleware('permission:'.Permission::VIEW_CVTHEQUE)->group(function () {
-        Route::get('/cvtheque',                     [CvthequeController::class, 'index'])->name('cvtheque');
-        Route::get('/cvtheque/favoris',             [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
-        Route::get('/cvtheque/{cv}',                [CvthequeController::class, 'show'])->name('cvtheque.show');
-        Route::post('/cvtheque/{cv}/telecharger',   [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
-        Route::get('/cvtheque/{cv}/pdf',            [CvthequeController::class, 'telechargerPdf'])->name('cvtheque.pdf');
-        Route::post('/cvtheque/{cv}/favoris',       [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
+        Route::get('/cvtheque',                                    [CvthequeController::class, 'index'])->name('cvtheque');
+        Route::get('/cvtheque/favoris',                            [CvthequeController::class, 'favoris'])->name('cvtheque.favoris.list');
+        Route::get('/cvtheque/document/{document}',               [CvthequeController::class, 'showDocument'])->name('cvtheque.document.show');
+        Route::post('/cvtheque/document/{document}/telecharger',  [CvthequeController::class, 'telechargerDocument'])->name('cvtheque.document.telecharger');
+        Route::get('/cvtheque/{cv}',                              [CvthequeController::class, 'show'])->name('cvtheque.show');
+        Route::post('/cvtheque/{cv}/telecharger',                 [CvthequeController::class, 'telecharger'])->name('cvtheque.telecharger');
+        Route::get('/cvtheque/{cv}/pdf',                          [CvthequeController::class, 'telechargerPdf'])->name('cvtheque.pdf');
+        Route::post('/cvtheque/{cv}/favoris',                     [CvthequeController::class, 'toggleFavoris'])->name('cvtheque.favoris');
     });
 
     // Crédits CVthèque
@@ -443,6 +456,7 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     Route::put('/profil',        [RecruteurProfil::class, 'update'])->name('profil.update');
     Route::get('/parametres',    [RecruteurProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',    [RecruteurProfil::class, 'updateParametres'])->name('parametres.update');
+    Route::delete('/compte',     [RecruteurProfil::class, 'deleteAccount'])->name('compte.delete');
 
     }); // fin recruteur.approuve
 
@@ -516,9 +530,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     // Gestion CVs & Documents
     Route::middleware('permission:'.Permission::MANAGE_CVS)->group(function () {
         Route::prefix('cvs')->name('cvs.')->group(function () {
-            Route::get('/',        [AdminCV::class, 'index'])->name('list');
-            Route::get('/{cv}',    [AdminCV::class, 'show'])->name('detail');
-            Route::delete('/{cv}', [AdminCV::class, 'destroy'])->name('destroy');
+            Route::get('/',              [AdminCV::class, 'index'])->name('list');
+            Route::get('/{cv}',          [AdminCV::class, 'show'])->name('detail');
+            Route::patch('/{cv}/toggle', [AdminCV::class, 'toggleVisible'])->name('toggle');
+            Route::delete('/{cv}',       [AdminCV::class, 'destroy'])->name('destroy');
         });
         Route::prefix('documents')->name('documents.')->group(function () {
             Route::get('/',             [AdminDocument::class, 'index'])->name('list');
@@ -535,6 +550,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         Route::get('/{article}/modifier', [AdminBlog::class, 'edit'])->name('edit');
         Route::put('/{article}',          [AdminBlog::class, 'update'])->name('update');
         Route::delete('/{article}',       [AdminBlog::class, 'destroy'])->name('destroy');
+        Route::post('/generer-ia',         [AdminBlog::class, 'genererIA'])->name('generer-ia');
     });
 
     // Gestion services & commandes

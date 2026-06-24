@@ -18,7 +18,7 @@ $jobPosting = [
     'url'            => route('offre.detail', $offre),
     'datePosted'     => $offre->created_at->toDateString(),
     'dateModified'   => $offre->updated_at->toDateString(),
-    'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre->type ?? 'OTHER')),
+    'employmentType' => strtoupper(str_replace([' ', '-'], '_', $offre?->type?->libelle ?? 'OTHER')),
     'jobLocationType'=> 'TELECOMMUTE',
     'hiringOrganization' => [
         '@type'  => 'Organization',
@@ -39,11 +39,11 @@ $jobPosting = [
 if ($offre->date_limite) {
     $jobPosting['validThrough'] = \Carbon\Carbon::parse($offre->date_limite)->toIso8601String();
 }
-if ($offre->salaire) {
+if ($offre->salaire_min || $offre->salaire_max) {
     $jobPosting['baseSalary'] = [
         '@type'    => 'MonetaryAmount',
         'currency' => 'XOF',
-        'value'    => ['@type' => 'QuantitativeValue', 'value' => $offre->salaire, 'unitText' => 'MONTH'],
+        'value'    => ['@type' => 'QuantitativeValue', 'minValue' => $offre->salaire_min, 'maxValue' => $offre->salaire_max, 'unitText' => 'MONTH'],
     ];
 }
 $breadcrumb = [
@@ -74,13 +74,19 @@ $breadcrumb = [
       Retour aux offres
     </a>
     <div class="od-hero__head">
-      <div class="od-hero__avatar">{{ strtoupper(substr($offre->entreprise, 0, 2)) }}</div>
+      <div class="od-hero__avatar" style="overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8f0fe,#dbeafe);border:2px solid rgba(255,255,255,.4)">
+        @if($offre->logo)
+          <img src="{{ asset('storage/' . $offre->logo) }}" alt="{{ $offre->entreprise }}" style="width:100%;height:100%;object-fit:contain;padding:6px">
+        @else
+          {{ strtoupper(substr($offre->entreprise, 0, 2)) }}
+        @endif
+      </div>
       <div class="od-hero__info">
         <h1 class="od-hero__title">{{ $offre->titre }}</h1>
         <p class="od-hero__company">{{ $offre->entreprise }}</p>
         <div class="od-hero__badges">
           @if($offre->type)
-            <span class="od-badge od-badge--type">{{ $offre->type }}</span>
+            <span class="od-badge od-badge--type">{{ $offre?->type?->libelle }}</span>
           @endif
           @if($offre->localisation)
             <span class="od-badge od-badge--loc">
@@ -88,12 +94,12 @@ $breadcrumb = [
               {{ $offre->localisation }}
             </span>
           @endif
-          @foreach((array)$offre->secteur as $s)
+          {{-- @foreach((array)$offre->secteur as $s)
             @if($s)<span class="od-badge od-badge--sect">{{ $s }}</span>@endif
-          @endforeach
-          @if($offre->salaire)
-            <span class="od-badge od-badge--sal">{{ $offre->salaire }}</span>
-          @endif
+          @endforeach --}}
+          {{-- @if($offre->salaire)
+            <span class="od-badge od-badge--sal">{{ $offre->salaire }} Fa</span>
+          @endif --}}
         </div>
       </div>
     </div>
@@ -221,7 +227,7 @@ $breadcrumb = [
           </div>
           <div>
             <p class="od-info-row__label">Type de contrat</p>
-            <p class="od-info-row__value">{{ $offre->type }}</p>
+            <p class="od-info-row__value">{{ $offre?->type?->libelle }}</p>
           </div>
         </div>
         @endif
@@ -238,14 +244,14 @@ $breadcrumb = [
         </div>
         @endif
 
-        @if($offre->salaire)
+        @if($offre->salaireFormate())
         <div class="od-info-row">
           <div class="od-info-row__icon">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
           <div>
             <p class="od-info-row__label">Rémunération</p>
-            <p class="od-info-row__value">{{ $offre->salaire }}</p>
+            <p class="od-info-row__value">{{ $offre->salaireFormate() }}</p>
           </div>
         </div>
         @endif
@@ -292,7 +298,7 @@ $breadcrumb = [
           </div>
           <div>
             <p class="od-info-row__label">Publiée</p>
-            <p class="od-info-row__value">{{ $offre->created_at->diffForHumans() }}</p>
+            <p class="od-info-row__value">{{ \Carbon\Carbon::parse($offre->created_at)->format('d M Y') }}</p>
           </div>
         </div>
 
@@ -377,7 +383,7 @@ $breadcrumb = [
           </div>
         </div>
         <div class="od-sim-card__meta">
-          @if($s->type)<span class="od-sim-badge od-sim-badge--type">{{ $s->type }}</span>@endif
+          @if($s->type)<span class="od-sim-badge od-sim-badge--type">{{ $s?->type?->libelle }}</span>@endif
           @if($s->localisation)<span class="od-sim-badge od-sim-badge--loc">{{ $s->localisation }}</span>@endif
         </div>
         <p class="od-sim-card__date">{{ $s->created_at->diffForHumans() }}</p>

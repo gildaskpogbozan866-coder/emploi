@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -62,14 +62,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
-  <link rel="manifest" href="{{ route('pwa.manifest') }}">
-  <meta name="theme-color" content="#042C53">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Emploi Bénin">
-  <link rel="apple-touch-icon" href="{{ asset('images/Logo.png') }}">
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon-64.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
+  <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
+  @include('partials._pwa-head')
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
   @yield('css')
@@ -103,20 +100,20 @@
   @include('components.footer')
 
   {{-- ── BANNIÈRE CONSENTEMENT COOKIES ── --}}
-  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;color:#e2e8f0;padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.25)">
-    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:12px">
-      <p style="margin:0;font-size:13.5px;flex:1;min-width:200px;line-height:1.5">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Ce site utilise des cookies pour améliorer votre expérience et mesurer l'audience.
-        <a href="/legale/politique-confidentialite" style="color:#93c5fd;text-decoration:underline;margin-left:4px">En savoir plus</a>
+  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;color:#e2e8f0;padding:12px 16px;box-shadow:0 -4px 20px rgba(0,0,0,.25)">
+    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+      <p style="margin:0;font-size:13px;flex:1;min-width:180px;line-height:1.5">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:5px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Ce site utilise des cookies pour améliorer votre expérience.
+        <a href="/legale/politique-confidentialite" style="color:#93c5fd;text-decoration:underline;margin-left:4px;white-space:nowrap;display:inline-flex;align-items:center;padding:6px 0;min-height:36px">En savoir plus</a>
       </p>
-      <div style="display:flex;gap:8px;flex-shrink:0">
+      <div style="display:flex;gap:8px;flex-shrink:0;width:100%;justify-content:flex-end" id="cookie-actions">
         <button onclick="setCookieConsent('refused')"
-                style="padding:8px 16px;border-radius:7px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer">
+                style="padding:8px 14px;border-radius:7px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;min-height:40px">
           Refuser
         </button>
         <button onclick="setCookieConsent('accepted')"
-                style="padding:8px 16px;border-radius:7px;border:none;background:#F5C842;color:#1e293b;font-size:13px;font-weight:700;cursor:pointer">
+                style="padding:8px 16px;border-radius:7px;border:none;background:#F5C842;color:#1e293b;font-size:13px;font-weight:700;cursor:pointer;min-height:40px">
           Tout accepter
         </button>
       </div>
@@ -124,18 +121,21 @@
   </div>
   <script>
   (function () {
+    var banner = document.getElementById('cookie-banner');
     if (!localStorage.getItem('cookie_consent')) {
-      document.getElementById('cookie-banner').style.display = 'block';
+      banner.style.display = 'block';
+      document.body.style.paddingBottom = (banner.offsetHeight + 8) + 'px';
     }
   })();
   function setCookieConsent(choice) {
     localStorage.setItem('cookie_consent', choice);
     document.getElementById('cookie-banner').style.display = 'none';
+    document.body.style.paddingBottom = '';
   }
   </script>
 
   {{-- ── POPUP PUBLICITAIRE ── --}}
-  <div id="pub-popup" style="display:none;position:fixed;bottom:24px;right:24px;z-index:8888;width:320px;max-width:calc(100vw - 32px);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);background:#fff">
+  <div id="pub-popup" style="display:none;position:fixed;bottom:16px;right:16px;z-index:8888;width:300px;max-width:calc(100vw - 24px);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);background:#fff">
     <div style="background:linear-gradient(135deg,#042C53,#185FA5);padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
       <span style="color:#F5C842;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Publicité</span>
       <button id="pub-close" aria-label="Fermer"
@@ -353,161 +353,7 @@
   @include('components.flash-swal')
   @yield('scripts')
 
-  {{-- ── PWA INSTALL BANNER ── --}}
-  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99998;background:#042C53;color:#fff;padding:14px 16px;box-shadow:0 -4px 24px rgba(0,0,0,.3)">
-    <div style="max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px">
-      <img src="{{ asset('images/Logo.png') }}" alt="" width="40" height="40" style="border-radius:10px;flex-shrink:0;object-fit:cover">
-      <div style="flex:1;min-width:0">
-        <p style="margin:0;font-size:13.5px;font-weight:700;color:#fff;line-height:1.3">Emploi Bouge Bénin</p>
-        <p style="margin:0;font-size:12px;color:rgba(255,255,255,.7);line-height:1.4" id="pwa-banner-text">Installez l'application pour accéder rapidement aux offres d'emploi.</p>
-      </div>
-      <div style="display:flex;gap:8px;flex-shrink:0;align-items:center">
-        <button id="pwa-install-btn" style="display:none;padding:9px 16px;background:#F5C842;color:#042C53;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">
-          Installer
-        </button>
-        <button id="pwa-ios-btn" style="display:none;padding:9px 16px;background:#F5C842;color:#042C53;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">
-          Comment installer ?
-        </button>
-        <button id="pwa-close-btn" aria-label="Fermer" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:4px;display:flex;align-items:center">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-    {{-- Guide installation --}}
-    <div id="pwa-ios-guide" style="display:none;max-width:600px;margin:10px auto 0;background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
-      <p id="pwa-guide-ios" style="margin:0;font-size:12.5px;color:#fff;line-height:1.9">
-        <strong>iPhone / iPad :</strong>
-        Appuyez sur
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5C842" stroke-width="2.2" style="display:inline-block;vertical-align:-2px"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-        <strong>"Partager"</strong> en bas de Safari &rarr; <strong>"Sur l'écran d'accueil"</strong> &rarr; <strong>"Ajouter"</strong>
-      </p>
-      <p id="pwa-guide-android" style="margin:0;font-size:12.5px;color:#fff;line-height:1.9">
-        <strong>Android :</strong>
-        Ouvrez le menu Chrome
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5C842" stroke-width="2.2" style="display:inline-block;vertical-align:-2px"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-        &rarr; <strong>"Ajouter à l'écran d'accueil"</strong>
-      </p>
-      <p id="pwa-guide-desktop" style="margin:0;font-size:12.5px;color:#fff;line-height:1.9">
-        <strong>Ordinateur (Chrome) :</strong>
-        Cliquez sur l'icône
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5C842" stroke-width="2.2" style="display:inline-block;vertical-align:-2px"><path d="M12 3v13M5 10l7 7 7-7"/><path d="M5 21h14"/></svg>
-        dans la barre d'adresse (en haut à droite) &rarr; <strong>"Installer"</strong>
-      </p>
-    </div>
-  </div>
-
-  <script>
-  (function () {
-    var STORAGE_KEY    = 'pwa_installed';
-    var banner         = document.getElementById('pwa-banner');
-    var installBtn     = document.getElementById('pwa-install-btn');
-    var iosBtn         = document.getElementById('pwa-ios-btn');
-    var closeBtn       = document.getElementById('pwa-close-btn');
-    var iosGuide       = document.getElementById('pwa-ios-guide');
-    var deferredPrompt = null;
-
-    // App déjà installée → ne rien afficher
-    if (localStorage.getItem(STORAGE_KEY) === 'yes') return;
-
-    // Déjà ouvert en mode standalone (app installée)
-    var isStandalone = window.navigator.standalone === true
-                    || window.matchMedia('(display-mode: standalone)').matches;
-    if (isStandalone) { localStorage.setItem(STORAGE_KEY, 'yes'); return; }
-
-    var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-    function showBanner() { banner.style.display = 'block'; }
-
-    // ── Prompt natif (Chrome Android + Chrome Desktop) ─────
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'inline-block';
-      showBanner();
-    });
-
-    // ── iOS Safari : guide manuel ───────────────────────────
-    if (isIos) {
-      iosBtn.style.display = 'inline-block';
-      showBanner();
-    }
-
-    // ── Tous les autres cas (si le prompt ne vient pas) ────
-    // Attendre que la bannière cookies soit réglée pour éviter le chevauchement
-    function tryShowFallback() {
-      if (banner.style.display !== 'none') return;
-      iosBtn.textContent = 'Comment installer ?';
-      iosBtn.style.display = 'inline-block';
-      showBanner();
-    }
-
-    var cookieConsent = localStorage.getItem('cookie_consent');
-    if (cookieConsent) {
-      // Cookie déjà accepté/refusé → afficher après 1.5s
-      setTimeout(tryShowFallback, 1500);
-    } else {
-      // Attendre que l'utilisateur réponde à la bannière cookies
-      var cookieCheckInterval = setInterval(function () {
-        if (localStorage.getItem('cookie_consent')) {
-          clearInterval(cookieCheckInterval);
-          setTimeout(tryShowFallback, 800);
-        }
-      }, 500);
-      // Sécurité : afficher quand même après 30s si pas de réponse
-      setTimeout(function () {
-        clearInterval(cookieCheckInterval);
-        tryShowFallback();
-      }, 30000);
-    }
-
-    // ── Clic "Installer" (Android natif) ───────────────────
-    installBtn.addEventListener('click', function () {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function (r) {
-        if (r.outcome === 'accepted') {
-          localStorage.setItem(STORAGE_KEY, 'yes');
-          banner.style.display = 'none';
-        }
-        deferredPrompt = null;
-      });
-    });
-
-    // ── Clic "Comment installer ?" ─────────────────────────
-    iosBtn.addEventListener('click', function () {
-      var guide          = document.getElementById('pwa-ios-guide');
-      var guideIos       = document.getElementById('pwa-guide-ios');
-      var guideAndroid   = document.getElementById('pwa-guide-android');
-      var guideDesktop   = document.getElementById('pwa-guide-desktop');
-      var isAndroid      = /android/i.test(navigator.userAgent);
-      var isMobile       = isIos || isAndroid;
-
-      guideIos.style.display     = isIos     ? 'block' : 'none';
-      guideAndroid.style.display = (isAndroid && !isIos) ? 'block' : 'none';
-      guideDesktop.style.display = !isMobile ? 'block' : 'none';
-
-      guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
-    });
-
-    // ── Fermer (réapparaît à la prochaine visite) ──────────
-    closeBtn.addEventListener('click', function () {
-      banner.style.display = 'none';
-    });
-
-    // ── App installée via le prompt ────────────────────────
-    window.addEventListener('appinstalled', function () {
-      localStorage.setItem(STORAGE_KEY, 'yes');
-      banner.style.display = 'none';
-    });
-
-    // ── Enregistrement Service Worker ──────────────────────
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('{{ asset("sw.js") }}').catch(function () {});
-      });
-    }
-  })();
-  </script>
+  @include('partials._pwa-banner')
 
 </body>
 </html>

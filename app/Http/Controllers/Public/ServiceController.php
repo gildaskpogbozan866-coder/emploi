@@ -29,15 +29,16 @@ class ServiceController extends Controller
 
     public function storerCommande(Request $request, Service $service)
     {
+        $rules = [
+            'details_demande' => 'nullable|string|max:5000',
+            'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt,jpg,jpeg,png|max:10240',
+        ];
+
         if (!Auth::check()) {
-            return redirect()->route('auth.connexion')
-                ->with('error', 'Connectez-vous pour passer une commande.');
+            $rules['email_contact'] = 'required|email:rfc,dns|max:191';
         }
 
-        $request->validate([
-            'details_demande' => 'required|string|min:20',
-            'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt|max:10240',
-        ]);
+        $request->validate($rules);
 
         $fichierPath = null;
         if ($request->hasFile('fichier_joint')) {
@@ -52,6 +53,7 @@ class ServiceController extends Controller
             'montant'         => $service->prix,
             'statut'          => 'en_attente',
             'paiement_statut' => 'non_paye',
+            'email_contact'   => Auth::check() ? Auth::user()->email : $request->email_contact,
         ]);
 
         $service->increment('nb_commandes');
@@ -66,7 +68,12 @@ class ServiceController extends Controller
             'payable_type' => Commande::class,
         ]);
 
-        return redirect()->route('payment.choose', $paiement);
+        $params = ['paiement' => $paiement->id];
+        if (!Auth::check()) {
+            $params['token'] = $paiement->reference;
+        }
+
+        return redirect()->route('payment.choose', $params);
     }
 
     public function succes()

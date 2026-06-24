@@ -1,4 +1,4 @@
-﻿@extends('layouts.annonceur')
+@extends('layouts.annonceur')
 @section('title', 'Tableau de bord | Espace Annonceur')
 
 @section('content')

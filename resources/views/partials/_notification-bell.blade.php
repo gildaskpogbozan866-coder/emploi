@@ -64,15 +64,42 @@
   const btn  = document.getElementById('notifBellBtn');
   const dd   = document.getElementById('notifDropdown');
   if (!btn || !dd) return;
+
+  function positionDropdown() {
+    const rect   = btn.getBoundingClientRect();
+    const margin = 8;
+    const ddW    = dd.offsetWidth || 340;
+    let top   = rect.bottom + margin;
+    let right = window.innerWidth - rect.right;
+
+    // Ne pas dépasser le bord gauche de l'écran
+    if (rect.right - ddW < 8) {
+      right = window.innerWidth - Math.min(rect.right, window.innerWidth - 10);
+    }
+    // Ne pas dépasser en bas
+    const maxH = window.innerHeight - top - 16;
+    dd.style.top       = top + 'px';
+    dd.style.right     = Math.max(right, 8) + 'px';
+    dd.style.maxHeight = Math.max(maxH, 200) + 'px';
+  }
+
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
+    const isOpen = dd.classList.contains('open');
+    if (!isOpen) positionDropdown();
     dd.classList.toggle('open');
   });
+
   document.addEventListener('click', function (e) {
     if (!bell.contains(e.target)) dd.classList.remove('open');
   });
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') dd.classList.remove('open');
+  });
+
+  window.addEventListener('resize', function () {
+    if (dd.classList.contains('open')) positionDropdown();
   });
 })();
 </script>

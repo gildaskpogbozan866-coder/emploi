@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Statistiques | ' . $offre->titre)
 
 @section('sidebar')

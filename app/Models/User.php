@@ -111,7 +111,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function abonnementActif()
     {
-        return $this->hasOne(Abonnement::class)->where('status', 'active')->latest('starts_at');
+        return $this->hasOne(Abonnement::class)
+            ->where('status', 'active')
+            ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))
+            ->latest('starts_at');
     }
 
     public function estPremium(): bool

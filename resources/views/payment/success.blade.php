@@ -23,7 +23,7 @@
       <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:14px 18px;margin-bottom:24px;text-align:left;max-width:380px;margin-left:auto;margin-right:auto">
         <p style="font-size:13.5px;color:#92400e;margin:0;line-height:1.65">
           <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:5px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <strong>Livraison sous 24h.</strong> Notre équipe traite votre demande et vous contactera rapidement.
+          <strong>Livraison dans 1h.</strong> Notre équipe traite votre commande et vous livrera dans l'heure.
         </p>
       </div>
     @elseif($paiement->abonnement?->plan)
@@ -34,22 +34,28 @@
       <p style="margin:0 0 28px"></p>
     @endif
     @php
-      $role = auth()->user()->role;
-      $dashRoute = match($role) {
-        'recruteur' => route('recruteur.dashboard'),
-        'annonceur' => route('annonceur.dashboard'),
-        'admin'     => route('admin.dashboard'),
-        default     => route('candidat.dashboard'),
-      };
-      $paiementsRoute = match($role) {
-        'recruteur' => route('recruteur.paiements'),
-        'candidat'  => route('candidat.paiements'),
-        default     => null,
-      };
+      $user = auth()->user();
+      if ($user) {
+        $role = $user->role;
+        $dashRoute = match($role) {
+          'recruteur' => route('recruteur.dashboard'),
+          'annonceur' => route('annonceur.dashboard'),
+          'admin'     => route('admin.dashboard'),
+          default     => route('candidat.dashboard'),
+        };
+        $paiementsRoute = match($role) {
+          'recruteur' => route('recruteur.paiements'),
+          'candidat'  => route('candidat.paiements'),
+          default     => null,
+        };
+      } else {
+        $dashRoute = route('home');
+        $paiementsRoute = null;
+      }
     @endphp
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="{{ $dashRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#185FA5;color:#fff;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">
-        Tableau de bord
+        {{ auth()->check() ? 'Tableau de bord' : 'Retour à l\'accueil' }}
       </a>
       @if($paiementsRoute)
       <a href="{{ $paiementsRoute }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#f1f5f9;color:#042C53;border-radius:10px;font-weight:700;font-size:13.5px;text-decoration:none">

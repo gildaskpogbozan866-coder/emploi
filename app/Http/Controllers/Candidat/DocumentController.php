@@ -15,7 +15,6 @@ class DocumentController extends Controller
     {
         $request->validate([
             'type_document_id' => ['required', 'exists:type_documents,id'],
-            'nom'              => ['required', 'string', 'max:200'],
             'fichier'          => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx', 'max:5120'],
         ]);
 
@@ -25,11 +24,14 @@ class DocumentController extends Controller
             return back()->withErrors(['fichier' => 'Limite de 15 documents atteinte.']);
         }
 
+        $type = TypeDocument::find($request->type_document_id);
+        $nom  = ($type ? $type->nom : 'Document') . ' — ' . now()->format('d/m/Y');
+
         $path = $request->file('fichier')->store('candidats/documents', 'public');
 
         $user->documents()->create([
             'type_document_id' => $request->type_document_id,
-            'nom'              => $request->nom,
+            'nom'              => $nom,
             'fichier'          => $path,
         ]);
 

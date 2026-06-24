@@ -34,9 +34,9 @@ class KKiaPayService
         return [
             'publicApiKey' => $this->settings->public_key,
             'amount'       => (int) $paiement->montant,
-            'name'         => trim(($paiement->user->prenom ?? '') . ' ' . ($paiement->user->nom ?? '')),
-            'email'        => $paiement->user->email,
-            'phone'        => $paiement->user->telephone ?? '',
+            'name'         => trim(($paiement->user?->prenom ?? '') . ' ' . ($paiement->user?->nom ?? '')) ?: 'Client',
+            'email'        => $paiement->user?->email ?? $paiement->payable?->email_contact ?? '',
+            'phone'        => $paiement->user?->telephone ?? '',
             'data'         => ['paiement_id' => $paiement->id],
             'sandbox'      => $this->settings->env !== 'live',
             'theme'        => '#042C53',

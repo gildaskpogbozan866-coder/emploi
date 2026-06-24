@@ -1,4 +1,4 @@
-﻿﻿*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+﻿*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --font: 'Jost', sans-serif; --border: #e2e8f0; --text-main: #1e293b; --text-muted: #64748b; }
     body { font-family: var(--font); background: #f0f4f9; color: var(--text-main); }
 

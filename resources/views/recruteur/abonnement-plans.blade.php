@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Choisir un plan | Recruteur')
 
 @section('sidebar')
@@ -15,6 +15,13 @@
     <p>Sélectionnez le plan adapté à vos besoins de recrutement</p>
   </div>
 </div>
+
+@if(session('error'))
+<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:10px;align-items:center">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#dc2626" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <p style="color:#dc2626;font-size:13.5px;font-weight:600;margin:0">{{ session('error') }}</p>
+</div>
+@endif
 
 @if($abonnement)
 <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;gap:10px;align-items:center">
@@ -78,6 +85,14 @@ $featureLabels = [
         <div style="margin-top:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:11px;text-align:center">
           <span style="font-weight:700;color:#16a34a;font-size:14px">✓ Plan actuel</span>
         </div>
+      @elseif($plan->is_free && $hasUsedFreePlan)
+        <div style="margin-top:16px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:4px">✗ Déjà utilisé</div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;line-height:1.5">Le plan gratuit est limité à une seule utilisation par compte.</p>
+          <a href="{{ route('recruteur.abonnement.plans') }}" class="rec-btn rec-btn--yellow" style="width:100%;justify-content:center;font-size:13px;padding:10px;display:flex">
+            Voir les plans payants →
+          </a>
+        </div>
       @else
         <form method="POST" action="{{ route('recruteur.abonnement.store') }}" style="margin-top:16px">
           @csrf
@@ -130,8 +145,8 @@ $featureLabels = [
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
     @foreach([
       ['1', 'Choisissez votre plan', 'Sélectionnez le plan adapté à votre volume de recrutement.'],
-      ['2', 'Paiement Mobile Money', 'Un conseiller vous contacte pour finaliser le paiement (MTN, Moov, Wave).'],
-      ['3', 'Activé après confirmation', 'Dès validation par notre équipe, vos annonces sont publiables.'],
+      ['2', 'Paiement sécurisé', 'Payez en ligne avec MTN Money, Moov Money, Celtiis ou Carte bancaire.'],
+      ['3', 'Activation instantanée', 'Votre abonnement est activé immédiatement après confirmation du paiement.'],
     ] as [$n, $titre, $desc])
     <div style="display:flex;gap:12px;align-items:flex-start">
       <div style="width:28px;height:28px;border-radius:50%;background:#185FA5;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ $n }}</div>

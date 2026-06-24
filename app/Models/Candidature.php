@@ -11,7 +11,7 @@ class Candidature extends Model
 
     protected $fillable = [
         'offre_id', 'candidat_id', 'message_motivation',
-        'cv_path', 'cv_id', 'statut', 'note_recruteur',
+        'cv_id', 'cv_path', 'lettre_path', 'statut', 'note_recruteur',
     ];
 
     public function offre()

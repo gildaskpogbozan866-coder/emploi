@@ -1,4 +1,4 @@
-﻿@extends('layouts.recruteur')
+@extends('layouts.recruteur')
 @section('title', 'Messagerie | Recruteur')
 
 @section('sidebar')

@@ -1,5 +1,5 @@
-﻿@extends('layouts.recruteur')
-@section('title', 'Profil | ' . $cv->titre_poste)
+@extends('layouts.recruteur')
+@section('title', 'Profil | ' . ($cv->metier ?? 'Candidat'))
 
 @section('sidebar')
 @include('recruteur._sidebar')
@@ -27,21 +27,16 @@
   {{-- Profil --}}
   <div class="rec-card">
     <div style="background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);padding:28px 24px;display:flex;align-items:center;gap:18px;border-radius:12px 12px 0 0">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">
-        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.3);overflow:hidden">
+        @if($cv->photo)
+          <img src="{{ asset('storage/' . $cv->photo) }}" alt="{{ $cv->metier ?? 'Candidat' }}" style="width:100%;height:100%;object-fit:cover">
+        @else
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        @endif
       </div>
       <div>
         <h2 style="margin:0 0 3px;font-size:1.15rem;color:#fff;font-weight:700">{{ $cv->candidat?->prenom }} {{ $cv->candidat?->nom }}</h2>
-        <p style="margin:0;font-size:.95rem;color:rgba(255,255,255,.8)">{{ $cv->titre_poste }}</p>
-        @if($cv->disponibilite)
-        @php $dispo = $disponibilitesList->firstWhere('code', $cv->disponibilite) @endphp
-        @if($dispo)
-        <span style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 12px;font-size:11.5px;color:#fff;font-weight:600">
-          <span style="width:7px;height:7px;border-radius:50%;background:{{ $dispo->couleur }}"></span>
-          {{ $dispo->libelle }}
-        </span>
-        @endif
-        @endif
+        <p style="margin:0;font-size:.95rem;color:rgba(255,255,255,.8)">{{ $cv->metier }}</p>
       </div>
     </div>
 
@@ -71,12 +66,6 @@
           <div>
             <p style="font-size:11px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.05em;margin:0 0 3px">Téléphone</p>
             <p style="font-size:13.5px;color:#042C53;margin:0;font-weight:600">{{ $cv->candidat->telephone }}</p>
-          </div>
-          @endif
-          @if($cv->pays)
-          <div>
-            <p style="font-size:11px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.05em;margin:0 0 3px">Pays</p>
-            <p style="font-size:13.5px;color:#042C53;margin:0;font-weight:600">{{ $cv->pays }}</p>
           </div>
           @endif
         </div>

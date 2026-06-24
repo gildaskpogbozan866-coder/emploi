@@ -1,15 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@yield('title', 'Espace Recruteur') | Emploi Bouge Bénin</title>
-  <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}" />
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon-64.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
+  <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
   <link rel="stylesheet" href="{{ asset('css/recruteur/recruteur.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
   @yield('css')
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  @include('partials._pwa-head')
 </head>
 <body>
 
@@ -69,8 +73,8 @@
       const sidebar  = document.getElementById('recSidebar');
       const overlay  = document.getElementById('recOverlay');
       const closeBtn = document.getElementById('recClose');
-      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
       burger?.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
       closeBtn?.addEventListener('click', closeSidebar);
       overlay?.addEventListener('click', closeSidebar);
@@ -84,5 +88,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
+  @include('partials._pwa-banner')
 </body>
 </html>
