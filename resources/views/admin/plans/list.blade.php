@@ -72,8 +72,13 @@
                 @else
                   <div style="display:flex;flex-wrap:wrap;gap:4px">
                     @foreach($plan->features as $f)
+                      @php $isPredefined = array_key_exists($f->feature_key, $featureKeys); @endphp
                       <span style="background:#f1f5f9;color:#334155;font-size:11.5px;padding:2px 7px;border-radius:99px;white-space:nowrap">
-                        {{ $f->feature_key }} : {{ $f->feature_value }}
+                        @if($isPredefined)
+                          {{ $featureKeys[$f->feature_key] }} : {{ $f->feature_value }}
+                        @else
+                          {{ $f->feature_key }}
+                        @endif
                       </span>
                     @endforeach
                   </div>

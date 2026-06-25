@@ -36,7 +36,7 @@
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link active">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs crédits</a>
     @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link">Déposer un CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>

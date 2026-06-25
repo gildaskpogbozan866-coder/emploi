@@ -1,5 +1,5 @@
-﻿@extends('layouts.app')
-@section('title', 'Ajouter un CV ou document | Emploi Bouge Bénin')
+@extends('layouts.app')
+@section('title', 'Déposer un CV | Emploi Bouge Bénin')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/cv/cvtheque.css') }}">
@@ -14,7 +14,7 @@
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs CV</a>
-    <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}"  class="cvt-subnav__link active">Ajouter un CV / Document</a>
+    <a href="{{ route('cv.public.depot') }}"  class="cvt-subnav__link active">Déposer un CV</a>
   </div>
 </div>
 
@@ -22,8 +22,8 @@
 <section class="depot-hero">
   <div class="depot-hero__inner">
     <span class="depot-hero__badge">Espace candidat</span>
-    <h1 class="depot-hero__title">Ajoutez un <em>CV ou document</em></h1>
-    <p class="depot-hero__sub">CV, diplôme, attestation, certificat de formation… déposez tout ce qui valorise votre parcours.</p>
+    <h1 class="depot-hero__title">Déposez votre <em>CV</em></h1>
+    <p class="depot-hero__sub">Remplissez le formulaire ci-dessous pour apparaître dans la CVthèque et être trouvé par les recruteurs.</p>
   </div>
 </section>
 
@@ -37,7 +37,7 @@
     </div>
     <div class="depot-step depot-step--active">
       <div class="depot-step__num">Étape 2</div>
-      <div class="depot-step__label">Votre document</div>
+      <div class="depot-step__label">Votre CV</div>
     </div>
     <div class="depot-step">
       <div class="depot-step__num">Étape 3</div>
@@ -50,7 +50,7 @@
     <div class="depot-user-badge__avatar">{{ mb_strtoupper(mb_substr(auth()->user()->prenom, 0, 1)) }}</div>
     <div>
       <div class="depot-user-badge__name">{{ auth()->user()->prenom }} {{ auth()->user()->nom }}</div>
-      <div class="depot-user-badge__sub">Connecté, remplissez les informations ci-dessous</div>
+      <div class="depot-user-badge__sub">Connecté — remplissez le formulaire ci-dessous</div>
     </div>
   </div>
   @endauth
@@ -61,11 +61,11 @@
   <div style="display:flex;align-items:center;gap:10px;background:{{ $quota['remaining'] <= 1 ? '#fffbeb' : '#f0f9ff' }};border:1.5px solid {{ $quota['remaining'] <= 1 ? '#fde68a' : '#bae6fd' }};border-radius:10px;padding:11px 16px;margin-bottom:18px">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="{{ $quota['remaining'] <= 1 ? '#d97706' : '#0284c7' }}" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
     <p style="margin:0;font-size:13px;color:{{ $quota['remaining'] <= 1 ? '#92400e' : '#0c4a6e' }};flex:1">
-      <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} documents</strong> utilisés sur votre plan
+      <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} CV(s)</strong> déposé(s) sur votre plan
       @if($quota['remaining'] === 0)
-        quota atteint
+        — quota atteint
       @else
-        encore <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong> disponible{{ $quota['remaining'] > 1 ? 's' : '' }}
+        — encore <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong> disponible{{ $quota['remaining'] > 1 ? 's' : '' }}
       @endif
     </p>
     @if($quota['remaining'] <= 1)
@@ -84,21 +84,20 @@
 
   <div class="depot-card">
     <div class="depot-card__head">
-      <span class="depot-card__head-title">CV, diplôme, attestation ou certificat</span>
+      <span class="depot-card__head-title">Informations du CV</span>
     </div>
     <div class="depot-card__body">
       <form method="POST" action="{{ route('cv.public.depot.store') }}" enctype="multipart/form-data">
         @csrf
 
-        {{-- Type --}}
+        {{-- TYPE DE DOCUMENT --}}
         <div class="form-row form-row--1">
           <div>
             <label class="field__label" for="depot-type">Type de document <span class="req">*</span></label>
             <select class="field__select @error('type_document_id') field--invalid @enderror" id="depot-type" name="type_document_id" required>
               <option value="">-- Choisissez --</option>
               @foreach($typesDocuments as $type)
-                <option value="{{ $type->id }}"
-                  {{ old('type_document_id', $typeCVId) == $type->id ? 'selected' : '' }}>
+                <option value="{{ $type->id }}" {{ old('type_document_id', $typeCVId) == $type->id ? 'selected' : '' }}>
                   {{ $type->nom }}
                 </option>
               @endforeach
@@ -111,48 +110,55 @@
           </div>
         </div>
 
-        {{-- Intitulé universel --}}
-        <div class="form-row form-row--1">
-          <div>
-            <label class="field__label" for="depot-nom">Intitulé <span class="req">*</span></label>
-            <input class="field__input @error('nom') field--invalid @enderror" type="text" id="depot-nom" name="nom" required
-              value="{{ old('nom') }}"
-              placeholder="Ex : Comptable, Licence en Gestion UAC 2022, Attestation stage SONEB, BTS Commerce ENEAM…">
-            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
-            <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : indiquez le poste visé. Pour un diplôme ou certificat : indiquez le nom du document.</p>
-          </div>
-        </div>
-
-        {{-- Détails complémentaires (CV) --}}
-        {{-- <div class="form-section-label" style="margin-top:20px">
-          Détails complémentaires
-          <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px">utile pour les CV, ignorez si autre document</span>
-        </div> --}}
-
-        {{-- Photo de profil --}}
-        {{-- <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px">
-          <div id="photoPreviewWrap" style="position:relative;flex-shrink:0">
-            <div id="photoCircle" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2.5px solid #e2e8f0">
-              <span id="photoInitials" style="color:#fff;font-size:1.4rem;font-weight:800">{{ mb_strtoupper(mb_substr(auth()->user()->prenom ?? '?', 0, 1)) }}</span>
+        {{-- PHOTO DE PROFIL --}}
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;padding:16px 18px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px">
+          <div style="position:relative;flex-shrink:0">
+            <div id="photoCircle" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#042C53,#185FA5);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2.5px solid #e2e8f0">
+              <span id="photoInitials" style="color:#fff;font-size:1.3rem;font-weight:800">{{ mb_strtoupper(mb_substr(auth()->user()->prenom ?? '?', 0, 1)) }}</span>
               <img id="photoPreviewImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
             </div>
-            <label for="photoInput" style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:#185FA5;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
-              <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+            <label for="photoInput" style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#185FA5;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
             </label>
           </div>
           <div>
-            <p style="font-size:13.5px;font-weight:700;color:#042C53;margin:0 0 3px">Photo de profil</p>
-            <p style="font-size:12.5px;color:#64748b;margin:0 0 8px">JPG, PNG ou WebP · max 2 Mo</p>
+            <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 2px">Photo de profil <span style="font-size:11px;font-weight:400;color:#94a3b8">(optionnelle)</span></p>
+            <p style="font-size:12px;color:#64748b;margin:0 0 6px">JPG, PNG ou WebP · max 2 Mo</p>
             <label for="photoInput" style="font-size:12.5px;color:#185FA5;font-weight:600;cursor:pointer;text-decoration:underline">Choisir une photo</label>
-            <span id="photoFileName" style="font-size:12px;color:#94a3b8;margin-left:8px"></span>
+            <span id="photoFileName" style="font-size:11.5px;color:#94a3b8;margin-left:8px"></span>
           </div>
           <input type="file" id="photoInput" name="photo" accept=".jpg,.jpeg,.png,.webp" style="display:none">
-        </div> --}}
+        </div>
 
-        {{-- <div class="form-row form-row--2">
+        {{-- INTITULÉ / POSTE VISÉ --}}
+        <div class="form-row form-row--1">
+          <div>
+            <label class="field__label" for="depot-nom">Intitulé / Poste visé <span class="req">*</span></label>
+            <input class="field__input @error('nom') field--invalid @enderror" type="text" id="depot-nom" name="nom" required
+              value="{{ old('nom') }}"
+              placeholder="Ex : Comptable, Infirmier, Juriste, BTS Commerce ENEAM…">
+            @error('nom')<p class="field__server-error">{{ $message }}</p>@enderror
+            <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Pour un CV : le poste visé. Pour un diplôme ou certificat : le nom du document.</p>
+          </div>
+        </div>
+
+        {{-- RÉSUMÉ --}}
+        <div class="form-row form-row--1">
+          <div>
+            <label class="field__label">Résumé / Présentation</label>
+            <textarea class="field__textarea @error('resume') field--invalid @enderror" name="resume" rows="4"
+              placeholder="Présentez votre parcours, vos compétences clés et vos objectifs professionnels…">{{ old('resume') }}</textarea>
+            @error('resume')<p class="field__server-error">{{ $message }}</p>@enderror
+            <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Max 2 000 caractères</p>
+          </div>
+        </div>
+
+        {{-- LOCALISATION --}}
+        <div class="form-section-label" style="margin-top:24px">Localisation</div>
+        <div class="form-row form-row--2">
           <div>
             <label class="field__label">Pays</label>
-            <select class="field__select" name="pays" data-searchable>
+            <select class="field__select" name="pays">
               <option value="">-- Sélectionnez --</option>
               @foreach($paysList as $p)
                 <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -161,63 +167,58 @@
           </div>
           <div>
             <label class="field__label">Ville</label>
-            @include('_partials.villes-select', ['selected' => old('ville')])
+            <input class="field__input" type="text" name="ville" value="{{ old('ville') }}"
+              placeholder="Ex : Cotonou, Abomey-Calavi, Porto-Novo…">
           </div>
         </div>
 
-        <div class="form-row form-row--2">
+        {{-- PRÉFÉRENCES EMPLOI --}}
+        <div class="form-section-label" style="margin-top:24px">Préférences emploi</div>
+
+        <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Secteur d'activité</label>
-            <select class="field__select" name="secteur">
-              <option value="">-- Sélectionnez --</option>
-              @foreach($secteursList as $s)
-                <option value="{{ $s->libelle }}" {{ old('secteur') === $s->libelle ? 'selected' : '' }}>{{ $s->libelle }}</option>
+            <label class="field__label">Types de contrat souhaités</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+              @foreach($typesContrats as $tc)
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#042C53;cursor:pointer;padding:6px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;transition:border-color .15s"
+                       onmouseover="this.style.borderColor='#185FA5'" onmouseout="this.querySelector('input:not(:checked)') && (this.style.borderColor='#e2e8f0')">
+                  <input type="checkbox" name="types_contrat_ids[]" value="{{ $tc->id }}"
+                    {{ in_array($tc->id, old('types_contrat_ids', [])) ? 'checked' : '' }}
+                    style="width:15px;height:15px;accent-color:#185FA5;flex-shrink:0">
+                  {{ $tc->libelle }}
+                </label>
               @endforeach
-            </select>
-          </div>
-          <div>
-            <label class="field__label">Métier / Poste recherché</label>
-            <select class="field__select" name="metier">
-              <option value="">-- Sélectionnez --</option>
-              @foreach($metiersList as $m)
-                <option value="{{ $m->nom }}" {{ old('metier') === $m->nom ? 'selected' : '' }}>{{ $m->nom }}</option>
-              @endforeach
-            </select>
+            </div>
           </div>
         </div>
 
         <div class="form-row form-row--2">
           <div>
             <label class="field__label">Niveau d'expérience</label>
-            <select class="field__select" name="niveau_experience">
+            <select class="field__select" name="niveau_experience_id">
               <option value="">-- Sélectionnez --</option>
-              @foreach($niveauxExpList as $ne)
-                <option value="{{ $ne->code }}" {{ old('niveau_experience') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+              @foreach($niveauxExperience as $ne)
+                <option value="{{ $ne->id }}" {{ old('niveau_experience_id') == $ne->id ? 'selected' : '' }}>
+                  {{ $ne->libelle }}
+                </option>
               @endforeach
             </select>
           </div>
           <div>
             <label class="field__label">Niveau d'études</label>
-            <select class="field__select" name="niveau_etude">
+            <select class="field__select" name="niveau_etude_id">
               <option value="">-- Sélectionnez --</option>
-              @foreach($niveauxEtudeList as $ne)
-                <option value="{{ $ne->code }}" {{ old('niveau_etude') === $ne->code ? 'selected' : '' }}>{{ $ne->libelle }}</option>
+              @foreach($niveauxEtude as $ne)
+                <option value="{{ $ne->id }}" {{ old('niveau_etude_id') == $ne->id ? 'selected' : '' }}>
+                  {{ $ne->libelle }}
+                </option>
               @endforeach
             </select>
           </div>
         </div>
 
-        <div class="form-row form-row--2">
-          <div>
-            <label class="field__label">Type de contrat recherché</label>
-            <select class="field__select" name="type_contrat">
-              <option value="">-- Sélectionnez --</option>
-              @foreach($typeContratsList as $tc)
-                <option value="{{ $tc->code }}" {{ old('type_contrat') === $tc->code ? 'selected' : '' }}>{{ $tc->libelle }}</option>
-              @endforeach
-            </select>
-          </div>
-        </div>
+        {{-- CONTENU DU CV --}}
+        <div class="form-section-label" style="margin-top:24px">Contenu du CV</div>
 
         <div class="form-row form-row--1">
           <div>
@@ -235,21 +236,135 @@
           </div>
         </div>
 
-        <div class="form-row form-row--1">
-          <div>
-            <label class="field__label">Expérience professionnelle</label>
-            <textarea class="field__textarea" name="experience" rows="4"
-              placeholder="Décrivez vos expériences (poste, entreprise, durée, missions…)">{{ old('experience') }}</textarea>
-          </div>
+        {{-- ── EXPÉRIENCES ─────────────────────────────────── --}}
+        <div class="form-section-sub">
+          <span>Expériences professionnelles</span>
         </div>
+        <input type="hidden" name="experience" id="exp-hidden">
 
-        <div class="form-row form-row--1">
-          <div>
-            <label class="field__label">Formation</label>
-            <textarea class="field__textarea" name="formation" rows="3"
-              placeholder="Diplôme, école, année d'obtention…">{{ old('formation') }}</textarea>
+        <div id="exp-builder" class="cv-builder"></div>
+
+        <button type="button" class="builder-add-btn" id="add-exp">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Ajouter une expérience
+        </button>
+
+        <template id="exp-tpl">
+          <div class="cv-block">
+            <div class="cv-block__head">
+              <span class="cv-block__num"></span>
+              <button type="button" class="cv-block__del" title="Supprimer">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="cv-block__body">
+              <div class="form-row form-row--2">
+                <div>
+                  <label class="field__label">Poste <span class="req">*</span></label>
+                  <input type="text" class="field__input exp-poste" placeholder="ex: Comptable, Caissier, Infirmier…">
+                </div>
+                <div>
+                  <label class="field__label">Entreprise <span class="req">*</span></label>
+                  <input type="text" class="field__input exp-entreprise" placeholder="ex: MTN Bénin, SONEB, Ecobank…">
+                </div>
+              </div>
+              <div class="form-row form-row--2">
+                <div>
+                  <label class="field__label">Lieu</label>
+                  <input type="text" class="field__input exp-lieu" placeholder="ex: Cotonou, Porto-Novo…">
+                </div>
+                <div>
+                  <label class="field__label">Secteur</label>
+                  <input type="text" class="field__input exp-secteur" placeholder="ex: Banque, BTP, Santé…">
+                </div>
+              </div>
+              <div class="form-row form-row--2">
+                <div>
+                  <label class="field__label">Date de début <span class="req">*</span></label>
+                  <input type="month" class="field__input exp-debut">
+                </div>
+                <div>
+                  <label class="field__label">Date de fin <span style="font-size:11px;color:#94a3b8">(laisser vide si en cours)</span></label>
+                  <input type="month" class="field__input exp-fin">
+                </div>
+              </div>
+              <div>
+                <label class="field__label">Missions / Responsabilités</label>
+                <div class="inline-tag-builder">
+                  <div class="inline-tag-box">
+                    <div class="inline-tag-list"></div>
+                    <input type="text" class="inline-tag-text" placeholder="ex: Tenue de la comptabilité… puis Entrée" maxlength="120">
+                  </div>
+                  <button type="button" class="inline-tag-addbtn">+ Ajouter</button>
+                </div>
+                <p class="field__hint">Max 20 missions · <kbd>Entrée</kbd> ou clic sur Ajouter</p>
+              </div>
+            </div>
           </div>
+        </template>
+
+        {{-- ── FORMATIONS ───────────────────────────────────── --}}
+        <div class="form-section-sub" style="margin-top:24px">
+          <span>Formations</span>
         </div>
+        <input type="hidden" name="formation" id="form-hidden">
+
+        <div id="form-builder" class="cv-builder"></div>
+
+        <button type="button" class="builder-add-btn" id="add-form">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Ajouter une formation
+        </button>
+
+        <template id="form-tpl">
+          <div class="cv-block">
+            <div class="cv-block__head">
+              <span class="cv-block__num"></span>
+              <button type="button" class="cv-block__del" title="Supprimer">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="cv-block__body">
+              <div class="form-row form-row--2">
+                <div>
+                  <label class="field__label">Diplôme <span class="req">*</span></label>
+                  <input type="text" class="field__input form-diplome" placeholder="ex: Licence en Gestion, BTS Commerce…">
+                </div>
+                <div>
+                  <label class="field__label">Établissement <span class="req">*</span></label>
+                  <input type="text" class="field__input form-etablissement" placeholder="ex: UAC, ENEAM, UP Parakou…">
+                </div>
+              </div>
+              <div class="form-row form-row--1">
+                <div>
+                  <label class="field__label">Domaine / Spécialité</label>
+                  <input type="text" class="field__input form-domaine" placeholder="ex: Comptabilité, Droit, Génie Civil…">
+                </div>
+              </div>
+              <div class="form-row form-row--2">
+                <div>
+                  <label class="field__label">Date de début <span class="req">*</span></label>
+                  <input type="month" class="field__input form-debut">
+                </div>
+                <div>
+                  <label class="field__label">Date de fin <span style="font-size:11px;color:#94a3b8">(laisser vide si en cours)</span></label>
+                  <input type="month" class="field__input form-fin">
+                </div>
+              </div>
+              <div>
+                <label class="field__label">Activités / Réalisations</label>
+                <div class="inline-tag-builder">
+                  <div class="inline-tag-box">
+                    <div class="inline-tag-list"></div>
+                    <input type="text" class="inline-tag-text" placeholder="ex: Major de promotion, Stage à BOA Bénin… puis Entrée" maxlength="120">
+                  </div>
+                  <button type="button" class="inline-tag-addbtn">+ Ajouter</button>
+                </div>
+                <p class="field__hint">Max 20 activités · <kbd>Entrée</kbd> ou clic sur Ajouter</p>
+              </div>
+            </div>
+          </div>
+        </template>
 
         <div class="form-row form-row--1">
           <div>
@@ -259,13 +374,13 @@
               @if(count($oldLangues))
                 @foreach($oldLangues as $li => $lid)
                 <div class="langue-row">
-                  <select name="langues_ids[]" class="field__select langue-row__select" required>
+                  <select name="langues_ids[]" class="field__select langue-row__select">
                     <option value="">-- Langue --</option>
                     @foreach($languesList as $l)
                       <option value="{{ $l->id }}" {{ $lid == $l->id ? 'selected' : '' }}>{{ $l->nom }}</option>
                     @endforeach
                   </select>
-                  <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                  <select name="niveaux_ids[]" class="field__select langue-row__select">
                     <option value="">-- Niveau --</option>
                     @foreach($niveauxLangueList as $nl)
                       <option value="{{ $nl->id }}" {{ ($oldNiveaux[$li] ?? '') == $nl->id ? 'selected' : '' }}>{{ $nl->libelle }} ({{ $nl->code }})</option>
@@ -282,13 +397,13 @@
             </button>
             <template id="langue-row-tpl">
               <div class="langue-row">
-                <select name="langues_ids[]" class="field__select langue-row__select" required>
+                <select name="langues_ids[]" class="field__select langue-row__select">
                   <option value="">-- Langue --</option>
                   @foreach($languesList as $l)
                     <option value="{{ $l->id }}">{{ $l->nom }}</option>
                   @endforeach
                 </select>
-                <select name="niveaux_ids[]" class="field__select langue-row__select" required>
+                <select name="niveaux_ids[]" class="field__select langue-row__select">
                   <option value="">-- Niveau --</option>
                   @foreach($niveauxLangueList as $nl)
                     <option value="{{ $nl->id }}">{{ $nl->libelle }} ({{ $nl->code }})</option>
@@ -298,22 +413,25 @@
               </div>
             </template>
           </div>
-        </div> --}}
+        </div>
 
-        {{-- Upload --}}
-        <div class="form-section-label" style="margin-top:20px">Votre fichier (CV ou document)</div>
+        {{-- FICHIER PDF OBLIGATOIRE --}}
+        <div class="form-section-label" style="margin-top:24px">
+          Fichier PDF
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;margin-left:6px">Obligatoire</span>
+        </div>
 
         <div class="form-row form-row--1">
           <div>
             <div class="upload-zone" id="uploadZone">
-              <input type="file" id="cvFile" name="fichier_path" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp">
+              <input type="file" id="cvFile" name="fichier_path" accept=".pdf" required>
               <div class="upload-zone__icon">
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                 </svg>
               </div>
-              <div class="upload-zone__title">Glissez votre fichier ici ou <span>cliquez pour charger</span></div>
-              <div class="upload-zone__hint">PDF, DOC, DOCX, JPG, PNG ou WebP, max 5 Mo</div>
+              <div class="upload-zone__title">Glissez votre CV ici ou <span>cliquez pour charger</span></div>
+              <div class="upload-zone__hint">PDF uniquement · max 5 Mo</div>
             </div>
 
             <div class="file-preview" id="filePreview">
@@ -355,7 +473,7 @@
           <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
           </svg>
-          Enregistrer
+          Enregistrer et publier dans la CVthèque
         </button>
 
       </form>
@@ -367,9 +485,7 @@
 <style>
 /* ── Langue builder ───────────────────────────── */
 #langues-builder { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
-.langue-row {
-  display: flex; gap: 8px; align-items: center;
-}
+.langue-row { display: flex; gap: 8px; align-items: center; }
 .langue-row__select { flex: 1; margin: 0; }
 .langue-row__remove {
   flex-shrink: 0; width: 30px; height: 36px;
@@ -384,6 +500,73 @@
   cursor: pointer; transition: background .15s;
 }
 .langue-add-btn:hover { background: #dbeafe; }
+
+/* ── CV Builders (exp + formation) ─────────────── */
+.form-section-sub {
+  font-size: 12px; font-weight: 700; color: #185FA5;
+  text-transform: uppercase; letter-spacing: .06em;
+  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+.form-section-sub::after {
+  content: ''; flex: 1; height: 1px; background: #e2e8f0;
+}
+.cv-builder { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.cv-block {
+  border: 1.5px solid #e2e8f0; border-radius: 12px;
+  background: #fafbfc; overflow: hidden;
+}
+.cv-block__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0;
+}
+.cv-block__num { font-size: 12px; font-weight: 700; color: #185FA5; }
+.cv-block__del {
+  width: 26px; height: 26px; border-radius: 6px; border: none;
+  background: #fee2e2; color: #dc2626; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.cv-block__del:hover { background: #fca5a5; }
+.cv-block__body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.builder-add-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border: 1.5px dashed #93c5fd; border-radius: 9px;
+  background: #eff6ff; color: #185FA5; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s; margin-bottom: 4px;
+}
+.builder-add-btn:hover { background: #dbeafe; }
+
+/* ── Inline tag builder (missions / activités) ── */
+.inline-tag-builder { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; }
+.inline-tag-box {
+  flex: 1; min-height: 42px; padding: 6px 10px;
+  border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;
+  display: flex; flex-wrap: wrap; gap: 5px; align-items: center; cursor: text;
+  transition: border-color .15s;
+}
+.inline-tag-box:focus-within { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,.1); }
+.inline-tag-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 20px; font-size: 12px; font-weight: 600; color: #1e40af;
+}
+.inline-tag-chip button {
+  background: none; border: none; cursor: pointer;
+  color: #60a5fa; font-size: 13px; line-height: 1; padding: 0;
+}
+.inline-tag-chip button:hover { color: #dc2626; }
+.inline-tag-text {
+  border: none; outline: none; font-size: 13px;
+  color: #1e293b; min-width: 140px; flex: 1; background: transparent; font-family: inherit;
+}
+.inline-tag-addbtn {
+  flex-shrink: 0; padding: 8px 13px;
+  background: #042C53; color: #F5C842; font-size: 12.5px; font-weight: 700;
+  border: none; border-radius: 8px; cursor: pointer; white-space: nowrap;
+  transition: background .15s;
+}
+.inline-tag-addbtn:hover { background: #185FA5; color: #fff; }
+.field__hint { font-size: 11.5px; color: #94a3b8; margin: 4px 0 0; }
 </style>
 
 @endsection
@@ -391,7 +574,7 @@
 @section('scripts')
 <script src="{{ asset('js/searchable-select.js') }}"></script>
 <script>
-/* ── Upload preview ──────────────────────────── */
+/* ── Upload fichier CV preview ── */
 (function () {
   const input   = document.getElementById('cvFile');
   const zone    = document.getElementById('uploadZone');
@@ -405,14 +588,15 @@
     zone.classList.add('has-file');
     preview.classList.add('visible');
     name.textContent = file.name;
-    meta.textContent = (file.size / 1024 / 1024).toFixed(2) + ' Mo · ' + file.name.split('.').pop().toUpperCase();
+    meta.textContent = (file.size / 1024 / 1024).toFixed(2) + ' Mo · PDF';
   }
 
   input.addEventListener('change', () => showFile(input.files[0]));
-  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('has-file'); });
-  zone.addEventListener('dragleave', () => { if (!input.files[0]) zone.classList.remove('has-file'); });
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('dragging'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
   zone.addEventListener('drop', e => {
     e.preventDefault();
+    zone.classList.remove('dragging');
     if (e.dataTransfer.files[0]) { input.files = e.dataTransfer.files; showFile(e.dataTransfer.files[0]); }
   });
   remove.addEventListener('click', () => {
@@ -423,7 +607,7 @@
   });
 })();
 
-/* ── Tag input factory ───────────────────────── */
+/* ── Tag input (compétences) ── */
 function makeTagInput(wrapId, hiddenId, allSuggestions) {
   const wrap    = document.getElementById(wrapId);
   const box     = wrap.querySelector('.tag-input-box');
@@ -508,16 +692,17 @@ function makeTagInput(wrapId, hiddenId, allSuggestions) {
 
 makeTagInput('comp-wrap', 'comp-hidden', @json($competences));
 
-/* ── Langue builder ──────────────────────────── */
+/* ── Langue builder ── */
 document.getElementById('add-langue-row').addEventListener('click', function () {
-  const tpl = document.getElementById('langue-row-tpl');
+  const tpl   = document.getElementById('langue-row-tpl');
   const clone = tpl.content.cloneNode(true);
   document.getElementById('langues-builder').appendChild(clone);
 });
 
-/* ── Photo preview ───────────────────────────── */
+/* ── Photo preview ── */
 (function () {
   const input    = document.getElementById('photoInput');
+  if (!input) return;
   const img      = document.getElementById('photoPreviewImg');
   const initials = document.getElementById('photoInitials');
   const label    = document.getElementById('photoFileName');
@@ -535,5 +720,156 @@ document.getElementById('add-langue-row').addEventListener('click', function () 
     reader.readAsDataURL(file);
   });
 })();
+
+/* ══════════════════════════════════════════════════
+   BUILDERS Expérience & Formation
+══════════════════════════════════════════════════ */
+
+/* ── Inline tag builder (missions / activités) ── */
+function initInlineTagBuilder(block, max) {
+  const box    = block.querySelector('.inline-tag-box');
+  const list   = block.querySelector('.inline-tag-list');
+  const txt    = block.querySelector('.inline-tag-text');
+  const addBtn = block.querySelector('.inline-tag-addbtn');
+  let tags = [];
+
+  function render() {
+    list.innerHTML = tags.map((t, i) =>
+      `<span class="inline-tag-chip">${t}<button type="button" data-i="${i}" tabindex="-1">×</button></span>`
+    ).join('');
+  }
+
+  function addTag(val) {
+    val = val.trim();
+    if (!val || tags.includes(val) || tags.length >= max) { txt.value = ''; return; }
+    tags.push(val);
+    render();
+    txt.value = '';
+  }
+
+  list.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (btn) { tags.splice(+btn.dataset.i, 1); render(); }
+  });
+
+  txt.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addTag(txt.value); }
+  });
+
+  addBtn.addEventListener('click', () => addTag(txt.value));
+  box.addEventListener('click', () => txt.focus());
+
+  return { getTags: () => tags };
+}
+
+/* ── Renumber blocks ── */
+function renumberBlocks(builderId, label) {
+  document.querySelectorAll(`#${builderId} .cv-block__num`).forEach((el, i) => {
+    el.textContent = `${label} ${i + 1}`;
+  });
+}
+
+/* ── Format month string (YYYY-MM → "mois AAAA") ── */
+function fmtMonth(val) {
+  if (!val) return '';
+  const [y, m] = val.split('-');
+  const months = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  return `${months[+m - 1] || ''} ${y}`;
+}
+
+/* ════════ EXPÉRIENCES ════════ */
+const expBuilder  = document.getElementById('exp-builder');
+const expHidden   = document.getElementById('exp-hidden');
+const expTpl      = document.getElementById('exp-tpl');
+const expTags     = new Map(); // block element → { getTags }
+
+function addExpBlock() {
+  const clone = expTpl.content.cloneNode(true);
+  const block = clone.querySelector('.cv-block');
+  const tagApi = initInlineTagBuilder(block, 20);
+  expBuilder.appendChild(block);
+  const inserted = expBuilder.lastElementChild;
+  expTags.set(inserted, tagApi);
+  renumberBlocks('exp-builder', 'Expérience');
+  inserted.querySelector('.cv-block__del').addEventListener('click', () => {
+    expTags.delete(inserted);
+    inserted.remove();
+    renumberBlocks('exp-builder', 'Expérience');
+  });
+}
+
+document.getElementById('add-exp').addEventListener('click', addExpBlock);
+
+function serializeExp() {
+  const parts = [];
+  expBuilder.querySelectorAll('.cv-block').forEach(block => {
+    const poste      = block.querySelector('.exp-poste')?.value.trim()      || '';
+    const entreprise = block.querySelector('.exp-entreprise')?.value.trim() || '';
+    if (!poste && !entreprise) return;
+    const lieu    = block.querySelector('.exp-lieu')?.value.trim()    || '';
+    const secteur = block.querySelector('.exp-secteur')?.value.trim() || '';
+    const debut   = fmtMonth(block.querySelector('.exp-debut')?.value)  || '';
+    const fin     = fmtMonth(block.querySelector('.exp-fin')?.value)    || 'en cours';
+    const tags    = expTags.get(block)?.getTags() || [];
+
+    let line = `${poste}${entreprise ? ' — ' + entreprise : ''}`;
+    const meta = [lieu, secteur, debut && fin ? `${debut} → ${fin}` : debut].filter(Boolean);
+    if (meta.length) line += ' | ' + meta.join(' | ');
+    if (tags.length) line += '\nMissions : ' + tags.join(', ');
+    parts.push(line);
+  });
+  expHidden.value = parts.join('\n\n');
+}
+
+/* ════════ FORMATIONS ════════ */
+const formBuilder = document.getElementById('form-builder');
+const formHidden  = document.getElementById('form-hidden');
+const formTpl     = document.getElementById('form-tpl');
+const formTags    = new Map();
+
+function addFormBlock() {
+  const clone = formTpl.content.cloneNode(true);
+  const block = clone.querySelector('.cv-block');
+  const tagApi = initInlineTagBuilder(block, 20);
+  formBuilder.appendChild(block);
+  const inserted = formBuilder.lastElementChild;
+  formTags.set(inserted, tagApi);
+  renumberBlocks('form-builder', 'Formation');
+  inserted.querySelector('.cv-block__del').addEventListener('click', () => {
+    formTags.delete(inserted);
+    inserted.remove();
+    renumberBlocks('form-builder', 'Formation');
+  });
+}
+
+document.getElementById('add-form').addEventListener('click', addFormBlock);
+
+function serializeForm() {
+  const parts = [];
+  formBuilder.querySelectorAll('.cv-block').forEach(block => {
+    const diplome  = block.querySelector('.form-diplome')?.value.trim()       || '';
+    const etabl    = block.querySelector('.form-etablissement')?.value.trim() || '';
+    if (!diplome && !etabl) return;
+    const domaine = block.querySelector('.form-domaine')?.value.trim() || '';
+    const debut   = fmtMonth(block.querySelector('.form-debut')?.value)  || '';
+    const fin     = fmtMonth(block.querySelector('.form-fin')?.value)    || 'en cours';
+    const tags    = formTags.get(block)?.getTags() || [];
+
+    let line = `${diplome}${etabl ? ' — ' + etabl : ''}`;
+    const meta = [domaine, debut && fin ? `${debut} → ${fin}` : debut].filter(Boolean);
+    if (meta.length) line += ' | ' + meta.join(' | ');
+    if (tags.length) line += '\nActivités : ' + tags.join(', ');
+    parts.push(line);
+  });
+  formHidden.value = parts.join('\n\n');
+}
+
+/* ── Sérialisation avant soumission ── */
+document.querySelector('form[action*="deposer"]').addEventListener('submit', function () {
+  serializeExp();
+  serializeForm();
+});
+
+/* Les builders démarrent vides — l'utilisateur clique pour ajouter */
 </script>
 @endsection

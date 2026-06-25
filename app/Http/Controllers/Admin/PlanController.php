@@ -30,7 +30,7 @@ class PlanController extends Controller
                      ->orderBy('price')
                      ->get();
 
-        return view('admin.plans.list', compact('plans'));
+        return view('admin.plans.list', compact('plans') + ['featureKeys' => self::FEATURE_KEYS]);
     }
 
     public function create()

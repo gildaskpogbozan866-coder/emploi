@@ -76,6 +76,12 @@ class AbonnementController extends Controller
 
     public function pourquoiPremium()
     {
+        $abonnement = auth()->user()->abonnementActif()->with('plan')->first();
+        if ($abonnement && !($abonnement->plan?->is_free ?? true)) {
+            return redirect()->route('candidat.abonnement')
+                ->with('info', 'Vous êtes déjà abonné au plan ' . $abonnement->plan->name . '.');
+        }
+
         $plan_premium = Plan::where('is_active', true)
                             ->where('is_premium', true)
                             ->where('target_type', 'candidat')

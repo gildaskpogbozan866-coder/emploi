@@ -9,7 +9,10 @@ use App\Models\CV;
 use App\Models\Document;
 use App\Models\Langue;
 use App\Models\LangueCandidat;
+use App\Models\NiveauEtude;
+use App\Models\NiveauExperience;
 use App\Models\NiveauLangue;
+use App\Models\TypeContrat;
 use App\Models\TypeDocument;
 use App\Models\User;
 use App\Notifications\NouveauCVDeposeNotification;
@@ -176,11 +179,20 @@ class CVController extends Controller
                 ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
         }
 
-        $typesDocuments  = TypeDocument::actif()->get();
-        $competences     = Competence::orderBy('nom')->pluck('nom');
-        $typeCV          = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
-        $typeCVId        = $typeCV?->id ?? 1;
-        return view('public.cv.depot', compact('typesDocuments', 'competences', 'quota', 'typeCVId'));
+        $typesDocuments    = TypeDocument::actif()->get();
+        $competences       = Competence::orderBy('nom')->pluck('nom');
+        $typeCV            = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
+        $typeCVId          = $typeCV?->id ?? 1;
+        $languesList       = Langue::orderBy('nom')->get();
+        $niveauxLangueList = NiveauLangue::orderBy('libelle')->get();
+        $niveauxEtude      = NiveauEtude::orderBy('ordre')->get();
+        $niveauxExperience = NiveauExperience::orderBy('ordre')->get();
+        $typesContrats     = TypeContrat::orderBy('libelle')->get();
+
+        return view('public.cv.depot', compact(
+            'typesDocuments', 'competences', 'quota', 'typeCVId',
+            'languesList', 'niveauxLangueList', 'niveauxEtude', 'niveauxExperience', 'typesContrats'
+        ));
     }
 
     public function store(Request $request)
@@ -206,56 +218,85 @@ class CVController extends Controller
         }
 
         $request->validate([
-            'type_document_id'  => 'required|exists:type_documents,id',
-            'nom'               => 'required|string|max:200',
-            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'pays'              => 'nullable|string|max:100',
-            'ville'             => 'nullable|string|max:100',
-            'disponibilite'     => 'nullable|string|max:50',
-            'secteur'           => 'nullable|string|max:150',
-            'metier'            => 'nullable|string|max:150',
-            'niveau_experience' => 'nullable|string|max:100',
-            'niveau_etude'      => 'nullable|string|max:100',
-            'type_contrat'      => 'nullable|string|max:50',
-            'competences'       => 'nullable|string',
-            'experience'        => 'nullable|string',
-            'formation'         => 'nullable|string',
-            'langues_ids'       => 'nullable|array',
-            'langues_ids.*'     => 'nullable|exists:langues,id',
-            'niveaux_ids'       => 'nullable|array',
-            'niveaux_ids.*'     => 'nullable|exists:niveaux_langue,id',
-            'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
+            'type_document_id'    => 'required|exists:type_documents,id',
+            'nom'                 => 'required|string|max:200',
+            'resume'              => 'nullable|string|max:2000',
+            'photo'               => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'pays'                => 'nullable|string|max:100',
+            'ville'               => 'nullable|string|max:100',
+            'types_contrat_ids'   => 'nullable|array',
+            'types_contrat_ids.*' => 'nullable|exists:type_contrats,id',
+            'niveau_etude_id'     => 'nullable|exists:niveaux_etudes,id',
+            'niveau_experience_id'=> 'nullable|exists:niveaux_experience,id',
+            'competences'         => 'nullable|string',
+            'experience'          => 'nullable|string',
+            'formation'           => 'nullable|string',
+            'langues_ids'         => 'nullable|array',
+            'langues_ids.*'       => 'nullable|exists:langues,id',
+            'niveaux_ids'         => 'nullable|array',
+            'niveaux_ids.*'       => 'nullable|exists:niveaux_langue,id',
+            'fichier_path'        => 'required|file|mimes:pdf|max:5120',
+        ], [
+            'fichier_path.required' => 'Le fichier PDF est obligatoire.',
+            'fichier_path.mimes'    => 'Le fichier doit être au format PDF.',
         ]);
 
         $typeCV = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
         $estCV  = $typeCV && $request->type_document_id == $typeCV->id;
 
+        // Fichier obligatoire pour tous les types
+        $fichierPath = $request->file('fichier_path')->store('cvs', 'public');
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('cvs/photos', 'public');
+        }
+
+        // Conversion IDs → texte pour stockage
+        $typeContratTexte = '';
+        if ($request->filled('types_contrat_ids')) {
+            $typeContratTexte = TypeContrat::whereIn('id', $request->input('types_contrat_ids', []))
+                ->pluck('libelle')->join(', ');
+        }
+
+        $niveauEtudeTexte = '';
+        if ($request->filled('niveau_etude_id')) {
+            $niveauEtudeTexte = NiveauEtude::find($request->niveau_etude_id)?->libelle ?? '';
+        }
+
+        $niveauExpTexte = '';
+        if ($request->filled('niveau_experience_id')) {
+            $niveauExpTexte = NiveauExperience::find($request->niveau_experience_id)?->libelle ?? '';
+        }
+
+        [$languesTexte, $languesSync] = $this->buildLanguesData(
+            $request->input('langues_ids', []),
+            $request->input('niveaux_ids', [])
+        );
+
         if ($estCV) {
-            $fichierPath = null;
-            if ($request->hasFile('fichier_path')) {
-                $fichierPath = $request->file('fichier_path')->store('cvs', 'public');
-            }
-
-            $photoPath = null;
-            if ($request->hasFile('photo')) {
-                $photoPath = $request->file('photo')->store('cvs/photos', 'public');
-            }
-
-            [$languesTexte, $languesSync] = $this->buildLanguesData(
-                $request->input('langues_ids', []),
-                $request->input('niveaux_ids', [])
-            );
-
             $cv = CV::create([
-                'candidat_id'      => Auth::id(),
-
-                'fichier_path'     => $fichierPath,
-                'plan'             => 'gratuit',
-                'visible'          => true,
+                'candidat_id'       => Auth::id(),
+                'fichier_path'      => $fichierPath,
+                'photo'             => $photoPath ?: $user->avatar,
+                'plan'              => 'gratuit',
+                'visible'           => true,
+                'publie_le'         => now(),
+                'ville'             => $request->ville,
+                'metier'            => $request->nom,
+                'resume'            => $request->resume,
+                'competences'       => $request->competences,
+                'experience'        => $request->experience,
+                'formation'         => $request->formation,
+                'langues'           => $languesTexte ?: null,
+                'niveau_etude'      => $niveauEtudeTexte ?: null,
+                'type_contrat'      => $typeContratTexte ?: null,
+                'niveau_experience' => $niveauExpTexte ?: null,
             ]);
 
-            // Sync langues vers la table pivot
-            $user->langues()->sync($languesSync);
+            if (!empty($languesSync)) {
+                $user->langues()->sync($languesSync);
+            }
 
             // Notifier les admins
             foreach (User::where('role', 'admin')->get() as $admin) {
@@ -266,45 +307,48 @@ class CVController extends Controller
                 }
             }
 
-            // Sync vers le profil utilisateur
+            // Sync vers profil utilisateur
             $syncUser = [];
-            if ($request->filled('pays'))   $syncUser['pays']   = $request->pays;
-            if ($request->filled('metier')) $syncUser['metier'] = $request->metier;
-            if ($photoPath)                 $syncUser['avatar'] = $photoPath;
-            if (!empty($syncUser))          $user->update($syncUser);
+            if ($request->filled('pays')) $syncUser['pays']   = $request->pays;
+            if ($photoPath)               $syncUser['avatar'] = $photoPath;
+            if (!empty($syncUser))        $user->update($syncUser);
 
-            // Sync seulement les champs compatibles avec candidat_profils
-            // Note: disponibilite du formulaire dépôt utilise les codes CVthèque (en_recherche/ouvert/indisponible)
-            // qui sont différents de l'ENUM candidat_profils (immediatement/1_mois/etc.) → ne pas synchroniser
             $profilSync = [];
-            if ($request->filled('nom'))   $profilSync['titre_professionnel'] = $request->nom;
-            if ($request->filled('ville')) $profilSync['ville']               = $request->ville;
+            if ($request->filled('nom'))    $profilSync['titre_professionnel'] = $request->nom;
+            if ($request->filled('ville'))  $profilSync['ville']               = $request->ville;
+            if ($request->filled('resume')) $profilSync['bio']                 = $request->resume;
             if (!empty($profilSync)) {
                 CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
             }
 
-            return redirect()->route('candidat.cvs')->with('success', 'Votre CV a été publié avec succès !');
+            // Notification quota restant
+            $quotaApres = $this->cvQuota($user);
+            $successMsg = 'Votre CV a été publié avec succès dans la CVthèque !';
+            if (!$quotaApres['unlimited']) {
+                if ($quotaApres['remaining'] === 0) {
+                    $successMsg .= ' Vous avez atteint la limite de votre plan.';
+                } elseif ($quotaApres['remaining'] > 0) {
+                    $successMsg .= " Il vous reste {$quotaApres['remaining']} dépôt(s) disponible(s) sur votre plan.";
+                }
+            }
+
+            return redirect()->route('candidat.cvs')->with('success', $successMsg);
         }
 
-        $request->validate([
-            'fichier_path' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
-        ]);
-
-        $path = $request->file('fichier_path')->store('candidats/documents', 'public');
-
+        // Document non-CV
         $user->documents()->create([
             'type_document_id' => $request->type_document_id,
             'nom'              => $request->nom,
-            'fichier'          => $path,
+            'fichier'          => $fichierPath,
             'pays'             => $request->pays,
             'ville'            => $request->ville,
             'competences'      => $request->competences,
             'experience'       => $request->experience,
             'formation'        => $request->formation,
-            'langues'          => $request->langues,
+            'langues'          => $languesTexte ?: null,
         ]);
 
-        return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès !');
+        return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès dans la CVthèque !');
     }
 
     // ── Espace candidat ───────────────────────────────────

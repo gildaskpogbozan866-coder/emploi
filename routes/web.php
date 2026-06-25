@@ -167,8 +167,8 @@ Route::prefix('offres')->name('offre.')->group(function () {
 Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/',          [CVController::class, 'theque'])->name('theque');
     Route::get('/tarif',     [CVController::class, 'tarif'])->name('tarif');
-    Route::get('/deposer',  fn() => redirect()->route('candidat.profil'))->name('depot');
-    Route::post('/deposer', fn() => redirect()->route('candidat.profil'))->name('depot.store');
+    Route::get('/deposer',  [CVController::class, 'depot'])->name('depot');
+    Route::post('/deposer', [CVController::class, 'store'])->name('depot.store');
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
