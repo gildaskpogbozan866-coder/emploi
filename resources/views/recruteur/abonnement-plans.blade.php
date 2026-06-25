@@ -1,4 +1,4 @@
-@extends('layouts.recruteur')
+﻿@extends('layouts.recruteur')
 @section('title', 'Choisir un plan | Recruteur')
 
 @section('sidebar')
@@ -119,9 +119,7 @@ $featureLabels = [
             <li style="font-size:13.5px;color:#374151;display:flex;align-items:flex-start;gap:10px">
               <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
               {{ $def['label'] }}
-              @if(!$def['bool'] && $feat->feature_value !== null && $feat->feature_value !== '')
-                : <strong>{{ $feat->feature_value }}</strong>
-              @endif
+              
             </li>
             @endif
           @endforeach

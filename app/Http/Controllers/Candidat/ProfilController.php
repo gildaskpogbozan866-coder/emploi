@@ -102,6 +102,9 @@ class ProfilController extends Controller
         // CV du candidat (pour afficher le statut de visibilité)
         $cv = $user->cvs()->first();
 
+        $abonnement  = $user->abonnementActif()->with('plan')->first();
+        $estPremium  = $abonnement && !($abonnement->plan?->is_free ?? true);
+
         return view('candidat.profil', compact(
             'user',
             'languesCandidats',
@@ -116,7 +119,8 @@ class ProfilController extends Controller
             'typesDocuments',
             'candidatCompetenceIds',
             'metiersCompetencesJson',
-            'cv'
+            'cv',
+            'estPremium'
         ));
     }
 
@@ -200,15 +204,6 @@ class ProfilController extends Controller
                 )->delete();
             }
         });
-
-        // Garantir que le CV existe (mais ne pas l'auto-publier)
-        $cv = $user->cvs()->first();
-        if (!$cv) {
-            $cv = CV::create(['candidat_id' => $user->id, 'plan' => 'gratuit', 'visible' => false]);
-        }
-
-        // Synchroniser les données du profil vers le CV (sans changer visible)
-        $this->syncCvFromProfil($user, $cv);
 
         return redirect()
             ->route('candidat.profil')

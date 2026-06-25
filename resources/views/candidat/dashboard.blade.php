@@ -262,7 +262,7 @@
                     <span style="font-size:11px;font-weight:400;color:#c2410c">Limite atteinte, Upgrader</span>
                 </a>
             @else
-                <a href="{{ route('candidat.profil') }}"
+                <a href="{{ route('cv.public.depot') }}"
                     style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:18px 14px;text-decoration:none;color:#042C53;font-size:13px;font-weight:600;transition:border-color .2s,box-shadow .2s"
                     onmouseover="this.style.borderColor='#378ADD';this.style.boxShadow='0 2px 12px rgba(55,138,221,.12)'"
                     onmouseout="this.style.borderColor='#e2e6ed';this.style.boxShadow='none'">
@@ -272,8 +272,7 @@
                         <polyline points="17 8 12 3 7 8" />
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    Déposer un CV & attestation
-                    
+                    Déposer un CV
                 </a>
             @endif
 

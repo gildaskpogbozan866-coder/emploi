@@ -51,7 +51,7 @@
         Mettre à niveau
       </a>
     @else
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" class="cand-btn cand-btn--yellow">
+      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Ajouter
         @if(!$quota['unlimited'])
@@ -70,7 +70,7 @@
       </div>
       <p class="cand-empty__title">Aucun document pour l'instant</p>
       <p class="cand-empty__text">Ajoutez votre CV, vos diplômes, attestations ou certificats.</p>
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" class="cand-btn cand-btn--yellow">Ajouter mon premier document</a>
+      <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow">Ajouter mon premier document</a>
     </div>
   </div>
 @else

@@ -6,7 +6,6 @@
   display: flex;
   min-height: calc(100vh - var(--dash-h));
   background: #f0f2f5;
-  overflow-x: hidden;
 }
 
 /* ── Sidebar ── */
@@ -162,6 +161,7 @@
   flex: 1;
   min-width: 0;
   padding: 30px 30px 72px;
+  overflow-x: hidden;
 }
 
 /* ── Page header ── */

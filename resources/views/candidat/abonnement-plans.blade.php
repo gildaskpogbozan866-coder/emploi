@@ -162,9 +162,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
                                             {{ $def['label'] }}
-                                            @if (!$def['bool'] && $feat->feature_value !== null && $feat->feature_value !== '')
-                                                : <strong>{{ $feat->feature_value }}</strong>
-                                            @endif
+                                         
                                         </li>
                                     @endif
                                 @endforeach

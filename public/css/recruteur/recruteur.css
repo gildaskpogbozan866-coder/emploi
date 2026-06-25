@@ -27,7 +27,7 @@ body {
 .rec-wrap {
   display: flex;
   min-height: calc(100vh - var(--dash-h));
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* ── Sidebar ─────────────────────────────────── */

@@ -120,9 +120,11 @@ class PlanController extends Controller
     {
         $plan->features()->delete();
 
+        $seen = [];
         foreach ($features as $row) {
             $key = trim($row['key'] ?? '');
-            if ($key === '') continue;
+            if ($key === '' || isset($seen[$key])) continue;
+            $seen[$key] = true;
 
             $plan->features()->create([
                 'feature_key'   => $key,
