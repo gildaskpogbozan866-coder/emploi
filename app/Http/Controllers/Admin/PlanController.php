@@ -30,7 +30,7 @@ class PlanController extends Controller
                      ->orderBy('price')
                      ->get();
 
-        return view('admin.plans.list', compact('plans') + ['featureKeys' => self::FEATURE_KEYS]);
+        return view('admin.plans.list', compact('plans'));
     }
 
     public function create()
@@ -120,9 +120,11 @@ class PlanController extends Controller
     {
         $plan->features()->delete();
 
+        $seen = [];
         foreach ($features as $row) {
             $key = trim($row['key'] ?? '');
-            if ($key === '') continue;
+            if ($key === '' || isset($seen[$key])) continue;
+            $seen[$key] = true;
 
             $plan->features()->create([
                 'feature_key'   => $key,
