@@ -20,7 +20,9 @@ class Paiement extends Model
     protected function casts(): array
     {
         return [
-            'paid_at' => 'datetime',
+            'paid_at'  => 'datetime',
+            'user_id'  => 'integer',
+            'montant'  => 'float',
         ];
     }
 

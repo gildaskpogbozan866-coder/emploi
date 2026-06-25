@@ -17,8 +17,10 @@ class Plan extends Model
     protected function casts(): array
     {
         return [
-            'is_free'   => 'boolean',
-            'is_active' => 'boolean',
+            'is_free'      => 'boolean',
+            'is_active'    => 'boolean',
+            'duration_days'=> 'integer',
+            'price'        => 'float',
         ];
     }
 

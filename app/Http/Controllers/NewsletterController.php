@@ -37,7 +37,7 @@ class NewsletterController extends Controller
         ]);
 
         try {
-            Mail::to($subscriber->email)->send(new NewsletterConfirmationMail($subscriber));
+            Mail::to($subscriber->email)->queue(new NewsletterConfirmationMail($subscriber));
         } catch (\Throwable $e) {
             Log::warning('Email confirmation newsletter non envoyé', ['error' => $e->getMessage()]);
         }

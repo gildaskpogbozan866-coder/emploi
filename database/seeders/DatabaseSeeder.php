@@ -122,12 +122,12 @@ class DatabaseSeeder extends Seeder
         );
 
         $offresData = [
-            ['titre' => 'Développeur Web Full Stack',     'type_contrat_id' => 1,   'secteur' => 'Informatique', 'salaire' => '150 000 - 250 000 FCFA'],
-            ['titre' => 'Chargé(e) de Marketing Digital', 'type_contrat_id' => 1,   'secteur' => 'Marketing',    'salaire' => '120 000 FCFA'],
-            ['titre' => 'Stage en Comptabilité',          'type_contrat_id' => 2, 'secteur' => 'Finance',      'salaire' => '50 000 FCFA/mois'],
-            ['titre' => 'Responsable Ressources Humaines','type_contrat_id' => 3,   'secteur' => 'RH',           'salaire' => '200 000 - 300 000 FCFA'],
-            ['titre' => 'Bourse de formation Data Science','type_contrat_id'=> 3,'secteur' => 'Formation',    'salaire' => 'Gratuit + Allocation'],
-            ['titre' => 'Commercial terrain B2B',         'type_contrat_id' => 3,   'secteur' => 'Ventes',       'salaire' => 'Fixe + Commissions'],
+            ['titre' => 'Développeur Web Full Stack',      'type_contrat_id' => 1, 'secteur' => 'Informatique', 'salaire_min' => 150000, 'salaire_max' => 250000],
+            ['titre' => 'Chargé(e) de Marketing Digital',  'type_contrat_id' => 1, 'secteur' => 'Marketing',    'salaire_min' => 120000, 'salaire_max' => null],
+            ['titre' => 'Stage en Comptabilité',           'type_contrat_id' => 2, 'secteur' => 'Finance',      'salaire_min' => 50000,  'salaire_max' => null],
+            ['titre' => 'Responsable Ressources Humaines', 'type_contrat_id' => 3, 'secteur' => 'RH',           'salaire_min' => 200000, 'salaire_max' => 300000],
+            ['titre' => 'Bourse de formation Data Science','type_contrat_id' => 3, 'secteur' => 'Formation',    'salaire_min' => null,   'salaire_max' => null],
+            ['titre' => 'Commercial terrain B2B',          'type_contrat_id' => 3, 'secteur' => 'Ventes',       'salaire_min' => null,   'salaire_max' => null],
         ];
 
         foreach ($offresData as $i => $data) {
@@ -135,14 +135,15 @@ class DatabaseSeeder extends Seeder
             Offre::firstOrCreate(
                 ['recruteur_id' => $recruteurId, 'titre' => $data['titre']],
                 [
-                    'entreprise'   => ($i % 2 === 0) ? 'TechBénin SARL' : 'SenServices SA',
-                    'localisation' => ($i % 2 === 0) ? 'Cotonou, Bénin' : 'Dakar, Sénégal',
-                    'type_contrat_id'         => $data['type_contrat_id'],
-                    'secteur'      => $data['secteur'],
-                    'salaire'      => $data['salaire'],
-                    'description'  => "Nous recherchons un(e) {$data['titre']} motivé(e) pour rejoindre notre équipe. Venez contribuer à nos projets dans un environnement stimulant.",
-                    'statut'       => 'active',
-                    'date_limite'  => now()->addDays(30),
+                    'entreprise'      => ($i % 2 === 0) ? 'TechBénin SARL' : 'SenServices SA',
+                    'localisation'    => ($i % 2 === 0) ? 'Cotonou, Bénin' : 'Dakar, Sénégal',
+                    'type_contrat_id' => $data['type_contrat_id'],
+                    'secteur'         => $data['secteur'],
+                    'salaire_min'     => $data['salaire_min'],
+                    'salaire_max'     => $data['salaire_max'],
+                    'description'     => "Nous recherchons un(e) {$data['titre']} motivé(e) pour rejoindre notre équipe. Venez contribuer à nos projets dans un environnement stimulant.",
+                    'statut'          => 'active',
+                    'date_limite'     => now()->addDays(30),
                 ]
             );
         }

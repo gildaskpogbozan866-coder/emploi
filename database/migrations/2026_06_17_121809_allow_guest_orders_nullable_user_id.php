@@ -9,16 +9,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('commandes', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
+            $fkNames = collect(Schema::getForeignKeys('commandes'))->pluck('name');
+            if ($fkNames->contains('commandes_user_id_foreign')) {
+                $table->dropForeign(['user_id']);
+            }
             $table->unsignedBigInteger('user_id')->nullable()->change();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->string('email_contact')->nullable()->after('user_id');
+            $fkNames = collect(Schema::getForeignKeys('commandes'))->pluck('name');
+            if (! $fkNames->contains('commandes_user_id_foreign')) {
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            }
+            if (! Schema::hasColumn('commandes', 'email_contact')) {
+                $table->string('email_contact')->nullable()->after('user_id');
+            }
         });
 
         Schema::table('paiements', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
+            $fkNames = collect(Schema::getForeignKeys('paiements'))->pluck('name');
+            if ($fkNames->contains('paiements_user_id_foreign')) {
+                $table->dropForeign(['user_id']);
+            }
             $table->unsignedBigInteger('user_id')->nullable()->change();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $fkNames = collect(Schema::getForeignKeys('paiements'))->pluck('name');
+            if (! $fkNames->contains('paiements_user_id_foreign')) {
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            }
         });
     }
 
