@@ -307,16 +307,6 @@ class CVController extends Controller
                 $user->langues()->sync($languesSync);
             }
 
-            // Notifier les admins
-            foreach (User::where('role', 'admin')->get() as $admin) {
-                try {
-                    $admin->notify(new NouveauCVDeposeNotification($cv, $user));
-                } catch (\Throwable $e) {
-                    Log::warning('Notification admin CV non envoyée', ['error' => $e->getMessage()]);
-                }
-            }
-
-            // Sync vers profil utilisateur
             $syncUser = [
                 'prenom' => $request->prenom,
                 'nom'    => $request->nom_famille,
@@ -327,12 +317,20 @@ class CVController extends Controller
             $user->update($syncUser);
 
             $profilSync = [
-                'disponibilite' => $request->disponibilite,
-                'ville'         => $request->ville,
+                'titre_professionnel' => $request->nom,
+                'disponibilite'       => $request->disponibilite,
+                'ville'               => $request->ville,
             ];
-            if ($request->filled('nom'))    $profilSync['titre_professionnel'] = $request->nom;
-            if ($request->filled('resume')) $profilSync['bio']                 = $request->resume;
+            if ($request->filled('resume')) $profilSync['bio'] = $request->resume;
             CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
+
+            foreach (User::role('admin')->get() as $admin) {
+                try {
+                    $admin->notify(new NouveauCVDeposeNotification($cv, $user));
+                } catch (\Throwable $e) {
+                    Log::warning('Notification admin CV non envoyée', ['error' => $e->getMessage()]);
+                }
+            }
 
             // Notification quota restant
             $quotaApres = $this->cvQuota($user);
@@ -372,8 +370,9 @@ class CVController extends Controller
         $user->update($syncUser);
 
         CandidatProfil::updateOrCreate(['user_id' => $user->id], [
-            'disponibilite' => $request->disponibilite,
-            'ville'         => $request->ville,
+            'titre_professionnel' => $request->nom,
+            'disponibilite'       => $request->disponibilite,
+            'ville'               => $request->ville,
         ]);
 
         return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès dans la CVthèque !');
