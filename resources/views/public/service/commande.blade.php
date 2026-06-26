@@ -302,6 +302,23 @@
       </div>
     </div>
 
+    {{-- Description + Détails du service --}}
+    @if($service->description || $service->details)
+    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 24px;margin-bottom:20px">
+      @if($service->description)
+      <p style="font-size:14px;color:#374151;line-height:1.7;margin:0 0 {{ $service->details ? '14px' : '0' }}">
+        {{ $service->description }}
+      </p>
+      @endif
+      @if($service->details)
+      <div style="border-top:{{ $service->description ? '1px solid #f1f5f9' : 'none' }};padding-top:{{ $service->description ? '14px' : '0' }}">
+        <p style="font-size:12px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px">Détails</p>
+        <p style="font-size:13.5px;color:#4b5563;line-height:1.75;margin:0;white-space:pre-line">{{ $service->details }}</p>
+      </div>
+      @endif
+    </div>
+    @endif
+
     {{-- Erreurs --}}
     @if($errors->any())
       <div class="cmd-errors">
