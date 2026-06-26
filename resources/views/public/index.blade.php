@@ -116,7 +116,7 @@
                         Parcourir les offres
                     </a>
                     @if (!auth()->check() || auth()->user()->hasRole('candidat'))
-                        <a href="{{ auth()->check() ? auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' : route('auth.inscription') . '?role=candidat' }}"
+                        <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"
                             class="btn-hero-cv">
                             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 stroke-width="2.5">
@@ -380,7 +380,7 @@
                             percutant et une lettre convaincante <strong>adaptés au marché africain</strong>.
                         </p>
                         <ul class="formation-card__features">
-                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Lettre de motivation personnalisée et convaincante', 'Livraison Word &amp; PDF prêt à l\'emploi sous 48h', '1 révision gratuite incluse après livraison'] as $f)
+                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Lettre de motivation personnalisée et convaincante', 'Livraison Word &amp; PDF prêt à l\'emploi de 30min à 1H', '1 révision gratuite incluse après livraison'] as $f)
                                 <li class="formation-card__feature">
                                     <span class="formation-card__check"><svg width="10" height="10"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
@@ -415,7 +415,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Livré sous 48h
+                            Livré en 30min à 1H
                         </div>
                         <div class="formation-card__guarantee">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"

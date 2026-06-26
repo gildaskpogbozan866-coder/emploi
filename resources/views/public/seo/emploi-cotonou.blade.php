@@ -75,7 +75,7 @@
     </ol>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a href="{{ route('offre.list', ['localisation' => 'Cotonou']) }}" style="padding:10px 22px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Offres à Cotonou</a>
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
       <a href="{{ route('offre.list') }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Toutes les offres au Bénin</a>
     </div>
   </div>

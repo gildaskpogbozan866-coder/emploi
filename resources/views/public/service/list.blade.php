@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Nos Services | Emploi Bouge Bénin')
-@section('description', 'CV professionnel, lettre de motivation, coaching, logo, site web… Livrés en 30min à 48h.')
+@section('description', 'CV professionnel, lettre de motivation, coaching, logo, site web… Livrés en 30min à 1H.')
 
 @section('css')
 <style>
@@ -685,7 +685,7 @@ $hot = ['cv-professionnel','creation-logo'];
       <div class="svc-trust__ico">
         <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.85)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
       </div>
-      <strong>Livraison rapide</strong><em>30min à 48h</em>
+      <strong>Livraison rapide</strong><em>30min à 1H</em>
     </div>
     <div class="svc-trust__item">
       <div class="svc-trust__ico">

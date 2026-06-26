@@ -218,12 +218,16 @@ class CVController extends Controller
         }
 
         $request->validate([
+            'prenom'              => 'required|string|max:100',
+            'nom_famille'         => 'required|string|max:100',
+            'tel'                 => 'required|string|max:30',
+            'disponibilite'       => 'required|in:immediatement,1_mois,2_mois,3_mois,plus_3_mois',
             'type_document_id'    => 'required|exists:type_documents,id',
             'nom'                 => 'required|string|max:200',
             'resume'              => 'nullable|string|max:2000',
             'photo'               => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
             'pays'                => 'nullable|string|max:100',
-            'ville'               => 'nullable|string|max:100',
+            'ville'               => 'required|string|max:100',
             'types_contrat_ids'   => 'nullable|array',
             'types_contrat_ids.*' => 'nullable|exists:type_contrats,id',
             'niveau_etude_id'     => 'nullable|exists:niveaux_etudes,id',
@@ -237,8 +241,13 @@ class CVController extends Controller
             'niveaux_ids.*'       => 'nullable|exists:niveaux_langue,id',
             'fichier_path'        => 'required|file|mimes:pdf|max:5120',
         ], [
-            'fichier_path.required' => 'Le fichier PDF est obligatoire.',
-            'fichier_path.mimes'    => 'Le fichier doit être au format PDF.',
+            'prenom.required'           => 'Le prénom est obligatoire.',
+            'nom_famille.required'      => 'Le nom de famille est obligatoire.',
+            'tel.required'              => 'Le numéro de téléphone est obligatoire.',
+            'disponibilite.required'    => 'La disponibilité est obligatoire.',
+            'ville.required'            => 'La ville est obligatoire.',
+            'fichier_path.required'     => 'Le fichier PDF est obligatoire.',
+            'fichier_path.mimes'        => 'Le fichier doit être au format PDF.',
         ]);
 
         $typeCV = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
@@ -298,27 +307,29 @@ class CVController extends Controller
                 $user->langues()->sync($languesSync);
             }
 
-            // Notifier les admins
-            foreach (User::where('role', 'admin')->get() as $admin) {
+            $syncUser = [
+                'prenom' => $request->prenom,
+                'nom'    => $request->nom_famille,
+                'tel'    => $request->tel,
+            ];
+            if ($request->filled('pays')) $syncUser['pays']   = $request->pays;
+            if ($photoPath)               $syncUser['avatar'] = $photoPath;
+            $user->update($syncUser);
+
+            $profilSync = [
+                'titre_professionnel' => $request->nom,
+                'disponibilite'       => $request->disponibilite,
+                'ville'               => $request->ville,
+            ];
+            if ($request->filled('resume')) $profilSync['bio'] = $request->resume;
+            CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
+
+            foreach (User::role('admin')->get() as $admin) {
                 try {
                     $admin->notify(new NouveauCVDeposeNotification($cv, $user));
                 } catch (\Throwable $e) {
                     Log::warning('Notification admin CV non envoyée', ['error' => $e->getMessage()]);
                 }
-            }
-
-            // Sync vers profil utilisateur
-            $syncUser = [];
-            if ($request->filled('pays')) $syncUser['pays']   = $request->pays;
-            if ($photoPath)               $syncUser['avatar'] = $photoPath;
-            if (!empty($syncUser))        $user->update($syncUser);
-
-            $profilSync = [];
-            if ($request->filled('nom'))    $profilSync['titre_professionnel'] = $request->nom;
-            if ($request->filled('ville'))  $profilSync['ville']               = $request->ville;
-            if ($request->filled('resume')) $profilSync['bio']                 = $request->resume;
-            if (!empty($profilSync)) {
-                CandidatProfil::updateOrCreate(['user_id' => $user->id], $profilSync);
             }
 
             // Notification quota restant
@@ -346,6 +357,22 @@ class CVController extends Controller
             'experience'       => $request->experience,
             'formation'        => $request->formation,
             'langues'          => $languesTexte ?: null,
+        ]);
+
+        // Sync infos personnelles
+        $syncUser = [
+            'prenom' => $request->prenom,
+            'nom'    => $request->nom_famille,
+            'tel'    => $request->tel,
+        ];
+        if ($request->filled('pays')) $syncUser['pays'] = $request->pays;
+        if ($photoPath)               $syncUser['avatar'] = $photoPath;
+        $user->update($syncUser);
+
+        CandidatProfil::updateOrCreate(['user_id' => $user->id], [
+            'titre_professionnel' => $request->nom,
+            'disponibilite'       => $request->disponibilite,
+            'ville'               => $request->ville,
         ]);
 
         return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès dans la CVthèque !');
