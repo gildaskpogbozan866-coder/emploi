@@ -166,7 +166,7 @@
         <div style="flex:1">
             <p style="font-size:13.5px;font-weight:700;color:#9a3412;margin:0 0 4px">Aucun document déposé</p>
             <p style="font-size:12.5px;color:#c2410c;margin:0 0 12px;line-height:1.5">Déposez votre CV, diplôme ou attestation pour être visible auprès des recruteurs. C'est obligatoire pour postuler.</p>
-            <a href="{{ route('candidat.profil') }}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:#ea580c;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+            <a href="{{ route('cv.public.depot') }}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:#ea580c;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                 Déposer mon CV maintenant
             </a>

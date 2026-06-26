@@ -36,7 +36,7 @@
           <li><a href="{{ route('service.list') }}">Services</a></li>
           <li><a href="{{ route('blog.list') }}">Blog &amp; Conseils</a></li>
           @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-            <li><a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('candidat.profil') : route('auth.inscription').'?role=candidat' }}">Déposer mon CV</a></li>
+            <li><a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}">Déposer mon CV</a></li>
           @endif
           @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
             <li><a href="{{ route('offre.publier') }}">Publier une offre</a></li>

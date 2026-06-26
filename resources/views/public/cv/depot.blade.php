@@ -47,9 +47,9 @@
 
   @auth
   <div class="depot-user-badge">
-    <div class="depot-user-badge__avatar">{{ mb_strtoupper(mb_substr(auth()->user()->prenom, 0, 1)) }}</div>
+    <div class="depot-user-badge__avatar">{{ mb_strtoupper(mb_substr(auth()->user()->prenom ?? auth()->user()->email, 0, 1)) }}</div>
     <div>
-      <div class="depot-user-badge__name">{{ auth()->user()->prenom }} {{ auth()->user()->nom }}</div>
+      <div class="depot-user-badge__name">{{ auth()->user()->prenom ? auth()->user()->prenom.' '.auth()->user()->nom : auth()->user()->email }}</div>
       <div class="depot-user-badge__sub">Connecté — remplissez le formulaire ci-dessous</div>
     </div>
   </div>
@@ -130,6 +130,46 @@
           <input type="file" id="photoInput" name="photo" accept=".jpg,.jpeg,.png,.webp" style="display:none">
         </div>
 
+        {{-- INFORMATIONS PERSONNELLES --}}
+        <div class="form-section-label" style="margin-top:24px">Informations personnelles</div>
+        <div class="form-row form-row--2">
+          <div>
+            <label class="field__label" for="depot-prenom">Prénom <span class="req">*</span></label>
+            <input class="field__input @error('prenom') field--invalid @enderror" type="text" id="depot-prenom" name="prenom" required
+              value="{{ old('prenom', auth()->user()->prenom) }}"
+              placeholder="Ex : Gildas, Aïchatou, Rodrigue…">
+            @error('prenom')<p class="field__server-error">{{ $message }}</p>@enderror
+          </div>
+          <div>
+            <label class="field__label" for="depot-nom-famille">Nom de famille <span class="req">*</span></label>
+            <input class="field__input @error('nom_famille') field--invalid @enderror" type="text" id="depot-nom-famille" name="nom_famille" required
+              value="{{ old('nom_famille', auth()->user()->nom) }}"
+              placeholder="Ex : Kpogbozan, Dohou, Adanhou…">
+            @error('nom_famille')<p class="field__server-error">{{ $message }}</p>@enderror
+          </div>
+        </div>
+        <div class="form-row form-row--2">
+          <div>
+            <label class="field__label" for="depot-tel">Téléphone <span class="req">*</span></label>
+            <input class="field__input @error('tel') field--invalid @enderror" type="tel" id="depot-tel" name="tel" required
+              value="{{ old('tel', auth()->user()->tel) }}"
+              placeholder="Ex : +229 97 00 00 00">
+            @error('tel')<p class="field__server-error">{{ $message }}</p>@enderror
+          </div>
+          <div>
+            <label class="field__label" for="depot-disponibilite">Disponibilité <span class="req">*</span></label>
+            <select class="field__select @error('disponibilite') field--invalid @enderror" id="depot-disponibilite" name="disponibilite" required>
+              <option value="">-- Sélectionnez --</option>
+              @foreach(\App\Models\CandidatProfil::libelles()['disponibilite'] as $key => $label)
+                <option value="{{ $key }}" {{ old('disponibilite', auth()->user()->candidatProfil?->disponibilite) === $key ? 'selected' : '' }}>
+                  {{ $label }}
+                </option>
+              @endforeach
+            </select>
+            @error('disponibilite')<p class="field__server-error">{{ $message }}</p>@enderror
+          </div>
+        </div>
+
         {{-- INTITULÉ / POSTE VISÉ --}}
         <div class="form-row form-row--1">
           <div>
@@ -166,9 +206,11 @@
             </select>
           </div>
           <div>
-            <label class="field__label">Ville</label>
-            <input class="field__input" type="text" name="ville" value="{{ old('ville') }}"
+            <label class="field__label">Ville <span class="req">*</span></label>
+            <input class="field__input @error('ville') field--invalid @enderror" type="text" name="ville" required
+              value="{{ old('ville', auth()->user()->candidatProfil?->ville) }}"
               placeholder="Ex : Cotonou, Abomey-Calavi, Porto-Novo…">
+            @error('ville')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
