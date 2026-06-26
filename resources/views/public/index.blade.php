@@ -406,7 +406,7 @@
                         <span class="formation-card__badge-hot">+500 commandes</span>
                         <div class="formation-card__price-box">
                             <span class="formation-card__price-label">Seulement</span>
-                            <span class="formation-card__price">2 500</span>
+                            <span class="formation-card__price">{{ $cvService ? number_format($cvService->prix, 0, ',', ' ') : '2 500' }}</span>
                             <span class="formation-card__currency">FCFA tout compris</span>
                         </div>
                         <div class="formation-card__delivery">

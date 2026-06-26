@@ -11,6 +11,7 @@ use App\Models\CandidatProfil;
 use App\Models\Faq;
 use App\Models\Partenaire;
 use App\Models\Plan;
+use App\Models\Service;
 use App\Models\User;
 
 class HomeController extends Controller
@@ -67,8 +68,9 @@ class HomeController extends Controller
             ->with('features')->orderBy('price')->get();
 
         $partenaires = Partenaire::actifs()->get();
+        $cvService   = Service::where('slug', 'cv-professionnel')->where('actif', true)->first();
 
-        return view('public.index', compact('offres', 'candidats', 'articles', 'plansCandidats', 'plansRecruteurs', 'plansAnnonceurs', 'partenaires'));
+        return view('public.index', compact('offres', 'candidats', 'articles', 'plansCandidats', 'plansRecruteurs', 'plansAnnonceurs', 'partenaires', 'cvService'));
     }
 
     public function aPropos()
