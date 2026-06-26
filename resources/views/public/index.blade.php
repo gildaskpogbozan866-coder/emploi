@@ -453,7 +453,7 @@
                     <h2 class="section-title" style="margin-top:10px">Dernières offres publiées</h2>
                     <p class="section-subtitle">Les offres les plus récentes, mises à jour en continu.</p>
                 </div>
-                <a href="{{ route('offre.list') }}" class="btn btn--blue offres-header__cta" style="color: #F5C842;">
+                <a href="{{ route('offre.list') }}" class="btn btn--yellow offres-header__cta">
                     Voir toutes les offres
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
