@@ -357,6 +357,7 @@
     {{-- ═══════════════════════════════════════════
      NOS SERVICES
 ═══════════════════════════════════════════ --}}
+    @php $cvService ??= \App\Models\Service::where('slug','cv-professionnel')->first(); @endphp
     <section id="services" class="section services-section">
         <div class="container">
             <div class="section-header section-header--center">
