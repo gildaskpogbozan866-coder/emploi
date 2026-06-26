@@ -200,7 +200,7 @@
 
 /* ── GRILLE SERVICES ──────────────────────────────────── */
 .svc-all {
-  background: #fff;
+  background: #f8fafc;
   padding: 64px 0;
 }
 .svc-all__inner {
@@ -208,23 +208,25 @@
   margin: 0 auto;
   padding: 0 32px;
 }
-.svc-cat-block { margin-bottom: 52px; }
+.svc-cat-block { margin-bottom: 56px; }
 .svc-cat-block:last-child { margin-bottom: 0; }
 
 .svc-cat-head {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 2px solid #f1f5f9;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
 }
 .svc-cat-head__ico {
-  width: 42px; height: 42px;
-  background: #f0f6ff;
-  border-radius: 10px;
+  width: 44px; height: 44px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(4,44,83,.06);
 }
 .svc-cat-head__title {
   font-size: 1.15rem;
@@ -234,102 +236,156 @@
   flex: 1;
 }
 .svc-cat-head__count {
-  background: #f1f5f9;
-  color: #64748b;
+  background: #e0eeff;
+  color: #185FA5;
   font-size: 11px;
-  font-weight: 700;
-  padding: 3px 9px;
+  font-weight: 800;
+  padding: 3px 10px;
   border-radius: 50px;
 }
 
 /* Grille */
 .svc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
 }
 
 /* Carte */
 .svc-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 22px 18px 18px;
+  border: 1.5px solid #e8edf4;
+  border-radius: 16px;
+  padding: 24px 22px 20px;
   text-decoration: none;
   color: inherit;
   position: relative;
   overflow: hidden;
-  transition: transform .18s, box-shadow .18s, border-color .18s;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(4,44,83,.05);
 }
 .svc-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 28px rgba(4,44,83,.10);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(4,44,83,.12);
   border-color: #185FA5;
 }
 .svc-card--hot {
-  border-color: rgba(245,200,66,.5);
-  background: linear-gradient(160deg, #fffef0 0%, #fff 55%);
+  border-color: rgba(245,200,66,.6);
+  background: linear-gradient(160deg, #fffdf0 0%, #fff 60%);
+  box-shadow: 0 2px 12px rgba(245,200,66,.12);
 }
-.svc-card--hot:hover { border-color: #F5C842; }
+.svc-card--hot:hover {
+  border-color: #F5C842;
+  box-shadow: 0 12px 32px rgba(245,200,66,.2);
+}
 
 .svc-card__hot-badge {
   position: absolute;
-  top: 10px; right: 10px;
+  top: 12px; right: 12px;
   background: #F5C842;
   color: #042C53;
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 800;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 50px;
+  letter-spacing: .04em;
+}
+.svc-card__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 .svc-card__icon {
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  background: #f0f6ff;
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1.5px solid #dbeafe;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.svc-card--hot .svc-card__icon { background: rgba(245,200,66,.12); }
+.svc-card--hot .svc-card__icon {
+  background: rgba(245,200,66,.14);
+  border-color: rgba(245,200,66,.35);
+}
+.svc-card__header { flex: 1; min-width: 0; }
 .svc-card__name {
-  font-size: .93rem;
+  font-size: .95rem;
   font-weight: 800;
   color: #042C53;
-  margin: 0;
+  margin: 0 0 5px;
   line-height: 1.3;
 }
+.svc-card__delai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 2px 8px;
+  border-radius: 50px;
+}
 .svc-card__desc {
-  font-size: .78rem;
+  font-size: .8rem;
   color: #64748b;
-  line-height: 1.55;
-  margin: 0;
+  line-height: 1.6;
+  margin: 0 0 16px;
   flex: 1;
 }
 .svc-card__foot {
+  margin-top: auto;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
-  margin-top: auto;
+  gap: 10px;
 }
+.svc-card__price-block { display: flex; flex-direction: column; gap: 1px; }
+.svc-card__price-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 .svc-card__price {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 900;
   color: #042C53;
+  line-height: 1;
 }
-.svc-card__price small { font-size: .65rem; color: #94a3b8; font-weight: 600; }
-.svc-card__price--devis { font-size: .8rem; color: #64748b; font-weight: 700; }
-.svc-card__link {
+.svc-card__price small { font-size: .62rem; color: #94a3b8; font-weight: 600; }
+.svc-card__price--devis { font-size: .82rem; color: #185FA5; font-weight: 700; }
+.svc-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: .78rem;
-  font-weight: 700;
-  color: #185FA5;
+  font-weight: 800;
   white-space: nowrap;
+  text-decoration: none;
+  transition: background .18s, transform .15s;
+  flex-shrink: 0;
 }
+.svc-card__btn--primary {
+  background: #042C53;
+  color: #F5C842;
+}
+.svc-card__btn--primary:hover { background: #0d4a8a; transform: translateY(-1px); }
+.svc-card--hot .svc-card__btn--primary {
+  background: #F5C842;
+  color: #042C53;
+}
+.svc-card--hot .svc-card__btn--primary:hover { background: #f0bc1e; }
+.svc-card__btn--outline {
+  background: transparent;
+  color: #185FA5;
+  border: 1.5px solid #bfdbfe;
+}
+.svc-card__btn--outline:hover { background: #eff6ff; border-color: #185FA5; }
 
 /* ── RÉASSURANCE ──────────────────────────────────────── */
 .svc-trust {
@@ -435,11 +491,12 @@
   .svc-all         { padding: 40px 0; }
   .svc-cat-block   { margin-bottom: 36px; }
   .svc-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .svc-card { padding: 14px 12px; }
-  .svc-card__icon  { font-size: 1.6rem; }
+  .svc-card { padding: 16px 14px; }
+  .svc-card__icon  { width: 38px; height: 38px; }
   .svc-card__name  { font-size: .85rem; }
   .svc-card__desc  { display: none; }
   .svc-card__price { font-size: .9rem; }
+  .svc-card__btn   { padding: 7px 11px; font-size: .72rem; }
   .svc-trust { padding: 28px 0; }
   .svc-trust__inner { grid-template-columns: 1fr 1fr; }
   .svc-trust__item { padding: 14px 10px; }
@@ -650,26 +707,51 @@ $hot = ['cv-professionnel','creation-logo'];
         <div class="svc-grid">
           @foreach($items as $svc)
           @php $isHot = in_array($svc->slug, $hot); @endphp
-          <a href="{{ route('service.detail', $svc->slug) }}" class="svc-card{{ $isHot ? ' svc-card--hot' : '' }}">
-            @if($isHot)<span class="svc-card__hot-badge">Populaire</span>@endif
-            <div class="svc-card__icon">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.75">
-                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $svcPaths[$svc->slug] ?? $defaultSvcPath }}"/>
-              </svg>
+          <div class="svc-card{{ $isHot ? ' svc-card--hot' : '' }}" onclick="window.location='{{ route('service.detail', $svc->slug) }}'" style="cursor:pointer">
+            @if($isHot)<span class="svc-card__hot-badge">★ Populaire</span>@endif
+
+            <div class="svc-card__top">
+              <div class="svc-card__icon">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="{{ $isHot ? '#b8860b' : '#185FA5' }}" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="{{ $svcPaths[$svc->slug] ?? $defaultSvcPath }}"/>
+                </svg>
+              </div>
+              <div class="svc-card__header">
+                <h3 class="svc-card__name">{{ $svc->nom }}</h3>
+                @if($svc->delai)
+                  <span class="svc-card__delai">
+                    <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l3 3"/></svg>
+                    {{ $svc->delai }}
+                  </span>
+                @endif
+              </div>
             </div>
-            <h3 class="svc-card__name">{{ $svc->nom }}</h3>
+
             @if($svc->description)
-              <p class="svc-card__desc">{{ Str::limit($svc->description, 90) }}</p>
+              <p class="svc-card__desc">{{ Str::limit($svc->description, 95) }}</p>
             @endif
+
             <div class="svc-card__foot">
+              <div class="svc-card__price-block">
+                <span class="svc-card__price-label">{{ $svc->prix > 0 ? 'À partir de' : 'Tarif' }}</span>
+                @if($svc->prix > 0)
+                  <span class="svc-card__price">{{ number_format($svc->prix,0,',',' ') }} <small>FCFA</small></span>
+                @else
+                  <span class="svc-card__price svc-card__price--devis">Sur devis</span>
+                @endif
+              </div>
               @if($svc->prix > 0)
-                <span class="svc-card__price">{{ number_format($svc->prix,0,',',' ') }} <small>FCFA</small></span>
+                <a href="{{ route('service.commande', $svc->slug) }}" class="svc-card__btn svc-card__btn--primary" onclick="event.stopPropagation()">
+                  Commander
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
               @else
-                <span class="svc-card__price svc-card__price--devis">Sur devis</span>
+                <a href="{{ route('service.detail', $svc->slug) }}" class="svc-card__btn svc-card__btn--outline" onclick="event.stopPropagation()">
+                  En savoir +
+                </a>
               @endif
-              <span class="svc-card__link">Commander →</span>
             </div>
-          </a>
+          </div>
           @endforeach
         </div>
       </div>
