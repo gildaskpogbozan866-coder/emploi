@@ -548,8 +548,7 @@
                     <h2 class="section-title" style="margin-top:10px">Derniers profils déposés</h2>
                     <p class="section-subtitle">Des candidats actifs, emploi, stage, bourse ou freelance.</p>
                 </div>
-                <a href="{{ route('cv.public.theque') }}" class="btn btn--blue offres-header__cta"
-                    style="color: #F5C842;">
+                <a href="{{ route('cv.public.theque') }}" class="btn btn--yellow offres-header__cta">
                     Accéder aux profils
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1091,7 +1090,7 @@
             </div>
 
             <div class="articles-cta">
-                <a href="{{ route('blog.list') }}" class="btn btn--outline-blue" style="color: #F5C842;">
+                <a href="{{ route('blog.list') }}" class="btn btn--yellow">
                     Voir tous les articles
                     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                         stroke-width="2.5">
