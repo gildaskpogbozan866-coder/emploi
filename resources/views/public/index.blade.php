@@ -357,7 +357,7 @@
     {{-- ═══════════════════════════════════════════
      NOS SERVICES
 ═══════════════════════════════════════════ --}}
-    @php $cvService ??= \App\Models\Service::where('slug','cv-professionnel')->first(); @endphp
+    @php $cvService = \App\Models\Service::where('slug','cv-professionnel')->first(); @endphp
     <section id="services" class="section services-section">
         <div class="container">
             <div class="section-header section-header--center">
@@ -407,7 +407,7 @@
                         <span class="formation-card__badge-hot">+500 commandes</span>
                         <div class="formation-card__price-box">
                             <span class="formation-card__price-label">Seulement</span>
-                            <span class="formation-card__price">{{ $cvService ? number_format($cvService->prix, 0, ',', ' ') : '2 500' }}</span>
+                            <span class="formation-card__price">{{ number_format($cvService->prix, 0, ',', ' ') }}</span>
                             <span class="formation-card__currency">FCFA tout compris</span>
                         </div>
                         <div class="formation-card__delivery">
