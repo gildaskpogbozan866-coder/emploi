@@ -54,12 +54,17 @@ class GoogleController extends Controller
             return redirect($this->dashboardUrl($existingByEmail));
         }
 
+        // Extraction sécurisée du prénom/nom (family_name peut être absent)
+        $raw    = $googleUser->getRaw();
+        $prenom = $raw['given_name']  ?? (explode(' ', $googleUser->getName())[0] ?? '');
+        $nom    = $raw['family_name'] ?? (explode(' ', $googleUser->getName())[1] ?? '');
+
         // New user — use pre-selected role from inscription page if available
         $storedRole = $request->session()->pull('google_role');
         if ($storedRole && in_array($storedRole, ['candidat', 'recruteur', 'annonceur'])) {
             $user = User::create([
-                'prenom'            => $googleUser->offsetGet('given_name') ?? explode(' ', $googleUser->getName())[0] ?? '',
-                'nom'               => $googleUser->offsetGet('family_name') ?? (explode(' ', $googleUser->getName())[1] ?? ''),
+                'prenom'            => $prenom,
+                'nom'               => $nom,
                 'email'             => $googleUser->getEmail(),
                 'google_id'         => $googleUser->getId(),
                 'avatar'            => $googleUser->getAvatar(),
@@ -78,8 +83,8 @@ class GoogleController extends Controller
         // No pre-selected role — store Google data in session and ask for role
         $request->session()->put('google_user', [
             'google_id' => $googleUser->getId(),
-            'prenom'    => $googleUser->offsetGet('given_name') ?? explode(' ', $googleUser->getName())[0] ?? '',
-            'nom'       => $googleUser->offsetGet('family_name') ?? (explode(' ', $googleUser->getName())[1] ?? ''),
+            'prenom'    => $prenom,
+            'nom'       => $nom,
             'email'     => $googleUser->getEmail(),
             'avatar'    => $googleUser->getAvatar(),
         ]);
