@@ -381,7 +381,7 @@
                             percutant et une lettre convaincante <strong>adaptés au marché africain</strong>.
                         </p>
                         <ul class="formation-card__features">
-                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Lettre de motivation personnalisée et convaincante', 'Livraison Word &amp; PDF prêt à l\'emploi de 30min à 1H', '1 révision gratuite incluse après livraison'] as $f)
+                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Lettre de motivation personnalisée et convaincante', 'Livraison Word &amp; PDF prêt à l\'emploi' . ($cvService?->delai ? ' en ' . $cvService->delai : ' de 30min à 1H'), '1 révision gratuite incluse après livraison'] as $f)
                                 <li class="formation-card__feature">
                                     <span class="formation-card__check"><svg width="10" height="10"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
@@ -404,7 +404,7 @@
                         </div>
                     </div>
                     <div class="formation-card__right">
-                        <span class="formation-card__badge-hot">+500 commandes</span>
+                        <span class="formation-card__badge-hot">+{{ $cvService?->nb_commandes ?? 500 }} commandes</span>
                         <div class="formation-card__price-box">
                             <span class="formation-card__price-label">Seulement</span>
                             <span class="formation-card__price">{{ number_format($cvService->prix, 0, ',', ' ') }}</span>
@@ -416,7 +416,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Livré en 30min à 1H
+                            Livré en {{ $cvService?->delai ?? '30min à 1H' }}
                         </div>
                         <div class="formation-card__guarantee">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"

@@ -181,7 +181,7 @@
         </span>
         <div style="flex:1;min-width:0">
             <p style="font-size:13px;font-weight:800;color:#F5C842;margin:0 0 3px;text-transform:uppercase;letter-spacing:.05em">CV Professionnel</p>
-            <p style="font-size:13px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">Faites rédiger votre CV par nos experts · Livraison en <strong style="color:#fff">30 min à 1h</strong> · <strong style="color:#F5C842">2 500 FCFA</strong></p>
+            <p style="font-size:13px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">Faites rédiger votre CV par nos experts · Livraison en <strong style="color:#fff">{{ $cvService->delai ?? '30 min à 1h' }}</strong> · <strong style="color:#F5C842">{{ $cvService ? number_format($cvService->prix, 0, ',', ' ').' FCFA' : '2 500 FCFA' }}</strong></p>
         </div>
         <a href="{{ route('service.commande', 'cv-professionnel') }}" style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap">
             Commander →

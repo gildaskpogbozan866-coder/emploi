@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
+use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -33,8 +34,8 @@ class DashboardController extends Controller
             ->get();
 
         $plan_premium = Plan::where('is_active', 1)->where('is_premium', 1)->where("target_type", 'candidat')->first();
-      
-        
+        $cvService    = Service::where('slug', 'cv-professionnel')->where('actif', true)->first();
+
         // Abonnement actif + quotas
         $abonnement = $user->abonnementActif()->with('plan.features')->first();
         $quotas     = null;
@@ -62,6 +63,6 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('candidat.dashboard', compact('user', 'stats', 'dernieres_candidatures', 'abonnement', 'quotas', 'plan_premium'));
+        return view('candidat.dashboard', compact('user', 'stats', 'dernieres_candidatures', 'abonnement', 'quotas', 'plan_premium', 'cvService'));
     }
 }

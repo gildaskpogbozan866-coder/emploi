@@ -411,16 +411,17 @@
 $cats = ['cv-professionnel'=>'Carrière & Emploi','lettre-de-motivation'=>'Carrière & Emploi','preparation-entretien'=>'Carrière & Emploi','linkedin-optimise'=>'Carrière & Emploi','coaching-entretien'=>'Carrière & Emploi','creation-cv-documents'=>'Carrière & Emploi','traduction-documents'=>'Documents & Rédaction','redaction-rapport-memoire'=>'Documents & Rédaction','creation-sites-web'=>'Digital & Web','creation-logo'=>'Digital & Web','gestion-reseaux-sociaux'=>'Digital & Web','marketing-digital'=>'Digital & Web','referencement-seo'=>'Digital & Web','developpement-applications'=>'Digital & Web','formation-informatique'=>'Formation','accompagnement-digital'=>'Formation'];
 $catLabel = $cats[$service->slug] ?? 'Service';
 
+$delai = $service->delai;
 $chips = match($service->slug) {
-  'cv-professionnel','creation-cv-documents' => ['30min à 1h','Format Word & PDF','1 révision offerte'],
-  'lettre-de-motivation'    => ['30min à 1h','Personnalisée','1 révision offerte'],
-  'linkedin-optimise'       => ['1h à 2h','Profil optimisé ATS','Mots-clés recruteurs'],
-  'coaching-entretien','preparation-entretien' => ['1h de session','Feedback détaillé','Plan d\'action'],
-  'traduction-documents'    => ['Délai : 1h','FR ↔ EN','Document certifié'],
-  'redaction-rapport-memoire'=> ['12h à 24h','Selon normes','Révision incluse'],
-  'creation-logo'           => ['24h à 48h','Fichiers HD livrés','Charte graphique'],
+  'cv-professionnel','creation-cv-documents' => [$delai ?? '30min à 1h','Format Word & PDF','1 révision offerte'],
+  'lettre-de-motivation'    => [$delai ?? '30min à 1h','Personnalisée','1 révision offerte'],
+  'linkedin-optimise'       => [$delai ?? '1h à 2h','Profil optimisé ATS','Mots-clés recruteurs'],
+  'coaching-entretien','preparation-entretien' => [$delai ?? '1h de session','Feedback détaillé','Plan d\'action'],
+  'traduction-documents'    => [$delai ? 'Délai : '.$delai : 'Délai : 1h','FR ↔ EN','Document certifié'],
+  'redaction-rapport-memoire'=> [$delai ?? '12h à 24h','Selon normes','Révision incluse'],
+  'creation-logo'           => [$delai ?? '24h à 48h','Fichiers HD livrés','Charte graphique'],
   'creation-sites-web'      => ['Responsive','SEO inclus','1 mois de support'],
-  default                   => ['Service professionnel','Équipe experte','Réponse rapide'],
+  default                   => array_filter([$delai, 'Équipe experte', 'Réponse rapide']),
 };
 
 $steps = match(true) {
@@ -450,7 +451,7 @@ $steps = match(true) {
   ],
 };
 
-$waNumber  = '22951929856';
+$waNumber  = \App\Models\ParametreApp::get('whatsapp_number', '22951929856');
 $waMessage = urlencode('Bonjour, je suis intéressé(e) par votre service « ' . $service->nom . ' ». Pouvez-vous me donner plus d\'informations ?');
 $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
 @endphp

@@ -1,5 +1,5 @@
-@extends('layouts.candidat')
-@section('title', 'Mon profil | Emploi Bouge BÃ©nin')
+﻿@extends('layouts.candidat')
+@section('title', 'Mon profil | Emploi Bouge Bénin')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/candidat/profil.css') }}">
@@ -25,7 +25,7 @@
     <div class="cand-page-header">
         <div class="cand-page-header__left">
             <div class="cand-page-header__title">Mon profil</div>
-            <div class="cand-page-header__sub">ComplÃ©tez votre profil pour maximiser vos chances</div>
+            <div class="cand-page-header__sub">Complétez votre profil pour maximiser vos chances</div>
         </div>
     </div>
 
@@ -37,11 +37,11 @@
             </svg>
         </div>
         <div class="cp-depot-alert__body">
-            <div class="cp-depot-alert__title">Remplissez votre profil avant de dÃ©poser un CV</div>
-            <div class="cp-depot-alert__text">Les recruteurs voient vos informations de profil. Un profil complet multiplie vos chances d'Ãªtre contactÃ©.</div>
+            <div class="cp-depot-alert__title">Remplissez votre profil avant de déposer un CV</div>
+            <div class="cp-depot-alert__text">Les recruteurs voient vos informations de profil. Un profil complet multiplie vos chances d'être contacté.</div>
         </div>
         <button onclick="openModal('modal-infos')" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">
-            ComplÃ©ter maintenant
+            Compléter maintenant
         </button>
     </div>
     @endif
@@ -127,7 +127,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
                         </svg>
-                        {{ $profil->annees_experience }} an{{ $profil->annees_experience > 1 ? 's' : '' }} d'expÃ©rience
+                        {{ $profil->annees_experience }} an{{ $profil->annees_experience > 1 ? 's' : '' }} d'expérience
                     </span>
                 @endif
             </div>
@@ -171,7 +171,7 @@
         </div>
     </div>
 
-    {{-- â•â•â•â•â•â•â•â•â•â•â• MODALES â•â•â•â•â•â•â•â•â•â•â• --}}
+    {{-- �.��.��.��.��.��.��.��.��.��.��.� MODALES �.��.��.��.��.��.��.��.��.��.��.� --}}
 
     {{-- Modale Infos perso --}}
     <div class="cp-modal-overlay" id="modal-infos">
@@ -187,17 +187,17 @@
                 <form id="form-profil-infos" method="POST" action="{{ route('candidat.profil.update') }}">
                     @csrf @method('PUT')
 
-                    {{-- SECTION 1 : Votre identitÃ© --}}
+                    {{-- SECTION 1 : Votre identité --}}
                     <div class="cp-form-section-head">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
-                        Votre identitÃ©
+                        Votre identité
                     </div>
 
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
-                            <label class="cand-form-label" for="profil-prenom">PrÃ©nom <span class="req">*</span></label>
+                            <label class="cand-form-label" for="profil-prenom">Prénom <span class="req">*</span></label>
                             <input type="text" id="profil-prenom" name="prenom"
                                 class="cand-form-input @error('prenom') field--invalid @enderror"
                                 value="{{ old('prenom', $user->prenom) }}" required>
@@ -220,18 +220,18 @@
                         <input type="text" name="titre_professionnel" class="cand-form-input"
                             placeholder="ex: Comptable, Juriste, Infirmier, Enseignant, Agent commercial..."
                             value="{{ old('titre_professionnel', $profil?->titre_professionnel) }}">
-                        <div class="cand-form-hint">Indique aux recruteurs votre mÃ©tier en un coup d'Å“il</div>
+                        <div class="cand-form-hint">Indique aux recruteurs votre métier en un coup d'œil</div>
                     </div>
 
                     <div class="cand-form-group">
                         <label class="cand-form-label">
-                            RÃ©sumÃ© / Bio
+                            Résumé / Bio
                             <span class="cp-oblig-badge">Obligatoire</span>
                         </label>
                         <textarea name="bio" class="cand-form-textarea @error('bio') field--invalid @enderror" rows="4"
-                            placeholder="Ex : Comptable avec 5 ans d'expÃ©rience Ã  Cotonou, spÃ©cialisÃ© en fiscalitÃ© OHADA. Je recherche un poste en entreprise ou ONG...">{{ old('bio', $profil?->bio) }}</textarea>
+                            placeholder="Ex : Comptable avec 5 ans d'expérience à Cotonou, spécialisé en fiscalité OHADA. Je recherche un poste en entreprise ou ONG...">{{ old('bio', $profil?->bio) }}</textarea>
                         @error('bio')<p class="field__server-error">{{ $message }}</p>@enderror
-                        <div class="cand-form-hint">Max 1 000 caractÃ¨res</div>
+                        <div class="cand-form-hint">Max 1 000 caractères</div>
                     </div>
 
                     {{-- SECTION 2 : Localisation & contact --}}
@@ -246,7 +246,7 @@
                     <div class="cand-form-group">
                         <label class="cand-form-label">Pays</label>
                         <select name="pays" id="cand-modal-pays" class="cand-form-select">
-                            <option value="">-- SÃ©lectionnez votre pays --</option>
+                            <option value="">-- Sélectionnez votre pays --</option>
                             @foreach ($paysList as $p)
                                 <option value="{{ $p }}" {{ old('pays', $user->pays) === $p ? 'selected' : '' }}>{{ $p }}</option>
                             @endforeach
@@ -261,7 +261,7 @@
                                 value="{{ old('ville', $profil?->ville) }}">
                         </div>
                         <div class="cand-form-group">
-                            <label class="cand-form-label">TÃ©lÃ©phone</label>
+                            <label class="cand-form-label">Téléphone</label>
                             <div style="display:flex;align-items:stretch">
                                 <span id="cand-tel-prefix"
                                     style="display:flex;align-items:center;justify-content:center;padding:0 12px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-right:none;border-radius:8px 0 0 8px;font-size:13.5px;font-weight:700;color:#042C53;white-space:nowrap;min-width:60px;user-select:none">+229</span>
@@ -272,24 +272,24 @@
                         </div>
                     </div>
 
-                    {{-- SECTION 3 : PrÃ©fÃ©rences emploi --}}
+                    {{-- SECTION 3 : Préférences emploi --}}
                     <div class="cp-form-section-head">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <rect x="2" y="7" width="20" height="14" rx="2"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
                         </svg>
-                        PrÃ©fÃ©rences emploi
+                        Préférences emploi
                     </div>
 
                     <div class="cand-form-grid">
                         <div class="cand-form-group">
-                            <label class="cand-form-label">Domaine / SpÃ©cialitÃ©</label>
+                            <label class="cand-form-label">Domaine / Spécialité</label>
                             {{-- Custom multi-select widget --}}
                             <div class="ms-wrap" id="ms-metiers-wrap">
                                 <div class="cand-form-input ms-trigger" id="ms-metiers-trigger"
                                      role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
                                     <span id="ms-metiers-chips"></span>
-                                    <span id="ms-metiers-ph" style="color:#94a3b8;font-size:14px">SÃ©lectionnez un ou plusieurs domainesâ€¦</span>
+                                    <span id="ms-metiers-ph" style="color:#94a3b8;font-size:14px">Sélectionnez un ou plusieurs domaines…</span>
                                     <svg class="ms-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                                 </div>
                             </div>
@@ -303,7 +303,7 @@
                             </select>
                         </div>
                         <div class="cand-form-group">
-                            <label class="cand-form-label">AnnÃ©es d'expÃ©rience</label>
+                            <label class="cand-form-label">Années d'expérience</label>
                             <input type="number" name="annees_experience"
                                 class="cand-form-input @error('annees_experience') field--invalid @enderror"
                                 min="0" max="50" placeholder="ex: 3"
@@ -313,7 +313,7 @@
                     </div>
 
                     <div class="cand-form-group">
-                        <label class="cand-form-label">DisponibilitÃ© <span class="cp-oblig-badge">Obligatoire</span></label>
+                        <label class="cand-form-label">Disponibilité <span class="cp-oblig-badge">Obligatoire</span></label>
                         <div class="cp-pill-group">
                             @foreach ($libelles['disponibilite'] as $val => $lab)
                                 <label class="cp-pill">
@@ -325,7 +325,7 @@
                         </div>
                     </div>
                     <div class="cand-form-group">
-                        <label class="cand-form-label">TÃ©lÃ©travail</label>
+                        <label class="cand-form-label">Télétravail</label>
                         <div class="cp-pill-group">
                             @foreach ($libelles['remote'] as $val => $lab)
                                 <label class="cp-pill">
@@ -338,7 +338,7 @@
                     </div>
 
                     <div class="cand-form-group">
-                        <label class="cand-form-label">Types de contrat souhaitÃ©s <span class="cp-oblig-badge">Obligatoire</span></label>
+                        <label class="cand-form-label">Types de contrat souhaités <span class="cp-oblig-badge">Obligatoire</span></label>
                         <div class="cp-contract-grid">
                             @foreach ($typesContrats as $tc)
                                 <label class="cp-contract-label">
@@ -418,7 +418,7 @@
     <script>
         $('#cand-modal-metiers').select2({
             language: 'fr',
-            placeholder: 'Rechercher un mÃ©tierâ€¦',
+            placeholder: 'Rechercher un métier…',
             allowClear: true,
             width: '100%',
         });
@@ -441,9 +441,9 @@
             }
             el.innerHTML = items.map((m, i) => `
     <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#f8fafc;border-radius:6px;margin-bottom:4px;border:1px solid #e8ecf0">
-      <span style="color:#64748b;font-size:18px;line-height:1;flex-shrink:0">â€¢</span>
+      <span style="color:#64748b;font-size:18px;line-height:1;flex-shrink:0">�?�</span>
       <span style="flex:1;font-size:13px;color:#1e293b">${m.replace(/</g,'&lt;')}</span>
-      <button type="button" onclick="${removeFn}(${i})" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;line-height:1;padding:0 2px;flex-shrink:0" title="Supprimer">Ã—</button>
+      <button type="button" onclick="${removeFn}(${i})" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;line-height:1;padding:0 2px;flex-shrink:0" title="Supprimer">�-</button>
     </div>`).join('');
         }
 
@@ -498,7 +498,7 @@
             wrap.style.opacity = checked ? '.4' : '1';
             wrap.querySelector('input').disabled = checked;
         }
-        // â”€â”€ Toast SweetAlert2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // �"?�"? Toast SweetAlert2 �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
         const _SwalToast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -518,7 +518,7 @@
             });
         }
 
-        /* â”€â”€ Upload avatar immÃ©diat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* �"?�"? Upload avatar immédiat �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? */
         (function() {
             const input = document.getElementById('avatar-upload-input');
             const img = document.getElementById('avatar-preview-img');
@@ -532,7 +532,7 @@
                 const file = this.files[0];
                 if (!file) return;
 
-                // Preview local immÃ©diat
+                // Preview local immédiat
                 const reader = new FileReader();
                 reader.onload = e => {
                     img.src = e.target.result;
@@ -557,12 +557,12 @@
                     const data = await res.json();
                     if (res.ok && data.url) {
                         img.src = data.url;
-                        showToast('Photo de profil mise Ã  jour !');
+                        showToast('Photo de profil mise à jour !');
                     } else {
                         showToast(data.message || 'Erreur lors de l\'upload.', true);
                     }
                 } catch (e) {
-                    showToast('Erreur rÃ©seau.', true);
+                    showToast('Erreur réseau.', true);
                 } finally {
                     spinner.style.display = 'none';
                     btn.style.pointerEvents = '';
@@ -596,16 +596,16 @@
         }
         async function deleteItem(type, id, elId) {
             const labels = {
-                experiences: 'cette expÃ©rience',
+                experiences: 'cette expérience',
                 formations: 'cette formation',
-                competences: 'cette compÃ©tence',
+                competences: 'cette compétence',
                 langues: 'cette langue'
             };
             const {
                 isConfirmed
             } = await Swal.fire({
-                title: 'Supprimer ' + (labels[type] ?? 'cet Ã©lÃ©ment') + ' ?',
-                text: 'Cette action est irrÃ©versible.',
+                title: 'Supprimer ' + (labels[type] ?? 'cet élément') + ' ?',
+                text: 'Cette action est irréversible.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
@@ -632,19 +632,19 @@
                     el.style.transition = 'opacity .3s';
                     el.style.opacity = '0';
                     setTimeout(() => el.remove(), 300);
-                    showToast('SupprimÃ© avec succÃ¨s');
+                    showToast('Supprimé avec succès');
                 } else {
-                    showToast(status === 403 ? 'Action non autorisÃ©e.' : (data.message ??
+                    showToast(status === 403 ? 'Action non autorisée.' : (data.message ??
                         'Erreur lors de la suppression.'), true);
                 }
-            }).catch(() => showToast('Erreur rÃ©seau, rÃ©essayez.', true));
+            }).catch(() => showToast('Erreur réseau, réessayez.', true));
         }
 
-        // ExpÃ©riences
+        // Expériences
         function openExpModal() {
             editingExpId = null;
             expMissions = [];
-            document.getElementById('modal-exp-title').textContent = 'Ajouter une expÃ©rience';
+            document.getElementById('modal-exp-title').textContent = 'Ajouter une expérience';
             ['exp-poste', 'exp-entreprise', 'exp-lieu', 'exp-secteur', 'exp-date-debut', 'exp-date-fin',
                 'exp-mission-input'
             ].forEach(id => {
@@ -660,7 +660,7 @@
         function editExp(id, d) {
             editingExpId = id;
             expMissions = d.missions ?? [];
-            document.getElementById('modal-exp-title').textContent = "Modifier l'expÃ©rience";
+            document.getElementById('modal-exp-title').textContent = "Modifier l'expérience";
             document.getElementById('exp-poste').value = d.poste;
             document.getElementById('exp-entreprise').value = d.entreprise;
             document.getElementById('exp-lieu').value = d.lieu ?? '';
@@ -695,7 +695,7 @@
                 return;
             }
             sessionStorage.setItem('_toast', JSON.stringify({
-                msg: editingExpId ? 'ExpÃ©rience mise Ã  jour !' : 'ExpÃ©rience ajoutÃ©e !',
+                msg: editingExpId ? 'Expérience mise à jour !' : 'Expérience ajoutée !',
                 err: false
             }));
             closeModal('modal-exp');
@@ -755,18 +755,18 @@
                 return;
             }
             sessionStorage.setItem('_toast', JSON.stringify({
-                msg: editingFormId ? 'Formation mise Ã  jour !' : 'Formation ajoutÃ©e !',
+                msg: editingFormId ? 'Formation mise à jour !' : 'Formation ajoutée !',
                 err: false
             }));
             closeModal('modal-form');
             location.reload();
         }
 
-        // CompÃ©tences
+        // Compétences
         async function saveComp() {
             const competenceId = document.getElementById('comp-competence-id').value;
             if (!competenceId) {
-                showToast('Veuillez sÃ©lectionner une compÃ©tence.', true);
+                showToast('Veuillez sélectionner une compétence.', true);
                 return;
             }
             const annees = document.getElementById('comp-annees').value;
@@ -795,15 +795,15 @@
             document.getElementById('comp-list').appendChild(chip);
             document.getElementById('comp-competence-id').value = '';
             document.getElementById('comp-annees').value = '';
-            showToast('CompÃ©tence ajoutÃ©e !');
+            showToast('Compétence ajoutée !');
         }
 
-        // â”€â”€ Filtrage du select compÃ©tences selon mÃ©tiers cochÃ©s â”€â”€
+        // �"?�"? Filtrage du select compétences selon métiers cochés �"?�"?
         (function() {
             const metiersCompetences = @json($metiersCompetencesJson);
             const allCompetences = @json($competences->map(fn($c) => ['id' => $c->id, 'nom' => $c->nom])->values());
 
-            // Construire un index competence_id â†’ [metier_ids]
+            // Construire un index competence_id �?' [metier_ids]
             const compToMetiers = {};
             Object.entries(metiersCompetences).forEach(([metierId, comps]) => {
                 comps.forEach(c => {
@@ -832,15 +832,15 @@
 
 
                 // Vider et reconstruire les options
-                compSelect.innerHTML = '<option value="">-- Choisir une compÃ©tence --</option>';
+                compSelect.innerHTML = '<option value="">-- Choisir une compétence --</option>';
 
                 let options = [];
 
                 if (selectedMetiers.length === 0) {
-                    // Aucun filtre mÃ©tier â†’ toutes les compÃ©tences
+                    // Aucun filtre métier �?' toutes les compétences
                     options = [...allCompetences].sort((a, b) => a.nom.localeCompare(b.nom));
                 } else {
-                    // CompÃ©tences liÃ©es aux mÃ©tiers sÃ©lectionnÃ©s
+                    // Compétences liées aux métiers sélectionnés
                     const seen = new Set();
                     selectedMetiers.forEach(mid => {
                         (metiersCompetences[mid] ?? []).forEach(c => {
@@ -850,7 +850,7 @@
                     options.sort((a, b) => a.nom.localeCompare(b.nom));
 
                     if (options.length === 0) {
-                        // MÃ©tier sans compÃ©tences liÃ©es â†’ fallback toutes
+                        // Métier sans compétences liées �?' fallback toutes
                         options = [...allCompetences].sort((a, b) => a.nom.localeCompare(b.nom));
                     }
                 }
@@ -865,20 +865,20 @@
                     compSelect.appendChild(opt);
                 });
 
-                // Restaurer la sÃ©lection si encore valide
+                // Restaurer la sélection si encore valide
                 if (currentVal && seen2.has(parseInt(currentVal))) {
                     compSelect.value = currentVal;
                 }
             }
 
-            // Ã‰couter le filtre mÃ©tier dans modal-comp uniquement
+            // �?couter le filtre métier dans modal-comp uniquement
             document.addEventListener('change', function(e) {
                 if (e.target.matches('#comp-metier-filter') || e.target.matches('input[name="metiers_ids[]"]')) {
                     refreshCompSelect();
                 }
             });
 
-            // Peupler quand on ouvre la modale compÃ©tences
+            // Peupler quand on ouvre la modale compétences
             const origOpenModal = window.openModal;
             window.openModal = function(id) {
                 origOpenModal(id);
@@ -917,15 +917,15 @@
                 if (addedOption) addedOption.remove();
                 langSelect.value = '';
                 document.querySelectorAll('input[name="lang-niveau-radio"]').forEach(r => r.checked = false);
-                showToast('Langue ajoutÃ©e !');
+                showToast('Langue ajoutée !');
                 closeModal('modal-lang');
             } catch (e) {
-                showToast('Langue ajoutÃ©e ! (rechargez la page)', false);
+                showToast('Langue ajoutée ! (rechargez la page)', false);
                 console.error('saveLang UI error:', e);
             }
         }
 
-        // Messages aprÃ¨s reload
+        // Messages après reload
         const _pt = sessionStorage.getItem('_toast');
         if (_pt) {
             const {
@@ -942,7 +942,7 @@
             showToast({{ Js::from(implode(', ', $errors->all())) }}, true);
         @endif
 
-        // â”€â”€ Multi-select : SpÃ©cialitÃ© / Domaine d'expertise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // �"?�"? Multi-select : Spécialité / Domaine d'expertise �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
         (function () {
             function msEsc(str) {
                 const d = document.createElement('div');
@@ -957,11 +957,11 @@
             const ph      = document.getElementById('ms-metiers-ph');
             if (!select || !wrap) return;
 
-            // Dropdown portÃ© dans <body> pour passer au-dessus du modal
+            // Dropdown porté dans <body> pour passer au-dessus du modal
             const drop = document.createElement('div');
             drop.className = 'ms-drop ss-drop';
             drop.innerHTML =
-                '<input type="text" class="ss-search" placeholder="Rechercher un mÃ©tierâ€¦" autocomplete="off">' +
+                '<input type="text" class="ss-search" placeholder="Rechercher un métier�?�" autocomplete="off">' +
                 '<ul class="ss-list" role="listbox"></ul>';
             document.body.appendChild(drop);
             const srch = drop.querySelector('.ss-search');
@@ -1023,7 +1023,7 @@
                 if (!count) {
                     const emp = document.createElement('li');
                     emp.className = 'ss-empty';
-                    emp.textContent = 'Aucun rÃ©sultat';
+                    emp.textContent = 'Aucun résultat';
                     list.appendChild(emp);
                 }
             }
@@ -1106,7 +1106,7 @@
         })();
     </script>
     <style>
-        /* â”€â”€ Multi-select mÃ©tiers â”€â”€ */
+        /* �"?�"? Multi-select métiers �"?�"? */
         .ms-wrap { position: relative; width: 100%; }
 
         .tag-chip {
@@ -1222,7 +1222,7 @@
         .ms-check--empty { color: #cbd5e1; }
         .ss-option--sel .ms-check--empty { display: none; }
 
-        /* â”€â”€ Carte Publication â”€â”€ */
+        /* �"?�"? Carte Publication �"?�"? */
         .cp-publish-card {
             background: #fff;
             border: 2px solid #e2e8f0;
@@ -1309,7 +1309,7 @@
             border-radius: 12px;
         }
 
-        /* SpÃ©cialitÃ© hero */
+        /* Spécialité hero */
         .cp-hero__specialite {
             font-size: 13px;
             color: #64748b;
@@ -1421,13 +1421,13 @@
         }
 
         .cp-timeline__bullets li::before {
-            content: "â€¢";
+            content: "�?�";
             position: absolute;
             left: 0;
             color: #94a3b8
         }
 
-        /* Checklist complÃ©tion */
+        /* Checklist complétion */
         .cp-completion__checklist {
             margin-top: 12px;
             border-top: 1px solid #e8ecf0;
@@ -1543,7 +1543,7 @@
         }
 
         .cp-checklist-done summary::before {
-            content: "â–¶";
+            content: "�-�";
             font-size: 9px;
             transition: transform .2s
         }
@@ -1563,15 +1563,15 @@
     document.addEventListener('DOMContentLoaded', function () {
         var manque = @json(session('publier_erreurs'));
         var liste = manque.map(function(item) {
-            return '<li style="text-align:left;padding:4px 0;color:#374151">â€¢ ' + item.charAt(0).toUpperCase() + item.slice(1) + '</li>';
+            return '<li style="text-align:left;padding:4px 0;color:#374151">�?� ' + item.charAt(0).toUpperCase() + item.slice(1) + '</li>';
         }).join('');
 
         Swal.fire({
             icon: 'warning',
             title: 'Profil incomplet',
-            html: '<p style="font-size:14px;color:#6b7280;margin:0 0 14px">ComplÃ©tez ces sections avant de publier :</p>'
+            html: '<p style="font-size:14px;color:#6b7280;margin:0 0 14px">Complétez ces sections avant de publier :</p>'
                 + '<ul style="list-style:none;margin:0;padding:0;font-size:13.5px;font-weight:600">' + liste + '</ul>',
-            confirmButtonText: 'ComplÃ©ter mon profil',
+            confirmButtonText: 'Compléter mon profil',
             confirmButtonColor: '#185FA5',
             showCancelButton: false,
             customClass: { popup: 'swal-profil-incomplet' },
@@ -1592,9 +1592,9 @@
     document.addEventListener('DOMContentLoaded', function () {
         Swal.fire({
             icon: 'success',
-            title: 'Profil publiÃ© !',
-            html: '<p style="font-size:14px;color:#374151;margin:0">Votre profil est maintenant <strong style="color:#16a34a">visible dans la CVthÃ¨que</strong>.<br>Les recruteurs peuvent vous trouver et vous contacter.</p>',
-            confirmButtonText: 'Voir dans la CVthÃ¨que',
+            title: 'Profil publié !',
+            html: '<p style="font-size:14px;color:#374151;margin:0">Votre profil est maintenant <strong style="color:#16a34a">visible dans la CVthèque</strong>.<br>Les recruteurs peuvent vous trouver et vous contacter.</p>',
+            confirmButtonText: 'Voir dans la CVthèque',
             confirmButtonColor: '#185FA5',
             showCancelButton: true,
             cancelButtonText: 'Rester ici',

@@ -42,8 +42,8 @@
   <div class="auth-form-panel">
     <div class="auth-form-wrap">
 
-      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
-        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+      <div style="width:64px;height:64px;border-radius:50%;background:#e8f0fb;border:2px solid #185FA5;display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
       </div>
@@ -55,7 +55,8 @@
       </p>
 
       @if(session('resent'))
-        <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#065f46;margin-bottom:20px;text-align:center">
+        <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#065f46;margin-bottom:20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
           E-mail renvoyé avec succès. Vérifiez votre boîte de réception (et vos spams).
         </div>
       @endif
@@ -64,7 +65,8 @@
         <p style="font-size:.85rem;color:#374151;margin:0 0 14px">Vous n'avez pas reçu l'e-mail ?</p>
         <form method="POST" action="{{ route('verification.send') }}">
           @csrf
-          <button type="submit" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:.9rem;cursor:pointer;font-weight:600">
+          <button type="submit"
+            style="background:#042C53;color:#fff;border:none;border-radius:8px;padding:12px 28px;font-size:.9rem;cursor:pointer;font-weight:600;width:100%">
             Renvoyer le lien de confirmation
           </button>
         </form>
@@ -72,7 +74,8 @@
 
       <form method="POST" action="{{ route('auth.deconnecter') }}" style="text-align:center">
         @csrf
-        <button type="submit" style="background:none;border:none;color:#6b7280;font-size:.85rem;cursor:pointer;text-decoration:underline">
+        <button type="submit"
+          style="background:none;border:none;color:#6b7280;font-size:.82rem;cursor:pointer;text-decoration:underline">
           Se déconnecter et utiliser un autre compte
         </button>
       </form>

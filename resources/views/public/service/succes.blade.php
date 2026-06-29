@@ -11,7 +11,7 @@
     </div>
     <h1 style="font-size:2rem;font-weight:800;color:#042C53;margin:0 0 14px">Commande reçue !</h1>
     <p style="font-size:1.05rem;color:#64748b;line-height:1.65;margin:0 0 32px">
-      Votre paiement a bien été reçu. Vous recevrez votre service dans <strong>moins d'1 heure</strong>.
+      Votre paiement a bien été reçu. Notre équipe va traiter votre commande dans les <strong>meilleurs délais</strong>.
     </p>
 
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 24px;margin-bottom:28px;text-align:left">

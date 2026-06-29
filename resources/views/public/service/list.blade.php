@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Nos Services | Emploi Bouge Bénin')
-@section('description', 'CV professionnel, lettre de motivation, coaching, logo, site web… Livrés en 30min à 1H.')
+@section('description', 'CV professionnel, lettre de motivation, coaching, logo, site web… Des experts à votre service, livrés rapidement et à prix abordable.')
 
 @section('css')
 <style>
@@ -535,11 +535,16 @@
       <h1 class="svc-hero__title">Tout ce dont vous avez<br><span>besoin pour réussir</span></h1>
       <p class="svc-hero__sub">CV, lettre de motivation, logo, site web, traduction… Des experts à votre service, livrés rapidement et à prix abordable.</p>
       <div class="svc-hero__stats">
-        <div class="svc-stat"><span class="svc-stat__n">+500</span><span class="svc-stat__l">Livrés</span></div>
+        @php
+          $totalCommandes = $services->sum('nb_commandes');
+          $starService    = $services->firstWhere('slug', 'cv-professionnel') ?? $services->first();
+          $delaiMin       = $starService?->delai ?? '30min';
+        @endphp
+        <div class="svc-stat"><span class="svc-stat__n">+{{ $totalCommandes > 0 ? $totalCommandes : 500 }}</span><span class="svc-stat__l">Livrés</span></div>
         <div class="svc-stat__sep"></div>
         <div class="svc-stat"><span class="svc-stat__n">{{ $services->count() }}</span><span class="svc-stat__l">Services</span></div>
         <div class="svc-stat__sep"></div>
-        <div class="svc-stat"><span class="svc-stat__n">30min</span><span class="svc-stat__l">Délai min.</span></div>
+        <div class="svc-stat"><span class="svc-stat__n">{{ Str::before($delaiMin, ' ') ?: $delaiMin }}</span><span class="svc-stat__l">Délai min.</span></div>
       </div>
       <a href="#services" class="svc-hero__btn">
         Voir les services
@@ -633,7 +638,7 @@
           <div class="svc-feat__price">
             <span class="svc-feat__price-from">Seulement</span>
             <span class="svc-feat__price-val">{{ number_format($star->prix, 0, ',', ' ') }} FCFA</span>
-            <span class="svc-feat__price-del">· livré en 30min</span>
+            @if($star->delai)<span class="svc-feat__price-del">· livré en {{ $star->delai }}</span>@endif
           </div>
           <a href="{{ route('service.commande', $star->slug) }}" class="svc-feat__btn">Commander maintenant →</a>
         </div>
