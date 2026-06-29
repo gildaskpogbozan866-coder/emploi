@@ -199,14 +199,6 @@ function selectRole(role) {
   document.querySelector('.role-card[data-role="' + role + '"]')?.classList.add('selected');
   document.getElementById('roleInput').value = role;
   document.getElementById('entrepriseField').style.display = role === 'recruteur' ? '' : 'none';
-  var banner = document.getElementById('role-banner');
-  var label  = document.getElementById('role-label');
-  if (roleLabels[role]) {
-    label.textContent = roleLabels[role];
-    banner.style.display = 'flex';
-  } else {
-    banner.style.display = 'none';
-  }
   var googleBtn = document.getElementById('google-btn-inscription');
   if (googleBtn) googleBtn.href = '{{ route("auth.google") }}?role=' + role;
 }
