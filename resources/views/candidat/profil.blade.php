@@ -272,136 +272,6 @@
                         </div>
                     </div>
 
-                    {{-- SECTION 3 : Préférences emploi --}}
-                    <div class="cp-form-section-head">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <rect x="2" y="7" width="20" height="14" rx="2"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-                        </svg>
-                        Préférences emploi
-                    </div>
-
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Domaine / Spécialité</label>
-                            {{-- Custom multi-select widget --}}
-                            <div class="ms-wrap" id="ms-metiers-wrap">
-                                <div class="cand-form-input ms-trigger" id="ms-metiers-trigger"
-                                     role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
-                                    <span id="ms-metiers-chips"></span>
-                                    <span id="ms-metiers-ph" style="color:#94a3b8;font-size:14px">Sélectionnez un ou plusieurs domaines…</span>
-                                    <svg class="ms-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                                </div>
-                            </div>
-                            <select name="metiers_ids[]" id="cand-modal-metiers" multiple style="display:none">
-                                @foreach ($metiers as $p)
-                                    <option value="{{ $p->id }}"
-                                        {{ in_array($p->id, old('metiers_ids', $user->metiers->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
-                                        {{ $p->nom }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Années d'expérience</label>
-                            <input type="number" name="annees_experience"
-                                class="cand-form-input @error('annees_experience') field--invalid @enderror"
-                                min="0" max="50" placeholder="ex: 3"
-                                value="{{ old('annees_experience', $profil?->annees_experience) }}">
-                            @error('annees_experience')<p class="field__server-error">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Disponibilité <span class="cp-oblig-badge">Obligatoire</span></label>
-                        <div class="cp-pill-group">
-                            @foreach ($libelles['disponibilite'] as $val => $lab)
-                                <label class="cp-pill">
-                                    <input type="radio" name="disponibilite" value="{{ $val }}"
-                                        {{ old('disponibilite', $profil?->disponibilite) === $val ? 'checked' : '' }}>
-                                    {{ $lab }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Télétravail</label>
-                        <div class="cp-pill-group">
-                            @foreach ($libelles['remote'] as $val => $lab)
-                                <label class="cp-pill">
-                                    <input type="radio" name="remote" value="{{ $val }}"
-                                        {{ old('remote', $profil?->remote ?? 'non') === $val ? 'checked' : '' }}>
-                                    {{ $lab }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="cand-form-group">
-                        <label class="cand-form-label">Types de contrat souhaités <span class="cp-oblig-badge">Obligatoire</span></label>
-                        <div class="cp-contract-grid">
-                            @foreach ($typesContrats as $tc)
-                                <label class="cp-contract-label">
-                                    <input type="checkbox" name="types_contrat_ids[]" value="{{ $tc->id }}"
-                                        {{ in_array($tc->id, old('types_contrat_ids', $user->typesContrats->pluck('id')->toArray())) ? 'checked' : '' }}>
-                                    {{ $tc->libelle }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Salaire min (FCFA/mois)</label>
-                            <input type="number" name="salaire_min"
-                                class="cand-form-input @error('salaire_min') field--invalid @enderror" min="0"
-                                placeholder="ex: 80 000"
-                                value="{{ old('salaire_min', $profil?->salaire_min) }}">
-                            @error('salaire_min')<p class="field__server-error">{{ $message }}</p>@enderror
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">Salaire max (FCFA/mois)</label>
-                            <input type="number" name="salaire_max"
-                                class="cand-form-input @error('salaire_max') field--invalid @enderror" min="0"
-                                placeholder="ex: 250 000"
-                                value="{{ old('salaire_max', $profil?->salaire_max) }}">
-                            @error('salaire_max')<p class="field__server-error">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-
-                    {{-- SECTION 4 : Liens professionnels --}}
-                    <div class="cp-form-section-head">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                        </svg>
-                        Liens professionnels
-                    </div>
-
-                    <div class="cand-form-grid">
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5" style="vertical-align:-2px;margin-right:4px"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2" fill="#0077b5"/></svg>
-                                LinkedIn
-                            </label>
-                            <input type="url" name="linkedin"
-                                class="cand-form-input @error('linkedin') field--invalid @enderror"
-                                placeholder="https://linkedin.com/in/votre-profil"
-                                value="{{ old('linkedin', $profil?->linkedin) }}">
-                            @error('linkedin')<p class="field__server-error">{{ $message }}</p>@enderror
-                        </div>
-                        <div class="cand-form-group">
-                            <label class="cand-form-label">
-                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#6b7a8d" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                Portfolio / Site web
-                            </label>
-                            <input type="url" name="portfolio"
-                                class="cand-form-input @error('portfolio') field--invalid @enderror"
-                                placeholder="https://votre-site.com"
-                                value="{{ old('portfolio', $profil?->portfolio) }}">
-                            @error('portfolio')<p class="field__server-error">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-
                     <div class="cp-modal__actions">
                         <button type="button" class="cand-btn cand-btn--outline"
                             onclick="closeModal('modal-infos')">Annuler</button>
@@ -410,6 +280,20 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    {{-- Bouton dépôt CV --}}
+    <div style="margin-top:32px;padding:24px 28px;background:#fff;border:2px dashed #cbd5e1;border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+            <div style="font-size:15px;font-weight:700;color:#042C53">Prêt à être visible des recruteurs ?</div>
+            <div style="font-size:13px;color:#64748b;margin-top:3px">Déposez votre CV dans la CVthèque pour être contacté directement.</div>
+        </div>
+        <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow" style="flex-shrink:0;display:inline-flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            Déposer votre CV
+        </a>
     </div>
 
 @endsection
@@ -1222,93 +1106,6 @@
         .ms-check--empty { color: #cbd5e1; }
         .ss-option--sel .ms-check--empty { display: none; }
 
-        /* �"?�"? Carte Publication �"?�"? */
-        .cp-publish-card {
-            background: #fff;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 28px 28px 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 12px rgba(4,44,83,.06);
-        }
-        .cp-publish-card__header {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .cp-publish-card__icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background: #ebf4fd;
-            color: #185FA5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .cp-publish-card__title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #042C53;
-        }
-        .cp-publish-card__sub {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        .cp-publish-card__bar-wrap {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 99px;
-            margin-top: 10px;
-            width: 100%;
-            overflow: hidden;
-        }
-        .cp-publish-card__bar {
-            height: 100%;
-            background: linear-gradient(90deg, #185FA5, #378ADD);
-            border-radius: 99px;
-            transition: width .4s ease;
-        }
-        .cp-publish-card__errors {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            border-radius: 10px;
-            padding: 14px 16px;
-            display: flex;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-        .cp-publish-checklist {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .cp-publish-check {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 9px 14px;
-            border-radius: 8px;
-            font-size: 13.5px;
-        }
-        .cp-publish-check--ok  { background: #f0fdf4; }
-        .cp-publish-check--ko  { background: #fef9f0; }
-        .cp-publish-check__label { font-weight: 600; color: #042C53; }
-        .cp-publish-check--ok .cp-publish-check__label { color: #16a34a; }
-        .cp-publish-check--ko .cp-publish-check__label { color: #92400e; }
-        .cp-publish-check__hint { font-size: 12px; color: #78716c; font-weight: 400; }
-        .cp-publish-btn {
-            width: 100%;
-            justify-content: center;
-            font-size: 15px;
-            padding: 14px 24px;
-            border-radius: 12px;
-        }
-
         /* Spécialité hero */
         .cp-hero__specialite {
             font-size: 13px;
@@ -1558,55 +1355,4 @@
         initTelField('cand-modal-pays', 'cand-tel-prefix', 'cand-tel-input');
     </script>
 
-    @if(session('publier_erreurs'))
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var manque = @json(session('publier_erreurs'));
-        var liste = manque.map(function(item) {
-            return '<li style="text-align:left;padding:4px 0;color:#374151">�?� ' + item.charAt(0).toUpperCase() + item.slice(1) + '</li>';
-        }).join('');
-
-        Swal.fire({
-            icon: 'warning',
-            title: 'Profil incomplet',
-            html: '<p style="font-size:14px;color:#6b7280;margin:0 0 14px">Complétez ces sections avant de publier :</p>'
-                + '<ul style="list-style:none;margin:0;padding:0;font-size:13.5px;font-weight:600">' + liste + '</ul>',
-            confirmButtonText: 'Compléter mon profil',
-            confirmButtonColor: '#185FA5',
-            showCancelButton: false,
-            customClass: { popup: 'swal-profil-incomplet' },
-        }).then(function() {
-            var card = document.getElementById('section-publication');
-            if (card) {
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                card.style.outline = '3px solid #185FA5';
-                setTimeout(function() { card.style.outline = ''; }, 2000);
-            }
-        });
-    });
-    </script>
-    @endif
-
-    @if(session('profil_publie'))
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        Swal.fire({
-            icon: 'success',
-            title: 'Profil publié !',
-            html: '<p style="font-size:14px;color:#374151;margin:0">Votre profil est maintenant <strong style="color:#16a34a">visible dans la CVthèque</strong>.<br>Les recruteurs peuvent vous trouver et vous contacter.</p>',
-            confirmButtonText: 'Voir dans la CVthèque',
-            confirmButtonColor: '#185FA5',
-            showCancelButton: true,
-            cancelButtonText: 'Rester ici',
-            cancelButtonColor: '#6b7280',
-        }).then(function(result) {
-            if (result.isConfirmed) {
-                @if($cv)
-                window.open('{{ route('cv.public.detail', $cv) }}', '_blank');
-                @endif
-            }
-        });
-    });
-    </script>
-    @endif
 @endsection

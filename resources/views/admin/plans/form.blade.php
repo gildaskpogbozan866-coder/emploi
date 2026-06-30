@@ -73,7 +73,7 @@
     </div>
     <div style="padding:20px 24px">
 
-      <div class="adm-form-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px">
+      <div class="adm-form-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:16px">
         <div class="adm-form-field">
           <label for="price" class="adm-form-label">Prix <span style="color:#e53e3e">*</span></label>
           <input id="price" type="number" name="price" min="0" value="{{ old('price', $plan->price ?? 0) }}" required class="adm-form-input">

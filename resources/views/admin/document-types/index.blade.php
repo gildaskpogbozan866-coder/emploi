@@ -55,7 +55,7 @@
   </form>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:start">
 
   {{-- Liste des types --}}
   <div>
@@ -94,7 +94,7 @@
         <div style="border-top:1px solid #f1f5f9;padding:20px">
           <form method="POST" action="{{ route('admin.document-types.update', $type) }}">
             @csrf @method('PUT')
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px">
               <div style="grid-column:1/-1">
                 <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px">Nom du document</label>
                 <input type="text" name="nom" value="{{ $type->nom }}" required

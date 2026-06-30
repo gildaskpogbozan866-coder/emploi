@@ -175,15 +175,17 @@
     @endif
 
     {{-- Bloc CV Professionnel --}}
-    <div style="display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);border-radius:14px;padding:20px 24px;margin-bottom:22px">
-        <span style="flex-shrink:0;width:44px;height:44px;border-radius:12px;background:rgba(245,200,66,.15);display:flex;align-items:center;justify-content:center">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        </span>
-        <div style="flex:1;min-width:0">
-            <p style="font-size:13px;font-weight:800;color:#F5C842;margin:0 0 3px;text-transform:uppercase;letter-spacing:.05em">CV Professionnel</p>
-            <p style="font-size:13px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">Faites rédiger votre CV par nos experts · Livraison en <strong style="color:#fff">{{ $cvService->delai ?? '30 min à 1h' }}</strong> · <strong style="color:#F5C842">{{ $cvService ? number_format($cvService->prix, 0, ',', ' ').' FCFA' : '2 500 FCFA' }}</strong></p>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:linear-gradient(135deg,#042C53 0%,#185FA5 100%);border-radius:14px;padding:18px 20px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+            <span style="flex-shrink:0;width:40px;height:40px;border-radius:10px;background:rgba(245,200,66,.15);display:flex;align-items:center;justify-content:center">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#F5C842" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </span>
+            <div style="min-width:0">
+                <p style="font-size:12px;font-weight:800;color:#F5C842;margin:0 0 2px;text-transform:uppercase;letter-spacing:.05em">CV Professionnel</p>
+                <p style="font-size:12.5px;color:rgba(255,255,255,.85);margin:0;line-height:1.5">Faites rédiger votre CV par nos experts · Livraison en <strong style="color:#fff">{{ $cvService->delai ?? '30 min à 1h' }}</strong> · <strong style="color:#F5C842">{{ $cvService ? number_format($cvService->prix, 0, ',', ' ').' FCFA' : '2 500 FCFA' }}</strong></p>
+            </div>
         </div>
-        <a href="{{ route('service.commande', 'cv-professionnel') }}" style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap">
+        <a href="{{ route('service.commande', 'cv-professionnel') }}" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#F5C842;color:#042C53;border-radius:8px;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap;flex-shrink:0">
             Commander →
         </a>
     </div>

@@ -340,7 +340,6 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
     Route::post('/profil/avatar',          [CandidatProfil::class, 'updateAvatar'])->name('profil.avatar.update');
     Route::delete('/profil/avatar',        [CandidatProfil::class, 'deleteAvatar'])->name('profil.avatar.delete');
     Route::post('/profil/fichier-cv',      [CandidatProfil::class, 'updateFichierCv'])->name('profil.fichier-cv');
-    Route::post('/profil/publier',         [CandidatProfil::class, 'publier'])->name('profil.publier');
     Route::get('/parametres',              [CandidatProfil::class, 'parametres'])->name('parametres');
     Route::put('/parametres',              [CandidatProfil::class, 'updateParametres'])->name('parametres.update');
 

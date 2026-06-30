@@ -34,55 +34,57 @@
         <a href="{{ route('admin.publicites.index') }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir tout</a>
       </div>
     @else
-      <table class="adm-table">
-        <thead>
-          <tr>
-            <th>Annonce</th>
-            <th>Annonceur</th>
-            <th>Statut</th>
-            <th>Diffusion</th>
-            <th>Soumise le</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($publicites as $pub)
-          <tr>
-            <td>
-              <div style="display:flex;align-items:center;gap:12px">
-                <img src="{{ asset('storage/' . $pub->image) }}"
-                     alt="{{ $pub->titre }}"
-                     style="width:64px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0">
-                <div>
-                  <div style="font-weight:600;color:#042C53;font-size:13.5px">{{ $pub->titre }}</div>
-                  @if($pub->lien)
-                    <div style="font-size:12px;color:#94a3b8">{{ Str::limit($pub->lien, 35) }}</div>
-                  @endif
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Annonce</th>
+              <th>Annonceur</th>
+              <th>Statut</th>
+              <th>Diffusion</th>
+              <th>Soumise le</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($publicites as $pub)
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <img src="{{ asset('storage/' . $pub->image) }}"
+                       alt="{{ $pub->titre }}"
+                       style="width:64px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0">
+                  <div>
+                    <div style="font-weight:600;color:#042C53;font-size:13.5px">{{ $pub->titre }}</div>
+                    @if($pub->lien)
+                      <div style="font-size:12px;color:#94a3b8">{{ Str::limit($pub->lien, 35) }}</div>
+                    @endif
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <div style="font-weight:600;color:#042C53;font-size:13px">{{ $pub->user->nom_complet }}</div>
-              <div style="font-size:12px;color:#94a3b8">{{ $pub->user->email }}</div>
-            </td>
-            <td>
-              <span class="adm-badge adm-badge--{{ $pub->statut_badge }}">{{ $pub->statut_label }}</span>
-            </td>
-            <td style="font-size:12.5px;color:#64748b">
-              @if($pub->date_debut || $pub->date_fin)
-                {{ $pub->date_debut?->format('d/m/Y') ?? '-' }}→{{ $pub->date_fin?->format('d/m/Y') ?? '∞' }}
-              @else
-                <span style="color:#94a3b8">Sans limite</span>
-              @endif
-            </td>
-            <td style="font-size:13px;color:#64748b;white-space:nowrap">{{ $pub->created_at->format('d/m/Y') }}</td>
-            <td>
-              <a href="{{ route('admin.publicites.show', $pub) }}" class="adm-btn adm-btn--outline adm-btn--sm">Examiner</a>
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
+              </td>
+              <td>
+                <div style="font-weight:600;color:#042C53;font-size:13px">{{ $pub->user->nom_complet }}</div>
+                <div style="font-size:12px;color:#94a3b8">{{ $pub->user->email }}</div>
+              </td>
+              <td>
+                <span class="adm-badge adm-badge--{{ $pub->statut_badge }}">{{ $pub->statut_label }}</span>
+              </td>
+              <td style="font-size:12.5px;color:#64748b">
+                @if($pub->date_debut || $pub->date_fin)
+                  {{ $pub->date_debut?->format('d/m/Y') ?? '-' }}→{{ $pub->date_fin?->format('d/m/Y') ?? '∞' }}
+                @else
+                  <span style="color:#94a3b8">Sans limite</span>
+                @endif
+              </td>
+              <td style="font-size:13px;color:#64748b;white-space:nowrap">{{ $pub->created_at->format('d/m/Y') }}</td>
+              <td>
+                <a href="{{ route('admin.publicites.show', $pub) }}" class="adm-btn adm-btn--outline adm-btn--sm">Examiner</a>
+              </td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
       <div style="padding:16px 24px">
         {{ $publicites->links() }}
       </div>

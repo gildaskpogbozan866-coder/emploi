@@ -17,14 +17,14 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start">
   <div>
     <div class="adm-card" style="margin-bottom:20px">
       <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
         <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Détails de l'offre</h3>
       </div>
       <div style="padding:20px 24px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px">
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Type de contrat</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->type }}</p></div>
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Secteur</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->secteur ? (is_array($offre->secteur) ? implode(', ', $offre->secteur) : $offre->secteur) : '-' }}</p></div>
           <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Localisation</p><p style="font-weight:600;color:#042C53;margin:0">{{ $offre->localisation }}</p></div>

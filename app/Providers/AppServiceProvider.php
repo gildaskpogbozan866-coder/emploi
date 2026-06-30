@@ -6,6 +6,8 @@ use App\Events\CandidatureDeposee;
 use App\Events\PaymentConfirmed;
 use App\Listeners\HandlePaymentConfirmed;
 use App\Listeners\NotifierRecruteurCandidature;
+
+
 use App\Models\CreditCvPack;
 use App\Models\Disponibilite;
 use App\Models\Langue;
@@ -38,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         Schema::defaultStringLength(191);
         Event::listen(PaymentConfirmed::class, HandlePaymentConfirmed::class);
         Event::listen(CandidatureDeposee::class, NotifierRecruteurCandidature::class);

@@ -463,6 +463,17 @@
           <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;margin-left:6px">Obligatoire</span>
         </div>
 
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:11px 14px;margin-bottom:14px">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#d97706" stroke-width="2.2" style="flex-shrink:0;margin-top:1px">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <p style="margin:0;font-size:13px;color:#92400e;line-height:1.55">
+            Vérifiez que votre CV est vraiment professionnel — un recruteur décide en <strong>7 secondes</strong>.
+            Si vous avez un doute,
+            <a href="{{ route('service.commande', 'cv-professionnel') }}" target="_blank" style="color:#b45309;font-weight:700;text-decoration:underline">commandez un CV professionnel&nbsp;+ lettre de motivation ici</a>.
+          </p>
+        </div>
+
         <div class="form-row form-row--1">
           <div>
             <div class="upload-zone" id="uploadZone">

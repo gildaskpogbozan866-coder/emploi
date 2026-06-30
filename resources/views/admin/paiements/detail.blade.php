@@ -28,7 +28,7 @@
   </span>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:900px">
 
   {{-- Informations financières --}}
   <div class="adm-card">

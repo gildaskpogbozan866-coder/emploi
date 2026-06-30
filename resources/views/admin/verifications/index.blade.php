@@ -14,7 +14,7 @@
   </div>
 
   {{-- Compteurs globaux (indépendants des filtres) --}}
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;margin-bottom:20px">
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;text-align:center">
       <div style="font-size:1.6rem;font-weight:700;color:#d97706">{{ $counts['en_attente'] }}</div>
       <div style="font-size:.82rem;color:#92400e;margin-top:4px">En attente</div>
@@ -38,6 +38,7 @@
   ])
 
   <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden">
+    <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.88rem">
       <thead>
         <tr style="background:#f8fafc;border-bottom:2px solid #e5e7eb">
@@ -80,6 +81,7 @@
         @endforelse
       </tbody>
     </table>
+    </div>
   </div>
 
   <div style="margin-top:20px">

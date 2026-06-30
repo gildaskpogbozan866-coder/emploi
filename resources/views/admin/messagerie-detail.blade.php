@@ -22,7 +22,7 @@
 </div>
 
 {{-- Info participants --}}
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px">
   @foreach([$conversation->user1, $conversation->user2] as $participant)
   <div class="adm-card" style="padding:16px 22px;display:flex;align-items:center;gap:14px">
     <div style="width:46px;height:46px;border-radius:50%;background:rgba(55,138,221,0.12);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:#185FA5;flex-shrink:0">

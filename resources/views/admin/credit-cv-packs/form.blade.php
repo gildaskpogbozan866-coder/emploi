@@ -35,7 +35,7 @@
       </div>
 
       {{-- Crédits + Prix --}}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
         <div>
           <label style="display:block;font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Nombre de crédits *</label>
           <input type="number" name="credits" value="{{ old('credits', $pack->credits) }}"
@@ -53,7 +53,7 @@
       </div>
 
       {{-- Badge + Ordre --}}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
         <div>
           <label style="display:block;font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Badge <span style="font-weight:400;text-transform:none">(optionnel)</span></label>
           <input type="text" name="badge" value="{{ old('badge', $pack->badge) }}"

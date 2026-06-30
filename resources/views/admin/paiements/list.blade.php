@@ -93,7 +93,7 @@
 
   {{-- Formulaire --}}
   <form method="GET" id="filterForm">
-    <div style="padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+    <div style="padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
 
       {{-- Recherche --}}
       <div>

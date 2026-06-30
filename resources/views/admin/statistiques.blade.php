@@ -76,7 +76,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
 
   {{-- Offres par type --}}
   <div class="adm-card" style="grid-column:1/-1">

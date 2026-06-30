@@ -161,7 +161,7 @@
           <form method="POST" action="{{ route('admin.seo.page.update', $page) }}">
             @csrf @method('PUT')
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px">
               <div>
                 <label style="display:block;font-size:12.5px;font-weight:600;color:#374151;margin-bottom:5px">
                   Balise title <span style="font-weight:400;color:#94a3b8">(max 60 car.)</span>
@@ -179,7 +179,7 @@
               </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px">
               <div>
                 <label style="display:block;font-size:12.5px;font-weight:600;color:#374151;margin-bottom:5px">
                   Meta description <span style="font-weight:400;color:#94a3b8">(max 160 car.)</span>

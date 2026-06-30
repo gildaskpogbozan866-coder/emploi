@@ -27,7 +27,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
   <div class="adm-card">
     <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Informations</h3>
@@ -53,7 +53,7 @@
     <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Résumé activité</h3>
     </div>
-    <div style="padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px">
       <div style="text-align:center;padding:16px;background:#f8fafc;border-radius:10px">
         <p style="font-size:1.6rem;font-weight:800;color:#185FA5;margin:0">{{ $user->offres->count() }}</p>
         <p style="font-size:12px;color:#64748b;margin:4px 0 0">Offres publiées</p>
