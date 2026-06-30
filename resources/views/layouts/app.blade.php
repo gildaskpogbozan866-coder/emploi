@@ -27,6 +27,12 @@
         ? $__env->yieldContent('og_url')
         : url()->current();
     $gaId    = $seo['ga_id'] ?? '';
+
+    // yieldContent() applique e() en interne → décode avant que {{ }} re-encode
+    $metaTitle = html_entity_decode($metaTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $metaDesc  = html_entity_decode($metaDesc,  ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $ogTitle   = html_entity_decode($ogTitle,   ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $ogDesc    = html_entity_decode($ogDesc,    ENT_QUOTES | ENT_HTML5, 'UTF-8');
   @endphp
 
   <title>{{ $metaTitle }}</title>
