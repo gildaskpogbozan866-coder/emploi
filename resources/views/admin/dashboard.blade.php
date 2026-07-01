@@ -1,6 +1,28 @@
 @extends('layouts.admin')
 @section('title', 'Tableau de bord | Administration')
 
+@php
+  $stats              = $stats ?? [];
+  $chartData          = $chartData ?? [
+    'utilisateurs'  => ['labels' => [], 'values' => []],
+    'offresStatut'  => ['labels' => [], 'values' => []],
+    'moisLabels'    => [],
+    'inscriptions'  => [],
+    'candidatures'  => [],
+    'revenus'       => [],
+    'offresParType' => ['labels' => [], 'values' => []],
+    'candParStatut' => ['labels' => [], 'values' => []],
+    'topOffres'     => ['labels' => [], 'values' => []],
+  ];
+  $tauxConversion       = $tauxConversion ?? 0;
+  $derniers_utilisateurs = $derniers_utilisateurs ?? collect();
+  $dernieres_offres      = $dernieres_offres ?? collect();
+  $dernieres_commandes   = $dernieres_commandes ?? collect();
+  $derniers_cvs          = $derniers_cvs ?? collect();
+  $derniers_signalements = $derniers_signalements ?? collect();
+  $topRecruteurs         = $topRecruteurs ?? collect();
+@endphp
+
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
@@ -30,7 +52,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['candidats'] }}</div>
+      <div class="adm-stat__val">{{ $stats['candidats'] ?? 0 }}</div>
       <div class="adm-stat__label">Candidats</div>
     </div>
   </a>
@@ -39,7 +61,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['recruteurs'] }}</div>
+      <div class="adm-stat__val">{{ $stats['recruteurs'] ?? 0 }}</div>
       <div class="adm-stat__label">Recruteurs</div>
     </div>
   </a>
@@ -48,7 +70,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['annonceurs'] }}</div>
+      <div class="adm-stat__val">{{ $stats['annonceurs'] ?? 0 }}</div>
       <div class="adm-stat__label">Annonceurs</div>
     </div>
   </a>
@@ -57,7 +79,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['offres_actives'] }}</div>
+      <div class="adm-stat__val">{{ $stats['offres_actives'] ?? 0 }}</div>
       <div class="adm-stat__label">Offres actives</div>
     </div>
   </a>
@@ -66,12 +88,12 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['candidatures'] }}</div>
+      <div class="adm-stat__val">{{ $stats['candidatures'] ?? 0 }}</div>
       <div class="adm-stat__label">Candidatures</div>
     </div>
   </a>
   <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}" style="position:relative">
-    @if($stats['cvs_nouveaux'] > 0)
+    @if(($stats['cvs_nouveaux'] ?? 0) > 0)
     <span style="position:absolute;top:10px;right:10px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;line-height:1.4">
       {{ $stats['cvs_nouveaux'] }} nouveau{{ $stats['cvs_nouveaux'] > 1 ? 'x' : '' }}
     </span>
@@ -80,7 +102,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['cvs'] }}</div>
+      <div class="adm-stat__val">{{ $stats['cvs'] ?? 0 }}</div>
       <div class="adm-stat__label">CVs</div>
     </div>
   </a>
@@ -89,7 +111,7 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val">{{ $stats['commandes'] }}</div>
+      <div class="adm-stat__val">{{ $stats['commandes'] ?? 0 }}</div>
       <div class="adm-stat__label">Commandes</div>
     </div>
   </a>
@@ -98,16 +120,16 @@
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     </div>
     <div>
-      <div class="adm-stat__val" style="color:#38A169;font-size:1.1rem">{{ number_format($stats['paiements'], 0, ',', ' ') }}</div>
+      <div class="adm-stat__val" style="color:#38A169;font-size:1.1rem">{{ number_format($stats['paiements'] ?? 0, 0, ',', ' ') }}</div>
       <div class="adm-stat__label">FCFA confirmés</div>
     </div>
   </a>
 </div>
 
-@if($stats['signalements'] > 0)
+@if(($stats['signalements'] ?? 0) > 0)
   <div class="flash flash--warning" style="margin-bottom:24px">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <span>{{ $stats['signalements'] }} signalement(s) en attente.
+    <span>{{ $stats['signalements'] ?? 0 }} signalement(s) en attente.
       <a href="{{ route('admin.signalements.list') }}" style="font-weight:700;margin-left:6px;color:inherit">Traiter →</a>
     </span>
   </div>
@@ -135,7 +157,7 @@
         <table class="adm-table">
           <thead><tr><th>Nom</th><th>Rôle</th><th>Email</th><th>Date</th></tr></thead>
           <tbody id="tbl-users">
-            @foreach($derniers_utilisateurs as $u)
+            @foreach($derniers_utilisateurs ?? [] as $u)
             <tr>
               <td style="font-weight:500;white-space:nowrap">{{ $u->nom_complet ?? $u->email }}</td>
               <td><span class="badge-role badge-role--{{ $u->role }}">{{ ucfirst($u->role) }}</span></td>
@@ -167,7 +189,7 @@
         <table class="adm-table">
           <thead><tr><th>Titre</th><th>Statut</th><th>Recruteur</th><th>Date</th></tr></thead>
           <tbody id="tbl-offres">
-            @foreach($dernieres_offres as $offre)
+            @foreach($dernieres_offres ?? [] as $offre)
             <tr>
               <td style="max-width:160px">
                 <p style="font-weight:500;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $offre->titre }}</p>
@@ -201,7 +223,7 @@
         <table class="adm-table">
           <thead><tr><th>Client</th><th>Service</th><th>Statut</th><th>Date</th></tr></thead>
           <tbody id="tbl-commandes">
-            @foreach($dernieres_commandes as $cmd)
+            @foreach($dernieres_commandes ?? [] as $cmd)
             <tr>
               <td style="font-weight:500;white-space:nowrap">{{ $cmd->user?->nom_complet ?? $cmd->email_contact ?? 'Invité' }}</td>
               <td style="color:#6b7a8d;font-size:12.5px">{{ $cmd->service->nom ?? '-' }}</td>
@@ -220,7 +242,7 @@
         <h2>Derniers CVs déposés</h2>
         <a href="{{ route('admin.cvs.list') }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir tout</a>
       </div>
-      @if($derniers_cvs->isEmpty())
+      @if(($derniers_cvs ?? collect())->isEmpty())
         <div class="adm-empty" style="padding:24px 22px">
           <p style="font-size:13.5px;color:#64748b">Aucun CV déposé pour l'instant.</p>
         </div>
@@ -231,7 +253,7 @@
               <tr><th>Candidat</th><th>Métier</th><th>Ville</th><th>Visible</th><th>Déposé le</th><th>Actions</th></tr>
             </thead>
             <tbody>
-              @foreach($derniers_cvs as $cv)
+              @foreach($derniers_cvs ?? [] as $cv)
               <tr>
                 <td>
                   <div style="font-weight:600;color:#042C53;display:flex;align-items:center;gap:6px">
@@ -277,7 +299,7 @@
         <h2>Signalements en attente</h2>
         <a href="{{ route('admin.signalements.list') }}" class="adm-btn adm-btn--outline adm-btn--sm">Voir tout</a>
       </div>
-      @if($derniers_signalements->isEmpty())
+      @if(($derniers_signalements ?? collect())->isEmpty())
         <div class="adm-empty" style="padding:24px 22px">
           <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
           <p style="font-size:13.5px;color:#64748b">Aucun signalement en attente</p>
@@ -287,7 +309,7 @@
           <table class="adm-table">
             <thead><tr><th>Type</th><th>Raison</th><th>Signalé par</th><th>Date</th></tr></thead>
             <tbody>
-              @foreach($derniers_signalements as $s)
+              @foreach($derniers_signalements ?? [] as $s)
               <tr>
                 <td><span class="tag">{{ ucfirst($s->type) }}</span></td>
                 <td style="color:#6b7a8d;font-size:12.5px">{{ Str::limit($s->raison, 36) }}</td>
@@ -310,11 +332,11 @@
   {{-- Taux de conversion --}}
   <div class="adm-card" style="margin-bottom:20px;display:flex;flex-direction:column;align-items:center;padding:32px 24px;text-align:center">
     <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="1.5" style="margin-bottom:12px"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-    <div style="font-size:3rem;font-weight:800;color:#185FA5;line-height:1">{{ $tauxConversion }}%</div>
+    <div style="font-size:3rem;font-weight:800;color:#185FA5;line-height:1">{{ $tauxConversion ?? 0 }}%</div>
     <div style="font-size:13px;font-weight:600;color:#64748b;margin-top:8px">Taux de conversion</div>
     <div style="font-size:11.5px;color:#94a3b8;margin-top:4px">vues → candidatures</div>
     <div style="margin-top:16px;font-size:11.5px;color:#042C53;background:#f0f7ff;padding:6px 14px;border-radius:20px">
-      {{ number_format($stats['candidatures']) }} cand. / {{ number_format(app(\App\Models\Offre::class)->sum('vues') ?: 0) }} vues
+      {{ number_format($stats['candidatures'] ?? 0) }} cand. / {{ number_format(app(\App\Models\Offre::class)->sum('vues') ?: 0) }} vues
     </div>
   </div>
 
@@ -387,7 +409,7 @@
   @endif
 
   {{-- Top recruteurs --}}
-  @if($topRecruteurs->isNotEmpty())
+  @if(($topRecruteurs ?? collect())->isNotEmpty())
   <div class="adm-card" style="margin-bottom:20px">
     <div class="adm-card__header"><h2>Top recruteurs par candidatures reçues</h2></div>
     <div class="adm-table-wrap">
@@ -396,7 +418,7 @@
           <tr><th>#</th><th>Recruteur</th><th>Entreprise</th><th>Email</th><th style="text-align:right">Candidatures</th></tr>
         </thead>
         <tbody>
-          @foreach($topRecruteurs as $i => $rec)
+          @foreach($topRecruteurs ?? [] as $i => $rec)
           <tr>
             <td style="font-weight:700;color:#185FA5">{{ $i + 1 }}</td>
             <td style="font-weight:500">{{ $rec->nom_complet ?? $rec->email }}</td>

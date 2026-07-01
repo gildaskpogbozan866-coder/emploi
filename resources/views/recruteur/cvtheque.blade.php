@@ -242,7 +242,7 @@
 </div>
 
 @if($cvs->hasPages())
-  <div style="margin-top:24px">{{ $cvs->links() }}</div>
+  <div style="margin-top:28px">{{ $cvs->links() }}</div>
 @endif
 @endsection
 

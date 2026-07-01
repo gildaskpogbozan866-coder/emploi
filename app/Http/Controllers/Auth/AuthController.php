@@ -77,8 +77,9 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->forget('url.intended');
 
-        return redirect()->intended($this->dashboardUrl(Auth::user()));
+        return redirect($this->dashboardUrl(Auth::user()));
     }
 
     // ── Inscription ───────────────────────────────────────
@@ -113,6 +114,8 @@ class AuthController extends Controller
         $user->assignRole($role);
 
         Auth::login($user, remember: true);
+
+        $request->session()->regenerate();
 
         $user->sendEmailVerificationNotification();
 

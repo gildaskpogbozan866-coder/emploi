@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        Paginator::defaultView('vendor.pagination.custom');
+        Paginator::defaultSimpleView('vendor.pagination.custom');
         Event::listen(PaymentConfirmed::class, HandlePaymentConfirmed::class);
         Event::listen(CandidatureDeposee::class, NotifierRecruteurCandidature::class);
         $this->configureRateLimiters();
