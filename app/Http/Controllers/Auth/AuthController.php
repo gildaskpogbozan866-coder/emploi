@@ -99,6 +99,8 @@ class AuthController extends Controller
 
         Auth::login($user, remember: true);
 
+        $request->session()->regenerate();
+
         $user->sendEmailVerificationNotification();
 
         return redirect()->route('verification.notice');

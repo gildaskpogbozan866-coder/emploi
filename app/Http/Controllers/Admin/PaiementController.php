@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Paiement;
+use App\Notifications\PaiementConfirme;
 use Illuminate\Http\Request;
 
 class PaiementController extends Controller
@@ -39,6 +40,7 @@ class PaiementController extends Controller
 
         if ($request->statut === 'confirme') {
             $paiement->user->update(['premium' => true]);
+            $paiement->user->notify(new PaiementConfirme($paiement));
         }
 
         return back()->with('success', 'Paiement mis à jour.');

@@ -50,13 +50,13 @@ class AbonnementController extends Controller
                 'methode'      => $request->methode ?? 'mobile_money',
                 'statut'       => 'en_attente',
             ]);
+        } else {
+            Auth::user()->update(['premium' => false]);
         }
-
-        Auth::user()->update(['premium' => $request->plan === 'premium']);
 
         return redirect()->route('candidat.abonnement')
             ->with('success', $request->plan === 'premium'
-                ? 'Abonnement Premium activé ! Paiement en cours de vérification.'
+                ? 'Demande d\'abonnement Premium enregistrée. Votre accès sera activé dès confirmation du paiement.'
                 : 'Vous utilisez le plan gratuit.');
     }
 
