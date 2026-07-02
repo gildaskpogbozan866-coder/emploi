@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Spatie\Permission\Models\Role as SpatieRole;
 
@@ -13,14 +14,34 @@ class GoogleController extends Controller
 {
     public function redirect(Request $request)
     {
-        if ($request->has('role') && in_array($request->role, ['candidat', 'recruteur', 'annonceur'])) {
-            $request->session()->put('google_role', $request->role);
+        $role = $request->input('role');
+
+        if ($role && in_array($role, ['candidat', 'recruteur', 'annonceur'])) {
+            // Encode role in OAuth state — Google echoes it back, no session/cookie needed
+            $customState = $role . '|' . Str::random(40);
+
+            $redirectResponse = Socialite::driver('google')
+                ->with(['state' => $customState])
+                ->redirect();
+
+            // Override the auto-generated Socialite state in session with our custom one
+            $request->session()->put('state', $customState);
+
+            return $redirectResponse;
         }
+
         return Socialite::driver('google')->redirect();
     }
 
     public function callback(Request $request)
     {
+        // Extract role from state parameter before Socialite consumes it
+        $stateParam    = $request->input('state', '');
+        $parts         = explode('|', $stateParam, 2);
+        $roleFromState = (count($parts) === 2 && in_array($parts[0], ['candidat', 'recruteur', 'annonceur']))
+            ? $parts[0]
+            : null;
+
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
@@ -54,32 +75,35 @@ class GoogleController extends Controller
             return redirect($this->dashboardUrl($existingByEmail));
         }
 
-        // New user — use pre-selected role from inscription page if available
-        $storedRole = $request->session()->pull('google_role');
-        if ($storedRole && in_array($storedRole, ['candidat', 'recruteur', 'annonceur'])) {
+        // New user
+        $raw    = $googleUser->getRaw();
+        $prenom = $raw['given_name']  ?? (explode(' ', $googleUser->getName() ?? '')[0] ?? '');
+        $nom    = $raw['family_name'] ?? (explode(' ', $googleUser->getName() ?? '')[1] ?? '');
+
+        if ($roleFromState) {
             $user = User::create([
-                'prenom'            => $googleUser->offsetGet('given_name') ?? explode(' ', $googleUser->getName())[0] ?? '',
-                'nom'               => $googleUser->offsetGet('family_name') ?? (explode(' ', $googleUser->getName())[1] ?? ''),
+                'prenom'            => $prenom,
+                'nom'               => $nom,
                 'email'             => $googleUser->getEmail(),
                 'google_id'         => $googleUser->getId(),
                 'avatar'            => $googleUser->getAvatar(),
                 'password'          => null,
-                'role'              => $storedRole,
+                'role'              => $roleFromState,
                 'pays'              => 'Bénin',
                 'actif'             => true,
                 'email_verified_at' => now(),
             ]);
-            SpatieRole::firstOrCreate(['name' => $storedRole, 'guard_name' => 'web']);
-            $user->assignRole($storedRole);
+            SpatieRole::firstOrCreate(['name' => $roleFromState, 'guard_name' => 'web']);
+            $user->assignRole($roleFromState);
             Auth::login($user, remember: true);
             return redirect($this->dashboardUrl($user));
         }
 
-        // No pre-selected role — store Google data in session and ask for role
+        // No role in state — ask for role selection
         $request->session()->put('google_user', [
             'google_id' => $googleUser->getId(),
-            'prenom'    => $googleUser->offsetGet('given_name') ?? explode(' ', $googleUser->getName())[0] ?? '',
-            'nom'       => $googleUser->offsetGet('family_name') ?? (explode(' ', $googleUser->getName())[1] ?? ''),
+            'prenom'    => $prenom,
+            'nom'       => $nom,
             'email'     => $googleUser->getEmail(),
             'avatar'    => $googleUser->getAvatar(),
         ]);

@@ -116,6 +116,7 @@ class AuthController extends Controller
         Auth::login($user, remember: true);
 
         $request->session()->regenerate();
+        $request->session()->forget('url.intended');
 
         $user->sendEmailVerificationNotification();
 

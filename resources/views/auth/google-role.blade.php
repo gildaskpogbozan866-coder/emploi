@@ -60,7 +60,7 @@
         @csrf
         <div class="aform__field">
           <div class="role-grid">
-            <button type="button" data-role="candidat" class="role-card selected" onclick="selectRole('candidat')">
+            <button type="button" data-role="candidat" class="role-card" onclick="selectRole('candidat')">
               <div class="role-card__icon">
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
               </div>
@@ -82,7 +82,7 @@
               <div class="role-card__desc">Je publie des affiches pub</div>
             </button>
           </div>
-          <input type="hidden" name="role" id="roleInput" value="candidat" />
+          <input type="hidden" name="role" id="roleInput" value="" />
         </div>
 
         <button type="submit" class="aform__submit" style="margin-top:8px">Créer mon compte →</button>
