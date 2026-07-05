@@ -85,7 +85,7 @@ class OffreControllerTest extends TestCase
             'titre'        => 'Développeur Laravel',
             'entreprise'   => 'Acme Corp',
             'localisation' => 'Cotonou',
-            'type'         => 'CDI',
+            'type'         => \App\Models\TypeContrat::where('code', 'CDI')->value('id'),
             'description'  => str_repeat('Lorem ipsum ', 10),
         ], $override);
     }
@@ -151,6 +151,12 @@ class OffreControllerTest extends TestCase
             'titre'        => 'Développeur Laravel',
             'statut'       => 'active',
         ]);
+
+        // published_at doit être renseigné dès la création (bug corrigé : sans
+        // lui, les alertes quotidiennes/hebdomadaires ne trouvent jamais cette
+        // offre, même si le planificateur tourne).
+        $offre = \App\Models\Offre::where('titre', 'Développeur Laravel')->first();
+        $this->assertNotNull($offre->published_at);
     }
 
     public function test_store_avec_fichier_le_stocke(): void
@@ -167,6 +173,21 @@ class OffreControllerTest extends TestCase
         $offre = Offre::where('recruteur_id', $recruteur->id)->first();
         $this->assertNotNull($offre->fichier);
         Storage::disk('public')->assertExists($offre->fichier);
+    }
+
+    public function test_store_synchronise_les_types_documents_requis(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+
+        $this->actingAs($recruteur)
+            ->post(route('recruteur.offres.store'), $this->donneesValides([
+                'types_documents_requis' => [$type->id],
+            ]))
+            ->assertRedirect(route('recruteur.offres'));
+
+        $offre = Offre::where('recruteur_id', $recruteur->id)->first();
+        $this->assertTrue($offre->typesDocumentsRequis->contains($type->id));
     }
 
     public function test_store_sync_competences(): void
@@ -248,6 +269,38 @@ class OffreControllerTest extends TestCase
             ->assertRedirect(route('recruteur.offres'));
 
         $this->assertDatabaseHas('offres', ['id' => $offre->id, 'titre' => 'Titre modifié']);
+    }
+
+    public function test_edit_affiche_les_types_documents_requis_deja_coches(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $offre     = $this->creerOffre($recruteur);
+        $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+        $offre->typesDocumentsRequis()->attach($type->id);
+
+        $this->actingAs($recruteur)
+            ->get(route('recruteur.offres.edit', $offre))
+            ->assertOk()
+            ->assertSee('Diplôme');
+    }
+
+    public function test_update_synchronise_les_types_documents_requis(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $offre     = $this->creerOffre($recruteur);
+        $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+        $offre->typesDocumentsRequis()->attach($type->id);
+        $autreType = \App\Models\TypeDocument::create(['nom' => 'Attestation de travail', 'actif' => true, 'ordre' => 2]);
+
+        $this->actingAs($recruteur)
+            ->put(route('recruteur.offres.update', $offre), $this->donneesValides([
+                'types_documents_requis' => [$autreType->id],
+            ]))
+            ->assertRedirect(route('recruteur.offres'));
+
+        $offre->refresh();
+        $this->assertFalse($offre->typesDocumentsRequis->contains($type->id));
+        $this->assertTrue($offre->typesDocumentsRequis->contains($autreType->id));
     }
 
     public function test_update_remplace_fichier_et_supprime_lancien(): void
@@ -390,6 +443,21 @@ class OffreControllerTest extends TestCase
         $copie = Offre::where('titre', 'like', '%(copie)')->first();
         $this->assertNotNull($copie);
         $this->assertTrue($copie->competences->contains('slug', 'laravel'));
+    }
+
+    public function test_dupliquer_copie_les_types_documents_requis(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $offre     = $this->creerOffre($recruteur);
+        $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+        $offre->typesDocumentsRequis()->attach($type->id);
+
+        $this->actingAs($recruteur)
+            ->post(route('recruteur.offres.dupliquer', $offre));
+
+        $copie = Offre::where('titre', 'like', '%(copie)')->first();
+        $this->assertNotNull($copie);
+        $this->assertTrue($copie->typesDocumentsRequis->contains($type->id));
     }
 
     public function test_dupliquer_remet_vues_a_zero(): void

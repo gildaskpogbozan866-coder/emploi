@@ -11,8 +11,7 @@ class CandidatProfil extends Model
     protected $fillable = [
         'user_id', 'titre_professionnel', 'bio', 'ville',
         'disponibilite', 'salaire_min', 'salaire_max',
-        'remote', 'linkedin', 'portfolio',
- 'annees_experience',
+        'remote', 'linkedin', 'portfolio', 'annees_experience',
     ];
 
     public function user()

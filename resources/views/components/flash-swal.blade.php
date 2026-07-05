@@ -33,6 +33,14 @@ document.addEventListener('submit', function(e) {
     }).then(function(result) {
         if (result.isConfirmed) {
             form.removeAttribute('data-confirm');
+            var btn = form.querySelector('[type="submit"]:not([data-no-guard])');
+            if (btn && !btn.disabled) {
+                btn.disabled = true;
+                if (btn.tagName === 'BUTTON') {
+                    btn.dataset.originalText = btn.textContent;
+                    btn.textContent = 'En cours…';
+                }
+            }
             form.submit();
         }
     });

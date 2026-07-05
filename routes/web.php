@@ -172,7 +172,6 @@ Route::prefix('cvs')->name('cv.public.')->group(function () {
     Route::get('/{cv}',      [CVController::class, 'detail'])->name('detail');
 });
 
-Route::get('/documents/{document}', [CVController::class, 'documentDetail'])->name('document.public.detail');
 Route::get('/candidat/{id}/profil', [CVController::class, 'candidatDetails'])->name('public.candidat.detail');
 
 // Services
@@ -228,11 +227,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
     Route::post('/deconnecter', [AuthController::class, 'deconnecter'])->name('deconnecter')->middleware('auth');
 
-    // Google OAuth
-    Route::get('/google',          [GoogleController::class, 'redirect'])->name('google');
-    Route::get('/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
-    Route::get('/google/role',     [GoogleController::class, 'showRoleSelect'])->name('google.role');
-    Route::post('/google/create',  [GoogleController::class, 'createWithRole'])->name('google.create');
+    // Google OAuth désactivé temporairement à la demande du client
+    // Route::get('/google',          [GoogleController::class, 'redirect'])->name('google');
+    // Route::get('/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+    // Route::get('/google/role',     [GoogleController::class, 'showRoleSelect'])->name('google.role');
+    // Route::post('/google/create',  [GoogleController::class, 'createWithRole'])->name('google.create');
 });
 
 // ════════════════════════════════════════════════════════
@@ -244,11 +243,11 @@ Route::middleware('auth')->group(function () {
         if ($user->hasVerifiedEmail()) {
             $validationDocsActif = \App\Models\ParametreApp::get('recruteur_validation_docs', '0') === '1';
             return match ($user->role) {
-                'admin'     => redirect()->route('admin.dashboard'),
-                'recruteur' => $validationDocsActif
+                \App\Enums\Role::ADMIN     => redirect()->route('admin.dashboard'),
+                \App\Enums\Role::RECRUTEUR => $validationDocsActif
                                 ? redirect()->route('recruteur.verification')
                                 : redirect()->route('recruteur.dashboard'),
-                'annonceur' => redirect()->route('annonceur.dashboard'),
+                \App\Enums\Role::ANNONCEUR => redirect()->route('annonceur.dashboard'),
                 default     => redirect()->route('candidat.dashboard'),
             };
         }
@@ -260,15 +259,15 @@ Route::middleware('auth')->group(function () {
         $user                  = $request->user();
         $validationDocsActif   = ParametreApp::get('recruteur_validation_docs', '0') === '1';
 
-        if ($user->role === 'recruteur') {
+        if ($user->role === \App\Enums\Role::RECRUTEUR) {
             return $validationDocsActif
                 ? redirect()->route('recruteur.verification')
                 : redirect()->route('recruteur.dashboard');
         }
 
         return match ($user->role) {
-            'admin'     => redirect()->route('admin.dashboard'),
-            'annonceur' => redirect()->route('annonceur.dashboard'),
+            \App\Enums\Role::ADMIN     => redirect()->route('admin.dashboard'),
+            \App\Enums\Role::ANNONCEUR => redirect()->route('annonceur.dashboard'),
             default     => redirect()->route('candidat.dashboard'),
         };
     })->middleware('signed')->name('verification.verify');
@@ -297,8 +296,8 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
         Route::patch('/mes-cvs/{cv}/visibilite',      [CVController::class, 'toggleVisibilite'])->name('cvs.visibilite');
     });
 
-    // Candidatures — nécessite apply-offre + profil complet
-    Route::middleware(['candidat.profil-complet', 'permission:'.Permission::APPLY_OFFRE])->group(function () {
+    // Candidatures — nécessite apply-offre
+    Route::middleware(['permission:'.Permission::APPLY_OFFRE])->group(function () {
         Route::get('/mes-candidatures',               [CandidatureController::class, 'index'])->name('candidatures');
         Route::get('/mes-candidatures/{candidature}', [CandidatureController::class, 'detail'])->name('candidatures.detail');
     });
@@ -327,11 +326,13 @@ Route::prefix('candidat')->name('candidat.')->middleware(['auth', 'verified', 's
 
     // Messagerie (accessibles à tous les candidats authentifiés)
     Route::get('/messagerie',                                      [CandidatMessage::class, 'index'])->name('messagerie');
+    Route::get('/messagerie/archives',                             [CandidatMessage::class, 'archives'])->name('messagerie.archives');
     Route::post('/messagerie/initier/{user}',                      [CandidatMessage::class, 'initier'])->name('messagerie.initier');
     Route::get('/messagerie/{conversation}',                       [CandidatMessage::class, 'show'])->name('messagerie.show');
     Route::post('/messagerie/{conversation}',                      [CandidatMessage::class, 'store'])->name('messagerie.store');
     Route::get('/messagerie/{conversation}/rafraichir',            [CandidatMessage::class, 'rafraichir'])->name('messagerie.rafraichir');
     Route::post('/messagerie/{conversation}/archiver',             [CandidatMessage::class, 'archiver'])->name('messagerie.archiver');
+    Route::post('/messagerie/{conversation}/restaurer',            [CandidatMessage::class, 'restaurer'])->name('messagerie.restaurer');
     Route::get('/notifications',            [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/marquer',   [NotificationController::class, 'marquerLues'])->name('notifications.lues');
     Route::get('/paiements',               [CandidatPaiement::class, 'index'])->name('paiements');
@@ -433,11 +434,13 @@ Route::prefix('recruteur')->name('recruteur.')->middleware(['auth', 'verified', 
     // Contact candidats (messagerie) — nécessite contact-candidats
     Route::middleware('permission:'.Permission::CONTACT_CANDIDATS)->group(function () {
         Route::get('/messagerie',                               [RecruteurMessage::class, 'index'])->name('messagerie');
+        Route::get('/messagerie/archives',                     [RecruteurMessage::class, 'archives'])->name('messagerie.archives');
         Route::post('/messagerie/initier/{user}',               [RecruteurMessage::class, 'initier'])->name('messagerie.initier');
         Route::get('/messagerie/{conversation}',                [RecruteurMessage::class, 'show'])->name('messagerie.show');
         Route::post('/messagerie/{conversation}',               [RecruteurMessage::class, 'store'])->name('messagerie.store');
         Route::get('/messagerie/{conversation}/rafraichir',     [RecruteurMessage::class, 'rafraichir'])->name('messagerie.rafraichir');
         Route::post('/messagerie/{conversation}/archiver',      [RecruteurMessage::class, 'archiver'])->name('messagerie.archiver');
+        Route::post('/messagerie/{conversation}/restaurer',     [RecruteurMessage::class, 'restaurer'])->name('messagerie.restaurer');
     });
 
     // Abonnement recruteur
@@ -675,6 +678,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
     Route::middleware('permission:'.Permission::MANAGE_PARAMETRES)->group(function () {
         Route::get('/parametres',  [AdminParametre::class, 'index'])->name('parametres');
         Route::put('/parametres',  [AdminParametre::class, 'update'])->name('parametres.update');
+        Route::post('/parametres/maintenance/activer',   [AdminParametre::class, 'activerMaintenance'])->name('parametres.maintenance.activer');
+        Route::post('/parametres/maintenance/desactiver', [AdminParametre::class, 'desactiverMaintenance'])->name('parametres.maintenance.desactiver');
 
         // SEO
         Route::prefix('seo')->name('seo.')->group(function () {

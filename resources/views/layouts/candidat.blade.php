@@ -59,11 +59,34 @@
       @yield('sidebar')
     </aside>
     <main class="cand-main">
+      @if(! auth()->user()->cvs()->exists())
+        <div class="cand-cv-hint" id="candCvHint">
+          <span class="cand-cv-hint__text">
+            Vous n'avez pas encore de CV en ligne — <a href="{{ route('cv.public.depot') }}">ajoutez-en un</a> pour augmenter vos chances d'être contacté.
+          </span>
+          <button type="button" class="cand-cv-hint__close" id="candCvHintClose" aria-label="Fermer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      @endif
       @yield('content')
     </main>
   </div>
 
   <script>
+    (function() {
+      const hint = document.getElementById('candCvHint');
+      if (hint) {
+        if (localStorage.getItem('cand_cv_hint_dismissed')) {
+          hint.style.display = 'none';
+        } else {
+          document.getElementById('candCvHintClose')?.addEventListener('click', () => {
+            localStorage.setItem('cand_cv_hint_dismissed', '1');
+            hint.style.display = 'none';
+          });
+        }
+      }
+    })();
     (function() {
       const burger  = document.getElementById('candBurger');
       const sidebar = document.getElementById('candSidebar');
@@ -84,6 +107,5 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
-  @include('partials._pwa-banner')
 </body>
 </html>

@@ -156,18 +156,21 @@
           </td>
 
           {{-- Statut --}}
+          @php $etat = $ab->etat(); @endphp
           <td>
-            <span class="adm-badge adm-badge--{{ match($ab->status) {
+            <span class="adm-badge adm-badge--{{ match($etat) {
               'active'    => 'green',
-              'expired'   => 'gray',
+              'programme' => 'blue',
+              'expire', 'expired' => 'gray',
               'cancelled' => 'red',
               default     => 'gray'
             } }}">
-              {{ match($ab->status) {
+              {{ match($etat) {
                 'active'    => 'Actif',
-                'expired'   => 'Expiré',
+                'programme' => 'Programmé',
+                'expire', 'expired' => 'Expiré',
                 'cancelled' => 'Annulé',
-                default     => $ab->status
+                default     => $etat
               } }}
             </span>
           </td>

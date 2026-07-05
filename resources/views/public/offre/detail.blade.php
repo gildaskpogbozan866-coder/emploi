@@ -185,7 +185,7 @@ $breadcrumb = [
           <div class="od-expired">
             <p class="od-expired__text">Cette offre n'est plus disponible</p>
           </div>
-        @elseif(Auth::check() && !Auth::user()->hasRole('candidat'))
+        @elseif(Auth::check() && !Auth::user()->hasRole(\App\Enums\Role::CANDIDAT))
           {{-- Recruteur / admin : pas de bouton postuler --}}
         @else
           <a href="{{ route('offre.postuler', $offre) }}" class="od-btn-postuler">
@@ -195,7 +195,7 @@ $breadcrumb = [
         @endif
 
         @auth
-        @if(Auth::user()->hasRole('candidat'))
+        @if(Auth::user()->hasRole(\App\Enums\Role::CANDIDAT))
         <form method="POST" action="{{ route('candidat.offres-sauvegardees.toggle', $offre) }}">
           @csrf
           @if($estSauvegarde)

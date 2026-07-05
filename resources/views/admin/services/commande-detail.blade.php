@@ -16,10 +16,11 @@
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Client</h3>
     </div>
     @php
-      $clientNom   = $commande->user?->nom_complet ?? 'Invité';
+      $clientPrenom = $commande->user?->prenom ?? $commande->prenom ?? '';
+      $clientNomSeul = $commande->user?->nom ?? $commande->nom ?? '';
+      $clientNom   = trim($clientPrenom.' '.$clientNomSeul) ?: 'Invité';
       $clientEmail = $commande->user?->email ?? $commande->email_contact ?? '—';
-      $clientPrenom = $commande->user?->prenom ?? '';
-      $clientTel   = $commande->user?->tel ?? null;
+      $clientTel   = $commande->user?->tel ?? $commande->telephone ?? null;
     @endphp
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
       <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $clientNom }}</p></div>

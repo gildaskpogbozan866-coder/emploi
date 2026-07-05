@@ -117,6 +117,7 @@ class CandidatureController extends Controller
         $candidature->load([
             'offre',
             'cv',
+            'documents.type',
             'candidat.candidatProfil',
             'candidat.competences',
             'candidat.experiences',
@@ -126,7 +127,6 @@ class CandidatureController extends Controller
             'candidat.typesContrats',
             'candidat.niveauEtude.niveauEtude',
             'candidat.niveauExperience.niveauExperience',
-            'candidat.documents.type',
             'candidat.cvs',
         ]);
 

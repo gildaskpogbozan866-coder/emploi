@@ -41,7 +41,7 @@
             <p style="font-weight:500;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $offre->titre }}</p>
           </td>
           <td style="color:#64748b">{{ $offre->entreprise }}</td>
-          <td><span class="tag tag--type">{{ $offre->type }}</span></td>
+          <td><span class="tag tag--type">{{ $offre->type?->libelle }}</span></td>
           <td><strong>{{ $offre->candidatures_count }}</strong></td>
           <td>
             <form method="POST" action="{{ route('admin.offres.statut', $offre) }}">

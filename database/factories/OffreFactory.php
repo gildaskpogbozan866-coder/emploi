@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TypeContrat;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,15 @@ class OffreFactory extends Factory
     public function definition(): array
     {
         return [
-            'recruteur_id' => User::factory()->recruteur(),
-            'titre'        => fake()->jobTitle(),
-            'entreprise'   => fake()->company(),
-            'localisation' => 'Cotonou, Bénin',
-            'type'         => fake()->randomElement(['CDI','CDD','Stage','Freelance']),
-            'secteur'      => fake()->randomElement(['Informatique','Finance','Commerce']),
-            'description'  => fake()->paragraphs(3, true),
-            'statut'       => 'active',
-            'vues'         => 0,
+            'recruteur_id'    => User::factory()->recruteur(),
+            'titre'           => fake()->jobTitle(),
+            'entreprise'      => fake()->company(),
+            'localisation'    => 'Cotonou, Bénin',
+            'type_contrat_id' => TypeContrat::inRandomOrder()->first()?->id ?? TypeContrat::factory(),
+            'secteur'         => fake()->randomElement(['Informatique','Finance','Commerce']),
+            'description'     => fake()->paragraphs(3, true),
+            'statut'          => 'active',
+            'vues'            => 0,
         ];
     }
 

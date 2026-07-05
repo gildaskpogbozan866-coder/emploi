@@ -91,6 +91,22 @@ class MessageController extends Controller
         return redirect()->route('candidat.messagerie')->with('success', 'Conversation archivée.');
     }
 
+    public function archives()
+    {
+        $conversations = $this->service->conversationsArchivees(Auth::id());
+
+        return view('candidat.messagerie-archives', compact('conversations'));
+    }
+
+    public function restaurer(Conversation $conversation)
+    {
+        $this->autoriser($conversation);
+
+        $this->service->restaurer($conversation, Auth::id());
+
+        return redirect()->route('candidat.messagerie.archives')->with('success', 'Conversation restaurée.');
+    }
+
     private function autoriser(Conversation $conversation): void
     {
         abort_if(

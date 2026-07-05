@@ -88,6 +88,5 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
-  @include('partials._pwa-banner')
 </body>
 </html>

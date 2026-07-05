@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Models\Candidature;
 use App\Models\CV;
@@ -10,8 +11,12 @@ use App\Events\CandidatureDeposee;
 use App\Models\Offre;
 use App\Models\TypeContrat;
 use App\Notifications\CandidatureRecueNotification;
+use App\Services\CvQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OffreController extends Controller
 {
@@ -104,7 +109,7 @@ class OffreController extends Controller
             ->where('id', '!=', $offre->id)
             ->where(function ($q) use ($offre, $competenceIds) {
                 $q->where('secteur', $offre->secteur)
-                  ->orWhere('type_contrat_id', $offre->type)
+                  ->orWhere('type_contrat_id', $offre->type_contrat_id)
                   ->orWhere('localisation', 'like', '%' . explode(',', $offre->localisation)[0] . '%');
                 if ($competenceIds->isNotEmpty()) {
                     $q->orWhereHas('competences', fn($sq) => $sq->whereIn('competences.id', $competenceIds));
@@ -123,11 +128,11 @@ class OffreController extends Controller
             return redirect()->guest(route('auth.connexion'));
         }
 
-        if (!Auth::user()->hasRole('candidat')) {
-            $dashboard = match (Auth::user()->role) {
-                'recruteur' => route('recruteur.dashboard'),
-                'admin'     => route('admin.dashboard'),
-                default     => route('home'),
+        if (!Auth::user()->hasRole(Role::CANDIDAT)) {
+            $dashboard = match (true) {
+                Auth::user()->hasRole(Role::RECRUTEUR) => route('recruteur.dashboard'),
+                Auth::user()->hasRole(Role::ADMIN)      => route('admin.dashboard'),
+                default => route('home'),
             };
             return redirect($dashboard)->with('error', 'Seuls les candidats peuvent postuler à une offre.');
         }
@@ -139,16 +144,22 @@ class OffreController extends Controller
         $cvs       = Auth::user()->cvs()->orderByDesc('created_at')->get();
         $documents = Auth::user()->documents()->with('type')->orderByDesc('created_at')->get();
 
-        return view('public.offre.postuler', compact('offre', 'aPostule', 'cvs', 'documents'));
+        $offre->load('typesDocumentsRequis');
+        $documentsRequisParType  = $documents->whereIn('type_document_id', $offre->typesDocumentsRequis->pluck('id'))->groupBy('type_document_id');
+        // Pièces "libres" proposées dans la section optionnelle : celles dont le type
+        // n'est pas déjà couvert par un bloc "requis" dédié, pour ne pas les montrer deux fois.
+        $documentsLibres = $documents->whereNotIn('type_document_id', $offre->typesDocumentsRequis->pluck('id'));
+
+        return view('public.offre.postuler', compact('offre', 'aPostule', 'cvs', 'documents', 'documentsRequisParType', 'documentsLibres'));
     }
 
-    public function storerCandidature(Request $request, Offre $offre)
+    public function storerCandidature(Request $request, Offre $offre, CvQuotaService $quotaService)
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion');
         }
 
-        if (!Auth::user()->hasRole('candidat')) {
+        if (!Auth::user()->hasRole(Role::CANDIDAT)) {
             return redirect()->route('home')->with('error', 'Seuls les candidats peuvent postuler à une offre.');
         }
 
@@ -156,12 +167,20 @@ class OffreController extends Controller
             return back()->with('error_duplicate', true);
         }
 
+        $offre->load('typesDocumentsRequis');
+
         $rules = [
-            'message_motivation' => 'nullable|string|max:3000',
-            'cv_id'              => 'nullable|integer|exists:cvs,id',
-            'document_id'        => 'nullable|integer|exists:documents,id',
-            'cv_file'            => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'lettre_file'        => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'message_motivation'  => 'nullable|string|max:3000',
+            'cv_id'                => 'nullable|integer|exists:cvs,id',
+            'document_id'          => 'nullable|integer|exists:documents,id',
+            'cv_file'              => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'lettre_file'          => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'pieces_ids'           => 'nullable|array',
+            'pieces_ids.*'         => 'integer|exists:documents,id',
+            'pieces_existantes'    => 'nullable|array',
+            'pieces_existantes.*'  => 'nullable|integer|exists:documents,id',
+            'pieces_nouvelles'     => 'nullable|array',
+            'pieces_nouvelles.*'   => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
         ];
 
         // Validation conditionnelle selon les exigences de l'offre
@@ -187,9 +206,37 @@ class OffreController extends Controller
             'lettre_file.max'      => 'La lettre ne doit pas dépasser 5 Mo.',
         ]);
 
-        $cvId      = null;
-        $cvPath    = null;
-        $lettrePath = null;
+        // Chaque type de document requis par l'offre doit avoir soit un document
+        // existant sélectionné, soit un nouveau fichier téléversé.
+        $manquants = [];
+        foreach ($offre->typesDocumentsRequis as $typeRequis) {
+            $existant = $request->input("pieces_existantes.{$typeRequis->id}");
+            $nouveau  = $request->file("pieces_nouvelles.{$typeRequis->id}");
+            if (!$existant && !$nouveau) {
+                $manquants["pieces_nouvelles.{$typeRequis->id}"] = "Le document « {$typeRequis->nom} » est requis pour postuler à cette offre.";
+            }
+        }
+        if (!empty($manquants)) {
+            throw \Illuminate\Validation\ValidationException::withMessages($manquants);
+        }
+
+        // Un CV téléversé à la volée (aucun CV/document existant sélectionné) devient
+        // un vrai CV dans l'espace du candidat — il compte donc dans le quota de son
+        // plan, au même titre qu'un dépôt normal depuis "Mes CV". Sinon la limite de
+        // CV du plan serait contournable en passant simplement par une candidature.
+        if (!$request->filled('cv_id') && !$request->filled('document_id') && $request->hasFile('cv_file')) {
+            $quota = $quotaService->quotaFor(Auth::user());
+            if ($quota['reached']) {
+                throw ValidationException::withMessages([
+                    'cv_file' => "Vous avez atteint la limite de {$quota['limit']} CV de votre plan. Choisissez un de vos CV existants ci-dessus, ou passez à un plan supérieur pour en ajouter un nouveau.",
+                ]);
+            }
+        }
+
+        $cvId          = null;
+        $cvPath        = null;
+        $lettrePath    = null;
+        $nouveauCvId   = null;
 
         if ($request->filled('cv_id')) {
             $cv   = CV::where('id', $request->cv_id)->where('candidat_id', Auth::id())->first();
@@ -198,11 +245,42 @@ class OffreController extends Controller
             $doc    = Document::where('id', $request->document_id)->where('user_id', Auth::id())->first();
             $cvPath = $doc?->fichier;
         } elseif ($request->hasFile('cv_file')) {
-            $cvPath = $request->file('cv_file')->store('candidatures/cvs', 'public');
+            // Fichier persisté comme un vrai CV dans l'espace du candidat (pas juste
+            // rattaché à cette candidature) — masqué par défaut : il lui manque les
+            // champs obligatoires du dépôt normal (métier, ville, compétences...),
+            // le candidat doit le compléter et le publier lui-même depuis "Mes CV".
+            $cv = CV::create([
+                'candidat_id'  => Auth::id(),
+                'fichier_path' => $request->file('cv_file')->store('cvs', 'public'),
+                'plan'         => 'gratuit',
+                'visible'      => false,
+            ]);
+            $cvId        = $cv->id;
+            $nouveauCvId = $cv->id;
         }
 
         if ($request->hasFile('lettre_file')) {
             $lettrePath = $request->file('lettre_file')->store('candidatures/lettres', 'public');
+        }
+
+        // Instantané du CV au moment de la candidature : le recruteur doit voir le
+        // CV tel qu'il était à l'envoi, pas sa version live si le candidat le modifie
+        // ensuite (métier/ville changés, ou fichier remplacé — update() supprime
+        // l'ancien fichier physique, donc on en copie une copie dédiée à cette
+        // candidature plutôt que de ne garder qu'un chemin qui finirait par pointer
+        // dans le vide).
+        $cvSnapshot = null;
+        if (!empty($cv)) {
+            $snapshotFichierPath = null;
+            if ($cv->fichier_path && Storage::disk('public')->exists($cv->fichier_path)) {
+                $snapshotFichierPath = 'candidatures/cvs-snapshot/' . Str::uuid() . '.' . pathinfo($cv->fichier_path, PATHINFO_EXTENSION);
+                Storage::disk('public')->copy($cv->fichier_path, $snapshotFichierPath);
+            }
+            $cvSnapshot = [
+                'metier'        => $cv->metier,
+                'ville'         => $cv->ville,
+                'fichier_path'  => $snapshotFichierPath,
+            ];
         }
 
         $candidature = Candidature::create([
@@ -211,8 +289,48 @@ class OffreController extends Controller
             'message_motivation' => $request->message_motivation,
             'cv_id'              => $cvId,
             'cv_path'            => $cvPath,
+            'cv_snapshot'        => $cvSnapshot,
             'lettre_path'        => $lettrePath,
         ]);
+
+        // Pièces justificatives : celles librement choisies par le candidat (pieces_ids)
+        // + celles couvrant les types requis par l'offre (existantes ou nouvellement
+        // téléversées — dans ce dernier cas, le document est aussi créé dans l'espace
+        // personnel du candidat comme un dépôt normal, pas seulement attaché ici).
+        $piecesIds = [];
+
+        if ($request->filled('pieces_ids')) {
+            $piecesIds = Document::where('user_id', Auth::id())
+                ->whereIn('id', $request->input('pieces_ids'))
+                ->pluck('id')->all();
+        }
+
+        foreach ($offre->typesDocumentsRequis as $typeRequis) {
+            $existantId = $request->input("pieces_existantes.{$typeRequis->id}");
+            $nouveauFile = $request->file("pieces_nouvelles.{$typeRequis->id}");
+
+            if ($existantId) {
+                $doc = Document::where('id', $existantId)
+                    ->where('user_id', Auth::id())
+                    ->where('type_document_id', $typeRequis->id)
+                    ->first();
+                if ($doc) {
+                    $piecesIds[] = $doc->id;
+                }
+            } elseif ($nouveauFile) {
+                $path = $nouveauFile->store('candidats/documents', 'public');
+                $doc  = Auth::user()->documents()->create([
+                    'type_document_id' => $typeRequis->id,
+                    'nom'              => $typeRequis->nom . ' — ' . now()->format('d/m/Y'),
+                    'fichier'          => $path,
+                ]);
+                $piecesIds[] = $doc->id;
+            }
+        }
+
+        if (!empty($piecesIds)) {
+            $candidature->documents()->sync(array_unique($piecesIds));
+        }
 
         $candidat = Auth::user();
 
@@ -222,7 +340,12 @@ class OffreController extends Controller
         // Email de confirmation au candidat (en queue)
         $candidat->notify(new CandidatureRecueNotification($offre));
 
-        return redirect()->route('offre.candidature-succes', $offre);
+        $redirect = redirect()->route('offre.candidature-succes', $offre);
+        if ($nouveauCvId) {
+            $redirect->with('nouveau_cv_id', $nouveauCvId);
+        }
+
+        return $redirect;
     }
 
     public function candidatureSucces(Offre $offre)
@@ -236,11 +359,11 @@ class OffreController extends Controller
             return redirect()->route('auth.connexion')->with('redirect_after', route('offre.publier'));
         }
 
-        if (!Auth::user()->hasRole('recruteur')) {
-            return redirect()->route(match(Auth::user()->role) {
-                'candidat' => 'candidat.dashboard',
-                'admin'    => 'admin.dashboard',
-                default    => 'home',
+        if (!Auth::user()->hasRole(Role::RECRUTEUR)) {
+            return redirect()->route(match (true) {
+                Auth::user()->hasRole(Role::CANDIDAT) => 'candidat.dashboard',
+                Auth::user()->hasRole(Role::ADMIN)     => 'admin.dashboard',
+                default => 'home',
             })->with('error', 'Seuls les recruteurs peuvent publier des offres. Connectez-vous avec un compte recruteur.');
         }
 
@@ -253,11 +376,11 @@ class OffreController extends Controller
             return redirect()->route('auth.connexion');
         }
 
-        if (!Auth::user()->hasRole('recruteur')) {
-            return redirect()->route(match(Auth::user()->role) {
-                'candidat' => 'candidat.dashboard',
-                'admin'    => 'admin.dashboard',
-                default    => 'home',
+        if (!Auth::user()->hasRole(Role::RECRUTEUR)) {
+            return redirect()->route(match (true) {
+                Auth::user()->hasRole(Role::CANDIDAT) => 'candidat.dashboard',
+                Auth::user()->hasRole(Role::ADMIN)     => 'admin.dashboard',
+                default => 'home',
             })->with('error', 'Seuls les recruteurs peuvent publier des offres. Connectez-vous avec un compte recruteur.');
         }
 
@@ -270,11 +393,14 @@ class OffreController extends Controller
             'date_limite' => 'nullable|date|after_or_equal:today',
         ]);
 
+        // published_at n'est pas renseigné ici : l'offre est encore en_attente,
+        // pas publiée. Il sera renseigné par Admin\OffreController::updateStatut()
+        // au moment où elle passe réellement à active.
         $offre = Offre::create([
-            ...$request->only(['titre','entreprise','localisation','type','secteur','salaire','description','competences','exigences','date_limite']),
-            'recruteur_id' => Auth::id(),
-            'statut'       => 'en_attente',
-            'published_at' => now(),
+            ...$request->only(['titre','entreprise','localisation','secteur','description','exigences','date_limite']),
+            'type_contrat_id' => TypeContrat::where('code', $request->type)->value('id'),
+            'recruteur_id'    => Auth::id(),
+            'statut'          => 'en_attente',
         ]);
 
         return redirect()->route('offre.publiee-succes', $offre);

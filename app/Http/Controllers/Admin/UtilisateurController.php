@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -73,7 +74,7 @@ class UtilisateurController extends Controller
 
     public function toggleStatut(Request $request, User $user)
     {
-        if ($user->role === 'admin') {
+        if ($user->hasRole(Role::ADMIN)) {
             return back()->withErrors(['Impossible de suspendre un administrateur.']);
         }
         $user->update(['actif' => !$user->actif]);
@@ -83,7 +84,7 @@ class UtilisateurController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->role === 'admin') {
+        if ($user->hasRole(Role::ADMIN)) {
             return back()->withErrors(['Impossible de supprimer un administrateur.']);
         }
         $role = $user->role;

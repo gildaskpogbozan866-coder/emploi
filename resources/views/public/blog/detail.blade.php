@@ -126,7 +126,7 @@ $breadcrumb = [
         </div>
 
         {{-- ── CTA double : Déposer + Commander ── --}}
-        @if(!auth()->check() || auth()->user()->hasRole('candidat'))
+        @if(!auth()->check() || auth()->user()->hasRole(\App\Enums\Role::CANDIDAT))
         <div class="article-cta-cv">
           <div class="article-cta-cv__icon">
             <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -138,7 +138,7 @@ $breadcrumb = [
             <p class="article-cta-cv__sub">Déposez votre CV gratuitement pour être visible des recruteurs, ou faites rédiger un CV professionnel par nos experts.</p>
           </div>
           <div class="article-cta-cv__actions">
-            <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"
+            <a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"
                class="article-cta-cv__btn article-cta-cv__btn--primary">
               <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
@@ -198,7 +198,7 @@ $breadcrumb = [
           <p style="font-size:13px;color:#92400e;line-height:1.6;margin:0 0 14px">
             Déposez votre CV gratuitement pour être visible, ou commandez un CV professionnel rédigé par nos experts.
           </p>
-          <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"
+          <a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}"
              class="sidebar-cv-btn">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>

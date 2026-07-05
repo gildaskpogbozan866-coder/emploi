@@ -19,6 +19,25 @@
   </div>
 </div>
 
+{{-- Abonnement déjà souscrit mais pas encore en vigueur --}}
+@if($abonnementProgramme)
+  <div style="display:flex;align-items:flex-start;gap:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:18px 20px;margin-bottom:22px">
+    <span style="flex-shrink:0;width:38px;height:38px;border-radius:10px;background:#dcfce7;display:flex;align-items:center;justify-content:center">
+      <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </span>
+    <div style="flex:1">
+      <p style="font-size:13.5px;font-weight:700;color:#15803d;margin:0 0 4px">
+        Nouvel abonnement « {{ $abonnementProgramme->plan?->name }} » en attente
+      </p>
+      <p style="font-size:12.5px;color:#166534;margin:0;line-height:1.5">
+        Souscrit le {{ $abonnementProgramme->created_at->format('d/m/Y') }} — il prendra automatiquement le relais le
+        <strong>{{ $abonnementProgramme->starts_at->format('d/m/Y') }}</strong> ({{ $abonnementProgramme->starts_at->diffForHumans() }}),
+        à la fin de votre plan actuel (ou avant, si celui-ci épuise un de ses avantages plus tôt).
+      </p>
+    </div>
+  </div>
+@endif
+
 {{-- Stats --}}
 <div class="rec-stats">
   <div class="rec-stat">

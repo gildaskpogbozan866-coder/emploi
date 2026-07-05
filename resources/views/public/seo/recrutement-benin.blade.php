@@ -59,7 +59,7 @@
       <a href="{{ route('offre.detail', $offre) }}" style="display:block;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;text-decoration:none">
         <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:4px">{{ $offre->titre }}</div>
         <div style="font-size:12px;color:#185FA5;font-weight:600;margin-bottom:8px">{{ $offre->entreprise }}</div>
-        @if($offre->type)<span style="font-size:10.5px;background:#eff6ff;color:#1d4ed8;border-radius:99px;padding:2px 9px;font-weight:600">{{ $offre->type }}</span>@endif
+        @if($offre->type)<span style="font-size:10.5px;background:#eff6ff;color:#1d4ed8;border-radius:99px;padding:2px 9px;font-weight:600">{{ $offre->type?->libelle }}</span>@endif
       </a>
       @endforeach
     </div>

@@ -65,6 +65,25 @@
 </div>
 @endif
 
+{{-- Abonnement déjà souscrit mais pas encore en vigueur --}}
+@if($abonnementProgramme)
+<div style="display:flex;align-items:flex-start;gap:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:18px 20px;margin-bottom:28px">
+  <span style="flex-shrink:0;width:38px;height:38px;border-radius:10px;background:#dcfce7;display:flex;align-items:center;justify-content:center">
+    <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  </span>
+  <div style="flex:1">
+    <p style="font-size:13.5px;font-weight:700;color:#15803d;margin:0 0 4px">
+      Nouvel abonnement « {{ $abonnementProgramme->plan?->name }} » en attente
+    </p>
+    <p style="font-size:12.5px;color:#166534;margin:0;line-height:1.5">
+      Souscrit le {{ $abonnementProgramme->created_at->format('d/m/Y') }} — il prendra automatiquement le relais le
+      <strong>{{ $abonnementProgramme->starts_at->format('d/m/Y') }}</strong> ({{ $abonnementProgramme->starts_at->diffForHumans() }}),
+      à la fin de votre plan actuel ci-dessus (ou avant, si celui-ci épuise un de ses avantages plus tôt).
+    </p>
+  </div>
+</div>
+@endif
+
 {{-- Quotas du plan actif --}}
 @if($abonnement && count($quotas))
 <div style="margin-bottom:28px">
@@ -73,21 +92,39 @@
 
     {{-- Offres publiées --}}
     @php
-      $used  = $quotas['offres']['used'];
-      $limit = $quotas['offres']['limit'];
-      $pct   = $limit > 0 ? min(100, round($used / $limit * 100)) : 0;
-      $reste = max(0, $limit - $used);
-      $barColor = $pct >= 90 ? '#ef4444' : ($pct >= 70 ? '#f97316' : '#22c55e');
+      $used      = $quotas['offres']['used'];
+      $limit     = $quotas['offres']['limit'];
+      $unlimited = $quotas['offres']['unlimited'];
+      $disabled  = $quotas['offres']['disabled'];
+      $pct       = (!$unlimited && !$disabled && $limit > 0) ? min(100, round($used / $limit * 100)) : 0;
+      $reste     = max(0, $limit - $used);
+      $barColor  = $pct >= 90 ? '#ef4444' : ($pct >= 70 ? '#f97316' : '#22c55e');
     @endphp
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <p style="font-size:13px;font-weight:600;color:#374151;margin:0">Offres publiées</p>
-        <span style="font-size:12px;font-weight:700;color:{{ $barColor }}">{{ $reste }} restante{{ $reste > 1 ? 's' : '' }}</span>
+        @if($unlimited)
+          <span style="font-size:12px;font-weight:700;color:#22c55e">Illimitées</span>
+        @elseif($disabled)
+          <span style="font-size:12px;font-weight:700;color:#ef4444">Désactivées sur ce plan</span>
+        @else
+          <span style="font-size:12px;font-weight:700;color:{{ $barColor }}">{{ $reste }} restante{{ $reste > 1 ? 's' : '' }}</span>
+        @endif
       </div>
+      @if(!$unlimited && !$disabled)
       <div style="background:#f1f5f9;border-radius:99px;height:7px;margin-bottom:8px;overflow:hidden">
         <div style="height:100%;width:{{ $pct }}%;background:{{ $barColor }};border-radius:99px;transition:width .4s"></div>
       </div>
-      <p style="font-size:12px;color:#94a3b8;margin:0">{{ $used }} utilisée{{ $used > 1 ? 's' : '' }} sur {{ $limit }}</p>
+      @endif
+      <p style="font-size:12px;color:#94a3b8;margin:0">
+        @if($unlimited)
+          {{ $used }} publiée{{ $used > 1 ? 's' : '' }}
+        @elseif($disabled)
+          Souscrivez un plan supérieur pour publier des offres.
+        @else
+          {{ $used }} utilisée{{ $used > 1 ? 's' : '' }} sur {{ $limit }}
+        @endif
+      </p>
     </div>
 
     {{-- Accès CVthèque --}}
@@ -150,12 +187,13 @@
       </thead>
       <tbody>
         @foreach($abonnements as $ab)
-        <tr style="border-bottom:1px solid #f1f5f9;{{ $ab->status === 'active' ? 'background:#f0fdf4' : '' }}">
+        @php $etat = $ab->etat(); @endphp
+        <tr style="border-bottom:1px solid #f1f5f9;{{ $etat === 'active' ? 'background:#f0fdf4' : '' }}">
           <td style="padding:13px 18px">
-            <span style="font-weight:{{ $ab->status === 'active' ? '700' : '500' }};color:#042C53">
+            <span style="font-weight:{{ $etat === 'active' ? '700' : '500' }};color:#042C53">
               {{ $ab->plan?->name ?? '-' }}
             </span>
-            @if($ab->status === 'active')
+            @if($etat === 'active')
               <span style="margin-left:6px;font-size:11px;background:#dcfce7;color:#16a34a;font-weight:700;padding:2px 7px;border-radius:20px">actif</span>
             @endif
           </td>
@@ -182,11 +220,13 @@
           </td>
           <td style="padding:13px 18px">
             @php
-              $badge = match($ab->status) {
+              $badge = match($etat) {
                 'active'    => ['bg' => '#dcfce7', 'color' => '#16a34a', 'label' => 'Actif'],
+                'programme' => ['bg' => '#e0f2fe', 'color' => '#0369a1', 'label' => 'Programmé'],
+                'expire'    => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => 'Expiré'],
                 'expired'   => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => 'Expiré'],
                 'cancelled' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'Annulé'],
-                default     => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => $ab->status],
+                default     => ['bg' => '#f1f5f9', 'color' => '#64748b', 'label' => $etat],
               };
             @endphp
             <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:{{ $badge['bg'] }};color:{{ $badge['color'] }}">

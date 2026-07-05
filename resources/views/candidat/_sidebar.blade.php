@@ -1,6 +1,15 @@
 @php
   $abActifCand = auth()->user()->abonnementActif()->with('plan')->first();
   $estPremiumCand = $abActifCand && !($abActifCand->plan?->is_free ?? true);
+  // Abonnement déjà souscrit mais qui ne prendra effet qu'à l'expiration de
+  // l'actuel — cf. AbonnementSchedulingService::dateDebut(). Affiché ici pour
+  // que l'utilisateur comprenne pourquoi il ne profite pas encore de ce plan.
+  $abProgrammeeCand = auth()->user()->abonnements()
+      ->where('status', 'active')
+      ->where('starts_at', '>', now())
+      ->with('plan')
+      ->orderBy('starts_at')
+      ->first();
 @endphp
 <div class="cand-sidebar__user">
   <div class="cand-sidebar__avatar">{{ auth()->user()->initiale }}</div>
@@ -32,6 +41,16 @@
     <p style="font-size:11px;color:rgba(255,255,255,0.55);margin:0 0 2px">Aucun abonnement actif</p>
     <p style="font-size:12px;color:#F5C842;font-weight:700;margin:0">Voir les plans →</p>
   </a>
+@endif
+
+@if($abProgrammeeCand)
+  <div style="margin:0 14px 10px;padding:9px 13px;background:rgba(56,161,105,0.12);border:1px solid rgba(56,161,105,0.35);border-radius:8px">
+    <p style="font-size:11px;color:rgba(255,255,255,0.6);margin:0 0 2px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Prochain plan programmé</p>
+    <p style="font-size:12.5px;color:#38A169;font-weight:700;margin:0">{{ $abProgrammeeCand->plan?->name }}</p>
+    <p style="font-size:11px;color:rgba(255,255,255,0.6);margin:2px 0 0">
+      Prend le relais le {{ $abProgrammeeCand->starts_at->format('d/m/Y') }} (à l'expiration du plan actuel)
+    </p>
+  </div>
 @endif
 
 <nav class="cand-nav" id="candNav">

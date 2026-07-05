@@ -2,10 +2,6 @@
 
 namespace App\Providers;
 
-use App\Events\CandidatureDeposee;
-use App\Events\PaymentConfirmed;
-use App\Listeners\HandlePaymentConfirmed;
-use App\Listeners\NotifierRecruteurCandidature;
 use App\Models\CreditCvPack;
 use App\Models\Disponibilite;
 use App\Models\Langue;
@@ -25,7 +21,6 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -42,11 +37,19 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         Paginator::defaultView('vendor.pagination.custom');
         Paginator::defaultSimpleView('vendor.pagination.custom');
-        Event::listen(PaymentConfirmed::class, HandlePaymentConfirmed::class);
-        Event::listen(CandidatureDeposee::class, NotifierRecruteurCandidature::class);
         $this->configureRateLimiters();
         $this->configurePasswordReset();
         $this->configureEmailVerification();
+
+        // Le mode maintenance (activable depuis Admin > Paramètres) ne doit
+        // jamais bloquer l'espace admin ni la connexion — sinon un admin qui
+        // active la maintenance (ou dont la session expire pendant) se
+        // retrouverait lui-même enfermé dehors, sans moyen de la désactiver
+        // autrement qu'en SSH sur le serveur.
+        \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::except([
+            'admin/*',
+            'auth/*',
+        ]);
 
         View::composer(
             ['layouts.candidat', 'layouts.recruteur', 'layouts.admin', 'layouts.annonceur'],

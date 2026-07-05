@@ -13,6 +13,7 @@ use App\Notifications\NouvelleCommandeServiceNotification;
 use App\Notifications\NouvellePubliciteAdminNotification;
 use App\Notifications\PaiementConfirmeNotification;
 use App\Notifications\PubliciteSoumiseNotification;
+use App\Services\AbonnementSchedulingService;
 use Illuminate\Support\Facades\Log;
 
 class HandlePaymentConfirmed
@@ -146,7 +147,14 @@ class HandlePaymentConfirmed
         $abonnement = $paiement->abonnement()->with('plan.features')->first();
         if (!$abonnement) return;
 
-        $startsAt = now();
+        $user = $paiement->user;
+
+        // Un abonnement en cours (ou déjà programmé) et encore valide n'est
+        // jamais annulé par une nouvelle souscription — celle-ci prend le
+        // relais à l'expiration de l'ancien plutôt que de l'écraser.
+        $startsAt = $user
+            ? app(AbonnementSchedulingService::class)->dateDebut($user, $abonnement->id)
+            : now();
         $endsAt   = $abonnement->plan?->duration_days
             ? $startsAt->copy()->addDays($abonnement->plan->duration_days)
             : null;
@@ -157,7 +165,6 @@ class HandlePaymentConfirmed
             'ends_at'   => $endsAt,
         ]);
 
-        $user    = $paiement->user;
         $planNom = $abonnement->plan?->name ?? 'votre plan';
 
         // Notification in-app
@@ -169,7 +176,7 @@ class HandlePaymentConfirmed
                     'titre'   => 'Abonnement activé',
                     'contenu' => "Votre abonnement {$planNom} est maintenant actif."
                         . ($endsAt ? " Valable jusqu'au " . $endsAt->format('d/m/Y') . '.' : ''),
-                    'lien' => $user->role === 'recruteur'
+                    'lien' => $user->hasRole(Role::RECRUTEUR)
                         ? route('recruteur.abonnement')
                         : route('candidat.abonnement'),
                 ]);

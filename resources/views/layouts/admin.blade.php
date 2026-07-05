@@ -85,7 +85,7 @@
             Tableau de bord
           </a>
         </li>
-        @can('view-statistiques')
+        @can(\App\Enums\Permission::VIEW_STATISTIQUES)
         <li class="adm-nav__item {{ request()->routeIs('admin.statistiques') ? 'active' : '' }}">
           <a href="{{ route('admin.statistiques') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -363,6 +363,5 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
-  @include('partials._pwa-banner')
 </body>
 </html>

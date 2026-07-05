@@ -441,7 +441,7 @@
 
             <p class="cvtd-locked__desc">
                 @auth
-                    @if(auth()->user()->hasRole('recruteur'))
+                    @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
                         Accédez au profil complet depuis votre espace recruteur CVthèque.
                     @else
                         Ces informations sont réservées aux recruteurs inscrits.
@@ -452,7 +452,7 @@
             </p>
             <div class="cvtd-locked__actions">
                 @auth
-                    @if(auth()->user()->hasRole('recruteur'))
+                    @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
                         <a href="{{ route('recruteur.cvtheque') }}" class="cvtd-locked__btn cvtd-locked__btn--blue">
                             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>

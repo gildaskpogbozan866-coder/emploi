@@ -24,6 +24,10 @@ class AlerteServiceTest extends TestCase
         parent::setUp();
         $this->seed(RolesAndPermissionsSeeder::class);
         Cache::flush();
+        \App\Models\TypeContrat::insert([
+            ['code' => 'CDI',   'libelle' => 'Contrat à Durée Indéterminée', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'Stage', 'libelle' => 'Stage',                        'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 
     // ── Helpers ───────────────────────────────────────────
@@ -79,7 +83,8 @@ class AlerteServiceTest extends TestCase
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
         $alerte    = $this->creerAlerte($candidat, ['metier' => 'Comptable']);
-        $offre     = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel', 'metier' => 'Développeur Backend']);
+        $metier    = \App\Models\Metier::create(['nom' => 'Développeur Backend', 'slug' => 'developpeur-backend']);
+        $offre     = $this->creerOffre($recruteur, ['titre' => 'Développeur Laravel', 'metier_id' => $metier->id]);
 
         $service = app(AlerteService::class);
         $this->assertFalse($service->matcheOffre($alerte, $offre));
@@ -112,7 +117,9 @@ class AlerteServiceTest extends TestCase
         $candidat  = $this->creerCandidat();
         $recruteur = $this->creerRecruteur();
         $alerte    = $this->creerAlerte($candidat, ['type_contrat' => 'CDI']);
-        $offre     = $this->creerOffre($recruteur, ['type' => 'Stage']);
+        $offre     = $this->creerOffre($recruteur, [
+            'type_contrat_id' => \App\Models\TypeContrat::where('code', 'Stage')->value('id'),
+        ]);
 
         $service = app(AlerteService::class);
         $this->assertFalse($service->matcheOffre($alerte, $offre));
@@ -149,6 +156,26 @@ class AlerteServiceTest extends TestCase
             'user_id' => $candidat->id,
             'type'    => 'alerte',
         ]);
+    }
+
+    public function test_notifier_immediat_ne_leak_pas_le_json_du_type_contrat_dans_le_contenu(): void
+    {
+        NotificationFacade::fake();
+
+        $candidat  = $this->creerCandidat();
+        $recruteur = $this->creerRecruteur();
+        $this->creerAlerte($candidat, ['metier' => 'Développeur']);
+        $offre = $this->creerOffre($recruteur, [
+            'titre'           => 'Développeur Laravel',
+            'type_contrat_id' => \App\Models\TypeContrat::where('code', 'CDI')->value('id'),
+        ]);
+
+        app(AlerteService::class)->notifierImmediat($offre);
+
+        $notification = Notification::where('user_id', $candidat->id)->where('type', 'alerte')->first();
+        $this->assertNotNull($notification);
+        $this->assertStringNotContainsString('{"id"', $notification->contenu);
+        $this->assertStringContainsString('Contrat à Durée Indéterminée', $notification->contenu);
     }
 
     public function test_notifier_immediat_envoie_email_au_candidat(): void
@@ -243,6 +270,52 @@ class AlerteServiceTest extends TestCase
             'user_id' => $candidat->id,
             'type'    => 'alerte',
         ]);
+    }
+
+    public function test_admin_activation_renseigne_published_at(): void
+    {
+        NotificationFacade::fake();
+
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $adminUser->assignRole('admin');
+
+        $recruteur = $this->creerRecruteur();
+        $offre = $this->creerOffre($recruteur, ['statut' => 'en_attente']);
+        $this->assertNull($offre->published_at);
+
+        $this->actingAs($adminUser)
+            ->patch(route('admin.offres.statut', $offre), ['statut' => 'active']);
+
+        $this->assertNotNull($offre->fresh()->published_at);
+    }
+
+    /**
+     * Bug réel corrigé : published_at n'était jamais renseigné à l'activation
+     * d'une offre (ni via le recruteur, ni via l'admin), donc notifierDigest()
+     * — utilisé par les alertes quotidiennes/hebdomadaires — ne trouvait jamais
+     * aucune offre, même quand le planificateur tournait normalement.
+     */
+    public function test_notifierdigest_trouve_une_offre_activee_par_ladmin(): void
+    {
+        NotificationFacade::fake();
+
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $adminUser->assignRole('admin');
+
+        $candidat  = $this->creerCandidat();
+        $recruteur = $this->creerRecruteur();
+        $this->creerAlerte($candidat, ['metier' => 'Comptable', 'frequence' => 'quotidien']);
+        $offre = $this->creerOffre($recruteur, [
+            'titre'  => 'Comptable senior',
+            'statut' => 'en_attente',
+        ]);
+
+        $this->actingAs($adminUser)
+            ->patch(route('admin.offres.statut', $offre), ['statut' => 'active']);
+
+        $count = (new AlerteService())->notifierDigest('quotidien');
+
+        $this->assertSame(1, $count);
     }
 
     public function test_admin_activation_ne_declenche_pas_alertes_si_deja_active(): void

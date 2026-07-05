@@ -34,8 +34,14 @@ class ServiceController extends Controller
             'fichier_joint'   => 'nullable|file|mimes:pdf,doc,docx,txt,jpg,jpeg,png|max:10240',
         ];
 
+        // Un client connecté a déjà ces informations sur son compte (champs en
+        // lecture seule côté formulaire) — on ne les redemande, ni ne les fait
+        // confiance depuis la requête, que pour un invité.
         if (!Auth::check()) {
             $rules['email_contact'] = 'required|email:rfc,dns|max:191';
+            $rules['prenom']        = 'required|string|max:100';
+            $rules['nom']           = 'required|string|max:100';
+            $rules['telephone']     = 'required|string|max:30';
         }
 
         $request->validate($rules);
@@ -54,6 +60,9 @@ class ServiceController extends Controller
             'statut'          => 'en_attente',
             'paiement_statut' => 'non_paye',
             'email_contact'   => Auth::check() ? Auth::user()->email : $request->email_contact,
+            'prenom'          => Auth::check() ? Auth::user()->prenom : $request->prenom,
+            'nom'             => Auth::check() ? Auth::user()->nom : $request->nom,
+            'telephone'       => Auth::check() ? Auth::user()->tel : $request->telephone,
         ]);
 
         $service->increment('nb_commandes');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
 use App\Notifications\ReinitialisationMotDePasse;
 use App\Notifications\VerificationEmailFr;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -69,9 +70,9 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     // ── Vérifications de rôle (utilise Spatie sous le capot) ─
-    public function isAdmin(): bool     { return $this->hasRole('admin'); }
-    public function isCandidat(): bool  { return $this->hasRole('candidat'); }
-    public function isRecruteur(): bool { return $this->hasRole('recruteur'); }
+    public function isAdmin(): bool     { return $this->hasRole(Role::ADMIN); }
+    public function isCandidat(): bool  { return $this->hasRole(Role::CANDIDAT); }
+    public function isRecruteur(): bool { return $this->hasRole(Role::RECRUTEUR); }
 
     // ── Relations métier ────────────────────────────────────
     public function offres()
@@ -111,10 +112,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function abonnementActif()
     {
+        // Priorité à l'abonnement déjà démarré (starts_at <= now()) et pas encore
+        // expiré — sinon, s'il n'y en a aucun (ex. l'abonnement en cours a été
+        // écourté/annulé avant sa date de fin prévue), on retombe sur le prochain
+        // programmé le plus proche, promu automatiquement pour éviter tout trou
+        // sans abonnement actif. Aucune tâche planifiée n'est nécessaire : c'est
+        // cet ordre de tri qui fait toute la transition, dans les deux cas.
         return $this->hasOne(Abonnement::class)
             ->where('status', 'active')
             ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))
-            ->latest('starts_at');
+            ->orderByRaw('CASE WHEN starts_at <= ? THEN 0 ELSE 1 END', [now()])
+            ->orderBy('starts_at');
     }
 
     public function estPremium(): bool

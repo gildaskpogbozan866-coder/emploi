@@ -10,8 +10,10 @@ use App\Models\NiveauExperience;
 use App\Models\Offre;
 use App\Models\ParametreApp;
 use App\Models\TypeContrat;
+use App\Models\TypeDocument;
 use App\Notifications\NouvelleOffreCreee;
 use App\Jobs\NotifierAlertesOffreJob;
+use App\Services\JobPostQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -48,34 +50,7 @@ class OffreController extends Controller
 
     private function verifierQuota(): ?string
     {
-        $abonnement = Auth::user()->abonnementActif()->with('plan.features')->first();
-
-        if (!$abonnement) {
-            return 'Vous devez souscrire à un abonnement pour publier des offres.';
-        }
-
-        $limitValue = $abonnement->plan?->getFeature('job_post_limit');
-
-        // Feature non définie = illimité
-        if ($limitValue === null) {
-            return null;
-        }
-
-        // 0 = publication d'offres désactivée sur ce plan
-        if ((int) $limitValue === 0) {
-            return "Votre plan « {$abonnement->plan->name} » ne permet pas de publier des offres. Souscrivez un plan supérieur.";
-        }
-
-        $limite    = (int) $limitValue;
-        $utilisees = Auth::user()->offres()
-                         ->where('created_at', '>=', $abonnement->starts_at)
-                         ->count();
-
-        if ($utilisees >= $limite) {
-            return "Vous avez utilisé {$utilisees}/{$limite} offres de votre plan « {$abonnement->plan->name} ». Renouvelez votre abonnement pour continuer à publier.";
-        }
-
-        return null;
+        return app(JobPostQuotaService::class)->quotaFor(Auth::user())['message'];
     }
 
     public function index(Request $request)
@@ -133,11 +108,18 @@ class OffreController extends Controller
                 : 'recruteur.abonnement';
             return redirect()->route($route)->with('error', $erreurQuota);
         }
-        $typeContrats  = TypeContrat::orderBy('libelle')->get();
-        $metiers       = Metier::orderBy('nom')->get();
-        $niveauxExp    = NiveauExperience::orderBy('ordre')->get();
-        $niveauxEtude  = NiveauEtude::orderBy('ordre')->get();
-        return view('recruteur.offre-create', compact('typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
+        $typeContrats    = TypeContrat::orderBy('libelle')->get();
+        $metiers         = Metier::orderBy('nom')->get();
+        $niveauxExp      = NiveauExperience::orderBy('ordre')->get();
+        $niveauxEtude    = NiveauEtude::orderBy('ordre')->get();
+        $typesDocuments  = $this->typesDocumentsSelectionnables();
+        return view('recruteur.offre-create', compact('typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude', 'typesDocuments'));
+    }
+
+    /** Types de documents proposables comme "pièce requise" sur une offre — le CV a déjà son propre toggle exige_cv. */
+    private function typesDocumentsSelectionnables()
+    {
+        return TypeDocument::actif()->where('nom', 'not like', '%Curriculum Vitae%')->get();
     }
 
     public function store(Request $request)
@@ -156,6 +138,8 @@ class OffreController extends Controller
             'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
+            'types_documents_requis'   => 'nullable|array',
+            'types_documents_requis.*' => 'integer|exists:type_documents,id',
         ]);
 
         $erreurQuota = $this->verifierQuota();
@@ -178,6 +162,7 @@ class OffreController extends Controller
             ...$request->only(['titre','entreprise','localisation','salaire_min','salaire_max','description','exigences','date_limite','metier_id','niveau_experience','niveau_etude']),
             'recruteur_id'    => Auth::id(),
             'statut'          => 'active',
+            'published_at'    => now(),
             'fichier'         => $fichier,
             'logo'            => $logo,
             'secteur'         => $request->input('secteur', []),
@@ -187,6 +172,7 @@ class OffreController extends Controller
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
+        $offre->typesDocumentsRequis()->sync($request->input('types_documents_requis', []));
         $offre->load(['recruteur', 'competences']);
 
         NotifierAlertesOffreJob::dispatch($offre);
@@ -203,11 +189,13 @@ class OffreController extends Controller
     public function edit(Offre $offre)
     {
         $this->authorize('update', $offre);
-        $typeContrats  = TypeContrat::orderBy('libelle')->get();
-        $metiers       = Metier::orderBy('nom')->get();
-        $niveauxExp    = NiveauExperience::orderBy('ordre')->get();
-        $niveauxEtude  = NiveauEtude::orderBy('ordre')->get();
-        return view('recruteur.offre-edit', compact('offre', 'typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
+        $typeContrats    = TypeContrat::orderBy('libelle')->get();
+        $metiers         = Metier::orderBy('nom')->get();
+        $niveauxExp      = NiveauExperience::orderBy('ordre')->get();
+        $niveauxEtude    = NiveauEtude::orderBy('ordre')->get();
+        $typesDocuments  = $this->typesDocumentsSelectionnables();
+        $offre->load('typesDocumentsRequis');
+        return view('recruteur.offre-edit', compact('offre', 'typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude', 'typesDocuments'));
     }
 
     public function update(Request $request, Offre $offre)
@@ -227,6 +215,8 @@ class OffreController extends Controller
             'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
+            'types_documents_requis'   => 'nullable|array',
+            'types_documents_requis.*' => 'integer|exists:type_documents,id',
         ]);
 
         $data = array_merge(
@@ -257,17 +247,23 @@ class OffreController extends Controller
 
         $offre->update($data);
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
+        $offre->typesDocumentsRequis()->sync($request->input('types_documents_requis', []));
 
         return redirect()->route('recruteur.offres')->with('success', 'Offre mise à jour.');
     }
 
     private function syncCompetences(array $noms): array
     {
+        // Recherche par `nom` (la valeur saisie par le recruteur) et non par
+        // `slug` recalculé : certaines compétences existantes ont un slug
+        // seedé manuellement qui ne correspond plus à Str::slug($nom), ce qui
+        // faisait échouer la recherche et déclenchait une violation de la
+        // contrainte unique sur `nom` à l'insertion.
         return collect($noms)
             ->filter()
             ->map(fn($nom) => Competence::firstOrCreate(
-                ['slug' => Str::slug($nom)],
-                ['nom'  => $nom]
+                ['nom'  => $nom],
+                ['slug' => Str::slug($nom)]
             )->id)
             ->unique()
             ->values()
@@ -326,6 +322,7 @@ class OffreController extends Controller
         $copie->save();
 
         $copie->competences()->sync($offre->competences->pluck('id')->all());
+        $copie->typesDocumentsRequis()->sync($offre->typesDocumentsRequis->pluck('id')->all());
 
         return redirect()->route('recruteur.offres.edit', $copie)
             ->with('success', 'Offre dupliquée — modifiez-la avant de la publier.');

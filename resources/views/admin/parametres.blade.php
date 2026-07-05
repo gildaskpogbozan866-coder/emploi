@@ -47,27 +47,6 @@
         </div>
       </div>
 
-      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
-        <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 16px">Statut du site</h3>
-        <div style="display:flex;align-items:center;gap:12px;padding:16px;background:{{ $parametres['maintenance_mode'] ? '#fef2f2' : '#f0fdf4' }};border-radius:10px;border:1px solid {{ $parametres['maintenance_mode'] ? '#fecaca' : '#bbf7d0' }}">
-          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="{{ $parametres['maintenance_mode'] ? '#dc2626' : '#16a34a' }}" stroke-width="2">
-            @if($parametres['maintenance_mode'])
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            @else
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            @endif
-          </svg>
-          <div style="flex:1">
-            <p style="font-weight:700;color:{{ $parametres['maintenance_mode'] ? '#dc2626' : '#16a34a' }};margin:0 0 2px">
-              {{ $parametres['maintenance_mode'] ? 'Mode maintenance actif' : 'Site en ligne' }}
-            </p>
-            <p style="font-size:12.5px;color:#64748b;margin:0">
-              {{ $parametres['maintenance_mode'] ? 'Le site est en maintenance, les visiteurs voient une page d\'erreur 503.' : 'Le site est accessible normalement.' }}
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
         <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 16px">Plans d'abonnement (référence)</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
@@ -147,6 +126,43 @@
 
       <button type="submit" class="adm-btn adm-btn--yellow">Enregistrer les paramètres</button>
     </form>
+  </div>
+</div>
+
+<div class="adm-card" style="max-width:640px;margin-top:20px">
+  <div style="padding:24px">
+    <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0 0 16px">Statut du site</h3>
+    <div style="display:flex;align-items:center;gap:12px;padding:16px;background:{{ $parametres['maintenance_mode'] ? '#fef2f2' : '#f0fdf4' }};border-radius:10px;border:1px solid {{ $parametres['maintenance_mode'] ? '#fecaca' : '#bbf7d0' }};margin-bottom:14px">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="{{ $parametres['maintenance_mode'] ? '#dc2626' : '#16a34a' }}" stroke-width="2">
+        @if($parametres['maintenance_mode'])
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        @else
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        @endif
+      </svg>
+      <div style="flex:1">
+        <p style="font-weight:700;color:{{ $parametres['maintenance_mode'] ? '#dc2626' : '#16a34a' }};margin:0 0 2px">
+          {{ $parametres['maintenance_mode'] ? 'Mode maintenance actif' : 'Site en ligne' }}
+        </p>
+        <p style="font-size:12.5px;color:#64748b;margin:0">
+          {{ $parametres['maintenance_mode'] ? 'Le site est en maintenance, les visiteurs voient une page d\'erreur 503.' : 'Le site est accessible normalement.' }}
+        </p>
+      </div>
+    </div>
+
+    @if($parametres['maintenance_mode'])
+      <form method="POST" action="{{ route('admin.parametres.maintenance.desactiver') }}">
+        @csrf
+        <button type="submit" class="adm-btn adm-btn--yellow">Désactiver le mode maintenance</button>
+      </form>
+    @else
+      <form method="POST" action="{{ route('admin.parametres.maintenance.activer') }}"
+            onsubmit="return confirm('Activer le mode maintenance ? Le site affichera une page d\'erreur 503 à tous les visiteurs (l\'espace admin et la connexion restent accessibles).')">
+        @csrf
+        <button type="submit" class="adm-btn adm-btn--danger">Activer le mode maintenance</button>
+      </form>
+    @endif
+    <p style="font-size:11.5px;color:#94a3b8;margin:10px 0 0">L'espace admin et la page de connexion restent toujours accessibles, même en maintenance.</p>
   </div>
 </div>
 @endsection

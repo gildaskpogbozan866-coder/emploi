@@ -59,7 +59,7 @@
   display: block; font-size: 13px; font-weight: 500;
   color: #1e293b; margin-bottom: 6px;
 }
-.req { color: #185FA5; }
+.req { color: #e53e3e; }
 
 .field__input,
 .field__select,

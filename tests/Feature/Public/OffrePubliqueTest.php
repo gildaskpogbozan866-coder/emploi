@@ -68,8 +68,10 @@ class OffrePubliqueTest extends TestCase
     public function test_liste_filtre_par_type(): void
     {
         $recruteur = $this->creerRecruteur();
-        $this->creerOffre($recruteur, ['titre' => 'Offre CDI',   'type' => 'CDI']);
-        $this->creerOffre($recruteur, ['titre' => 'Offre Stage', 'type' => 'Stage']);
+        $cdi   = TypeContrat::create(['code' => 'CDI', 'libelle' => 'CDI']);
+        $stage = TypeContrat::create(['code' => 'Stage', 'libelle' => 'Stage']);
+        $this->creerOffre($recruteur, ['titre' => 'Offre CDI',   'type_contrat_id' => $cdi->id]);
+        $this->creerOffre($recruteur, ['titre' => 'Offre Stage', 'type_contrat_id' => $stage->id]);
 
         $this->get(route('offre.list', ['type' => 'CDI']))
             ->assertSee('Offre CDI')

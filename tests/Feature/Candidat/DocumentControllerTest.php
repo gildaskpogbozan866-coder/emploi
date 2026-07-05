@@ -63,14 +63,13 @@ class DocumentControllerTest extends TestCase
         $this->actingAs($candidat)
             ->post(route('candidat.documents.store'), [
                 'type_document_id' => $type->id,
-                'nom'              => 'Licence Informatique',
                 'fichier'          => $this->fichierPdf('licence.pdf'),
             ])
             ->assertRedirect();
 
         $this->assertDatabaseHas('documents', [
-            'user_id' => $candidat->id,
-            'nom'     => 'Licence Informatique',
+            'user_id'          => $candidat->id,
+            'type_document_id' => $type->id,
         ]);
     }
 
@@ -142,19 +141,6 @@ class DocumentControllerTest extends TestCase
             ->assertSessionHasErrors('type_document_id');
     }
 
-    public function test_store_validation_nom_requis(): void
-    {
-        $candidat = $this->creerCandidat();
-        $type     = $this->typeDoc();
-
-        $this->actingAs($candidat)
-            ->post(route('candidat.documents.store'), [
-                'type_document_id' => $type->id,
-                'fichier'          => $this->fichierPdf(),
-            ])
-            ->assertSessionHasErrors('nom');
-    }
-
     public function test_store_validation_fichier_type_invalide(): void
     {
         $candidat = $this->creerCandidat();
@@ -167,6 +153,21 @@ class DocumentControllerTest extends TestCase
                 'fichier'          => UploadedFile::fake()->create('virus.exe', 100, 'application/octet-stream'),
             ])
             ->assertSessionHasErrors('fichier');
+    }
+
+    public function test_store_refuse_le_type_curriculum_vitae(): void
+    {
+        $candidat = $this->creerCandidat();
+        $typeCV   = TypeDocument::create(['nom' => 'Curriculum Vitae (CV)', 'actif' => true, 'ordre' => 1]);
+
+        $this->actingAs($candidat)
+            ->post(route('candidat.documents.store'), [
+                'type_document_id' => $typeCV->id,
+                'fichier'          => $this->fichierPdf(),
+            ])
+            ->assertSessionHasErrors('type_document_id');
+
+        $this->assertDatabaseCount('documents', 0);
     }
 
     public function test_store_redirige_si_non_connecte(): void
@@ -295,6 +296,23 @@ class DocumentControllerTest extends TestCase
                 'type_document_id' => $type->id,
             ])
             ->assertSessionHasErrors('nom');
+    }
+
+    public function test_update_refuse_le_retypage_en_curriculum_vitae(): void
+    {
+        $candidat = $this->creerCandidat();
+        $type     = $this->typeDoc();
+        $doc      = $this->creerDocument($candidat, $type);
+        $typeCV   = TypeDocument::create(['nom' => 'Curriculum Vitae (CV)', 'actif' => true, 'ordre' => 2]);
+
+        $this->actingAs($candidat)
+            ->put(route('candidat.documents.update', $doc), [
+                'type_document_id' => $typeCV->id,
+                'nom'              => 'Mon diplôme devenu CV',
+            ])
+            ->assertSessionHasErrors('type_document_id');
+
+        $this->assertDatabaseHas('documents', ['id' => $doc->id, 'type_document_id' => $type->id]);
     }
 
     // ── Suppression ───────────────────────────────────────

@@ -181,6 +181,93 @@
         @endif
         {{-- ── /CV requis ──────────────────────────────────────────── --}}
 
+        {{-- ── Documents requis par le recruteur ───────────────────── --}}
+        @foreach($offre->typesDocumentsRequis as $typeRequis)
+        <div style="margin-bottom:28px">
+          <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
+            {{ $typeRequis->nom }} <span style="color:#e53e3e">*</span>
+            <span style="font-weight:400;color:#64748b;font-size:12px">Requis par le recruteur pour cette offre</span>
+          </label>
+
+          @php $docsCeType = $documentsRequisParType->get($typeRequis->id, collect()); @endphp
+          @if($docsCeType->isNotEmpty())
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            @php $oldExistant = old('pieces_existantes.'.$typeRequis->id); @endphp
+            @foreach($docsCeType as $doc)
+            <label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid {{ $oldExistant == $doc->id ? '#185FA5' : '#e2e8f0' }};border-radius:10px;cursor:pointer;background:{{ $oldExistant == $doc->id ? '#f0f7ff' : '#fff' }}">
+              <input type="radio" name="pieces_existantes[{{ $typeRequis->id }}]" value="{{ $doc->id }}"
+                     {{ $oldExistant == $doc->id ? 'checked' : '' }}
+                     style="width:17px;height:17px;accent-color:#185FA5;flex-shrink:0">
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:13.5px">{{ $doc->nom }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">Déjà dans votre espace</p>
+              </div>
+            </label>
+            @endforeach
+            <label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px dashed #cbd5e0;border-radius:10px;cursor:pointer;background:#fafafa">
+              <input type="radio" name="pieces_existantes[{{ $typeRequis->id }}]" value=""
+                     {{ !$oldExistant ? 'checked' : '' }}
+                     style="width:17px;height:17px;accent-color:#185FA5;flex-shrink:0">
+              <span style="font-size:13.5px;color:#64748b;font-weight:600">Téléverser un nouveau document</span>
+            </label>
+          </div>
+          @endif
+
+          <div id="upload-requis-{{ $typeRequis->id }}" style="{{ $docsCeType->isNotEmpty() && $oldExistant ? 'display:none' : '' }}">
+            <label style="display:flex;align-items:center;gap:14px;padding:16px 18px;border:2px dashed {{ $errors->has('pieces_nouvelles.'.$typeRequis->id) ? '#dc2626' : '#cbd5e0' }};border-radius:12px;cursor:pointer;background:#fafafa">
+              <div style="width:38px;height:38px;border-radius:10px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-size:13.5px;font-weight:600;color:#185FA5;margin:0">Cliquer pour joindre « {{ $typeRequis->nom }} »</p>
+                <p style="font-size:12px;color:#64748b;margin:3px 0 0">PDF, DOC, DOCX, JPG, PNG — max 5 Mo. Sera aussi ajouté à vos documents.</p>
+              </div>
+              <input type="file" name="pieces_nouvelles[{{ $typeRequis->id }}]" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp" style="display:none"
+                     onchange="this.closest('label').querySelector('p').textContent = this.files[0]?.name || 'Cliquer pour joindre « {{ $typeRequis->nom }} »'">
+            </label>
+          </div>
+          @error('pieces_nouvelles.'.$typeRequis->id)
+            <p style="color:#dc2626;font-size:12.5px;margin:6px 0 0">{{ $message }}</p>
+          @enderror
+
+          @if($docsCeType->isNotEmpty())
+          <script>
+          document.querySelectorAll('input[name="pieces_existantes[{{ $typeRequis->id }}]"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+              document.getElementById('upload-requis-{{ $typeRequis->id }}').style.display = this.value === '' ? '' : 'none';
+            });
+          });
+          </script>
+          @endif
+        </div>
+        @endforeach
+        {{-- ── /Documents requis ───────────────────────────────────── --}}
+
+        {{-- ── Pièces justificatives (optionnel) ───────────────────── --}}
+        @if($documentsLibres->isNotEmpty())
+        <div style="margin-bottom:28px">
+          <label style="display:block;font-size:13.5px;font-weight:700;color:#374151;margin-bottom:10px">
+            Autres pièces justificatives
+            <span style="font-weight:400;color:#64748b;font-size:12px">Optionnel — joignez d'autres diplômes, attestations ou certificats pertinents</span>
+          </label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            @php $oldPieces = old('pieces_ids', []); @endphp
+            @foreach($documentsLibres as $doc)
+            <label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;background:#fff">
+              <input type="checkbox" name="pieces_ids[]" value="{{ $doc->id }}"
+                     {{ in_array($doc->id, $oldPieces) ? 'checked' : '' }}
+                     style="width:17px;height:17px;accent-color:#185FA5;flex-shrink:0">
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:13.5px">{{ $doc->nom }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $doc->type?->nom }}</p>
+              </div>
+            </label>
+            @endforeach
+          </div>
+        </div>
+        @endif
+        {{-- ── /Pièces justificatives ──────────────────────────────── --}}
+
         {{-- ── Lettre de motivation requise ───────────────────────── --}}
         @if($offre->exige_lettre)
         <div style="margin-bottom:28px">

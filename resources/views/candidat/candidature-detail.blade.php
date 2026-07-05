@@ -47,19 +47,34 @@
           </div>
         @endif
 
-        {{-- CV joint à la candidature --}}
+        {{-- CV joint à la candidature (état au moment de l'envoi) --}}
+        @php
+          $cvAffiche = $candidature->cv_snapshot ?: ($candidature->cv ? [
+              'metier'       => $candidature->cv->metier,
+              'ville'        => $candidature->cv->ville,
+              'fichier_path' => $candidature->cv->fichier_path,
+          ] : null);
+        @endphp
         <div style="margin-top:20px;padding-top:20px;border-top:1px solid #e2e8f0">
           <p style="font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 10px">CV joint</p>
-          @if($candidature->cv)
+          @if($cvAffiche)
             <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:10px">
               <div style="width:36px;height:36px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
               <div style="flex:1;min-width:0">
-                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $candidature->cv->metier }}</p>
-                <p style="font-size:12px;color:#64748b;margin:0">{{ $candidature->cv->ville }}</p>
+                <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:14px">{{ $cvAffiche['metier'] }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $cvAffiche['ville'] }}</p>
               </div>
-              <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Profil</span>
+              <div style="display:flex;gap:8px;flex-shrink:0;align-items:center">
+                <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:600">Profil</span>
+                @if($cvAffiche['fichier_path'])
+                <a href="{{ asset('storage/'.$cvAffiche['fichier_path']) }}" target="_blank"
+                   style="font-size:12.5px;font-weight:600;color:#185FA5;text-decoration:none;white-space:nowrap">
+                  Télécharger
+                </a>
+                @endif
+              </div>
             </div>
           @elseif($candidature->cv_path)
             <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
@@ -79,6 +94,29 @@
             <p style="font-size:13.5px;color:#64748b;font-style:italic;margin:0">Aucun CV joint à cette candidature.</p>
           @endif
         </div>
+
+        @if($candidature->documents->isNotEmpty())
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid #e2e8f0">
+          <p style="font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 10px">Pièces justificatives jointes</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            @foreach($candidature->documents as $doc)
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
+              <div style="width:36px;height:36px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#64748b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-weight:600;color:#042C53;margin:0 0 2px;font-size:14px">{{ $doc->nom }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0">{{ $doc->type?->nom }}</p>
+              </div>
+              <a href="{{ asset('storage/'.$doc->fichier) }}" target="_blank"
+                 style="font-size:12.5px;font-weight:600;color:#185FA5;text-decoration:none;white-space:nowrap;flex-shrink:0">
+                Voir
+              </a>
+            </div>
+            @endforeach
+          </div>
+        </div>
+        @endif
       </div>
     </div>
   </div>

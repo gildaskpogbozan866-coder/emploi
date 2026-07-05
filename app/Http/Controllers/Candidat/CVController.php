@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Candidat;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Models\CandidatProfil;
 use App\Models\Competence;
 use App\Models\CV;
-use App\Models\Document;
 use App\Models\Langue;
 use App\Models\LangueCandidat;
 use App\Models\NiveauEtude;
@@ -16,6 +16,7 @@ use App\Models\TypeContrat;
 use App\Models\TypeDocument;
 use App\Models\User;
 use App\Notifications\NouveauCVDeposeNotification;
+use App\Services\CvQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -49,39 +50,11 @@ class CVController extends Controller
             return $cv;
         });
 
-        // ── Documents (diplômes, attestations, certificats…) ──
-        $docQuery = Document::with(['user', 'type'])->latest();
-
-        if ($request->filled('q')) {
-            $q = $request->q;
-            $docQuery->where(function ($sq) use ($q) {
-                $sq->where('nom', 'like', "%$q%")
-                    ->orWhere('competences', 'like', "%$q%");
-            });
-        }
-        if ($request->filled('pays'))   $docQuery->where('pays', $request->pays);
-        if ($request->filled('langue')) $docQuery->where('langues', 'like', '%' . $request->langue . '%');
-
-        $docResults = $docQuery->get()->map(function ($doc) {
-            return (object) [
-                '_is_document' => true,
-                'id'           => $doc->id,
-                'titre_poste'  => $doc->nom,
-                'photo'        => null,
-                'pays'         => $doc->pays,
-                'langues'      => $doc->langues,
-                'competences'  => $doc->competences,
-                'experience'   => $doc->experience,
-                'plan'         => null,
-                'candidat'     => $doc->user,
-                'type_label'   => $doc->type?->nom ?? 'Document',
-                'fichier'      => $doc->fichier,
-                'created_at'   => $doc->created_at,
-            ];
-        });
-
-        // ── Fusion & pagination ──
-        $merged = $cvResults->concat($docResults)->sortByDesc('created_at')->values();
+        // Les documents (diplômes, attestations…) ne sont pas des CV : ils
+        // n'ont aucun mécanisme de consentement/visibilité et ne doivent pas
+        // apparaître dans une recherche publique. Rien n'est supprimé côté
+        // données — ils restent consultables par leur propriétaire et l'admin.
+        $merged = $cvResults->sortByDesc('created_at')->values();
         $page   = (int) $request->get('page', 1);
         $perPage = 12;
         $cvs = new LengthAwarePaginator(
@@ -101,12 +74,6 @@ class CVController extends Controller
         }
 
         return view('public.cv.theque', compact('cvs'));
-    }
-
-    public function documentDetail(Document $document)
-    {
-        $document->load(['user', 'type']);
-        return view('public.cv.document-detail', compact('document'));
     }
 
     public function candidatDetails(int $id)
@@ -132,8 +99,14 @@ class CVController extends Controller
             ])
             ->firstOrFail();
 
-        // Sécurité : profil doit exister
+        // Sécurité : le profil doit exister ET le candidat doit avoir publié
+        // au moins un CV visible — remplir son profil seul ne suffit pas à
+        // apparaître publiquement.
         abort_if(is_null($candidat->candidatProfil), 404);
+        abort_if(
+            !$candidat->cvs->contains(fn ($cv) => $cv->visible && $cv->publie_le !== null),
+            404
+        );
 
         $libelles = \App\Models\CandidatProfil::libelles();
 
@@ -142,7 +115,7 @@ class CVController extends Controller
 
     public function detail(CV $cv)
     {
-        if (!$cv->visible) {
+        if (!$cv->visible || is_null($cv->publie_le)) {
             abort(404);
         }
 
@@ -157,27 +130,25 @@ class CVController extends Controller
         return view('public.cv.tarif', compact('packs'));
     }
 
-    public function depot()
+    public function depot(CvQuotaService $quotaService)
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion')->with('redirect_after', route('cv.public.depot'));
         }
 
-        if (!Auth::user()->hasRole('candidat')) {
-            return redirect()->route(match (Auth::user()->role) {
-                'recruteur' => 'recruteur.dashboard',
-                'admin'     => 'admin.dashboard',
-                default     => 'home',
+        if (!Auth::user()->hasRole(Role::CANDIDAT)) {
+            return redirect()->route(match (true) {
+                Auth::user()->hasRole(Role::RECRUTEUR) => 'recruteur.dashboard',
+                Auth::user()->hasRole(Role::ADMIN)      => 'admin.dashboard',
+                default => 'home',
             })->with('error', 'Seuls les candidats peuvent déposer un CV.');
         }
 
         $user  = Auth::user();
-        $quota = $this->cvQuota($user);
-
-        if ($quota['reached']) {
-            return redirect()->route('candidat.abonnement.plans')
-                ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
-        }
+        // Le quota ne limite que les CV — ne pas bloquer l'accès au formulaire,
+        // qui sert aussi à déposer des documents (diplôme, attestation...) non
+        // concernés par cette limite. Le blocage réel se fait dans store().
+        $quota = $quotaService->quotaFor($user);
 
         $typesDocuments    = TypeDocument::actif()->get();
         $competences       = Competence::orderBy('nom')->pluck('nom');
@@ -195,28 +166,37 @@ class CVController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, CvQuotaService $quotaService)
     {
         if (!Auth::check()) {
             return redirect()->route('auth.connexion');
         }
 
-        if (!Auth::user()->hasRole('candidat')) {
-            return redirect()->route(match (Auth::user()->role) {
-                'recruteur' => 'recruteur.dashboard',
-                'admin'     => 'admin.dashboard',
-                default     => 'home',
+        if (!Auth::user()->hasRole(Role::CANDIDAT)) {
+            return redirect()->route(match (true) {
+                Auth::user()->hasRole(Role::RECRUTEUR) => 'recruteur.dashboard',
+                Auth::user()->hasRole(Role::ADMIN)      => 'admin.dashboard',
+                default => 'home',
             })->with('error', 'Seuls les candidats peuvent déposer un CV.');
         }
 
-        $user  = Auth::user();
-        $quota = $this->cvQuota($user);
+        $user   = Auth::user();
+        $typeCV = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
+        $estCV  = $typeCV && $request->type_document_id == $typeCV->id;
 
-        if ($quota['reached']) {
-            return redirect()->route('candidat.abonnement.plans')
-                ->with('info', "Vous avez atteint la limite de {$quota['limit']} document(s) de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
+        // Le quota du plan ne limite que le nombre de CV — les autres types de
+        // documents (diplôme, attestation...) ne doivent jamais être bloqués par lui.
+        if ($estCV) {
+            $quota = $quotaService->quotaFor($user);
+            if ($quota['reached']) {
+                return redirect()->route('candidat.abonnement.plans')
+                    ->with('info', "Vous avez atteint la limite de {$quota['limit']} CV de votre plan. Passez à un plan supérieur pour en ajouter davantage.");
+            }
         }
 
+        // Niveau d'études, niveau d'expérience, compétences et type de contrat
+        // ne sont obligatoires que pour un CV — un dépôt de diplôme/attestation/etc.
+        // n'a pas à renseigner un "poste visé" ou des compétences.
         $request->validate([
             'prenom'              => 'required|string|max:100',
             'nom_famille'         => 'required|string|max:100',
@@ -224,21 +204,21 @@ class CVController extends Controller
             'disponibilite'       => 'required|in:immediatement,1_mois,2_mois,3_mois,plus_3_mois',
             'type_document_id'    => 'required|exists:type_documents,id',
             'nom'                 => 'required|string|max:200',
-            'resume'              => 'nullable|string|max:2000',
-            'photo'               => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'pays'                => 'nullable|string|max:100',
+            'resume'              => [$estCV ? 'required' : 'nullable', 'string', 'max:2000'],
+            'photo'               => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'pays'                => [$estCV ? 'required' : 'nullable', 'string', 'max:100'],
             'ville'               => 'required|string|max:100',
-            'types_contrat_ids'   => 'nullable|array',
-            'types_contrat_ids.*' => 'nullable|exists:type_contrats,id',
-            'niveau_etude_id'     => 'nullable|exists:niveaux_etudes,id',
-            'niveau_experience_id'=> 'nullable|exists:niveaux_experience,id',
-            'competences'         => 'nullable|string',
-            'experience'          => 'nullable|string',
-            'formation'           => 'nullable|string',
-            'langues_ids'         => 'nullable|array',
-            'langues_ids.*'       => 'nullable|exists:langues,id',
-            'niveaux_ids'         => 'nullable|array',
-            'niveaux_ids.*'       => 'nullable|exists:niveaux_langue,id',
+            'types_contrat_ids'   => [$estCV ? 'required' : 'nullable', 'array', $estCV ? 'min:1' : 'nullable'],
+            'types_contrat_ids.*' => $estCV ? 'required|exists:type_contrats,id' : 'nullable|exists:type_contrats,id',
+            'niveau_etude_id'     => [$estCV ? 'required' : 'nullable', 'exists:niveaux_etudes,id'],
+            'niveau_experience_id'=> [$estCV ? 'required' : 'nullable', 'exists:niveaux_experience,id'],
+            'competences'         => $estCV ? 'required|string' : 'nullable|string',
+            'experience'          => $estCV ? 'required|string' : 'nullable|string',
+            'formation'           => $estCV ? 'required|string' : 'nullable|string',
+            'langues_ids'         => [$estCV ? 'required' : 'nullable', 'array', $estCV ? 'min:1' : 'nullable'],
+            'langues_ids.*'       => $estCV ? 'required|exists:langues,id' : 'nullable|exists:langues,id',
+            'niveaux_ids'         => [$estCV ? 'required' : 'nullable', 'array', $estCV ? 'min:1' : 'nullable'],
+            'niveaux_ids.*'       => $estCV ? 'required|exists:niveaux_langue,id' : 'nullable|exists:niveaux_langue,id',
             'fichier_path'        => 'required|file|mimes:pdf|max:5120',
         ], [
             'prenom.required'           => 'Le prénom est obligatoire.',
@@ -246,12 +226,22 @@ class CVController extends Controller
             'tel.required'              => 'Le numéro de téléphone est obligatoire.',
             'disponibilite.required'    => 'La disponibilité est obligatoire.',
             'ville.required'            => 'La ville est obligatoire.',
+            'resume.required'           => 'Le résumé / présentation est obligatoire.',
+            'pays.required'             => 'Le pays est obligatoire.',
+            'types_contrat_ids.required' => 'Sélectionnez au moins un type de contrat souhaité.',
+            'types_contrat_ids.min'      => 'Sélectionnez au moins un type de contrat souhaité.',
+            'niveau_etude_id.required'   => 'Le niveau d\'études est obligatoire.',
+            'niveau_experience_id.required' => 'Le niveau d\'expérience est obligatoire.',
+            'competences.required'      => 'Indiquez au moins une compétence.',
+            'experience.required'       => 'Ajoutez au moins une expérience professionnelle.',
+            'formation.required'        => 'Ajoutez au moins une formation.',
+            'langues_ids.required'      => 'Ajoutez au moins une langue.',
+            'langues_ids.min'           => 'Ajoutez au moins une langue.',
+            'niveaux_ids.required'      => 'Précisez le niveau de chaque langue ajoutée.',
+            'niveaux_ids.min'           => 'Précisez le niveau de chaque langue ajoutée.',
             'fichier_path.required'     => 'Le fichier PDF est obligatoire.',
             'fichier_path.mimes'        => 'Le fichier doit être au format PDF.',
         ]);
-
-        $typeCV = TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->first();
-        $estCV  = $typeCV && $request->type_document_id == $typeCV->id;
 
         // Fichier obligatoire pour tous les types
         $fichierPath = $request->file('fichier_path')->store('cvs', 'public');
@@ -262,21 +252,11 @@ class CVController extends Controller
         }
 
         // Conversion IDs → texte pour stockage
-        $typeContratTexte = '';
-        if ($request->filled('types_contrat_ids')) {
-            $typeContratTexte = TypeContrat::whereIn('id', $request->input('types_contrat_ids', []))
-                ->pluck('libelle')->join(', ');
-        }
-
-        $niveauEtudeTexte = '';
-        if ($request->filled('niveau_etude_id')) {
-            $niveauEtudeTexte = NiveauEtude::find($request->niveau_etude_id)?->libelle ?? '';
-        }
-
-        $niveauExpTexte = '';
-        if ($request->filled('niveau_experience_id')) {
-            $niveauExpTexte = NiveauExperience::find($request->niveau_experience_id)?->libelle ?? '';
-        }
+        [$typeContratTexte, $niveauEtudeTexte, $niveauExpTexte] = $this->convertirChampsCvTexte(
+            $request->input('types_contrat_ids', []),
+            $request->input('niveau_etude_id'),
+            $request->input('niveau_experience_id')
+        );
 
         [$languesTexte, $languesSync] = $this->buildLanguesData(
             $request->input('langues_ids', []),
@@ -333,7 +313,7 @@ class CVController extends Controller
             }
 
             // Notification quota restant
-            $quotaApres = $this->cvQuota($user);
+            $quotaApres = $quotaService->quotaFor($user);
             $successMsg = 'Votre CV a été publié avec succès dans la CVthèque !';
             if (!$quotaApres['unlimited']) {
                 if ($quotaApres['remaining'] === 0) {
@@ -375,18 +355,18 @@ class CVController extends Controller
             'ville'               => $request->ville,
         ]);
 
-        return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès dans la CVthèque !');
+        return redirect()->route('candidat.cvs')->with('success', 'Document ajouté avec succès à votre espace candidat.');
     }
 
     // ── Espace candidat ───────────────────────────────────
-    public function index()
+    public function index(CvQuotaService $quotaService)
     {
         $user           = Auth::user();
         $cvs            = $user->cvs()->latest()->get();
         $documents      = $user->documents()->with('type')->latest()->get();
         $typesDocuments = TypeDocument::actif()->get();
         $total          = $cvs->count() + $documents->count();
-        $quota          = $this->cvQuota($user, $cvs->count());
+        $quota          = $quotaService->quotaFor($user);
 
         return view('candidat.cvs', compact('cvs', 'documents', 'typesDocuments', 'total', 'quota'));
     }
@@ -398,7 +378,25 @@ class CVController extends Controller
         $languesCandidatActuelles = LangueCandidat::where('candidat_id', $cv->candidat_id)
             ->with(['langue', 'niveau'])
             ->get();
-        return view('candidat.cv-edit', compact('cv', 'competences', 'languesCandidatActuelles'));
+        $languesList       = Langue::orderBy('nom')->get();
+        $niveauxLangueList = NiveauLangue::orderBy('libelle')->get();
+        $niveauxEtude      = NiveauEtude::orderBy('ordre')->get();
+        $niveauxExperience = NiveauExperience::orderBy('ordre')->get();
+        $typesContrats     = TypeContrat::orderBy('libelle')->get();
+
+        // Le CV ne stocke que le libellé texte (pas l'ID) pour ces champs — on
+        // remonte aux IDs correspondants pour pré-cocher/pré-sélectionner le formulaire.
+        $typesContratSelectionnes = $cv->type_contrat
+            ? $typesContrats->whereIn('libelle', array_map('trim', explode(',', $cv->type_contrat)))->pluck('id')->all()
+            : [];
+        $niveauEtudeSelectionne      = $niveauxEtude->firstWhere('libelle', $cv->niveau_etude)?->id;
+        $niveauExperienceSelectionne = $niveauxExperience->firstWhere('libelle', $cv->niveau_experience)?->id;
+
+        return view('candidat.cv-edit', compact(
+            'cv', 'competences', 'languesCandidatActuelles',
+            'languesList', 'niveauxLangueList', 'niveauxEtude', 'niveauxExperience', 'typesContrats',
+            'typesContratSelectionnes', 'niveauEtudeSelectionne', 'niveauExperienceSelectionne'
+        ));
     }
 
     public function update(Request $request, CV $cv)
@@ -406,38 +404,56 @@ class CVController extends Controller
         $this->authorize('update', $cv);
 
         $request->validate([
-            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
-            'ville'             => 'nullable|string|max:100',
-            'metier'            => 'nullable|string|max:150',
-            'niveau_experience' => 'nullable|string|max:100',
-            'niveau_etude'      => 'nullable|string|max:100',
-            'type_contrat'      => 'nullable|string|max:50',
-            'competences'       => 'nullable|string',
-            'experience'        => 'nullable|string',
-            'formation'         => 'nullable|string',
-            'langues_ids'       => 'nullable|array',
-            'langues_ids.*'     => 'nullable|exists:langues,id',
-            'niveaux_ids'       => 'nullable|array',
-            'niveaux_ids.*'     => 'nullable|exists:niveaux_langue,id',
-            'fichier_path'      => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
+            'photo'                => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'ville'                => 'required|string|max:100',
+            'metier'               => 'required|string|max:150',
+            'resume'               => 'required|string|max:2000',
+            'types_contrat_ids'    => 'required|array|min:1',
+            'types_contrat_ids.*'  => 'required|exists:type_contrats,id',
+            'niveau_etude_id'      => 'required|exists:niveaux_etudes,id',
+            'niveau_experience_id' => 'required|exists:niveaux_experience,id',
+            'competences'          => 'required|string',
+            'experience'           => 'required|string',
+            'formation'            => 'required|string',
+            'langues_ids'          => 'required|array|min:1',
+            'langues_ids.*'        => 'required|exists:langues,id',
+            'niveaux_ids'          => 'required|array|min:1',
+            'niveaux_ids.*'        => 'required|exists:niveaux_langue,id',
+            'fichier_path'         => 'nullable|file|mimes:pdf|max:5120',
+        ], [
+            'ville.required'             => 'La ville est obligatoire.',
+            'metier.required'            => 'L\'intitulé / poste visé est obligatoire.',
+            'resume.required'            => 'Le résumé / présentation est obligatoire.',
+            'types_contrat_ids.required' => 'Sélectionnez au moins un type de contrat souhaité.',
+            'types_contrat_ids.min'      => 'Sélectionnez au moins un type de contrat souhaité.',
+            'niveau_etude_id.required'   => 'Le niveau d\'études est obligatoire.',
+            'niveau_experience_id.required' => 'Le niveau d\'expérience est obligatoire.',
+            'competences.required'      => 'Indiquez au moins une compétence.',
+            'experience.required'       => 'Ajoutez au moins une expérience professionnelle.',
+            'formation.required'        => 'Ajoutez au moins une formation.',
+            'langues_ids.required'      => 'Ajoutez au moins une langue.',
+            'langues_ids.min'           => 'Ajoutez au moins une langue.',
+            'niveaux_ids.required'      => 'Précisez le niveau de chaque langue ajoutée.',
+            'niveaux_ids.min'           => 'Précisez le niveau de chaque langue ajoutée.',
+            'fichier_path.mimes'        => 'Le fichier doit être au format PDF.',
         ]);
+
+        [$typeContratTexte, $niveauEtudeTexte, $niveauExpTexte] = $this->convertirChampsCvTexte(
+            $request->input('types_contrat_ids', []),
+            $request->input('niveau_etude_id'),
+            $request->input('niveau_experience_id')
+        );
 
         [$languesTexte, $languesSync] = $this->buildLanguesData(
             $request->input('langues_ids', []),
             $request->input('niveaux_ids', [])
         );
 
-        $data = $request->only([
-            'ville',
-            'metier',
-            'niveau_experience',
-            'niveau_etude',
-            'type_contrat',
-            'competences',
-            'experience',
-            'formation',
-        ]);
-        $data['langues'] = $languesTexte;
+        $data = $request->only(['ville', 'metier', 'resume', 'competences', 'experience', 'formation']);
+        $data['type_contrat']      = $typeContratTexte ?: null;
+        $data['niveau_etude']      = $niveauEtudeTexte ?: null;
+        $data['niveau_experience'] = $niveauExpTexte ?: null;
+        $data['langues']           = $languesTexte;
 
         if ($request->hasFile('photo')) {
             if ($cv->photo) Storage::disk('public')->delete($cv->photo);
@@ -473,7 +489,21 @@ class CVController extends Controller
     public function toggleVisibilite(CV $cv)
     {
         $this->authorize('update', $cv);
-        $cv->update(['visible' => !$cv->visible]);
+        $devientVisible = !$cv->visible;
+
+        if ($devientVisible && !$cv->estComplet()) {
+            return back()->with('error', 'Complétez votre CV (métier, ville, résumé, compétences, expérience, formation, langues, photo...) avant de le rendre visible dans la CVthèque.');
+        }
+
+        $data = ['visible' => $devientVisible];
+        // publie_le conditionne aussi l'apparition en CVthèque (CV::scopeVisible) —
+        // un CV jamais passé par le dépôt normal (ex. créé pendant une candidature)
+        // ne l'a pas encore ; on le renseigne ici pour que "Rendre visible" publie
+        // vraiment, au lieu de rester un bouton sans effet réel.
+        if ($devientVisible && !$cv->publie_le) {
+            $data['publie_le'] = now();
+        }
+        $cv->update($data);
         $msg = $cv->visible
             ? 'Votre CV est maintenant visible dans la CVthèque.'
             : 'Votre CV est masqué de la CVthèque.';
@@ -485,6 +515,20 @@ class CVController extends Controller
         $this->authorize('delete', $cv);
         $cv->delete();
         return redirect()->route('candidat.cvs')->with('success', 'CV supprimé.');
+    }
+
+    // ── Conversion IDs de référentiels → texte stocké sur le CV ──
+    private function convertirChampsCvTexte(array $typesContratIds, ?int $niveauEtudeId, ?int $niveauExperienceId): array
+    {
+        $typeContratTexte = '';
+        if (!empty($typesContratIds)) {
+            $typeContratTexte = TypeContrat::whereIn('id', $typesContratIds)->pluck('libelle')->join(', ');
+        }
+
+        $niveauEtudeTexte = $niveauEtudeId ? (NiveauEtude::find($niveauEtudeId)?->libelle ?? '') : '';
+        $niveauExpTexte   = $niveauExperienceId ? (NiveauExperience::find($niveauExperienceId)?->libelle ?? '') : '';
+
+        return [$typeContratTexte, $niveauEtudeTexte, $niveauExpTexte];
     }
 
     // ── Langues helper ────────────────────────────────────
@@ -505,21 +549,5 @@ class CVController extends Controller
             $sync[$langueId] = ['niveau_id' => $niveauId];
         }
         return [implode(', ', $textes), $sync];
-    }
-
-    // ── Quota helper (compte uniquement les CVs, pas les documents) ──
-    private function cvQuota(User $user, ?int $alreadyCountedTotal = null): array
-    {
-        $abonnement = $user->abonnementActif()->with('plan.features')->first();
-        $total      = $alreadyCountedTotal ?? $user->cvs()->count();
-        $limit      = $abonnement ? (int) ($abonnement->plan?->getFeature('cv_limit', 1) ?? 1) : 1;
-        $unlimited  = $limit === 0;
-        return [
-            'used'      => $total,
-            'limit'     => $limit,
-            'unlimited' => $unlimited,
-            'reached'   => !$unlimited && $total >= $limit,
-            'remaining' => $unlimited ? null : max(0, $limit - $total),
-        ];
     }
 }

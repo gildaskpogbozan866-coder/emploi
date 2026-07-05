@@ -65,7 +65,7 @@
       @if($quota['remaining'] === 0)
         — quota atteint
       @else
-        — encore <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong> disponible{{ $quota['remaining'] > 1 ? 's' : '' }}
+        — encore <strong>{{ $quota['remaining'] }} CV</strong> possible{{ $quota['remaining'] > 1 ? 's' : '' }} sur votre plan
       @endif
     </p>
     @if($quota['remaining'] <= 1)
@@ -122,10 +122,11 @@
             </label>
           </div>
           <div>
-            <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 2px">Photo de profil <span style="font-size:11px;font-weight:400;color:#94a3b8">(optionnelle)</span></p>
+            <p style="font-size:13px;font-weight:700;color:#042C53;margin:0 0 2px">Photo de profil <span style="font-weight:400;color:#64748b;font-size:11px">optionnel</span></p>
             <p style="font-size:12px;color:#64748b;margin:0 0 6px">JPG, PNG ou WebP · max 2 Mo</p>
             <label for="photoInput" style="font-size:12.5px;color:#185FA5;font-weight:600;cursor:pointer;text-decoration:underline">Choisir une photo</label>
             <span id="photoFileName" style="font-size:11.5px;color:#94a3b8;margin-left:8px"></span>
+            @error('photo')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <input type="file" id="photoInput" name="photo" accept=".jpg,.jpeg,.png,.webp" style="display:none">
         </div>
@@ -185,8 +186,8 @@
         {{-- RÉSUMÉ --}}
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Résumé / Présentation</label>
-            <textarea class="field__textarea @error('resume') field--invalid @enderror" name="resume" rows="4"
+            <label class="field__label">Résumé / Présentation <span class="req" id="req-resume">*</span></label>
+            <textarea class="field__textarea @error('resume') field--invalid @enderror" id="depot-resume" name="resume" rows="4"
               placeholder="Présentez votre parcours, vos compétences clés et vos objectifs professionnels…">{{ old('resume') }}</textarea>
             @error('resume')<p class="field__server-error">{{ $message }}</p>@enderror
             <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Max 2 000 caractères</p>
@@ -197,13 +198,14 @@
         <div class="form-section-label" style="margin-top:24px">Localisation</div>
         <div class="form-row form-row--2">
           <div>
-            <label class="field__label">Pays</label>
-            <select class="field__select" name="pays">
+            <label class="field__label" for="depot-pays">Pays <span class="req" id="req-pays">*</span></label>
+            <select class="field__select @error('pays') field--invalid @enderror" id="depot-pays" name="pays">
               <option value="">-- Sélectionnez --</option>
               @foreach($paysList as $p)
                 <option value="{{ $p }}" {{ old('pays') === $p ? 'selected' : '' }}>{{ $p }}</option>
               @endforeach
             </select>
+            @error('pays')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <div>
             <label class="field__label">Ville <span class="req">*</span></label>
@@ -219,8 +221,8 @@
 
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Types de contrat souhaités</label>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+            <label class="field__label">Types de contrat souhaités <span class="req" id="req-type-contrat">*</span></label>
+            <div id="types-contrat-group" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
               @foreach($typesContrats as $tc)
                 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#042C53;cursor:pointer;padding:6px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;transition:border-color .15s"
                        onmouseover="this.style.borderColor='#185FA5'" onmouseout="this.querySelector('input:not(:checked)') && (this.style.borderColor='#e2e8f0')">
@@ -231,13 +233,15 @@
                 </label>
               @endforeach
             </div>
+            <p class="field__server-error" id="types-contrat-error" style="display:none">Sélectionnez au moins un type de contrat souhaité.</p>
+            @error('types_contrat_ids')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
         <div class="form-row form-row--2">
           <div>
-            <label class="field__label">Niveau d'expérience</label>
-            <select class="field__select" name="niveau_experience_id">
+            <label class="field__label" for="depot-niveau-experience">Niveau d'expérience <span class="req" id="req-niveau-experience">*</span></label>
+            <select class="field__select @error('niveau_experience_id') field--invalid @enderror" id="depot-niveau-experience" name="niveau_experience_id" required>
               <option value="">-- Sélectionnez --</option>
               @foreach($niveauxExperience as $ne)
                 <option value="{{ $ne->id }}" {{ old('niveau_experience_id') == $ne->id ? 'selected' : '' }}>
@@ -245,10 +249,11 @@
                 </option>
               @endforeach
             </select>
+            @error('niveau_experience_id')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
           <div>
-            <label class="field__label">Niveau d'études</label>
-            <select class="field__select" name="niveau_etude_id">
+            <label class="field__label" for="depot-niveau-etude">Niveau d'études <span class="req" id="req-niveau-etude">*</span></label>
+            <select class="field__select @error('niveau_etude_id') field--invalid @enderror" id="depot-niveau-etude" name="niveau_etude_id" required>
               <option value="">-- Sélectionnez --</option>
               @foreach($niveauxEtude as $ne)
                 <option value="{{ $ne->id }}" {{ old('niveau_etude_id') == $ne->id ? 'selected' : '' }}>
@@ -256,6 +261,7 @@
                 </option>
               @endforeach
             </select>
+            @error('niveau_etude_id')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
@@ -264,7 +270,7 @@
 
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Compétences principales</label>
+            <label class="field__label">Compétences principales <span class="req" id="req-competences">*</span></label>
             <div class="tag-input-wrap" id="comp-wrap">
               <div class="tag-input-box" id="comp-box">
                 <div class="tag-input-tags" id="comp-tags"></div>
@@ -275,16 +281,20 @@
               <input type="hidden" name="competences" id="comp-hidden" value="{{ old('competences') }}">
             </div>
             <p style="font-size:12px;color:#94a3b8;margin:4px 0 0">Appuyez sur <kbd>Entrée</kbd> ou <kbd>,</kbd> pour valider. Cliquez × pour retirer.</p>
+            <p class="field__server-error" id="comp-error" style="display:none">Indiquez au moins une compétence.</p>
+            @error('competences')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
         {{-- ── EXPÉRIENCES ─────────────────────────────────── --}}
         <div class="form-section-sub">
-          <span>Expériences professionnelles</span>
+          <span>Expériences professionnelles <span class="req" id="req-experience">*</span></span>
         </div>
         <input type="hidden" name="experience" id="exp-hidden">
 
         <div id="exp-builder" class="cv-builder"></div>
+        <p class="field__server-error" id="exp-error" style="display:none">Ajoutez au moins une expérience professionnelle.</p>
+        @error('experience')<p class="field__server-error">{{ $message }}</p>@enderror
 
         <button type="button" class="builder-add-btn" id="add-exp">
           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -347,11 +357,13 @@
 
         {{-- ── FORMATIONS ───────────────────────────────────── --}}
         <div class="form-section-sub" style="margin-top:24px">
-          <span>Formations</span>
+          <span>Formations <span class="req" id="req-formation">*</span></span>
         </div>
         <input type="hidden" name="formation" id="form-hidden">
 
         <div id="form-builder" class="cv-builder"></div>
+        <p class="field__server-error" id="form-error" style="display:none">Ajoutez au moins une formation.</p>
+        @error('formation')<p class="field__server-error">{{ $message }}</p>@enderror
 
         <button type="button" class="builder-add-btn" id="add-form">
           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -410,7 +422,7 @@
 
         <div class="form-row form-row--1">
           <div>
-            <label class="field__label">Langues</label>
+            <label class="field__label">Langues <span class="req" id="req-langues">*</span></label>
             <div id="langues-builder">
               @php $oldLangues = old('langues_ids', []); $oldNiveaux = old('niveaux_ids', []); @endphp
               @if(count($oldLangues))
@@ -454,6 +466,8 @@
                 <button type="button" class="langue-row__remove" onclick="this.closest('.langue-row').remove()">×</button>
               </div>
             </template>
+            <p class="field__server-error" id="langues-error" style="display:none">Ajoutez au moins une langue avec son niveau.</p>
+            @error('langues_ids')<p class="field__server-error">{{ $message }}</p>@enderror
           </div>
         </div>
 
@@ -906,10 +920,80 @@ function serializeForm() {
   formHidden.value = parts.join('\n\n');
 }
 
-/* ── Sérialisation avant soumission ── */
-document.querySelector('form[action*="deposer"]').addEventListener('submit', function () {
+/* ── Champs obligatoires uniquement pour un CV (pas diplôme/attestation/etc.) ── */
+const CV_TYPE_ID = '{{ $typeCVId }}';
+const typeSelect  = document.getElementById('depot-type');
+const niveauExpSelect   = document.getElementById('depot-niveau-experience');
+const niveauEtudeSelect = document.getElementById('depot-niveau-etude');
+const resumeField = document.getElementById('depot-resume');
+const paysField    = document.getElementById('depot-pays');
+
+function isCvSelected() {
+  return typeSelect.value === CV_TYPE_ID;
+}
+
+function updateCvOnlyRequiredFields() {
+  const isCv = isCvSelected();
+  ['req-type-contrat', 'req-niveau-experience', 'req-niveau-etude', 'req-competences',
+   'req-resume', 'req-experience', 'req-formation', 'req-langues', 'req-pays'].forEach(id => {
+    document.getElementById(id).style.display = isCv ? 'inline' : 'none';
+  });
+  niveauExpSelect.required   = isCv;
+  niveauEtudeSelect.required = isCv;
+  resumeField.required       = isCv;
+  paysField.required         = isCv;
+}
+
+typeSelect.addEventListener('change', updateCvOnlyRequiredFields);
+updateCvOnlyRequiredFields();
+
+function hasCompleteLangueRow() {
+  return Array.from(document.querySelectorAll('#langues-builder .langue-row')).some(row => {
+    const selects = row.querySelectorAll('select');
+    return selects[0]?.value && selects[1]?.value;
+  });
+}
+
+/* ── Validation + sérialisation avant soumission ── */
+document.querySelector('form[action*="deposer"]').addEventListener('submit', function (e) {
   serializeExp();
   serializeForm();
+
+  if (!isCvSelected()) return;
+
+  let valid = true;
+  let firstInvalidEl = null;
+
+  function fail(errorId, el) {
+    document.getElementById(errorId).style.display = 'block';
+    valid = false;
+    if (!firstInvalidEl) firstInvalidEl = el;
+  }
+
+  const typesContratChecked = document.querySelectorAll('#types-contrat-group input:checked').length > 0;
+  document.getElementById('types-contrat-error').style.display = typesContratChecked ? 'none' : 'block';
+  if (!typesContratChecked) fail('types-contrat-error', document.getElementById('types-contrat-group'));
+
+  const compHasTags = document.getElementById('comp-hidden').value.trim().length > 0;
+  document.getElementById('comp-error').style.display = compHasTags ? 'none' : 'block';
+  if (!compHasTags) fail('comp-error', document.getElementById('comp-box'));
+
+  const expHasContent = document.getElementById('exp-hidden').value.trim().length > 0;
+  document.getElementById('exp-error').style.display = expHasContent ? 'none' : 'block';
+  if (!expHasContent) fail('exp-error', document.getElementById('exp-builder'));
+
+  const formHasContent = document.getElementById('form-hidden').value.trim().length > 0;
+  document.getElementById('form-error').style.display = formHasContent ? 'none' : 'block';
+  if (!formHasContent) fail('form-error', document.getElementById('form-builder'));
+
+  const languesOk = hasCompleteLangueRow();
+  document.getElementById('langues-error').style.display = languesOk ? 'none' : 'block';
+  if (!languesOk) fail('langues-error', document.getElementById('langues-builder'));
+
+  if (!valid) {
+    e.preventDefault();
+    firstInvalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 });
 
 /* Les builders démarrent vides — l'utilisateur clique pour ajouter */

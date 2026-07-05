@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ParametreApp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class ParametreController extends Controller
 {
@@ -21,6 +22,25 @@ class ParametreController extends Controller
         ];
 
         return view('admin.parametres', compact('parametres'));
+    }
+
+    /**
+     * Active le mode maintenance (503 pour tous les visiteurs). L'espace
+     * /admin et /auth restent accessibles (voir AppServiceProvider::boot()) —
+     * l'admin qui active la maintenance ne se retrouve jamais bloqué dehors.
+     */
+    public function activerMaintenance()
+    {
+        Artisan::call('down');
+
+        return redirect()->route('admin.parametres')->with('success', 'Mode maintenance activé. Le reste du site affiche une page 503 — l\'espace admin reste accessible.');
+    }
+
+    public function desactiverMaintenance()
+    {
+        Artisan::call('up');
+
+        return redirect()->route('admin.parametres')->with('success', 'Mode maintenance désactivé, le site est de nouveau accessible.');
     }
 
     public function update(Request $request)

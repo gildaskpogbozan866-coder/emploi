@@ -341,33 +341,58 @@
         @csrf
         <div class="cmd-card__body">
 
-          {{-- Email invité --}}
-          @guest
+          {{-- Vos informations --}}
           <div class="cmd-field">
-            <label for="email_contact">
-              Votre adresse email <span class="cmd-field__required">*</span>
-            </label>
-            <div class="cmd-input-wrap">
-              <span class="cmd-input-icon">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-              </span>
-              <input id="email_contact" type="email" name="email_contact" required
-                     placeholder="votre@email.com"
-                     value="{{ old('email_contact') }}"
-                     class="cmd-input {{ $errors->has('email_contact') ? 'cmd-input--error' : '' }}">
+            <label style="margin-bottom:12px">Vos informations @auth<span style="font-weight:400;color:#94a3b8;font-size:12px">— déjà sur votre compte</span>@endauth</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+              <div>
+                <label for="prenom" style="font-size:12.5px;margin-bottom:6px">Prénom @unless(auth()->check())<span class="cmd-field__required">*</span>@endunless</label>
+                <input id="prenom" type="text" name="prenom"
+                       @auth readonly @else required @endauth
+                       value="{{ old('prenom', auth()->user()->prenom ?? '') }}"
+                       placeholder="Votre prénom"
+                       class="cmd-input {{ $errors->has('prenom') ? 'cmd-input--error' : '' }}"
+                       style="padding-left:16px;{{ auth()->check() ? 'background:#f8fafc;color:#64748b' : '' }}">
+                @error('prenom')<p class="cmd-field__err">{{ $message }}</p>@enderror
+              </div>
+              <div>
+                <label for="nom" style="font-size:12.5px;margin-bottom:6px">Nom @unless(auth()->check())<span class="cmd-field__required">*</span>@endunless</label>
+                <input id="nom" type="text" name="nom"
+                       @auth readonly @else required @endauth
+                       value="{{ old('nom', auth()->user()->nom ?? '') }}"
+                       placeholder="Votre nom"
+                       class="cmd-input {{ $errors->has('nom') ? 'cmd-input--error' : '' }}"
+                       style="padding-left:16px;{{ auth()->check() ? 'background:#f8fafc;color:#64748b' : '' }}">
+                @error('nom')<p class="cmd-field__err">{{ $message }}</p>@enderror
+              </div>
             </div>
-            @error('email_contact')
-              <p class="cmd-field__err">
-                <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                {{ $message }}
-              </p>
-            @enderror
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div>
+                <label for="telephone" style="font-size:12.5px;margin-bottom:6px">Téléphone @unless(auth()->check())<span class="cmd-field__required">*</span>@endunless</label>
+                <input id="telephone" type="tel" name="telephone"
+                       @auth readonly @else required @endauth
+                       value="{{ old('telephone', auth()->user()->tel ?? '') }}"
+                       placeholder="+229 90 00 00 00"
+                       class="cmd-input {{ $errors->has('telephone') ? 'cmd-input--error' : '' }}"
+                       style="padding-left:16px;{{ auth()->check() ? 'background:#f8fafc;color:#64748b' : '' }}">
+                @error('telephone')<p class="cmd-field__err">{{ $message }}</p>@enderror
+              </div>
+              <div>
+                <label for="email_contact" style="font-size:12.5px;margin-bottom:6px">Email @unless(auth()->check())<span class="cmd-field__required">*</span>@endunless</label>
+                <input id="email_contact" type="email" name="email_contact"
+                       @auth readonly @else required @endauth
+                       value="{{ old('email_contact', auth()->user()->email ?? '') }}"
+                       placeholder="votre@email.com"
+                       class="cmd-input {{ $errors->has('email_contact') ? 'cmd-input--error' : '' }}"
+                       style="padding-left:16px;{{ auth()->check() ? 'background:#f8fafc;color:#64748b' : '' }}">
+                @error('email_contact')<p class="cmd-field__err">{{ $message }}</p>@enderror
+              </div>
+            </div>
             <p class="cmd-field__hint">
               <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Votre CV livré sera envoyé à cette adresse.
+              Votre commande livrée sera envoyée à cet email, notre équipe pourra vous joindre à ce numéro.
             </p>
           </div>
-          @endguest
 
           {{-- Fichier joint --}}
           <div class="cmd-field">

@@ -55,6 +55,11 @@ class Offre extends Model
         return $this->belongsToMany(Competence::class, 'offre_competence');
     }
 
+    public function typesDocumentsRequis()
+    {
+        return $this->belongsToMany(TypeDocument::class, 'offre_type_document');
+    }
+
     public function sauvegardeursPar()
     {
         return $this->belongsToMany(User::class, 'offres_sauvegardees');

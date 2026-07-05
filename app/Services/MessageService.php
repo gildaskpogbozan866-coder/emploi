@@ -103,6 +103,31 @@ class MessageService
     }
 
     /**
+     * Restaure manuellement une conversation archivée pour un utilisateur donné.
+     */
+    public function restaurer(Conversation $conv, int $userId): void
+    {
+        $champ = $conv->user1_id === $userId ? 'archived_by_user1' : 'archived_by_user2';
+        $conv->update([$champ => false]);
+    }
+
+    /**
+     * Retourne les conversations archivées par un utilisateur donné.
+     */
+    public function conversationsArchivees(int $userId): Collection
+    {
+        return Conversation::where(function ($q) use ($userId) {
+                $q->where('user1_id', $userId)->where('archived_by_user1', true);
+            })
+            ->orWhere(function ($q) use ($userId) {
+                $q->where('user2_id', $userId)->where('archived_by_user2', true);
+            })
+            ->with(['user1', 'user2', 'dernierMessage'])
+            ->orderByDesc('dernier_message_at')
+            ->get();
+    }
+
+    /**
      * Retourne les conversations actives (non archivées) d'un utilisateur,
      * avec le comptage des messages non-lus.
      */

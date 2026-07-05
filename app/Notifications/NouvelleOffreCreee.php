@@ -30,7 +30,7 @@ class NouvelleOffreCreee extends Notification implements ShouldQueue
             ->line("Une nouvelle offre d'emploi vient d'être publiée sur la plateforme.")
             ->line("**Titre :** {$offre->titre}")
             ->line("**Entreprise :** {$offre->entreprise}")
-            ->line("**Type :** {$offre->type} · {$offre->localisation}")
+            ->line("**Type :** {$offre->type?->libelle} · {$offre->localisation}")
             ->line("**Recruteur :** {$recruteur->prenom} {$recruteur->nom} ({$recruteur->email})")
             ->action("Voir l'offre dans l'admin", $detailUrl)
             ->salutation('Emploi Bouge Bénin — Système de notifications');

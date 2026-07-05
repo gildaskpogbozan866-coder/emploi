@@ -167,7 +167,7 @@ class ProfilControllerTest extends TestCase
         ]);
     }
 
-    public function test_mise_a_jour_specialite_et_annees_experience(): void
+    public function test_mise_a_jour_annees_experience(): void
     {
         $candidat = $this->creerCandidat();
 
@@ -175,30 +175,16 @@ class ProfilControllerTest extends TestCase
             ->put(route('candidat.profil.update'), [
                 'prenom'             => $candidat->prenom,
                 'nom'                => $candidat->nom,
-                'specialite'         => 'Développement backend',
                 'annees_experience'  => 5,
             ])
             ->assertRedirect(route('candidat.profil'));
 
         $this->assertDatabaseHas('candidat_profils', [
             'user_id'           => $candidat->id,
-            'specialite'        => 'Développement backend',
             'annees_experience' => 5,
         ]);
     }
 
-    public function test_validation_specialite_trop_longue(): void
-    {
-        $candidat = $this->creerCandidat();
-
-        $this->actingAs($candidat)
-            ->put(route('candidat.profil.update'), [
-                'prenom'     => 'Kofi',
-                'nom'        => 'Mensah',
-                'specialite' => str_repeat('x', 201),
-            ])
-            ->assertSessionHasErrors('specialite');
-    }
 
     public function test_validation_annees_experience_negatif(): void
     {

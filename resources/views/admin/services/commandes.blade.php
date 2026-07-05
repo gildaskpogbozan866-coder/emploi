@@ -39,7 +39,7 @@
         <tr>
           <td style="font-family:monospace;font-size:12px;color:#64748b">{{ $commande->reference }}</td>
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $commande->user?->nom_complet ?? 'Invité' }}</div>
+            <div style="font-weight:600;color:#042C53">{{ $commande->user?->nom_complet ?? (trim(($commande->prenom ?? '').' '.($commande->nom ?? '')) ?: 'Invité') }}</div>
             <div style="font-size:12px;color:#94a3b8">{{ $commande->user?->email ?? $commande->email_contact ?? '—' }}</div>
           </td>
           <td style="font-weight:500;color:#042C53">{{ $commande->service->nom }}</td>

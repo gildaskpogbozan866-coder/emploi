@@ -31,7 +31,7 @@ class CandidatureController extends Controller
     public function detail(Candidature $candidature)
     {
         abort_if($candidature->candidat_id !== Auth::id(), 403);
-        $candidature->load(['offre.recruteur', 'cv']);
+        $candidature->load(['offre.recruteur', 'cv', 'documents.type']);
         return view('candidat.candidature-detail', compact('candidature'));
     }
 

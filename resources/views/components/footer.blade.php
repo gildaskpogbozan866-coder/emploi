@@ -35,10 +35,10 @@
           <li><a href="{{ route('cv.public.theque') }}">CVthèque</a></li>
           <li><a href="{{ route('service.list') }}">Services</a></li>
           <li><a href="{{ route('blog.list') }}">Blog &amp; Conseils</a></li>
-          @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-            <li><a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}">Déposer mon CV</a></li>
+          @if(!auth()->check() || auth()->user()->hasRole(\App\Enums\Role::CANDIDAT))
+            <li><a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}">Déposer mon CV</a></li>
           @endif
-          @if(!auth()->check() || auth()->user()->hasRole('recruteur'))
+          @if(!auth()->check() || auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
             <li><a href="{{ route('offre.publier') }}">Publier une offre</a></li>
           @endif
         </ul>

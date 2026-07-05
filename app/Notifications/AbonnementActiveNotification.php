@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\Role;
 use App\Models\Abonnement;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,10 +25,10 @@ class AbonnementActiveNotification extends Notification implements ShouldQueue
         $abonnement = $this->abonnement;
         $plan       = $abonnement->plan;
         $prenom     = $notifiable->prenom ?? 'Utilisateur';
-        $role       = $notifiable->role ?? 'candidat';
+        $isRecruteur = $notifiable->hasRole(Role::RECRUTEUR);
 
-        $typeLabel  = $role === 'recruteur' ? 'recruteur' : 'candidat';
-        $dashRoute  = $role === 'recruteur'
+        $typeLabel  = $isRecruteur ? 'recruteur' : 'candidat';
+        $dashRoute  = $isRecruteur
             ? route('recruteur.abonnement')
             : route('candidat.abonnement');
 

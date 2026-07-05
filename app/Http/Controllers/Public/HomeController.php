@@ -43,6 +43,7 @@ class HomeController extends Controller
         // $cvs = $cvsRaw->concat($docsRaw)->sortByDesc('created_at')->take(6)->values();
 
         $candidats = User::where('role', 'candidat')
+            ->where('actif', true)
             ->whereHas('candidatProfil')
             ->whereHas('cvs', fn($q) => $q->where('visible', true)->whereNotNull('publie_le'))
             ->with([

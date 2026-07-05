@@ -16,7 +16,7 @@
   <div style="display:flex;align-items:center;gap:12px;background:#fff1f2;border:1.5px solid #fecdd3;border-radius:10px;padding:12px 16px;margin-bottom:20px">
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#dc2626" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
     <p style="margin:0;font-size:13px;color:#991b1b;flex:1">
-      Quota atteint, <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} document{{ $quota['limit'] > 1 ? 's' : '' }}</strong>. Passez à un plan supérieur pour en ajouter davantage.
+      Quota atteint, <strong>{{ $quota['used'] }}/{{ $quota['limit'] }} CV{{ $quota['limit'] > 1 ? 's' : '' }}</strong>. Passez à un plan supérieur pour en ajouter davantage.
     </p>
     <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
   </div>
@@ -24,7 +24,7 @@
   <div style="display:flex;align-items:center;gap:12px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px">
     <svg width="18" height="18" fill="#F5C842" viewBox="0 0 24 24" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
     <p style="margin:0;font-size:13px;color:#92400e;flex:1">
-      {{ $quota['used'] }}/{{ $quota['limit'] }} documents, il vous reste <strong>{{ $quota['remaining'] }} slot{{ $quota['remaining'] > 1 ? 's' : '' }}</strong>. Passez au Premium pour un quota plus élevé.
+      {{ $quota['used'] }}/{{ $quota['limit'] }} CV déposé{{ $quota['limit'] > 1 ? 's' : '' }}, il vous reste <strong>{{ $quota['remaining'] }} CV possible{{ $quota['remaining'] > 1 ? 's' : '' }}</strong>. Passez au Premium pour un quota plus élevé.
     </p>
     <a href="{{ route('candidat.abonnement.plans') }}" class="cand-btn cand-btn--yellow cand-btn--sm" style="flex-shrink:0">Voir les plans</a>
   </div>
@@ -75,29 +75,22 @@
   </div>
 @else
 
-  {{-- Filtres --}}
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="filters">
-    <button class="doc-filter doc-filter--active" data-filter="tous">
-      Tous <span class="doc-filter__count">{{ $total }}</span>
-    </button>
-    @if($cvs->isNotEmpty())
-    <button class="doc-filter" data-filter="cv">
-      Curriculum Vitae <span class="doc-filter__count">{{ $cvs->count() }}</span>
-    </button>
-    @endif
-    @foreach($documents->groupBy('type.nom') as $typeName => $docs)
-    <button class="doc-filter" data-filter="type-{{ Str::slug($typeName) }}">
-      {{ $typeName }} <span class="doc-filter__count">{{ $docs->count() }}</span>
-    </button>
-    @endforeach
-  </div>
+  {{-- ── SECTION CV ──────────────────────────────────── --}}
+  <div class="doc-section">
+    <div class="doc-section__head">
+      <h2 class="doc-section__title">Mes CV</h2>
+      <span class="doc-section__count">{{ $cvs->count() }}</span>
+    </div>
 
-  {{-- Liste unifiée --}}
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px" id="doc-grid">
-
-    {{-- CVs --}}
-    @foreach($cvs as $cv)
-    <div class="cand-card doc-item" data-type="cv" style="margin-bottom:0">
+    @if($cvs->isEmpty())
+      <div class="cand-card doc-section__empty">
+        <p style="margin:0 0 10px;font-size:13px;color:#64748b">Vous n'avez encore déposé aucun CV.</p>
+        <a href="{{ route('cv.public.depot') }}" class="cand-btn cand-btn--yellow cand-btn--sm">Déposer mon CV</a>
+      </div>
+    @else
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:8px">
+        @foreach($cvs as $cv)
+        <div class="cand-card" style="margin-bottom:0">
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div style="width:42px;height:42px;border-radius:8px;background:rgba(55,138,221,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -106,6 +99,7 @@
           <p style="font-weight:700;color:#042C53;margin:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $cv->metier ?? 'Curriculum Vitae' }}</p>
           <p style="font-size:12px;color:#64748b;margin:2px 0 4px">{{ $cv->ville }}</p>
           <span style="display:inline-block;font-size:11px;background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 7px;font-weight:600">Curriculum Vitae</span>
+          <span style="display:inline-block;font-size:11px;background:#f1f5f9;color:#64748b;border-radius:4px;padding:1px 7px;font-weight:600;margin-left:4px" title="Ordre de dépôt — n°1 = premier CV déposé">CV n°{{ $cvs->count() - $loop->index }}</span>
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
@@ -113,11 +107,14 @@
           <span style="font-size:11px;color:#94a3b8">{{ $cv->created_at->format('d/m/Y') }} · {{ $cv->vues }} vue{{ $cv->vues > 1 ? 's' : '' }}</span>
           <form method="POST" action="{{ route('candidat.cvs.visibilite', $cv) }}" style="margin:0">
             @csrf @method('PATCH')
-            <button type="submit"
-                    title="{{ $cv->visible ? 'Masquer de la CVthèque' : 'Rendre visible dans la CVthèque' }}"
-                    style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;border:1px solid {{ $cv->visible ? '#bbf7d0' : '#e2e8f0' }};background:{{ $cv->visible ? '#f0fdf4' : '#f8fafc' }};color:{{ $cv->visible ? '#16a34a' : '#94a3b8' }};cursor:pointer;line-height:1.6">
-              <span style="width:6px;height:6px;border-radius:50%;background:{{ $cv->visible ? '#16a34a' : '#94a3b8' }};flex-shrink:0"></span>
-              {{ $cv->visible ? 'Visible CVthèque' : 'Masqué' }}
+            <button type="submit" class="cv-visibility-toggle"
+                    title="{{ $cv->visible ? 'Masquer de la CVthèque' : 'Rendre visible dans la CVthèque' }}">
+              <span class="cv-visibility-toggle__track {{ $cv->visible ? 'is-on' : '' }}">
+                <span class="cv-visibility-toggle__knob"></span>
+              </span>
+              <span class="cv-visibility-toggle__label" style="color:{{ $cv->visible ? '#16a34a' : '#94a3b8' }}">
+                {{ $cv->visible ? 'Visible CVthèque' : 'Masqué' }}
+              </span>
             </button>
           </form>
         </div>
@@ -132,11 +129,38 @@
         </div>
       </div>
     </div>
-    @endforeach
+        @endforeach
+      </div>
+    @endif
+  </div>
 
-    {{-- Documents --}}
-    @foreach($documents as $doc)
-    <div class="cand-card doc-item" data-type="type-{{ Str::slug($doc->type->nom) }}" style="margin-bottom:0">
+  {{-- ── SECTION AUTRES DOCUMENTS ────────────────────── --}}
+  <div class="doc-section" style="margin-top:28px">
+    <div class="doc-section__head">
+      <h2 class="doc-section__title">Mes autres documents</h2>
+      <span class="doc-section__count">{{ $documents->count() }}</span>
+    </div>
+
+    @if($documents->isEmpty())
+      <div class="cand-card doc-section__empty">
+        <p style="margin:0;font-size:13px;color:#64748b">Diplômes, attestations, certificats… aucun document ajouté pour l'instant.</p>
+      </div>
+    @else
+      {{-- Filtres par type --}}
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="filters">
+        <button class="doc-filter doc-filter--active" data-filter="tous">
+          Tous <span class="doc-filter__count">{{ $documents->count() }}</span>
+        </button>
+        @foreach($documents->groupBy('type.nom') as $typeName => $docs)
+        <button class="doc-filter" data-filter="type-{{ Str::slug($typeName) }}">
+          {{ $typeName }} <span class="doc-filter__count">{{ $docs->count() }}</span>
+        </button>
+        @endforeach
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px" id="doc-grid">
+        @foreach($documents as $doc)
+        <div class="cand-card doc-item" data-type="type-{{ Str::slug($doc->type->nom) }}" style="margin-bottom:0">
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div style="width:42px;height:42px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           @if($doc->estImage())
@@ -169,15 +193,25 @@
         </div>
       </div>
     </div>
-    @endforeach
-
+        @endforeach
+      </div>
+      <p id="no-results" style="display:none;text-align:center;color:#94a3b8;padding:32px 0;font-size:14px">Aucun document pour ce filtre.</p>
+    @endif
   </div>
-
-  <p id="no-results" style="display:none;text-align:center;color:#94a3b8;padding:32px 0;font-size:14px">Aucun élément pour ce filtre.</p>
 
 @endif
 
 <style>
+.doc-section__head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1.5px solid #e2e8f0;
+}
+.doc-section__title { font-size: 15px; font-weight: 800; color: #042C53; margin: 0; }
+.doc-section__count {
+  background: #f1f5f9; color: #64748b; border-radius: 10px;
+  padding: 1px 8px; font-size: 11px; font-weight: 700;
+}
+.doc-section__empty { padding: 18px; }
 .doc-filter {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;

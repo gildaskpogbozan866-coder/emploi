@@ -23,12 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'role'               => \App\Http\Middleware\CheckRole::class,
             'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'spatie.role'        => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'recruteur.approuve'    => \App\Http\Middleware\RecruteurApprouve::class,
-            'candidat.profil-complet' => \App\Http\Middleware\CandidatProfilComplet::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

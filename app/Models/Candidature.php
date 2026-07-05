@@ -11,8 +11,15 @@ class Candidature extends Model
 
     protected $fillable = [
         'offre_id', 'candidat_id', 'message_motivation',
-        'cv_id', 'cv_path', 'lettre_path', 'statut', 'note_recruteur',
+        'cv_id', 'cv_path', 'cv_snapshot', 'lettre_path', 'statut', 'note_recruteur',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'cv_snapshot' => 'array',
+        ];
+    }
 
     public function offre()
     {
@@ -26,6 +33,13 @@ class Candidature extends Model
 
     public function cv()
     {
-        return $this->belongsTo(CV::class);
+        // withTrashed() : le CV joint à une candidature doit rester consultable
+        // par le recruteur même si le candidat l'a supprimé depuis.
+        return $this->belongsTo(CV::class)->withTrashed();
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'candidature_document');
     }
 }

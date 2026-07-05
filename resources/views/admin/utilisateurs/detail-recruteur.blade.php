@@ -77,7 +77,7 @@
         @forelse($user->offres as $offre)
         <tr>
           <td style="font-weight:500;color:#042C53">{{ $offre->titre }}</td>
-          <td><span class="adm-badge adm-badge--blue">{{ $offre->type }}</span></td>
+          <td><span class="adm-badge adm-badge--blue">{{ $offre->type?->libelle }}</span></td>
           <td><strong>{{ $offre->candidatures_count }}</strong></td>
           <td>
             <span class="adm-badge adm-badge--{{ match($offre->statut) {

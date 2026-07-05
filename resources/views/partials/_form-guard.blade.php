@@ -114,8 +114,22 @@ textarea.field--invalid {
   }, true);
 })();
 
-/* ── Désactivation bouton soumettre après validation OK ── */
+/* ── Désactivation bouton soumettre après validation OK ──
+   Écouteur non-capturant (bulle) : il se déclenche APRÈS les validations
+   custom attachées directement au formulaire (ex: dépôt de CV), qui peuvent
+   annuler la soumission via e.preventDefault() sans stopPropagation(). Sans
+   ce délai, le bouton restait bloqué sur "En cours…" alors que le formulaire
+   n'était en réalité jamais soumis.
+   Les formulaires avec data-confirm (components/flash-swal.blade.php) sont
+   exclus ici : leur propre écouteur, lui aussi sur `document` en phase bulle
+   mais enregistré APRÈS celui-ci (ordre des <script> dans les layouts), ne
+   peut pas encore avoir appelé preventDefault() à ce stade — le bouton serait
+   désactivé avant même l'affichage de la boîte de confirmation, et resterait
+   bloqué sur "En cours…" si l'utilisateur clique "Annuler". flash-swal gère
+   lui-même la désactivation du bouton une fois la confirmation acceptée. */
 document.addEventListener('submit', function (e) {
+  if (e.defaultPrevented) return;
+  if (e.target.dataset.confirm !== undefined) return;
   var btns = e.target.querySelectorAll('[type="submit"]:not([data-no-guard])');
   btns.forEach(function (btn) {
     if (btn.disabled) return;
@@ -125,5 +139,5 @@ document.addEventListener('submit', function (e) {
       btn.textContent = 'En cours…';
     }
   });
-}, true);
+});
 </script>

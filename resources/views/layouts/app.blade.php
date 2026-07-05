@@ -4,34 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   @php
+    // @section('name', 'value') (forme en ligne, utilisée partout ici) échappe déjà
+    // le contenu en interne (Illuminate\View\Factory::startSection). On ne
+    // ré-échappe donc pas ces valeurs ici (sinon double encodage : ' devient &amp;#039;) —
+    // seules les valeurs brutes issues de $seo (base de données) passent par e().
     $seo       = $seo ?? [];
     $metaTitle = $__env->hasSection('title')
         ? $__env->yieldContent('title')
-        : ($seo['meta_title'] ?? 'Emploi Bouge Bénin');
+        : e($seo['meta_title'] ?? 'Emploi Bouge Bénin');
     $metaDesc  = $__env->hasSection('description')
         ? $__env->yieldContent('description')
-        : ($seo['meta_description'] ?? 'Plateforme emploi au Bénin, offres, CV et recrutement.');
+        : e($seo['meta_description'] ?? 'Plateforme emploi au Bénin, offres, CV et recrutement.');
     $metaRobots   = $__env->hasSection('robots')
         ? $__env->yieldContent('robots')
-        : ($seo['robots'] ?? 'index, follow');
+        : e($seo['robots'] ?? 'index, follow');
     $metaCanonical = $__env->hasSection('canonical')
         ? $__env->yieldContent('canonical')
-        : ($seo['canonical'] ?? url()->current());
+        : e($seo['canonical'] ?? url()->current());
     $ogTitle = $__env->hasSection('og_title')
         ? $__env->yieldContent('og_title')
-        : ($seo['og_title'] ?? $metaTitle);
+        : (e($seo['og_title'] ?? '') ?: $metaTitle);
     $ogDesc  = $__env->hasSection('og_description')
         ? $__env->yieldContent('og_description')
-        : ($seo['og_description'] ?? $metaDesc);
+        : (e($seo['og_description'] ?? '') ?: $metaDesc);
     $ogUrl   = $__env->hasSection('og_url')
         ? $__env->yieldContent('og_url')
-        : url()->current();
+        : e(url()->current());
     $gaId    = $seo['ga_id'] ?? '';
   @endphp
 
-  <title>{{ $metaTitle }}</title>
-  <meta name="description" content="{{ $metaDesc }}">
-  <meta name="robots" content="{{ $metaRobots }}">
+  <title>{!! $metaTitle !!}</title>
+  <meta name="description" content="{!! $metaDesc !!}">
+  <meta name="robots" content="{!! $metaRobots !!}">
   <meta name="author" content="Emploi Bouge Bénin">
   <meta name="geo.region" content="BJ">
   <meta name="geo.placename" content="Cotonou, Bénin">
@@ -39,23 +43,27 @@
   @if(!empty($seo['gsc_verification']))
   <meta name="google-site-verification" content="{{ $seo['gsc_verification'] }}">
   @endif
-  <link rel="canonical" href="{{ $metaCanonical }}">
+  <link rel="canonical" href="{!! $metaCanonical !!}">
 
   {{-- Open Graph --}}
-  @php $ogImage = $__env->hasSection('og_image') ? $__env->yieldContent('og_image') : ($seo['og_image'] ?? asset('images/Logo.png')); @endphp
+  @php
+    $ogImage = $__env->hasSection('og_image')
+        ? $__env->yieldContent('og_image')
+        : e($seo['og_image'] ?? asset('images/Logo.png'));
+  @endphp
   <meta property="og:site_name"    content="Emploi Bouge Bénin">
   <meta property="og:type"         content="@yield('og_type', 'website')">
   <meta property="og:locale"       content="fr_FR">
-  <meta property="og:title"        content="{{ $ogTitle }}">
-  <meta property="og:description"  content="{{ $ogDesc }}">
-  <meta property="og:url"          content="{{ $ogUrl }}">
-  <meta property="og:image"        content="{{ $ogImage }}">
+  <meta property="og:title"        content="{!! $ogTitle !!}">
+  <meta property="og:description"  content="{!! $ogDesc !!}">
+  <meta property="og:url"          content="{!! $ogUrl !!}">
+  <meta property="og:image"        content="{!! $ogImage !!}">
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="{{ $ogTitle }}">
-  <meta name="twitter:description" content="{{ $ogDesc }}">
-  <meta name="twitter:image"       content="{{ $ogImage }}">
+  <meta name="twitter:title"       content="{!! $ogTitle !!}">
+  <meta name="twitter:description" content="{!! $ogDesc !!}">
+  <meta name="twitter:image"       content="{!! $ogImage !!}">
 
   {{-- Preconnect for Google Fonts --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -352,8 +360,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   @include('components.flash-swal')
   @yield('scripts')
-
-  @include('partials._pwa-banner')
 
 </body>
 </html>

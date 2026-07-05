@@ -172,7 +172,7 @@ class AuthTest extends TestCase
     public function test_inscription_champs_requis_manquants(): void
     {
         $this->post(route('auth.inscription.store'), [])
-            ->assertSessionHasErrors(['prenom', 'nom', 'email', 'password', 'pays', 'role']);
+            ->assertSessionHasErrors(['prenom', 'nom', 'email', 'password', 'role']);
     }
 
     public function test_utilisateur_est_connecte_apres_inscription(): void

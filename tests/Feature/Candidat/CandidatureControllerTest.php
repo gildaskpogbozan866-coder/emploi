@@ -28,6 +28,11 @@ class CandidatureControllerTest extends TestCase
     {
         $user = User::factory()->candidat()->create();
         $user->assignRole('candidat');
+        $user->candidatProfil()->create([
+            'titre_professionnel' => 'Développeur',
+            'ville'               => 'Cotonou',
+            'disponibilite'       => 'immediatement',
+        ]);
         return $user;
     }
 
@@ -92,6 +97,43 @@ class CandidatureControllerTest extends TestCase
             ->get(route('candidat.candidatures.detail', $candidature))
             ->assertOk()
             ->assertViewIs('candidat.candidature-detail');
+    }
+
+    public function test_detail_affiche_les_pieces_justificatives_jointes(): void
+    {
+        $candidat    = $this->creerCandidat();
+        $candidature = $this->creerCandidature($candidat);
+        $type        = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+        $doc         = \App\Models\Document::create([
+            'user_id'          => $candidat->id,
+            'type_document_id' => $type->id,
+            'nom'              => 'Licence Informatique',
+            'fichier'          => 'candidats/documents/test.pdf',
+        ]);
+        $candidature->documents()->attach($doc->id);
+
+        $this->actingAs($candidat)
+            ->get(route('candidat.candidatures.detail', $candidature))
+            ->assertOk()
+            ->assertSee('Licence Informatique');
+    }
+
+    public function test_detail_affiche_le_lien_de_telechargement_du_cv_joint(): void
+    {
+        $candidat    = $this->creerCandidat();
+        $candidature = $this->creerCandidature($candidat, [
+            'cv_snapshot' => [
+                'metier'       => 'Comptable',
+                'ville'        => 'Cotonou',
+                'fichier_path' => 'candidatures/cvs-snapshot/test.pdf',
+            ],
+        ]);
+
+        $this->actingAs($candidat)
+            ->get(route('candidat.candidatures.detail', $candidature))
+            ->assertOk()
+            ->assertSee('Télécharger')
+            ->assertSee('storage/candidatures/cvs-snapshot/test.pdf', false);
     }
 
     public function test_detail_interdit_a_un_autre_candidat(): void

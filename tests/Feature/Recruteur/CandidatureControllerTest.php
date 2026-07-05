@@ -96,6 +96,26 @@ class CandidatureControllerTest extends TestCase
             ->assertViewIs('recruteur.candidature-detail');
     }
 
+    public function test_show_affiche_les_pieces_justificatives_jointes(): void
+    {
+        $recruteur   = $this->creerRecruteur();
+        $candidat    = $this->creerCandidat();
+        $candidature = $this->creerCandidature($recruteur, $candidat);
+        $type        = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
+        $doc         = \App\Models\Document::create([
+            'user_id'          => $candidat->id,
+            'type_document_id' => $type->id,
+            'nom'              => 'Licence Informatique',
+            'fichier'          => 'candidats/documents/test.pdf',
+        ]);
+        $candidature->documents()->attach($doc->id);
+
+        $this->actingAs($recruteur)
+            ->get(route('recruteur.candidatures.show', $candidature))
+            ->assertOk()
+            ->assertSee('Licence Informatique');
+    }
+
     public function test_show_marque_statut_vue_automatiquement(): void
     {
         $recruteur   = $this->creerRecruteur();
@@ -183,7 +203,7 @@ class CandidatureControllerTest extends TestCase
         );
     }
 
-    public function test_updatestatut_redirige_vers_index_candidatures(): void
+    public function test_updatestatut_redirige_vers_detail_candidature(): void
     {
         NotificationFacade::fake();
 
@@ -195,7 +215,7 @@ class CandidatureControllerTest extends TestCase
             ->patch(route('recruteur.candidatures.statut', $candidature), [
                 'statut' => 'refusee',
             ])
-            ->assertRedirect(route('recruteur.candidatures'))
+            ->assertRedirect(route('recruteur.candidatures.show', $candidature))
             ->assertSessionHas('success');
     }
 

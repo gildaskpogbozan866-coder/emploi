@@ -21,8 +21,8 @@
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link active">Packs crédits</a>
-    @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="cvt-subnav__link">Déposer un CV</a>
+    @if(!auth()->check() || auth()->user()->hasRole(\App\Enums\Role::CANDIDAT))
+      <a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>
@@ -50,7 +50,7 @@
         <p style="font-size:11px;color:{{ $pack->featured ? 'rgba(255,255,255,.45)' : '#94a3b8' }};margin:0 0 18px">{{ number_format($pack->prixParCredit(), 0, ',', ' ') }} FCFA / crédit</p>
 
         @auth
-          @if(auth()->user()->hasRole('recruteur'))
+          @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
             <a href="{{ route('recruteur.cv-credits.confirm', ['pack' => $pack->id]) }}"
                style="display:block;padding:9px 14px;background:{{ $pack->featured ? '#F5C842' : '#185FA5' }};color:{{ $pack->featured ? '#042C53' : '#fff' }};border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
               Acheter ce pack

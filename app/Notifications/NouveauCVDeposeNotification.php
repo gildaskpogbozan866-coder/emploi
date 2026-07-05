@@ -25,13 +25,13 @@ class NouveauCVDeposeNotification extends Notification implements ShouldQueue
         $adminUrl = route('admin.cvs.detail', $this->cv);
 
         return (new MailMessage)
-            ->subject('Nouveau CV déposé — ' . $this->cv->titre_poste)
+            ->subject('Nouveau CV déposé — ' . $this->cv->metier)
             ->greeting('Bonjour ' . ($notifiable->prenom ?? 'Admin') . ',')
             ->line('Un candidat vient de déposer un nouveau CV sur la plateforme.')
             ->line('**Candidat :** ' . $this->candidat->prenom . ' ' . $this->candidat->nom)
             ->line('**Email :** ' . $this->candidat->email)
-            ->line('**Poste visé :** ' . $this->cv->titre_poste)
-            ->line('**Pays :** ' . ($this->cv->pays ?: '—'))
+            ->line('**Poste visé :** ' . $this->cv->metier)
+            ->line('**Ville :** ' . ($this->cv->ville ?: '—'))
             ->action('Voir le CV dans l\'admin', $adminUrl)
             ->salutation('Emploi Bouge Bénin — Système de notifications');
     }

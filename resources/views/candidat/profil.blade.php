@@ -1309,12 +1309,6 @@
             border-radius: 12px;
         }
 
-        /* Spécialité hero */
-        .cp-hero__specialite {
-            font-size: 13px;
-            color: #64748b;
-            margin-top: 2px
-        }
 
         /* Attestations */
         .cp-att-item {

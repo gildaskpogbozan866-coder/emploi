@@ -224,27 +224,38 @@
     </div>
 
     {{-- Documents joints --}}
-    @if($candidature->cv || $candidature->cv_path || $candidature->lettre_path)
+    @php
+      // Instantané figé au moment de la candidature si disponible (candidatures
+      // créées depuis l'introduction de cv_snapshot) — sinon, repli sur la
+      // relation live cv() pour les candidatures plus anciennes (pas de
+      // reconstruction rétroactive possible).
+      $cvAffiche = $candidature->cv_snapshot ?: ($candidature->cv ? [
+          'metier'       => $candidature->cv->metier,
+          'ville'        => $candidature->cv->ville,
+          'fichier_path' => $candidature->cv->fichier_path,
+      ] : null);
+    @endphp
+    @if($cvAffiche || $candidature->cv_path || $candidature->lettre_path)
     <div class="rec-card">
       <div class="rec-card__head">
         <span class="rec-card__title">Documents joints à la candidature</span>
       </div>
       <div class="rec-card__body" style="display:flex;flex-direction:column;gap:12px">
 
-        {{-- CV profil --}}
-        @if($candidature->cv)
+        {{-- CV profil (état au moment de la candidature) --}}
+        @if($cvAffiche)
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:10px">
           <div style="width:40px;height:40px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           </div>
           <div style="flex:1;min-width:0">
-            <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:13.5px">{{ $candidature->cv->metier ?? 'CV' }}</p>
-            <p style="font-size:12px;color:#64748b;margin:0">{{ $candidature->cv->ville }}</p>
+            <p style="font-weight:700;color:#042C53;margin:0 0 2px;font-size:13.5px">{{ $cvAffiche['metier'] ?? 'CV' }}</p>
+            <p style="font-size:12px;color:#64748b;margin:0">{{ $cvAffiche['ville'] }}</p>
           </div>
           <div style="display:flex;gap:8px;flex-shrink:0">
             <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:20px;font-weight:700">CV profil</span>
-            @if($candidature->cv->fichier_path)
-            <a href="{{ asset('storage/'.$candidature->cv->fichier_path) }}" target="_blank"
+            @if($cvAffiche['fichier_path'])
+            <a href="{{ asset('storage/'.$cvAffiche['fichier_path']) }}" target="_blank"
                style="font-size:12px;font-weight:700;color:#185FA5;text-decoration:none;padding:5px 12px;border:1.5px solid #bfdbfe;border-radius:6px;background:#fff;white-space:nowrap">
               Télécharger
             </a>
@@ -380,14 +391,14 @@
       </div>
     </div>
 
-    {{-- Documents du profil --}}
-    @if($candidat->documents->isNotEmpty())
+    {{-- Pièces justificatives jointes à cette candidature --}}
+    @if($candidature->documents->isNotEmpty())
     <div class="rec-card">
-      <div class="rec-card__head"><span class="rec-card__title">Documents du profil</span></div>
+      <div class="rec-card__head"><span class="rec-card__title">Pièces justificatives (candidature)</span></div>
       <div class="rec-card__body" style="display:flex;flex-direction:column;gap:8px">
-        @foreach($candidat->documents as $doc)
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#64748b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        @foreach($candidature->documents as $doc)
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0f7ff;border-radius:8px;border:1px solid #bfdbfe">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           <div style="flex:1;min-width:0">
             <p style="font-size:12.5px;font-weight:600;color:#042C53;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $doc->nom }}</p>
             <p style="font-size:11px;color:#94a3b8;margin:0">{{ $doc->type?->nom ?? 'Document' }}</p>

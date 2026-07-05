@@ -103,21 +103,28 @@ class DatabaseSeeder extends Seeder
         $candidat3->syncRoles([Role::CANDIDAT]);
 
         // ── ÉTAPE 3 : Données métier ─────────────────────────
+        // publie_le est requis par CV::scopeVisible() en plus de visible=true —
+        // sans lui ces CV de démo n'apparaissent jamais dans la CVthèque malgré
+        // l'intention manifeste de les y afficher (bug réel trouvé le 2026-07-03).
         CV::firstOrCreate(
             ['candidat_id' => $candidat1->id],
             [
-               
+                'metier'      => 'Développeur Web Full Stack',
+                'ville'       => 'Cotonou',
                 'plan'        => 'gratuit',
                 'visible'     => true,
+                'publie_le'   => now(),
             ]
         );
 
         CV::firstOrCreate(
-            ['candidat_id' => $candidat2->id, ],
+            ['candidat_id' => $candidat2->id],
             [
-                
+                'metier'      => 'Chargée de Marketing Digital',
+                'ville'       => 'Abidjan',
                 'plan'        => 'gratuit',
                 'visible'     => true,
+                'publie_le'   => now(),
             ]
         );
 

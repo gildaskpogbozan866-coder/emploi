@@ -21,6 +21,5 @@
 
   @include('partials._form-guard')
   @yield('scripts')
-  @include('partials._pwa-banner')
 </body>
 </html>

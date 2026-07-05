@@ -60,8 +60,8 @@ class TestAlerteMatch extends Command
 
         // Type contrat
         if ($alerte->type_contrat) {
-            $ok = $alerte->type_contrat === $offre->type;
-            $this->line('Type contrat : ' . ($ok ? '✓' : '✗') . "  «{$alerte->type_contrat}» vs «{$offre->type}»");
+            $ok = $alerte->type_contrat === $offre->type?->code;
+            $this->line('Type contrat : ' . ($ok ? '✓' : '✗') . "  «{$alerte->type_contrat}» vs «{$offre->type?->code}»");
         } else {
             $this->line('Type contrat : ✓ (non filtré)');
         }

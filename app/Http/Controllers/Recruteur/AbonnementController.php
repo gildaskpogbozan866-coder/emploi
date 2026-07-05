@@ -6,14 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
 use App\Models\Paiement;
 use App\Models\Plan;
+use App\Services\AbonnementSchedulingService;
+use App\Services\JobPostQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AbonnementController extends Controller
 {
-    public function index()
+    public function index(JobPostQuotaService $jobPostQuota)
     {
-        $user       = Auth::user();
+        $user = Auth::user();
+
+        // Déclenche la même bascule anticipée que verifierQuota() (dès qu'un
+        // avantage est épuisé et qu'un plan est déjà programmé) — sinon cette
+        // page afficherait encore l'ancien plan tant que le recruteur n'a pas
+        // lui-même tenté de publier une offre.
+        $offresQuota = $jobPostQuota->quotaFor($user);
+        $user        = $user->fresh();
+
         $abonnement = $user->abonnementActif()->with('plan.features')->first();
 
         $abonnements = $user->abonnements()
@@ -21,20 +31,26 @@ class AbonnementController extends Controller
                             ->latest('starts_at')
                             ->get();
 
-        $quotas = $this->buildQuotas($user, $abonnement);
+        // Abonnement déjà souscrit mais qui ne prendra effet qu'à l'expiration
+        // de l'actuel — affiché clairement ici aussi (pas seulement sur le
+        // tableau de bord et la sidebar), puisque c'est la page où l'utilisateur
+        // vient justement chercher cette information.
+        $abonnementProgramme = $abonnements
+            ->where('status', 'active')
+            ->filter(fn ($a) => $a->starts_at->isFuture())
+            ->sortBy('starts_at')
+            ->first();
 
-        return view('recruteur.abonnement', compact('user', 'abonnement', 'abonnements', 'quotas'));
+        $quotas = $this->buildQuotas($abonnement, $offresQuota);
+
+        return view('recruteur.abonnement', compact('user', 'abonnement', 'abonnements', 'quotas', 'abonnementProgramme'));
     }
 
-    private function buildQuotas($user, $abonnement): array
+    private function buildQuotas($abonnement, array $offresQuota): array
     {
         if (!$abonnement) return [];
 
-        $plan  = $abonnement->plan;
-        $since = $abonnement->starts_at;
-
-        $offresPubliees = $user->offres()->where('created_at', '>=', $since)->count();
-        $jobLimit       = (int) $plan->getFeature('job_post_limit', 0);
+        $plan = $abonnement->plan;
 
         $featuredLimit    = (int) $plan->getFeature('featured_jobs', 0);
         $candidateSearch  = (bool) (int) $plan->getFeature('candidate_search', 0);
@@ -42,9 +58,10 @@ class AbonnementController extends Controller
         return [
             'offres' => [
                 'label'     => 'Offres publiées',
-                'used'      => $offresPubliees,
-                'limit'     => $jobLimit,
-                'unlimited' => $jobLimit === 0,
+                'used'      => $offresQuota['used'],
+                'limit'     => $offresQuota['limit'],
+                'unlimited' => $offresQuota['unlimited'],
+                'disabled'  => $offresQuota['disabled'],
             ],
             'featured_jobs' => [
                 'label'   => 'Offres mises en avant',
@@ -73,21 +90,22 @@ class AbonnementController extends Controller
             ->whereHas('plan', fn($q) => $q->where('is_free', true))
             ->exists();
 
-        return view('recruteur.abonnement-plans', compact('abonnement', 'plans', 'hasUsedFreePlan'));
+        // Aucun quota STOCK n'existe côté recruteur dans la classification
+        // produit actuelle (seul job_post_limit, de type FLUX) — tableau
+        // toujours vide pour l'instant, gardé pour la cohérence avec la vue
+        // candidat et si un futur quota STOCK recruteur est introduit.
+        $stockQuotasSatures = [];
+
+        return view('recruteur.abonnement-plans', compact('abonnement', 'plans', 'hasUsedFreePlan', 'stockQuotasSatures'));
     }
 
-    public function souscrire(Request $request)
+    public function souscrire(Request $request, AbonnementSchedulingService $planning)
     {
         $request->validate(['plan_id' => 'required|integer|exists:plans,id']);
 
         $plan = Plan::where('is_active', true)
                     ->whereIn('target_type', ['recruteur', 'both'])
                     ->findOrFail($request->plan_id);
-
-        // Annuler l'abonnement actif existant
-        Auth::user()->abonnements()
-            ->where('status', 'active')
-            ->update(['status' => 'cancelled']);
 
         if ($plan->is_free) {
             $alreadyUsed = Auth::user()->abonnements()
@@ -98,18 +116,27 @@ class AbonnementController extends Controller
                 return back()->with('error', 'Vous avez déjà utilisé le plan gratuit. Passez au Premium pour continuer.');
             }
 
+            // Un abonnement en cours (ou déjà programmé) et encore valide n'est
+            // jamais annulé — le nouveau prend le relais à son expiration.
+            $startsAt = $planning->dateDebut(Auth::user());
+
             Abonnement::create([
                 'user_id'    => Auth::id(),
                 'plan_id'    => $plan->id,
                 'status'     => 'active',
-                'starts_at'  => now(),
-                'ends_at'    => $plan->duration_days ? now()->addDays($plan->duration_days) : null,
+                'starts_at'  => $startsAt,
+                'ends_at'    => $plan->duration_days ? $startsAt->copy()->addDays($plan->duration_days) : null,
                 'auto_renew' => false,
             ]);
             return redirect()->route('recruteur.abonnement')
-                ->with('success', 'Plan gratuit activé avec succès.');
+                ->with('success', $startsAt->isFuture()
+                    ? 'Plan gratuit programmé — il prendra le relais le '.$startsAt->format('d/m/Y').', à l\'expiration de votre abonnement actuel.'
+                    : 'Plan gratuit activé avec succès.');
         }
 
+        // Le paiement n'étant pas encore confirmé, les dates réelles seront
+        // recalculées à la confirmation (HandlePaymentConfirmed::activateAbonnement) —
+        // celles-ci ne sont que des valeurs provisoires en attendant.
         $abonnement = Abonnement::create([
             'user_id'    => Auth::id(),
             'plan_id'    => $plan->id,

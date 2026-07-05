@@ -41,7 +41,7 @@
       </a>
 
       <h1 class="auth-form-wrap__title">Créez votre<br>compte gratuit</h1>
-      <p class="auth-form-wrap__sub">Choisissez votre type de compte, puis connectez-vous avec Google ou remplissez le formulaire.</p>
+      <p class="auth-form-wrap__sub">Choisissez votre type de compte, puis remplissez le formulaire ci-dessous.</p>
 
       {{-- Sélecteur de rôle (hors formulaire pour éviter la validation HTML5) --}}
       <div class="aform__field">
@@ -84,8 +84,8 @@
         </div>
       </div>
 
-      {{-- Google OAuth (hors formulaire) --}}
-      @if(config('services.google.client_id'))
+      {{-- Google OAuth désactivé temporairement à la demande du client --}}
+      @if(false)
       <a href="{{ route('auth.google') }}?role={{ old('role', 'candidat') }}" id="google-btn-inscription" class="google-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -207,8 +207,6 @@ function selectRole(role) {
   } else {
     banner.style.display = 'none';
   }
-  var googleBtn = document.getElementById('google-btn-inscription');
-  if (googleBtn) googleBtn.href = '{{ route("auth.google") }}?role=' + role;
 }
 
 // Auto-sélection depuis le paramètre URL ?role=

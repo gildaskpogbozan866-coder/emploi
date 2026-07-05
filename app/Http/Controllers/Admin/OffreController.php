@@ -39,7 +39,16 @@ class OffreController extends Controller
         $request->validate(['statut' => 'required|in:en_attente,active,expiree,suspendue']);
 
         $ancienStatut = $offre->statut;
-        $offre->update(['statut' => $request->statut]);
+        $data = ['statut' => $request->statut];
+
+        // published_at conditionne les alertes quotidiennes/hebdomadaires
+        // (AlerteService::notifierDigest) — renseigné une seule fois, à la
+        // première activation, jamais réécrasé sur une réactivation ultérieure.
+        if ($ancienStatut !== 'active' && $request->statut === 'active' && !$offre->published_at) {
+            $data['published_at'] = now();
+        }
+
+        $offre->update($data);
 
         if ($ancienStatut !== 'active' && $request->statut === 'active') {
             NotifierAlertesOffreJob::dispatch($offre);

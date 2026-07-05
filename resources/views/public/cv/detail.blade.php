@@ -269,8 +269,8 @@
   <div class="cvt-subnav__inner">
     <a href="{{ route('cv.public.theque') }}" class="cvt-subnav__link">Trouver des CV</a>
     <a href="{{ route('cv.public.tarif') }}"  class="cvt-subnav__link">Packs crédits</a>
-    @if(!auth()->check() || auth()->user()->hasRole('candidat'))
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="cvt-subnav__link">Déposer un CV</a>
+    @if(!auth()->check() || auth()->user()->hasRole(\App\Enums\Role::CANDIDAT))
+      <a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" class="cvt-subnav__link">Déposer un CV</a>
     @endif
   </div>
 </div>
@@ -507,7 +507,7 @@
       <p class="cvtd-locked__desc">
         Le nom, l'email et le téléphone de ce candidat sont protégés.<br>
         @auth
-          @if(auth()->user()->hasRole('recruteur'))
+          @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
             Accédez au profil complet depuis votre espace recruteur CVthèque.
           @else
             Ces informations sont réservées aux recruteurs inscrits.
@@ -518,7 +518,7 @@
       </p>
       <div class="cvtd-locked__actions">
         @auth
-          @if(auth()->user()->hasRole('recruteur'))
+          @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
             <a href="{{ route('recruteur.cvtheque') }}" class="cvtd-locked__btn cvtd-locked__btn--blue">
               <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
               Accéder à la CVthèque recruteur

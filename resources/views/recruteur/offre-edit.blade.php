@@ -150,6 +150,23 @@
       </div>
 
       <div style="margin-bottom:24px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">Autres pièces justificatives requises <small style="color:#94a3b8;font-weight:400">(optionnel)</small></label>
+        @php $requisIds = old('types_documents_requis', $offre->typesDocumentsRequis->pluck('id')->all()); @endphp
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          @foreach($typesDocuments as $type)
+          <label style="display:flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid {{ in_array($type->id, $requisIds) ? '#185FA5' : '#d1d5db' }};border-radius:9px;cursor:pointer;font-weight:500;font-size:13.5px;background:{{ in_array($type->id, $requisIds) ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+            <input type="checkbox" name="types_documents_requis[]" value="{{ $type->id }}"
+                   {{ in_array($type->id, $requisIds) ? 'checked' : '' }}
+                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'"
+                   style="accent-color:#185FA5">
+            {{ $type->nom }}
+          </label>
+          @endforeach
+        </div>
+        <small style="color:#94a3b8;margin-top:6px;display:block">Le candidat devra fournir un document de chaque type coché (existant dans son espace ou téléversé lors de la candidature).</small>
+      </div>
+
+      <div style="margin-bottom:24px">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">
           Logo de l'entreprise <small style="font-weight:400;color:#94a3b8">(JPG, PNG, WebP · max 2 Mo)</small>
         </label>

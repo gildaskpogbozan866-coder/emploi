@@ -2,6 +2,7 @@
 
 namespace App\View\Composers;
 
+use App\Enums\Role;
 use App\Models\Candidature;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ class NotificationComposer
             ->count();
 
         $candidaturesNouvelles = 0;
-        if ($user->hasRole('recruteur')) {
+        if ($user->hasRole(Role::RECRUTEUR)) {
             $candidaturesNouvelles = Candidature::whereHas('offre', fn($q) =>
                     $q->where('recruteur_id', $userId)
                 )

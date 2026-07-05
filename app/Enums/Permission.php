@@ -27,7 +27,6 @@ class Permission
     const MANAGE_ABONNEMENT_REC = 'manage-abonnement-recruteur';
 
     // ── ANNONCEUR ──────────────────────────────────────────
-    const SUBMIT_PUBLICITE      = 'submit-publicite';
     const MANAGE_PUBLICITES     = 'manage-publicites';
 
     // ── CANDIDAT ───────────────────────────────────────────
@@ -40,9 +39,7 @@ class Permission
     // ── Regroupements par rôle ─────────────────────────────
     public static function annonceurPermissions(): array
     {
-        return [
-            self::SUBMIT_PUBLICITE,
-        ];
+        return [];
     }
 
     public static function adminPermissions(): array

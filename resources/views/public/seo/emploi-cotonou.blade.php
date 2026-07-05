@@ -44,7 +44,7 @@
         <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:4px">{{ $offre->titre }}</div>
         <div style="font-size:12px;color:#185FA5;font-weight:600;margin-bottom:8px">{{ $offre->entreprise }}</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          @if($offre->type)<span style="font-size:10.5px;background:#eff6ff;color:#1d4ed8;border-radius:99px;padding:2px 9px;font-weight:600">{{ $offre->type }}</span>@endif
+          @if($offre->type)<span style="font-size:10.5px;background:#eff6ff;color:#1d4ed8;border-radius:99px;padding:2px 9px;font-weight:600">{{ $offre->type?->libelle }}</span>@endif
           @if($offre->localisation)<span style="font-size:10.5px;background:#f0fdf4;color:#16a34a;border-radius:99px;padding:2px 9px;font-weight:600">{{ $offre->localisation }}</span>@endif
         </div>
       </a>
@@ -75,7 +75,7 @@
     </ol>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a href="{{ route('offre.list', ['localisation' => 'Cotonou']) }}" style="padding:10px 22px;background:#185FA5;color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Offres à Cotonou</a>
-      <a href="{{ auth()->check() && auth()->user()->hasRole('candidat') ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
+      <a href="{{ auth()->check() && auth()->user()->hasRole(\App\Enums\Role::CANDIDAT) ? route('cv.public.depot') : route('auth.inscription').'?role=candidat' }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Déposer mon CV</a>
       <a href="{{ route('offre.list') }}" style="padding:10px 22px;background:#fff;color:#042C53;border:1.5px solid #e2e8f0;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">Toutes les offres au Bénin</a>
     </div>
   </div>

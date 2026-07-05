@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\IncriptionRequest;
 use App\Models\ParametreApp;
@@ -77,9 +78,8 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
-        $request->session()->forget('url.intended');
 
-        return redirect($this->dashboardUrl(Auth::user()));
+        return redirect()->intended($this->dashboardUrl(Auth::user()));
     }
 
     // ── Inscription ───────────────────────────────────────
@@ -216,10 +216,10 @@ class AuthController extends Controller
     private function dashboardUrl(User $user): string
     {
         return match ($user->role) {
-            'admin'      => route('admin.dashboard'),
-            'recruteur'  => route('recruteur.dashboard'),
-            'annonceur'  => route('annonceur.dashboard'),
-            default      => route('candidat.dashboard'),
+            Role::ADMIN      => route('admin.dashboard'),
+            Role::RECRUTEUR  => route('recruteur.dashboard'),
+            Role::ANNONCEUR  => route('annonceur.dashboard'),
+            default          => route('candidat.dashboard'),
         };
     }
 

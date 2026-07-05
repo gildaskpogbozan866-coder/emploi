@@ -26,7 +26,7 @@ class CvthequeController extends Controller
     public function index(Request $request)
     {
         // ── CVs ──
-        $cvQuery = CV::visible()->with('candidat')->latest();
+        $cvQuery = CV::visible()->whereHas('candidat', fn($q) => $q->where('actif', true))->with('candidat')->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -47,49 +47,11 @@ class CvthequeController extends Controller
             return $cv;
         });
 
-        // ── Documents (diplômes, attestations, certificats…) ──
-        // Ignorés si un filtre CV-spécifique est actif (disponibilite, secteur, niveau_etude, type_contrat, niveau_experience)
-        $skipDocs = $request->hasAny(['disponibilite', 'secteur', 'niveau_etude', 'type_contrat', 'niveau_experience']);
-
-        $docResults = collect();
-        if (!$skipDocs) {
-            $docQuery = Document::with(['user', 'type'])->latest();
-            if ($request->filled('q')) {
-                $q = $request->q;
-                $docQuery->where(function ($sq) use ($q) {
-                    $sq->where('nom', 'like', "%$q%")
-                       ->orWhere('competences', 'like', "%$q%");
-                });
-            }
-            if ($request->filled('pays'))   $docQuery->where('pays', $request->pays);
-            if ($request->filled('langue')) $docQuery->where('langues', 'like', '%'.$request->langue.'%');
-            if ($request->filled('metier')) $docQuery->where('nom', 'like', '%'.$request->metier.'%');
-
-            $docResults = $docQuery->get()->map(function ($doc) {
-                return (object) [
-                    '_is_document'  => true,
-                    'id'            => $doc->id,
-                    'titre_poste'   => $doc->nom,
-                    'photo'         => null,
-                    'pays'          => $doc->pays,
-                    'ville'         => $doc->ville,
-                    'langues'       => $doc->langues,
-                    'competences'   => $doc->competences,
-                    'experience'    => $doc->experience,
-                    'plan'          => null,
-                    'disponibilite' => null,
-                    'secteur'       => null,
-                    'vues'          => 0,
-                    'candidat'      => $doc->user,
-                    'type_label'    => $doc->type?->nom ?? 'Document',
-                    'fichier'       => $doc->fichier,
-                    'created_at'    => $doc->created_at,
-                ];
-            });
-        }
-
-        // ── Fusion & pagination ──
-        $merged = $cvResults->concat($docResults)->sortByDesc('created_at')->values();
+        // Les documents (diplômes, attestations…) ne sont pas des CV : ils
+        // n'ont aucun mécanisme de consentement/visibilité et ne doivent pas
+        // apparaître dans la CVthèque. Rien n'est supprimé côté données —
+        // ils restent consultables par leur propriétaire et l'admin.
+        $merged = $cvResults->sortByDesc('created_at')->values();
         $page   = (int) $request->get('page', 1);
         $perPage = 16;
         $cvs = new LengthAwarePaginator(
@@ -121,7 +83,7 @@ class CvthequeController extends Controller
 
     public function show(CV $cv)
     {
-        if (!$cv->visible) {
+        if (!$cv->visible || is_null($cv->publie_le)) {
             abort(404);
         }
 
@@ -141,7 +103,7 @@ class CvthequeController extends Controller
 
     public function telecharger(CV $cv)
     {
-        if (!$cv->visible) {
+        if (!$cv->visible || is_null($cv->publie_le)) {
             abort(404);
         }
 
@@ -185,7 +147,7 @@ class CvthequeController extends Controller
 
     public function telechargerPdf(CV $cv)
     {
-        if (!$cv->visible) {
+        if (!$cv->visible || is_null($cv->publie_le)) {
             abort(404);
         }
 

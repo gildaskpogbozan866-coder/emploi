@@ -41,55 +41,16 @@
   {{-- Formulaire --}}
   <div class="rec-card">
     <div class="rec-card__head">
-      <span class="rec-card__title">Choisir le mode de paiement</span>
+      <span class="rec-card__title">Confirmer votre achat</span>
     </div>
     <div class="rec-card__body">
-      <form method="POST" action="{{ route('recruteur.cv-credits.store') }}" id="payment-form">
+      <form method="POST" action="{{ route('recruteur.cv-credits.store') }}">
         @csrf
         <input type="hidden" name="pack_id" value="{{ $pack->id }}">
 
-        {{-- Méthode --}}
-        <div style="margin-bottom:20px">
-          <label style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:10px">Méthode de paiement</label>
-          <div style="display:flex;flex-direction:column;gap:10px">
-
-            <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:.15s" id="opt-momo">
-              <input type="radio" name="methode" value="mobile_money" required
-                     onchange="toggleTel(true)" style="accent-color:#185FA5;width:16px;height:16px">
-              <div>
-                <p style="font-size:14px;font-weight:700;color:#042C53;margin:0">Mobile Money</p>
-                <p style="font-size:12px;color:#94a3b8;margin:0">MTN MoMo · Moov Money</p>
-              </div>
-            </label>
-
-            <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:.15s" id="opt-card">
-              <input type="radio" name="methode" value="carte_bancaire"
-                     onchange="toggleTel(false)" style="accent-color:#185FA5;width:16px;height:16px">
-              <div>
-                <p style="font-size:14px;font-weight:700;color:#042C53;margin:0">Carte bancaire</p>
-                <p style="font-size:12px;color:#94a3b8;margin:0">Visa · Mastercard</p>
-              </div>
-            </label>
-
-          </div>
-        </div>
-
-        {{-- Téléphone Mobile Money --}}
-        <div id="tel-field" style="margin-bottom:20px;display:none">
-          <label style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">
-            Numéro Mobile Money
-          </label>
-          <input type="tel" name="telephone" id="telephone"
-                 placeholder="Ex: 97 00 00 00"
-                 style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;color:#042C53;outline:none">
-          @error('telephone')
-            <p style="color:#dc2626;font-size:12px;margin:4px 0 0">{{ $message }}</p>
-          @enderror
-        </div>
-
         {{-- Message info --}}
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:#475569;line-height:1.5">
-          Payez directement avec MTN, Moov, Celtiis ou Carte bancaire. Vos crédits seront ajoutés dans <strong>moins d'1 heure</strong>.
+          Vous choisirez votre mode de paiement (Mobile Money ou carte bancaire) à l'étape suivante. Vos crédits seront ajoutés dans <strong>moins d'1 heure</strong> après confirmation.
         </div>
 
         @if ($errors->any())
@@ -113,23 +74,4 @@
 
 </div>
 
-@endsection
-
-@section('scripts')
-<script>
-function toggleTel(show) {
-  const field = document.getElementById('tel-field');
-  const input = document.getElementById('telephone');
-  field.style.display = show ? 'block' : 'none';
-  input.required = show;
-}
-// Highlight selected option
-document.querySelectorAll('input[name="methode"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    document.querySelectorAll('label[id^="opt-"]').forEach(l => l.style.borderColor = '#e2e8f0');
-    const selected = document.querySelector('input[name="methode"]:checked');
-    if (selected) selected.closest('label').style.borderColor = '#185FA5';
-  });
-});
-</script>
 @endsection

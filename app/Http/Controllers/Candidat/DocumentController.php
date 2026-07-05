@@ -8,14 +8,29 @@ use App\Models\TypeDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class DocumentController extends Controller
 {
+    /**
+     * Un "Curriculum Vitae" ne doit jamais exister comme Document — il doit
+     * passer par CVController pour devenir un vrai modèle CV (visibilité,
+     * champs obligatoires, éligibilité CVthèque). Sinon on se retrouve avec
+     * deux entrées qui se ressemblent dans l'espace candidat sans que l'une
+     * soit un vrai CV utilisable.
+     */
+    private function cvTypeId(): ?int
+    {
+        return TypeDocument::where('nom', 'like', '%Curriculum Vitae%')->value('id');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
-            'type_document_id' => ['required', 'exists:type_documents,id'],
+            'type_document_id' => ['required', 'exists:type_documents,id', Rule::notIn([$this->cvTypeId()])],
             'fichier'          => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx', 'max:5120'],
+        ], [
+            'type_document_id.not_in' => 'Pour déposer un CV, utilisez la page "Déposer un CV".',
         ]);
 
         $user = Auth::user();
@@ -51,7 +66,7 @@ class DocumentController extends Controller
         abort_unless($document->user_id === Auth::id(), 403);
 
         $request->validate([
-            'type_document_id' => ['required', 'exists:type_documents,id'],
+            'type_document_id' => ['required', 'exists:type_documents,id', Rule::notIn([$this->cvTypeId()])],
             'nom'              => ['required', 'string', 'max:200'],
             'pays'             => ['nullable', 'string', 'max:100'],
             'ville'            => ['nullable', 'string', 'max:100'],
@@ -60,6 +75,8 @@ class DocumentController extends Controller
             'formation'        => ['nullable', 'string'],
             'langues'          => ['nullable', 'string'],
             'fichier'          => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx', 'max:5120'],
+        ], [
+            'type_document_id.not_in' => 'Pour déposer un CV, utilisez la page "Déposer un CV".',
         ]);
 
         $data = $request->only(['type_document_id', 'nom', 'pays', 'ville', 'competences', 'experience', 'formation', 'langues']);

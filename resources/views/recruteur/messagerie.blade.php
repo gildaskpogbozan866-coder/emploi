@@ -11,6 +11,10 @@
     <h1>Messagerie</h1>
     <p>Vos échanges avec les candidats</p>
   </div>
+  <a href="{{ route('recruteur.messagerie.archives') }}" class="rec-btn rec-btn--outline">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+    Archives
+  </a>
 </div>
 
 @if($conversations->isEmpty())

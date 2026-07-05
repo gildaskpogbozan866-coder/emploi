@@ -110,6 +110,28 @@
                                 style="margin-top:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:11px;text-align:center">
                                 <span style="font-weight:700;color:#16a34a;font-size:14px">✓ Plan actuel</span>
                             </div>
+                            @unless ($plan->is_free)
+                                @if (!empty($stockQuotasSatures))
+                                    <div
+                                        style="margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px">
+                                        <p style="margin:0;font-size:12.5px;color:#92400e;line-height:1.5">
+                                            <strong>⚠ Ce renouvellement ne débloquera pas de nouvelles places</strong>
+                                            pour
+                                            {{ implode(' et ', array_map(fn($q) => $q['label'] . " ({$q['limit']}/{$q['limit']})", $stockQuotasSatures)) }}
+                                            — votre plafond restera le même. Envisagez un palier supérieur si vous avez
+                                            besoin de plus de capacité.
+                                        </p>
+                                    </div>
+                                @endif
+                                <form method="POST" action="{{ route('candidat.abonnement.store') }}" style="margin-top:10px">
+                                    @csrf
+                                    <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+                                    <button type="submit" class="cand-btn cand-btn--yellow"
+                                        style="width:100%;justify-content:center;font-size:14px;padding:12px">
+                                        Réactiver
+                                    </button>
+                                </form>
+                            @endunless
                         @elseif($plan->is_free && $hasUsedFreePlan)
                             <div
                                 style="margin-top:16px;background:#f8fafc;border:1.5px solid #e2e6ed;border-radius:10px;padding:14px;text-align:center">

@@ -20,7 +20,7 @@
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0;margin-top:2px"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         <div>
           <p style="font-weight:700;color:#042C53;margin:0 0 4px">{{ $offre->titre }}</p>
-          <p style="font-size:13px;color:#64748b;margin:0">{{ $offre->entreprise }} · {{ $offre->localisation }} · {{ $offre->type }}</p>
+          <p style="font-size:13px;color:#64748b;margin:0">{{ $offre->entreprise }} · {{ $offre->localisation }} · {{ $offre->type?->libelle }}</p>
         </div>
       </div>
     </div>

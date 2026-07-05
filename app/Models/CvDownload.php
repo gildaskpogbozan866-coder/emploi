@@ -19,6 +19,6 @@ class CvDownload extends Model
 
     public function cv()
     {
-        return $this->belongsTo(CV::class, 'cv_id');
+        return $this->belongsTo(CV::class, 'cv_id')->withTrashed();
     }
 }

@@ -46,12 +46,14 @@
           <select class="field__select" name="type_document_id" required>
             <option value="">-- Choisissez --</option>
             @foreach($typesDocuments as $type)
+              @continue(str_contains($type->nom, 'Curriculum Vitae'))
               <option value="{{ $type->id }}"
                 {{ old('type_document_id', $document->type_document_id) == $type->id ? 'selected' : '' }}>
                 {{ $type->nom }}
               </option>
             @endforeach
           </select>
+          <p style="font-size:12px;color:#94a3b8;margin:5px 0 0">Pour déposer un CV, utilisez <a href="{{ route('cv.public.depot') }}" style="color:#185FA5;font-weight:600">Déposer un CV</a> — ce document reste distinct de vos CVs.</p>
         </div>
       </div>
 

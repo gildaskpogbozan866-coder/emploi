@@ -154,7 +154,6 @@ class ProfilController extends Controller
                     'remote'              => $request->remote ?? 'non',
                     'linkedin'            => $request->linkedin,
                     'portfolio'           => $request->portfolio,
-                    'specialite'          => $request->specialite,
                     'annees_experience'   => $request->annees_experience,
                 ]
             );
@@ -334,14 +333,14 @@ class ProfilController extends Controller
         return back()->with('success', 'Paramètres mis à jour.');
     }
 
-    // ── Upload fichier CV (PDF / Word / Image) ───────────────
+    // ── Upload fichier CV (PDF uniquement) ───────────────
     public function updateFichierCv(Request $request)
     {
         $request->validate([
-            'fichier_cv' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:5120',
+            'fichier_cv' => 'required|file|mimes:pdf|max:5120',
         ], [
             'fichier_cv.required' => 'Veuillez sélectionner un fichier.',
-            'fichier_cv.mimes'    => 'Format accepté : PDF, Word, JPG, PNG, WebP.',
+            'fichier_cv.mimes'    => 'Le fichier doit être au format PDF.',
             'fichier_cv.max'      => 'Le fichier ne doit pas dépasser 5 Mo.',
         ]);
 

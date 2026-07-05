@@ -111,7 +111,7 @@ class AlerteService
             'user_id' => $alerte->user_id,
             'type'    => 'alerte',
             'titre'   => 'Nouvelle offre : '.$offre->titre,
-            'contenu' => $offre->entreprise.' · '.$offre->localisation.' · '.$offre->type
+            'contenu' => $offre->entreprise.' · '.$offre->localisation.' · '.($offre->type?->libelle ?? '')
                          .' — correspond à votre alerte « '.$alerte->nom.' »',
             'lien'    => $lien,
             'lu'      => false,

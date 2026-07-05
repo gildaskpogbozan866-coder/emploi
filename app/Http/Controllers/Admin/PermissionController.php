@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Role as RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class PermissionController extends Controller
         ]);
 
         // Ne pas changer le rôle du super admin
-        if ($user->hasRole('admin') && $request->role !== 'admin') {
+        if ($user->hasRole(RoleEnum::ADMIN) && $request->role !== RoleEnum::ADMIN) {
             return back()->withErrors(['Impossible de changer le rôle d\'un administrateur.']);
         }
 
