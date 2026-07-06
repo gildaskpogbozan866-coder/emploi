@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
   <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ @filemtime(public_path('css/style.css')) }}" />
   @yield('css')
   <style>body { padding-top: 0 !important; }</style>
   <meta name="csrf-token" content="{{ csrf_token() }}">

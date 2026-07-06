@@ -9,10 +9,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
   <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/candidat/candidat.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ @filemtime(public_path('css/style.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/candidat/candidat.css') }}?v={{ @filemtime(public_path('css/candidat/candidat.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}?v={{ @filemtime(public_path('css/dashboard-layout.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/components.css') }}?v={{ @filemtime(public_path('css/components.css')) }}" />
   @yield('css')
   <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>

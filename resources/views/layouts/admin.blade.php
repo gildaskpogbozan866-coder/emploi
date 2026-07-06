@@ -9,9 +9,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}?v=2">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
   <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
-  <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/components.css') }}?v={{ @filemtime(public_path('css/components.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}?v={{ @filemtime(public_path('css/admin/admin.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/dashboard-layout.css') }}?v={{ @filemtime(public_path('css/dashboard-layout.css')) }}" />
   @yield('css')
   <meta name="csrf-token" content="{{ csrf_token() }}">
   @include('partials._pwa-head')

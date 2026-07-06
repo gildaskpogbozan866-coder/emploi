@@ -75,8 +75,8 @@
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}?v=2">
   <link rel="shortcut icon" href="{{ asset('images/favicon-64.png') }}?v=2">
   @include('partials._pwa-head')
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
-  <link rel="stylesheet" href="{{ asset('css/components.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ @filemtime(public_path('css/style.css')) }}" />
+  <link rel="stylesheet" href="{{ asset('css/components.css') }}?v={{ @filemtime(public_path('css/components.css')) }}" />
   @yield('css')
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
