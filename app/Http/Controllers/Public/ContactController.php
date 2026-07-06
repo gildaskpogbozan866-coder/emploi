@@ -2,37 +2,34 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\VerifiesRecaptcha;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use App\Models\Notification;
-use App\Models\ParametreApp;
 use App\Models\User;
 use App\Notifications\NouveauMessageContactNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
+    use VerifiesRecaptcha;
+
     public function envoyer(Request $request)
     {
         $type = $request->input('type', 'contact');
 
         if ($type === 'newsletter') {
             $request->validate(['email' => 'required|email']);
+            if (!$this->recaptchaValide($request)) {
+                return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
+            }
             Log::info('Newsletter inscription: ' . $request->email);
             return back()->with('success', 'Vous êtes maintenant abonné(e) à notre newsletter !');
         }
 
-        if ($this->recaptchaActif()) {
-            $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'   => ParametreApp::get('recaptcha_secret_key'),
-                'response' => $request->input('g-recaptcha-response'),
-                'remoteip' => $request->ip(),
-            ]);
-            if (!$verify->json('success')) {
-                return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
-            }
+        if (!$this->recaptchaValide($request)) {
+            return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
         }
 
         $validated = $request->validate([
@@ -64,12 +61,5 @@ class ContactController extends Controller
             'email'  => $validated['email'],
             'sujet'  => $validated['sujet'],
         ]);
-    }
-
-    private function recaptchaActif(): bool
-    {
-        return !app()->isLocal()
-            && ParametreApp::get('recaptcha_site_key') !== ''
-            && ParametreApp::get('recaptcha_secret_key') !== '';
     }
 }

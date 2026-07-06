@@ -80,6 +80,13 @@
           @enderror
         </div>
 
+        @if($recaptchaActif)
+          <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-bottom:16px"></div>
+        @endif
+        @error('recaptcha')
+          <p class="aform__error">{{ $message }}</p>
+        @enderror
+
         <button type="submit" class="aform__submit">Envoyer le lien de réinitialisation</button>
 
         <p class="aform__switch">

@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\Role;
+use App\Http\Controllers\Concerns\VerifiesRecaptcha;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\IncriptionRequest;
-use App\Models\ParametreApp;
 use App\Models\User;
 use Spatie\Permission\Models\Role as SpatieRole;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
+    use VerifiesRecaptcha;
+
     // ── Pages ────────────────────────────────────────────
     public function showConnexion()
     {
@@ -85,15 +86,8 @@ class AuthController extends Controller
     // ── Inscription ───────────────────────────────────────
     public function inscrire(IncriptionRequest $request)
     {
-        if ($this->recaptchaActif()) {
-            $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'   => ParametreApp::get('recaptcha_secret_key'),
-                'response' => $request->input('g-recaptcha-response'),
-                'remoteip' => $request->ip(),
-            ]);
-            if (!$verify->json('success')) {
-                return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
-            }
+        if (!$this->recaptchaValide($request)) {
+            return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
         }
 
         $role = $request->role;
@@ -130,6 +124,10 @@ class AuthController extends Controller
             'email.required' => 'L\'adresse e-mail est requise.',
             'email.email'    => 'Veuillez entrer une adresse e-mail valide.',
         ]);
+
+        if (!$this->recaptchaValide($request)) {
+            return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
+        }
 
         $status = Password::sendResetLink($request->only('email'));
 
@@ -206,13 +204,6 @@ class AuthController extends Controller
     }
 
     // ── Helpers ───────────────────────────────────────────
-    private function recaptchaActif(): bool
-    {
-        return !app()->isLocal()
-            && ParametreApp::get('recaptcha_site_key') !== ''
-            && ParametreApp::get('recaptcha_secret_key') !== '';
-    }
-
     private function dashboardUrl(User $user): string
     {
         return match ($user->role) {

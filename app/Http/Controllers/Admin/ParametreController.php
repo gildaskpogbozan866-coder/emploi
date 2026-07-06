@@ -33,14 +33,14 @@ class ParametreController extends Controller
     {
         Artisan::call('down');
 
-        return redirect()->route('admin.parametres')->with('success', 'Mode maintenance activé. Le reste du site affiche une page 503 — l\'espace admin reste accessible.');
+        return back()->with('success', 'Mode maintenance activé. Le reste du site affiche une page 503 — l\'espace admin reste accessible.');
     }
 
     public function desactiverMaintenance()
     {
         Artisan::call('up');
 
-        return redirect()->route('admin.parametres')->with('success', 'Mode maintenance désactivé, le site est de nouveau accessible.');
+        return back()->with('success', 'Mode maintenance désactivé, le site est de nouveau accessible.');
     }
 
     public function update(Request $request)

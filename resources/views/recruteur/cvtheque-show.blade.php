@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 290px;gap:20px;align-items:start">
+<div class="rec-grid-detail" style="align-items:start">
 
   {{-- Profil --}}
   <div class="rec-card">

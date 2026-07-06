@@ -1167,6 +1167,12 @@
                                 S'abonner gratuitement
                             </button>
                         </div>
+                        @if($recaptchaActif)
+                            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-top:12px"></div>
+                        @endif
+                        @error('recaptcha')
+                            <p style="color:#e53e3e;font-size:13px;margin-top:8px">{{ $message }}</p>
+                        @enderror
                         <p class="newsletter__privacy">Zéro spam. Désabonnement en un clic.</p>
                     </form>
                 </div>

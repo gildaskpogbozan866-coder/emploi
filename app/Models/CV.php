@@ -34,6 +34,11 @@ class CV extends Model
         return $this->belongsTo(User::class, 'candidat_id');
     }
 
+    public function consultations()
+    {
+        return $this->hasMany(CvConsultation::class, 'cv_id');
+    }
+
     public function scopeVisible($query)
     {
         return $query->where('visible', true)->whereNotNull('publie_le');

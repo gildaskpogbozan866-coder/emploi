@@ -29,9 +29,8 @@
       </div>
       <div style="flex:1;min-width:0">
         <p style="font-weight:700;color:#042C53;margin:0;font-size:14px">
-          {{ $cv->candidat->prenom ?? '' }} {{ substr($cv->candidat->nom ?? '', 0, 1) }}.
+          {{ $cv->metier ?? 'Profil candidat' }}
         </p>
-        <p style="font-size:12.5px;color:#185FA5;margin:2px 0 0;font-weight:600">{{ $cv->metier }}</p>
       </div>
       @if($cv->plan === 'premium')
         <span class="rec-badge rec-badge--yellow">Premium</span>

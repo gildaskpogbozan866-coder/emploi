@@ -17,45 +17,53 @@
 
 {{-- Stats --}}
 <div class="cand-stats">
-  <div class="cand-stat">
-    <div class="cand-stat__icon cand-stat__icon--blue">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+  <a href="{{ route('annonceur.publicites') }}" class="cand-stat--link">
+    <div class="cand-stat">
+      <div class="cand-stat__icon cand-stat__icon--blue">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div>
+        <div class="cand-stat__val">{{ $stats['total'] }}</div>
+        <div class="cand-stat__label">Total annonces</div>
+      </div>
     </div>
-    <div>
-      <div class="cand-stat__val">{{ $stats['total'] }}</div>
-      <div class="cand-stat__label">Total annonces</div>
-    </div>
-  </div>
+  </a>
 
-  <div class="cand-stat">
-    <div class="cand-stat__icon cand-stat__icon--yellow">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <a href="{{ route('annonceur.publicites') }}" class="cand-stat--link">
+    <div class="cand-stat">
+      <div class="cand-stat__icon cand-stat__icon--yellow">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div>
+        <div class="cand-stat__val" style="color:#b8860b">{{ $stats['en_attente'] }}</div>
+        <div class="cand-stat__label">En attente</div>
+      </div>
     </div>
-    <div>
-      <div class="cand-stat__val" style="color:#b8860b">{{ $stats['en_attente'] }}</div>
-      <div class="cand-stat__label">En attente</div>
-    </div>
-  </div>
+  </a>
 
-  <div class="cand-stat">
-    <div class="cand-stat__icon cand-stat__icon--green">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <a href="{{ route('annonceur.publicites') }}" class="cand-stat--link">
+    <div class="cand-stat">
+      <div class="cand-stat__icon cand-stat__icon--green">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div class="cand-stat__val" style="color:#38A169">{{ $stats['approuve'] }}</div>
+        <div class="cand-stat__label">Approuvées</div>
+      </div>
     </div>
-    <div>
-      <div class="cand-stat__val" style="color:#38A169">{{ $stats['approuve'] }}</div>
-      <div class="cand-stat__label">Approuvées</div>
-    </div>
-  </div>
+  </a>
 
-  <div class="cand-stat">
-    <div class="cand-stat__icon" style="background:rgba(220,38,38,.1);color:#dc2626">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  <a href="{{ route('annonceur.publicites') }}" class="cand-stat--link">
+    <div class="cand-stat">
+      <div class="cand-stat__icon" style="background:rgba(220,38,38,.1);color:#dc2626">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <div>
+        <div class="cand-stat__val" style="color:#dc2626">{{ $stats['rejete'] }}</div>
+        <div class="cand-stat__label">Rejetées</div>
+      </div>
     </div>
-    <div>
-      <div class="cand-stat__val" style="color:#dc2626">{{ $stats['rejete'] }}</div>
-      <div class="cand-stat__label">Rejetées</div>
-    </div>
-  </div>
+  </a>
 </div>
 
 {{-- Dernières annonces --}}

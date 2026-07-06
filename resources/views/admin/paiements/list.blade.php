@@ -1,6 +1,20 @@
 @extends('layouts.admin')
 @section('title', 'Paiements | Administration')
 
+@section('css')
+<style>
+.pai-filters-grid { padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.pai-filters-actions { grid-column: span 2; }
+@media (max-width: 900px) {
+  .pai-filters-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .pai-filters-grid { grid-template-columns: 1fr; }
+  .pai-filters-grid .pai-filters-actions { grid-column: span 1; }
+}
+</style>
+@endsection
+
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
@@ -93,7 +107,7 @@
 
   {{-- Formulaire --}}
   <form method="GET" id="filterForm">
-    <div style="padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+    <div class="pai-filters-grid">
 
       {{-- Recherche --}}
       <div>
@@ -155,7 +169,7 @@
       </div>
 
       {{-- Boutons --}}
-      <div style="grid-column:span 2;display:flex;align-items:flex-end;gap:10px">
+      <div class="pai-filters-actions" style="display:flex;align-items:flex-end;gap:10px">
         <button type="submit" class="adm-btn adm-btn--primary" style="flex:1">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;vertical-align:-2px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Appliquer

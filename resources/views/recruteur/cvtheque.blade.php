@@ -1,5 +1,5 @@
 @extends('layouts.recruteur')
-@section('title', 'CVthèque')
+@section('title', 'Acheter des CV')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
@@ -12,7 +12,7 @@
 @section('content')
 <div class="rec-topbar">
   <div class="rec-topbar__left">
-    <h1>CVthèque</h1>
+    <h1>Acheter des CV</h1>
     <p>{{ $cvs->total() }} profil{{ $cvs->total() > 1 ? 's' : '' }} disponible{{ $cvs->total() > 1 ? 's' : '' }} sur la plateforme</p>
   </div>
   <div class="rec-topbar__right" style="display:flex;align-items:center;gap:10px">
@@ -20,7 +20,7 @@
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0284c7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span style="font-size:13px;color:#0284c7;font-weight:700">{{ $credits }} crédit{{ $credits > 1 ? 's' : '' }}</span>
     </div>
-    <a href="{{ route('cv.public.tarif') }}" class="rec-btn rec-btn--yellow rec-btn--sm">+ Acheter des crédits</a>
+    <a href="{{ route('recruteur.cv-credits.index') }}" class="rec-btn rec-btn--yellow rec-btn--sm">+ Acheter des crédits</a>
   </div>
 </div>
 
@@ -28,10 +28,78 @@
 <div style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;margin-bottom:18px">
   <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#d97706" stroke-width="2" style="flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
   <p style="margin:0;font-size:13px;color:#92400e">
-    Vous n'avez plus de crédits. <a href="{{ route('cv.public.tarif') }}" style="color:#92400e;font-weight:700;text-decoration:underline">Achetez un pack</a> pour télécharger des CVs.
+    Vous n'avez plus de crédits. <a href="{{ route('recruteur.cv-credits.index') }}" style="color:#92400e;font-weight:700;text-decoration:underline">Achetez un pack</a> pour télécharger des CVs.
   </p>
 </div>
 @endif
+
+{{-- Stats --}}
+<div class="rec-stats" style="margin-bottom:18px">
+  <div class="rec-stat">
+    <div class="rec-stat__icon rec-stat__icon--blue">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="rec-stat__val">{{ $cvStats['credits_restants'] }}</div>
+    <div class="rec-stat__label">Crédits restants</div>
+  </div>
+  <div class="rec-stat">
+    <div class="rec-stat__icon rec-stat__icon--purple">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+    </div>
+    <div class="rec-stat__val">{{ $cvStats['cvs_consultes'] }}</div>
+    <div class="rec-stat__label">CV déjà achetés</div>
+  </div>
+  <div class="rec-stat">
+    <div class="rec-stat__icon rec-stat__icon--green">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </div>
+    <div class="rec-stat__val">{{ $cvStats['cvs_telecharges'] }}</div>
+    <div class="rec-stat__label">CV téléchargés</div>
+  </div>
+</div>
+
+{{-- Message clair sur ce que "déjà acheté" signifie --}}
+<div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:14px 18px;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  <p style="margin:0;font-size:13px;color:#1e3a5f;line-height:1.6">
+    <strong>À savoir :</strong> ouvrir la fiche complète d'un profil (bouton « Voir profil ») le marque définitivement comme <strong>« déjà acheté »</strong> ci-dessous, même sans télécharger le fichier. Télécharger le CV (PDF/Word) consomme en plus <strong>1 crédit</strong> à chaque fois.
+  </p>
+</div>
+
+{{-- Historique des achats de crédits --}}
+@if($paiementsCredits->isNotEmpty())
+<div class="rec-card" style="margin-bottom:18px">
+  <div class="rec-card__head">
+    <span class="rec-card__title">Historique des achats de crédits</span>
+    <a href="{{ route('recruteur.cv-credits.index') }}" class="rec-btn rec-btn--outline rec-btn--sm">Voir tout →</a>
+  </div>
+  <div class="rec-table-wrap">
+    <table class="rec-table">
+      <thead>
+        <tr><th>Date</th><th>Crédits</th><th>Montant</th><th>Méthode</th></tr>
+      </thead>
+      <tbody>
+        @foreach($paiementsCredits as $p)
+        <tr>
+          <td style="color:#94a3b8;font-size:12px">{{ $p->created_at->format('d/m/Y') }}</td>
+          <td style="font-weight:600;color:#042C53">+{{ $p->credits_cv }} crédit{{ $p->credits_cv > 1 ? 's' : '' }}</td>
+          <td>{{ number_format($p->montant, 0, ',', ' ') }} {{ $p->devise }}</td>
+          <td><span class="rec-badge rec-badge--blue">{{ ucfirst(str_replace('_',' ',$p->methode)) }}</span></td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+</div>
+@endif
+
+{{-- Onglets : tous les profils / déjà consultés --}}
+<div style="display:flex;gap:8px;margin-bottom:18px">
+  <a href="{{ route('recruteur.cvtheque', array_merge(request()->except(['vu','page']), [])) }}"
+     class="rec-btn {{ request('vu') !== 'deja' ? 'rec-btn--primary' : 'rec-btn--outline' }} rec-btn--sm">Tous les profils</a>
+  <a href="{{ route('recruteur.cvtheque', array_merge(request()->except('page'), ['vu' => 'deja'])) }}"
+     class="rec-btn {{ request('vu') === 'deja' ? 'rec-btn--primary' : 'rec-btn--outline' }} rec-btn--sm">CV déjà achetés</a>
+</div>
 
 {{-- Filtres --}}
 <div class="rec-card" style="margin-bottom:18px">
@@ -134,15 +202,22 @@
       </div>
       <div style="flex:1;min-width:0">
         <p style="font-weight:700;color:#042C53;margin:0;font-size:14px">
-          {{ $item->candidat->prenom ?? '' }} {{ substr($item->candidat->nom ?? '', 0, 1) }}.
+          {{ $isDoc ? ($item->titre_poste ?? 'Document') : ($item->metier ?? 'Profil candidat') }}
         </p>
-        <p style="font-size:12.5px;color:{{ $isDoc ? '#0284c7' : '#185FA5' }};margin:2px 0 0;font-weight:600">{{ $isDoc ? ($item->titre_poste ?? '') : ($item->metier ?? '') }}</p>
       </div>
-      @if($isDoc)
-        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0f9ff;color:#0284c7;border:1px solid #bae6fd;white-space:nowrap">{{ $item->type_label }}</span>
-      @elseif($item->plan === 'premium')
-        <span class="rec-badge rec-badge--yellow">Premium</span>
-      @endif
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0">
+        @if($isDoc)
+          <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0f9ff;color:#0284c7;border:1px solid #bae6fd;white-space:nowrap">{{ $item->type_label }}</span>
+        @else
+          @if($item->plan === 'premium')
+            <span class="rec-badge rec-badge--yellow">Premium</span>
+          @endif
+          @if(in_array($item->id, $dejaConsultesIds))
+            <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;white-space:nowrap">✓ Déjà acheté</span>
+            <span style="font-size:9.5px;color:#94a3b8;white-space:nowrap">le {{ $consultationsDates[$item->id]->format('d/m/Y') }}</span>
+          @endif
+        @endif
+      </div>
     </div>
 
     <div style="width:100%">

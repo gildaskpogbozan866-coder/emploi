@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\VerifiesRecaptcha;
 use App\Mail\NewsletterConfirmationMail;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Http\Request;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 
 class NewsletterController extends Controller
 {
+    use VerifiesRecaptcha;
+
     public function abonner(Request $request)
     {
         $request->validate([
@@ -19,6 +22,10 @@ class NewsletterController extends Controller
             'email.required' => 'Veuillez entrer votre adresse e-mail.',
             'email.email'    => 'Adresse e-mail invalide.',
         ]);
+
+        if (!$this->recaptchaValide($request)) {
+            return back()->with('newsletter_info', 'Vérification anti-robot échouée. Veuillez réessayer.');
+        }
 
         $existing = NewsletterSubscriber::where('email', $request->email)->first();
 

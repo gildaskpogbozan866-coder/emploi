@@ -14,7 +14,7 @@
   </div>
 
   {{-- Compteurs globaux (indépendants des filtres) --}}
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+  <div class="adm-stats" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:20px">
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;text-align:center">
       <div style="font-size:1.6rem;font-weight:700;color:#d97706">{{ $counts['en_attente'] }}</div>
       <div style="font-size:.82rem;color:#92400e;margin-top:4px">En attente</div>

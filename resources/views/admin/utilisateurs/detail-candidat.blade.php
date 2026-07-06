@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div class="adm-grid-2col">
   <div class="adm-card">
     <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Informations personnelles</h3>

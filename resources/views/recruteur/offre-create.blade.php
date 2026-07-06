@@ -16,6 +16,15 @@
   display: flex;
   align-items: center;
 }
+.offre-preview-grid { display: grid; grid-template-columns: 1fr 280px; gap: 0; }
+@media (max-width: 640px) {
+  .offre-preview-grid { grid-template-columns: 1fr; }
+  .offre-preview-grid > div:first-child { border-right: none !important; border-bottom: 1px solid #f1f5f9; }
+}
+@media (max-width: 480px) {
+  .offre-create-actions { flex-direction: column; }
+  .offre-create-actions .rec-btn { width: 100%; justify-content: center; min-width: 0; }
+}
 </style>
 @endsection
 
@@ -192,8 +201,8 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0">
-        <button type="submit" class="rec-btn rec-btn--yellow" style="flex:1;justify-content:center;padding:13px">
+      <div class="offre-create-actions" style="display:flex;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0;flex-wrap:wrap">
+        <button type="submit" class="rec-btn rec-btn--yellow" style="flex:1;justify-content:center;padding:13px;min-width:200px">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
           Publier l'offre
         </button>
@@ -210,17 +219,17 @@
 
 {{-- Modale de prévisualisation --}}
 <div id="offre-preview-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(4,44,83,.55);overflow-y:auto;padding:32px 16px" onclick="if(event.target===this)closeOffrePreview()">
-  <div style="max-width:860px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(4,44,83,.25)">
-    {{-- Header modale --}}
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#042C53;color:#fff">
+  <div style="max-width:860px;margin:0 auto;box-shadow:0 20px 60px rgba(4,44,83,.25);border-radius:16px">
+    {{-- Header modale : hors du conteneur overflow:hidden pour que position:sticky fonctionne réellement pendant le scroll --}}
+    <div style="position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#042C53;color:#fff;border-radius:16px 16px 0 0">
       <div style="display:flex;align-items:center;gap:10px">
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <span style="font-weight:700;font-size:15px">Prévisualisation de l'offre</span>
       </div>
-      <button onclick="closeOffrePreview()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">&times;</button>
+      <button onclick="closeOffrePreview()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">&times;</button>
     </div>
     {{-- Contenu preview --}}
-    <div id="offre-preview-body" style="padding:0"></div>
+    <div id="offre-preview-body" style="padding:0;background:#fff;border-radius:0 0 16px 16px;overflow:hidden"></div>
   </div>
 </div>
 
@@ -319,7 +328,7 @@ function openOffrePreview() {
         </div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 280px;gap:0">
+    <div class="offre-preview-grid">
       <div style="padding:24px;border-right:1px solid #f1f5f9">
         ${description ? `<div style="margin-bottom:24px"><h3 style="font-size:13px;font-weight:700;color:#042C53;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #e8f0fe">Description du poste</h3><div style="font-size:14px;color:#374151;line-height:1.75">${description}</div></div>` : ''}
         ${exigences ? `<div style="margin-bottom:24px"><h3 style="font-size:13px;font-weight:700;color:#042C53;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #e8f0fe">Exigences du poste</h3><div style="font-size:14px;color:#374151;line-height:1.75;white-space:pre-line">${exigences.replace(/</g,'&lt;')}</div></div>` : ''}

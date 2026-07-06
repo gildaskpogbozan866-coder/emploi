@@ -100,7 +100,7 @@
             $abonnement && $abonnement->plan && $abonnement->plan->getFeature('show_profile_views', '0') === '1';
     @endphp
     <div class="cand-stats">
-        <a href="{{ route('candidat.candidatures') }}" class="" style="text-decoration: none;">
+        <a href="{{ route('candidat.candidatures') }}" class="cand-stat--link">
 
             <div class="cand-stat">
                 <div class="cand-stat__icon cand-stat__icon--blue">
@@ -117,7 +117,7 @@
             </div>
         </a>
 
-        <a href="{{ route('candidat.cvs') }}" class=""  style="text-decoration: none;">
+        <a href="{{ route('candidat.cvs') }}" class="cand-stat--link">
 
             <div class="cand-stat">
                 <div class="cand-stat__icon cand-stat__icon--dark">
@@ -157,7 +157,7 @@
 
   
 
-        <a href="{{ route('candidat.candidatures') }}?q=&statut=retenue" class=""  style="text-decoration: none;">
+        <a href="{{ route('candidat.candidatures') }}?q=&statut=retenue" class="cand-stat--link">
 
 
             <div class="cand-stat">

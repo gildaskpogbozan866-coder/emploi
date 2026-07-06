@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start">
+<div class="cand-grid-detail" style="align-items:start">
   <div>
     <div class="cand-card" style="margin-bottom:16px">
       <div class="cand-card__head">

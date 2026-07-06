@@ -312,6 +312,7 @@
   border-color: rgba(245,200,66,.35);
 }
 .svc-card__header { flex: 1; min-width: 0; }
+.svc-card--hot .svc-card__header { padding-right: 78px; }
 .svc-card__name {
   font-size: .95rem;
   font-weight: 800;
@@ -354,6 +355,7 @@
   font-weight: 900;
   color: #042C53;
   line-height: 1;
+  white-space: nowrap;
 }
 .svc-card__price small { font-size: .62rem; color: #94a3b8; font-weight: 600; }
 .svc-card__price--devis { font-size: .82rem; color: #185FA5; font-weight: 700; }
@@ -509,12 +511,14 @@
   .svc-cta__sub   { max-width: 100%; }
   .svc-cta__btns  { justify-content: center; width: 100%; }
 }
-@media (max-width: 380px) {
-  .svc-hero__title { font-size: 1.5rem; }
-  .svc-stat__sep   { display: none; }
+@media (max-width: 480px) {
   .svc-grid { grid-template-columns: 1fr; }
   .svc-card__desc  { display: block; }
   .svc-card { padding: 16px 14px; }
+}
+@media (max-width: 380px) {
+  .svc-hero__title { font-size: 1.5rem; }
+  .svc-stat__sep   { display: none; }
   .svc-trust__inner { grid-template-columns: 1fr; }
   .svc-trust__item + .svc-trust__item { border-left: none; border-top: 1px solid rgba(255,255,255,.1); }
   .svc-trust__item:nth-child(3) { border-top: 1px solid rgba(255,255,255,.1); }

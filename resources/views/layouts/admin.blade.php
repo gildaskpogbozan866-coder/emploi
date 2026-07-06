@@ -33,8 +33,8 @@
       <div class="dash-header__right">
         @include('partials._notification-bell')
         <div class="dash-header__user">
-          <div class="dash-header__avatar">{{ auth()->user()->initiale }}</div>
-          <span class="dash-header__username">{{ auth()->user()->nom_complet }}</span>
+          <div class="dash-header__avatar">{{ auth()->user()?->initiale }}</div>
+          <span class="dash-header__username">{{ auth()->user()?->nom_complet }}</span>
         </div>
         <form method="POST" action="{{ route('auth.deconnecter') }}" style="display:inline">
           @csrf
@@ -59,9 +59,9 @@
         <span>Emploi Bouge</span><small>Bénin · Administration</small>
       </a>
       <div class="adm-sidebar__user">
-        <div class="adm-sidebar__avatar">{{ auth()->user()->initiale }}</div>
+        <div class="adm-sidebar__avatar">{{ auth()->user()?->initiale }}</div>
         <div class="adm-sidebar__info">
-          <div class="adm-sidebar__name">{{ auth()->user()->nom_complet }}</div>
+          <div class="adm-sidebar__name">{{ auth()->user()?->nom_complet }}</div>
           <div class="adm-sidebar__role">Super Admin</div>
         </div>
       </div>

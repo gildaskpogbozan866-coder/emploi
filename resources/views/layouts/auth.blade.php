@@ -20,6 +20,9 @@
   @yield('content')
 
   @include('partials._form-guard')
+  @if($recaptchaActif ?? false)
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  @endif
   @yield('scripts')
 </body>
 </html>

@@ -1,6 +1,14 @@
 @extends('layouts.admin')
 @section('title', 'Créer un service | Administration')
 
+@section('css')
+<style>
+  .svc-form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 700px) { .svc-form-grid-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .svc-form-grid-3 { grid-template-columns: 1fr; } }
+</style>
+@endsection
+
 @section('content')
 <div class="adm-topbar">
   <div class="adm-topbar__left">
@@ -38,7 +46,7 @@
                   style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box">{{ old('details') }}</textarea>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:18px">
+      <div class="svc-form-grid-3" style="display:grid;gap:16px;margin-bottom:18px">
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Prix (FCFA) <span style="color:#e53e3e">*</span></label>
           <input type="number" name="prix" value="{{ old('prix', 0) }}" min="0" required

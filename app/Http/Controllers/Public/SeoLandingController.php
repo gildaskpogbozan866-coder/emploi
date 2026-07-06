@@ -12,7 +12,11 @@ class SeoLandingController extends Controller
     {
         $query = Offre::active()->with('recruteur')->recente();
         foreach ($filters as $col => $val) {
-            $query->where($col, 'like', "%$val%");
+            if ($col === 'type') {
+                $query->whereHas('type', fn($q) => $q->where('libelle', 'like', "%$val%"));
+            } else {
+                $query->where($col, 'like', "%$val%");
+            }
         }
         return $query->limit($limit)->get();
     }

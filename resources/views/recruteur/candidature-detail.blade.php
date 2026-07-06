@@ -27,7 +27,7 @@
 <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 18px;margin-bottom:18px;color:#15803d;font-size:13.5px">{{ session('success') }}</div>
 @endif
 
-<div style="display:grid;grid-template-columns:1fr 310px;gap:20px;align-items:start">
+<div class="rec-grid-detail" style="align-items:start">
 
   {{-- ── Colonne principale ──────────────────────────────────── --}}
   <div style="display:flex;flex-direction:column;gap:20px">

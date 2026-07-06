@@ -96,6 +96,9 @@
             value="{{ old('email') }}">
           <button type="submit" class="footer__newsletter-btn">S'inscrire</button>
         </form>
+        @if($recaptchaActif)
+          <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-top:12px"></div>
+        @endif
       </div>
       @if(session('newsletter_success'))
         <p style="text-align:center;color:#86efac;font-size:13.5px;margin:10px 0 0;font-weight:600">

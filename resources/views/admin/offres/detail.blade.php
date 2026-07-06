@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+<div class="adm-grid-2" style="align-items:start">
   <div>
     <div class="adm-card" style="margin-bottom:20px">
       <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">

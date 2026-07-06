@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\VerifiesRecaptcha;
 use App\Http\Controllers\Controller;
 use App\Models\Commande;
 use App\Models\Paiement;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
+    use VerifiesRecaptcha;
+
     public function index()
     {
         $services = Service::where('actif', true)->orderBy('prix')->get();
@@ -45,6 +48,12 @@ class ServiceController extends Controller
         }
 
         $request->validate($rules);
+
+        // Le reCAPTCHA ne protège que le passage invité — un utilisateur
+        // connecté est déjà identifié, pas besoin de lui ajouter une friction.
+        if (!Auth::check() && !$this->recaptchaValide($request)) {
+            return back()->withErrors(['recaptcha' => 'Vérification anti-robot échouée. Veuillez cocher la case et réessayer.'])->withInput();
+        }
 
         $fichierPath = null;
         if ($request->hasFile('fichier_joint')) {

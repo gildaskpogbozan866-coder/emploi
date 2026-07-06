@@ -21,6 +21,7 @@
   $derniers_cvs          = $derniers_cvs ?? collect();
   $derniers_signalements = $derniers_signalements ?? collect();
   $topRecruteurs         = $topRecruteurs ?? collect();
+  $maintenanceMode       = $maintenanceMode ?? false;
 @endphp
 
 @section('content')
@@ -29,7 +30,26 @@
     <h1>Tableau de bord</h1>
     <p>Vue d'ensemble de la plateforme Emploi Bouge Bénin</p>
   </div>
-  <div class="adm-topbar__right">
+  <div class="adm-topbar__right" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    @if($maintenanceMode)
+      <form method="POST" action="{{ route('admin.parametres.maintenance.desactiver') }}">
+        @csrf
+        <button type="submit" class="adm-btn adm-btn--yellow" style="display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Désactiver la maintenance
+        </button>
+      </form>
+    @else
+      <form method="POST" action="{{ route('admin.parametres.maintenance.activer') }}"
+            data-confirm="Activer le mode maintenance ? Le site affichera une page d'erreur 503 à tous les visiteurs (l'espace admin et la connexion restent accessibles)."
+            data-confirm-btn="Activer" data-confirm-color="#dc2626">
+        @csrf
+        <button type="submit" class="adm-btn" style="display:flex;align-items:center;gap:6px;background:#f8fafc;color:#64748b;border:1.5px solid #e2e8f0">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Activer la maintenance
+        </button>
+      </form>
+    @endif
     <div style="display:inline-flex;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden">
       <button id="btn-tables" onclick="switchView('tables')"
               style="padding:7px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;background:#042C53;color:#fff;transition:background .15s">
@@ -65,7 +85,7 @@
       <div class="adm-stat__label">Recruteurs</div>
     </div>
   </a>
-  <a class="adm-stat adm-stat--link" href="{{ route('admin.utilisateurs.list') }}">
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.utilisateurs.list', ['role' => 'annonceur']) }}">
     <div class="adm-stat__icon adm-stat__icon--orange">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
     </div>
@@ -74,7 +94,7 @@
       <div class="adm-stat__label">Annonceurs</div>
     </div>
   </a>
-  <a class="adm-stat adm-stat--link" href="{{ route('admin.offres.list') }}">
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.offres.list', ['statut' => 'active']) }}">
     <div class="adm-stat__icon adm-stat__icon--blue">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
     </div>
@@ -83,7 +103,7 @@
       <div class="adm-stat__label">Offres actives</div>
     </div>
   </a>
-  <a class="adm-stat adm-stat--link" href="{{ route('admin.offres.list') }}">
+  <div class="adm-stat" title="Aucune page de gestion dédiée aux candidatures côté admin pour l'instant">
     <div class="adm-stat__icon adm-stat__icon--violet">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
@@ -91,7 +111,7 @@
       <div class="adm-stat__val">{{ $stats['candidatures'] ?? 0 }}</div>
       <div class="adm-stat__label">Candidatures</div>
     </div>
-  </a>
+  </div>
   <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}" style="position:relative">
     @if(($stats['cvs_nouveaux'] ?? 0) > 0)
     <span style="position:absolute;top:10px;right:10px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;line-height:1.4">

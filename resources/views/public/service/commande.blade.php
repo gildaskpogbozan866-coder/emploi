@@ -441,6 +441,14 @@
         </div>
 
         <div class="cmd-card__foot">
+          @guest
+            @if($recaptchaActif)
+              <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}" style="margin-bottom:16px"></div>
+            @endif
+            @error('recaptcha')
+              <p class="cmd-field__err">{{ $message }}</p>
+            @enderror
+          @endguest
           <div class="cmd-alert">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#92400e" stroke-width="2" style="flex-shrink:0;margin-top:1px">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Recruteur;
 
 use App\Http\Controllers\Controller;
 use App\Models\CV;
+use App\Models\CvConsultation;
 use App\Models\CvDownload;
 use App\Models\Disponibilite;
 use App\Models\Document;
@@ -11,6 +12,7 @@ use App\Models\Langue;
 use App\Models\Metier;
 use App\Models\NiveauEtude;
 use App\Models\NiveauExperience;
+use App\Models\Paiement;
 use App\Models\SecteurActivite;
 use App\Models\TypeContrat;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -41,6 +43,9 @@ class CvthequeController extends Controller
         if ($request->filled('niveau_etude'))      $cvQuery->where('niveau_etude', $request->niveau_etude);
         if ($request->filled('type_contrat'))      $cvQuery->where('type_contrat', $request->type_contrat);
         if ($request->filled('niveau_experience')) $cvQuery->where('niveau_experience', $request->niveau_experience);
+        if ($request->input('vu') === 'deja') {
+            $cvQuery->whereHas('consultations', fn($q) => $q->where('recruteur_id', Auth::id()));
+        }
 
         $cvResults = $cvQuery->get()->map(function ($cv) {
             $cv->_is_document = false;
@@ -62,8 +67,23 @@ class CvthequeController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        $favorisCvIds = Auth::user()->cvsFavoris()->pluck('cvs.id')->toArray();
-        $credits      = Auth::user()->cv_credits;
+        $favorisCvIds        = Auth::user()->cvsFavoris()->pluck('cvs.id')->toArray();
+        $consultationsDates  = CvConsultation::where('recruteur_id', Auth::id())->pluck('created_at', 'cv_id');
+        $dejaConsultesIds    = $consultationsDates->keys()->toArray();
+        $credits             = Auth::user()->cv_credits;
+
+        $cvStats = [
+            'credits_restants' => $credits,
+            'cvs_consultes'    => $consultationsDates->count(),
+            'cvs_telecharges'  => CvDownload::where('recruteur_id', Auth::id())->count(),
+        ];
+
+        $paiementsCredits = Paiement::where('user_id', Auth::id())
+            ->where('type', 'cv_credits')
+            ->where('statut', 'confirme')
+            ->latest()
+            ->limit(5)
+            ->get();
 
         $paysList           = DB::table('pays')->where('actif', true)->orderBy('ordre')->pluck('nom');
         $disponibilitesList = Disponibilite::actifs()->get();
@@ -75,7 +95,7 @@ class CvthequeController extends Controller
         $niveauxExpList     = NiveauExperience::orderBy('ordre')->get();
 
         return view('recruteur.cvtheque', compact(
-            'cvs', 'favorisCvIds', 'credits',
+            'cvs', 'favorisCvIds', 'dejaConsultesIds', 'consultationsDates', 'credits', 'cvStats', 'paiementsCredits',
             'paysList', 'disponibilitesList', 'secteursList', 'languesList',
             'metiersList', 'niveauxEtudeList', 'typeContratsList', 'niveauxExpList'
         ));
@@ -97,6 +117,8 @@ class CvthequeController extends Controller
         $cv->increment('vues');
         $cv->load('candidat');
         $credits = $user->cv_credits;
+
+        CvConsultation::firstOrCreate(['recruteur_id' => $user->id, 'cv_id' => $cv->id]);
 
         return view('recruteur.cvtheque-show', compact('cv', 'credits'));
     }

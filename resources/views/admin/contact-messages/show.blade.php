@@ -19,7 +19,7 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+<div class="adm-grid-2" style="align-items:start">
 
   {{-- Message principal --}}
   <div class="adm-card" style="padding:28px">

@@ -55,7 +55,7 @@
   </form>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start">
+<div class="adm-grid-2" style="align-items:start">
 
   {{-- Liste des types --}}
   <div>

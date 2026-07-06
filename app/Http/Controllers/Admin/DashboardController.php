@@ -33,6 +33,8 @@ class DashboardController extends Controller
             'signalements'   => Signalement::where('statut', 'en_attente')->count(),
         ];
 
+        $maintenanceMode = app()->isDownForMaintenance();
+
         // Tables (10 lignes + colonnes supplémentaires pour les filtres)
         $derniers_utilisateurs = User::latest()->limit(10)->get();
         $dernieres_offres      = Offre::with('recruteur')->latest()->limit(10)->get();
@@ -122,7 +124,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'stats', 'derniers_utilisateurs', 'dernieres_offres',
             'dernieres_commandes', 'derniers_signalements', 'derniers_cvs',
-            'chartData', 'topRecruteurs', 'tauxConversion'
+            'chartData', 'topRecruteurs', 'tauxConversion', 'maintenanceMode'
         ));
     }
 }
