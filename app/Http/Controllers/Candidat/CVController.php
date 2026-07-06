@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CandidatProfil;
 use App\Models\Competence;
 use App\Models\CV;
+use App\Models\CvConsultation;
 use App\Models\Langue;
 use App\Models\LangueCandidat;
 use App\Models\NiveauEtude;
@@ -65,15 +66,20 @@ class CVController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
+        $dejaAchetesIds = [];
+        if (Auth::check() && Auth::user()->hasRole(Role::RECRUTEUR)) {
+            $dejaAchetesIds = CvConsultation::where('recruteur_id', Auth::id())->pluck('cv_id')->toArray();
+        }
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'html'  => view('public.cv._theque_liste', compact('cvs'))->render(),
+                'html'  => view('public.cv._theque_liste', compact('cvs', 'dejaAchetesIds'))->render(),
                 'total' => $cvs->total(),
                 'pages' => $cvs->lastPage(),
             ]);
         }
 
-        return view('public.cv.theque', compact('cvs'));
+        return view('public.cv.theque', compact('cvs', 'dejaAchetesIds'));
     }
 
     public function candidatDetails(int $id)
@@ -121,7 +127,20 @@ class CVController extends Controller
 
         $cv->load('candidat');
 
-        return view('public.cv.detail', compact('cv'));
+        $debloque = false;
+        if (Auth::check() && Auth::user()->hasRole(Role::RECRUTEUR)) {
+            $recruteur = Auth::user();
+            $dejaAchete = CvConsultation::where('recruteur_id', $recruteur->id)->where('cv_id', $cv->id)->exists();
+
+            if ($dejaAchete) {
+                $debloque = true;
+            } elseif ($recruteur->cv_credits > 0) {
+                CvConsultation::firstOrCreate(['recruteur_id' => $recruteur->id, 'cv_id' => $cv->id]);
+                $debloque = true;
+            }
+        }
+
+        return view('public.cv.detail', compact('cv', 'debloque'));
     }
 
     public function tarif()

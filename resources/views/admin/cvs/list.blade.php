@@ -67,12 +67,12 @@
         <tr>
           <td>
             <div style="font-weight:600;color:#042C53;display:flex;align-items:center;gap:6px">
-              {{ $cv->candidat->nom_complet }}
+              {{ $cv->candidat?->nom_complet ?? 'Candidat supprimé' }}
               @if(!$cv->vu_admin && $cv->publie_le)
               <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:1px 6px;text-transform:uppercase;letter-spacing:.04em">Nouveau</span>
               @endif
             </div>
-            <div style="font-size:12px;color:#94a3b8">{{ $cv->candidat->email }}</div>
+            <div style="font-size:12px;color:#94a3b8">{{ $cv->candidat?->email ?? '-' }}</div>
           </td>
           <td style="font-weight:500;color:#042C53">{{ $cv->metier }}</td>
           <td style="color:#64748b">{{ $cv->ville }}</td>
@@ -115,8 +115,8 @@
         @forelse($items as $doc)
         <tr>
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $doc->user->nom_complet }}</div>
-            <div style="font-size:12px;color:#94a3b8">{{ $doc->user->email }}</div>
+            <div style="font-weight:600;color:#042C53">{{ $doc->user?->nom_complet ?? 'Utilisateur supprimé' }}</div>
+            <div style="font-size:12px;color:#94a3b8">{{ $doc->user?->email ?? '-' }}</div>
           </td>
           <td style="font-weight:500;color:#042C53">{{ $doc->nom }}</td>
           <td><span class="adm-badge adm-badge--blue">{{ $doc->type->nom ?? '-' }}</span></td>

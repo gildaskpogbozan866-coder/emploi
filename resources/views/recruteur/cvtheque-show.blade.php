@@ -62,10 +62,10 @@
             <p style="font-size:13.5px;color:#042C53;margin:0;font-weight:600">{{ $cv->candidat->email }}</p>
           </div>
           @endif
-          @if($cv->candidat?->telephone)
+          @if($cv->candidat?->tel)
           <div>
             <p style="font-size:11px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.05em;margin:0 0 3px">Téléphone</p>
-            <p style="font-size:13.5px;color:#042C53;margin:0;font-weight:600">{{ $cv->candidat->telephone }}</p>
+            <p style="font-size:13.5px;color:#042C53;margin:0;font-weight:600">{{ $cv->candidat->tel }}</p>
           </div>
           @endif
         </div>

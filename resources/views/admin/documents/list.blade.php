@@ -38,8 +38,8 @@
         @forelse($documents as $doc)
         <tr>
           <td>
-            <div style="font-weight:600;color:#042C53">{{ $doc->user->nom_complet }}</div>
-            <div style="font-size:12px;color:#94a3b8">{{ $doc->user->email }}</div>
+            <div style="font-weight:600;color:#042C53">{{ $doc->user?->nom_complet ?? 'Utilisateur supprimé' }}</div>
+            <div style="font-size:12px;color:#94a3b8">{{ $doc->user?->email ?? '-' }}</div>
           </td>
           <td style="font-weight:500;color:#042C53">{{ $doc->nom }}</td>
           <td>

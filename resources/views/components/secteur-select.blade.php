@@ -42,6 +42,7 @@ $selectedVals = collect($selected)->flatten()->filter()->values();
             language: 'fr',
             placeholder: 'Choisir un secteur…',
             allowClear: true,
+            width: '100%',
         });
     }
     if (document.readyState === 'loading') {

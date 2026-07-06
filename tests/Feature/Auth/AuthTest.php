@@ -286,6 +286,31 @@ class AuthTest extends TestCase
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
 
+    public function test_email_verifie_via_lien_signe_sans_session_active(): void
+    {
+        // Inscription sur un appareil, ouverture du lien sur un autre (ex. téléphone)
+        // sans y être connecté : la vérification doit quand même s'effectuer, sans
+        // exiger de connexion préalable sur cet appareil.
+        $user = $this->creerUser('candidat', verifie: false);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $this->get($url)->assertRedirect(route('auth.connexion'));
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
+
+        // De retour sur l'appareil d'origine, la connexion doit désormais mener
+        // au tableau de bord et non plus reboucler sur la page de vérification.
+        $this->post(route('auth.connexion.store'), [
+            'email'    => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect(route('candidat.dashboard'));
+    }
+
     public function test_recruteur_redirige_vers_dashboard_apres_email_verifie_si_validation_desactivee(): void
     {
         \App\Models\ParametreApp::set('recruteur_validation_docs', '0');

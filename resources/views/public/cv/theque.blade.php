@@ -231,7 +231,7 @@
 
       {{-- Résultats (initial server-side, puis AJAX) --}}
       <div id="cvt-results">
-        @include('public.cv._theque_liste', ['cvs' => $cvs])
+        @include('public.cv._theque_liste', ['cvs' => $cvs, 'dejaAchetesIds' => $dejaAchetesIds ?? []])
       </div>
 
     </div>

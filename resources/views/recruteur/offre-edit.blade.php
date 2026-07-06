@@ -17,6 +17,10 @@
 @media (max-width: 480px) {
   .offre-edit-actions .rec-btn { width: 100%; justify-content: center; min-width: 0; }
 }
+.offre-edit-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-bottom: 18px; }
+@media (max-width: 640px) {
+  .offre-edit-grid2 { grid-template-columns: minmax(0, 1fr); }
+}
 </style>
 @endsection
 
@@ -45,7 +49,7 @@
         @error('titre') <p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p> @enderror
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+      <div class="offre-edit-grid2">
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Entreprise <span style="color:#e53e3e">*</span></label>
           <input type="text" name="entreprise" value="{{ old('entreprise', $offre->entreprise) }}" required
@@ -58,7 +62,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+      <div class="offre-edit-grid2">
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Type de contrat <span style="color:#e53e3e">*</span></label>
           <select name="type" required style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
@@ -74,15 +78,15 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+      <div class="offre-edit-grid2">
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Rémunération (FCFA / mois)</label>
           <div style="display:flex;gap:8px;align-items:center">
             <input type="number" name="salaire_min" value="{{ old('salaire_min', $offre->salaire_min) }}" placeholder="Min" min="0" step="1000"
-                   style="flex:1;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
+                   style="flex:1;min-width:0;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
             <span style="color:#94a3b8;font-size:13px">–</span>
             <input type="number" name="salaire_max" value="{{ old('salaire_max', $offre->salaire_max) }}" placeholder="Max" min="0" step="1000"
-                   style="flex:1;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
+                   style="flex:1;min-width:0;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">
           </div>
         </div>
         <div>
@@ -103,7 +107,7 @@
         @error('metier_id')<p style="color:#e53e3e;font-size:12px;margin:3px 0 0">{{ $message }}</p>@enderror
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+      <div class="offre-edit-grid2">
         <div>
           <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Niveau d'expérience</label>
           <select name="niveau_experience" style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box">

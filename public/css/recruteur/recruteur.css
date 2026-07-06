@@ -386,7 +386,7 @@ a.rec-stat--link:hover { border-color: var(--bleu-clair); box-shadow: 0 4px 16px
 /* ── Form ─────────────────────────────────── */
 .rec-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
 }
 .rec-form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -399,6 +399,8 @@ a.rec-stat--link:hover { border-color: var(--bleu-clair); box-shadow: 0 4px 16px
 .rec-form-group input,
 .rec-form-group select,
 .rec-form-group textarea {
+  width: 100%;
+  min-width: 0;
   border: 1.5px solid var(--gris-border);
   border-radius: 8px;
   padding: 10px 14px;
@@ -930,7 +932,7 @@ a.rec-stat--link:hover { border-color: var(--bleu-clair); box-shadow: 0 4px 16px
   .rec-stats      { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .rec-grid-2     { grid-template-columns: 1fr; }
   .rec-grid-3     { grid-template-columns: 1fr; }
-  .rec-form-grid  { grid-template-columns: 1fr; }
+  .rec-form-grid  { grid-template-columns: minmax(0, 1fr); }
   .rec-form-group.full { grid-column: 1; }
   .rec-topbar     { flex-direction: column; align-items: flex-start; gap: 10px; }
   .rec-topbar__actions { width: 100%; flex-wrap: wrap; }

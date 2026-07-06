@@ -44,6 +44,7 @@ $selectedNoms = collect($selected)->map(fn($v) => is_string($v) ? $v : (is_objec
             tags: true,
             placeholder: 'Rechercher ou ajouter une compétence…',
             allowClear: true,
+            width: '100%',
             tokenSeparators: [','],
             createTag: function (params) {
                 var term = $.trim(params.term);

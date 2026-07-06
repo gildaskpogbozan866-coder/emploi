@@ -6,18 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\CV;
 use App\Models\CvConsultation;
 use App\Models\CvDownload;
-use App\Models\Disponibilite;
 use App\Models\Document;
-use App\Models\Langue;
-use App\Models\Metier;
-use App\Models\NiveauEtude;
-use App\Models\NiveauExperience;
 use App\Models\Paiement;
-use App\Models\SecteurActivite;
-use App\Models\TypeContrat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -27,50 +19,27 @@ class CvthequeController extends Controller
 {
     public function index(Request $request)
     {
-        // ── CVs ──
-        $cvQuery = CV::visible()->whereHas('candidat', fn($q) => $q->where('actif', true))->with('candidat')->latest();
+        // Cet espace ne montre plus que les CV déjà achetés (consultés/téléchargés) —
+        // parcourir de nouveaux profils se fait désormais sur la CVthèque publique,
+        // qui reconnaît un recruteur déjà passé par ici et lui montre les infos
+        // complètes sans dupliquer toute la recherche/filtres ici.
+        $consultationsDates = CvConsultation::where('recruteur_id', Auth::id())->pluck('created_at', 'cv_id');
+        $dejaConsultesIds    = $consultationsDates->keys()->toArray();
+
+        $cvQuery = CV::visible()->whereIn('id', $dejaConsultesIds)->with('candidat')->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
             $cvQuery->where(function ($sq) use ($q) {
                 $sq->where('competences', 'like', "%$q%")
-                   ->orWhere('metier', 'like', "%$q%")
-                   ->orWhere('resume', 'like', "%$q%");
+                   ->orWhere('metier', 'like', "%$q%");
             });
         }
-        if ($request->filled('langue'))            $cvQuery->where('langues', 'like', '%'.$request->langue.'%');
-        if ($request->filled('metier'))            $cvQuery->where('metier', 'like', '%'.$request->metier.'%');
-        if ($request->filled('niveau_etude'))      $cvQuery->where('niveau_etude', $request->niveau_etude);
-        if ($request->filled('type_contrat'))      $cvQuery->where('type_contrat', $request->type_contrat);
-        if ($request->filled('niveau_experience')) $cvQuery->where('niveau_experience', $request->niveau_experience);
-        if ($request->input('vu') === 'deja') {
-            $cvQuery->whereHas('consultations', fn($q) => $q->where('recruteur_id', Auth::id()));
-        }
 
-        $cvResults = $cvQuery->get()->map(function ($cv) {
-            $cv->_is_document = false;
-            return $cv;
-        });
+        $cvs = $cvQuery->paginate(16)->withQueryString();
 
-        // Les documents (diplômes, attestations…) ne sont pas des CV : ils
-        // n'ont aucun mécanisme de consentement/visibilité et ne doivent pas
-        // apparaître dans la CVthèque. Rien n'est supprimé côté données —
-        // ils restent consultables par leur propriétaire et l'admin.
-        $merged = $cvResults->sortByDesc('created_at')->values();
-        $page   = (int) $request->get('page', 1);
-        $perPage = 16;
-        $cvs = new LengthAwarePaginator(
-            $merged->forPage($page, $perPage)->values(),
-            $merged->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-
-        $favorisCvIds        = Auth::user()->cvsFavoris()->pluck('cvs.id')->toArray();
-        $consultationsDates  = CvConsultation::where('recruteur_id', Auth::id())->pluck('created_at', 'cv_id');
-        $dejaConsultesIds    = $consultationsDates->keys()->toArray();
-        $credits             = Auth::user()->cv_credits;
+        $favorisCvIds = Auth::user()->cvsFavoris()->pluck('cvs.id')->toArray();
+        $credits      = Auth::user()->cv_credits;
 
         $cvStats = [
             'credits_restants' => $credits,
@@ -85,19 +54,8 @@ class CvthequeController extends Controller
             ->limit(5)
             ->get();
 
-        $paysList           = DB::table('pays')->where('actif', true)->orderBy('ordre')->pluck('nom');
-        $disponibilitesList = Disponibilite::actifs()->get();
-        $secteursList       = SecteurActivite::orderBy('libelle')->get();
-        $languesList        = Langue::orderBy('nom')->get();
-        $metiersList        = Metier::orderBy('nom')->get();
-        $niveauxEtudeList   = NiveauEtude::orderBy('ordre')->get();
-        $typeContratsList   = TypeContrat::orderBy('libelle')->get();
-        $niveauxExpList     = NiveauExperience::orderBy('ordre')->get();
-
         return view('recruteur.cvtheque', compact(
-            'cvs', 'favorisCvIds', 'dejaConsultesIds', 'consultationsDates', 'credits', 'cvStats', 'paiementsCredits',
-            'paysList', 'disponibilitesList', 'secteursList', 'languesList',
-            'metiersList', 'niveauxEtudeList', 'typeContratsList', 'niveauxExpList'
+            'cvs', 'favorisCvIds', 'dejaConsultesIds', 'consultationsDates', 'credits', 'cvStats', 'paiementsCredits'
         ));
     }
 

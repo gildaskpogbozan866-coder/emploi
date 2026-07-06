@@ -89,7 +89,6 @@ use App\Http\Controllers\Admin\NotificationController as AdminNotification;
 use App\Http\Controllers\Recruteur\NotificationController as RecruteurNotification;
 use App\Http\Controllers\Annonceur\NotificationController as AnnonceurNotification;
 use App\Models\ParametreApp;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // API publique — annonces actives pour le widget homepage
 Route::get('/api/publicites/actives', [PublicPublicite::class, 'actives'])->name('publicites.actives');
@@ -254,10 +253,35 @@ Route::middleware('auth')->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 
-    Route::get('/email/verifier/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        $user                  = $request->user();
-        $validationDocsActif   = ParametreApp::get('recruteur_validation_docs', '0') === '1';
+    Route::post('/email/renvoyer', function (Illuminate\Http\Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('home'));
+        }
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('resent', true);
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
+// Hors du groupe 'auth' volontairement : le lien de vérification doit fonctionner
+// même ouvert sur un appareil où l'utilisateur n'est pas connecté (ex. inscription
+// sur PC, ouverture du mail sur téléphone) — la signature id+hash prouve déjà
+// l'autorisation, inutile d'exiger une session active en plus.
+Route::get('/email/verifier/{id}/{hash}', function (Illuminate\Http\Request $request, $id, $hash) {
+    $user = \App\Models\User::findOrFail($id);
+
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        abort(403);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new \Illuminate\Auth\Events\Verified($user));
+    }
+
+    // Même appareil/session déjà connectée en tant que ce compte : on continue
+    // le parcours normal vers le bon tableau de bord.
+    if (auth()->check() && auth()->id() === $user->id) {
+        $validationDocsActif = ParametreApp::get('recruteur_validation_docs', '0') === '1';
 
         if ($user->role === \App\Enums\Role::RECRUTEUR) {
             return $validationDocsActif
@@ -270,16 +294,11 @@ Route::middleware('auth')->group(function () {
             \App\Enums\Role::ANNONCEUR => redirect()->route('annonceur.dashboard'),
             default     => redirect()->route('candidat.dashboard'),
         };
-    })->middleware('signed')->name('verification.verify');
+    }
 
-    Route::post('/email/renvoyer', function (Illuminate\Http\Request $request) {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('home'));
-        }
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('resent', true);
-    })->middleware('throttle:6,1')->name('verification.send');
-});
+    // Autre appareil, pas de session : email vérifié quand même, on invite à se connecter.
+    return redirect()->route('auth.connexion')->with('success', 'Adresse email vérifiée avec succès ! Vous pouvez maintenant vous connecter.');
+})->middleware('signed')->name('verification.verify');
 
 // ════════════════════════════════════════════════════════
 //  ESPACE CANDIDAT — protégé par rôle + permissions

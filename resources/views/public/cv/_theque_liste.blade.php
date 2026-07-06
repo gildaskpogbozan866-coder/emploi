@@ -34,6 +34,9 @@
           @if($item->plan === 'premium')
             <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#fef9c3;color:#854d0e;border:1px solid #fde68a">★ Premium</span>
           @endif
+          @if(in_array($item->id, $dejaAchetesIds ?? []))
+            <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">✓ Déjà acheté</span>
+          @endif
         </div>
       </div>
     </div>

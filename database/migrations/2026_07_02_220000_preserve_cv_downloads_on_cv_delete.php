@@ -33,6 +33,14 @@ return new class extends Migration
     private function foreignKeyExists(string $table, string $constraintName): bool
     {
         $connection = Schema::getConnection();
+
+        // information_schema.TABLE_CONSTRAINTS n'existe que sur MySQL — sur les
+        // autres drivers (SQLite en test), on considère la contrainte absente et
+        // on laisse les blocs appelants la (re)créer via le Schema Builder.
+        if ($connection->getDriverName() !== 'mysql') {
+            return false;
+        }
+
         $result = $connection->select(
             "SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
              WHERE CONSTRAINT_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?

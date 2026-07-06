@@ -498,17 +498,35 @@
       </div>{{-- /body --}}
     </div>{{-- /profile --}}
 
-    {{-- ── COORDONNÉES VERROUILLÉES ── --}}
+    {{-- ── COORDONNÉES ── --}}
+    @if($debloque ?? false)
+    <div class="cvtd-locked" style="background:#f0fdf4;border-color:#bbf7d0">
+      <div class="cvtd-locked__icon" style="background:#dcfce7">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <h3 class="cvtd-locked__title">✓ Profil déjà acheté — coordonnées débloquées</h3>
+      <p class="cvtd-locked__desc">
+        <strong>Email :</strong> {{ $cv->candidat?->email ?? '-' }}<br>
+        <strong>Téléphone :</strong> {{ $cv->candidat?->tel ?? '-' }}
+      </p>
+      <div class="cvtd-locked__actions">
+        <a href="{{ route('recruteur.cvtheque') }}" class="cvtd-locked__btn cvtd-locked__btn--blue">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Télécharger depuis mon espace « Acheter des CV »
+        </a>
+      </div>
+    </div>
+    @else
     <div class="cvtd-locked">
       <div class="cvtd-locked__icon">
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
       <h3 class="cvtd-locked__title">Coordonnées confidentielles</h3>
       <p class="cvtd-locked__desc">
-        Le nom, l'email et le téléphone de ce candidat sont protégés.<br>
+        L'email et le téléphone de ce candidat sont protégés.<br>
         @auth
           @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
-            Accédez au profil complet depuis votre espace recruteur CVthèque.
+            Vous n'avez plus de crédits CVthèque — achetez-en pour débloquer ce profil.
           @else
             Ces informations sont réservées aux recruteurs inscrits.
           @endif
@@ -519,9 +537,9 @@
       <div class="cvtd-locked__actions">
         @auth
           @if(auth()->user()->hasRole(\App\Enums\Role::RECRUTEUR))
-            <a href="{{ route('recruteur.cvtheque') }}" class="cvtd-locked__btn cvtd-locked__btn--blue">
-              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              Accéder à la CVthèque recruteur
+            <a href="{{ route('recruteur.cv-credits.index') }}" class="cvtd-locked__btn cvtd-locked__btn--blue">
+              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              Acheter des crédits
             </a>
           @endif
         @else
@@ -536,6 +554,7 @@
         @endauth
       </div>
     </div>
+    @endif
 
   </div>
 </div>

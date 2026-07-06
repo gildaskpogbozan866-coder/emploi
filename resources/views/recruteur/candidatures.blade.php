@@ -74,11 +74,11 @@
           <td>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="rec-cand-row__avatar" style="width:36px;height:36px;font-size:13px">
-                {{ strtoupper(substr($c->candidat->prenom ?? '?', 0, 1)) }}
+                {{ strtoupper(substr($c->candidat?->prenom ?? '?', 0, 1)) }}
               </div>
               <div>
-                <div style="font-weight:600;color:#042C53;font-size:13.5px">{{ $c->candidat->nom_complet }}</div>
-                <div style="font-size:11.5px;color:#94a3b8">{{ $c->candidat->email }}</div>
+                <div style="font-weight:600;color:#042C53;font-size:13.5px">{{ $c->candidat?->nom_complet ?? 'Candidat supprimé' }}</div>
+                <div style="font-size:11.5px;color:#94a3b8">{{ $c->candidat?->email ?? '-' }}</div>
               </div>
             </div>
           </td>

@@ -19,14 +19,14 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div class="adm-grid-2col">
   <div class="adm-card">
     <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9">
       <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Candidat</h3>
     </div>
     <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->user->nom_complet }}</p></div>
-      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->user->email }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Nom</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->user?->nom_complet ?? 'Utilisateur supprimé' }}</p></div>
+      <div><p style="font-size:12px;color:#94a3b8;margin:0 0 2px">Email</p><p style="font-weight:600;color:#042C53;margin:0">{{ $document->user?->email ?? '-' }}</p></div>
     </div>
   </div>
 
