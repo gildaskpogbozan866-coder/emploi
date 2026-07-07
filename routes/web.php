@@ -43,6 +43,7 @@ use App\Http\Controllers\Recruteur\ProfilController as RecruteurProfil;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UtilisateurController;
 use App\Http\Controllers\Admin\OffreController as AdminOffre;
+use App\Http\Controllers\Admin\CandidatureController as AdminCandidature;
 use App\Http\Controllers\Admin\CVController as AdminCV;
 use App\Http\Controllers\Admin\DocumentController as AdminDocument;
 use App\Http\Controllers\Admin\BlogController as AdminBlog;
@@ -547,6 +548,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
         Route::get('/{offre}',             [AdminOffre::class, 'show'])->name('detail');
         Route::patch('/{offre}/statut',    [AdminOffre::class, 'updateStatut'])->name('statut');
         Route::delete('/{offre}',          [AdminOffre::class, 'destroy'])->name('destroy');
+    });
+
+    // Gestion candidatures
+    Route::middleware('permission:'.Permission::MANAGE_CANDIDATURES)->prefix('candidatures')->name('candidatures.')->group(function () {
+        Route::get('/',            [AdminCandidature::class, 'index'])->name('list');
+        Route::get('/{candidature}', [AdminCandidature::class, 'show'])->name('detail');
+        Route::delete('/{candidature}', [AdminCandidature::class, 'destroy'])->name('destroy');
     });
 
     // Gestion CVs & Documents

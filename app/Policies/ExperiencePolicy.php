@@ -9,6 +9,6 @@ class ExperiencePolicy
 {
     public function modify(User $user, Experience $experience): bool
     {
-        return $user->id === $experience->candidat_id;
+        return (int) $user->id === (int) $experience->candidat_id;
     }
 }

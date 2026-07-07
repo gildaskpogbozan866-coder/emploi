@@ -103,7 +103,7 @@
       <div class="adm-stat__label">Offres actives</div>
     </div>
   </a>
-  <div class="adm-stat" title="Aucune page de gestion dédiée aux candidatures côté admin pour l'instant">
+  <a class="adm-stat adm-stat--link" href="{{ route('admin.candidatures.list') }}">
     <div class="adm-stat__icon adm-stat__icon--violet">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
@@ -111,7 +111,7 @@
       <div class="adm-stat__val">{{ $stats['candidatures'] ?? 0 }}</div>
       <div class="adm-stat__label">Candidatures</div>
     </div>
-  </div>
+  </a>
   <a class="adm-stat adm-stat--link" href="{{ route('admin.cvs.list') }}" style="position:relative">
     @if(($stats['cvs_nouveaux'] ?? 0) > 0)
     <span style="position:absolute;top:10px;right:10px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;line-height:1.4">

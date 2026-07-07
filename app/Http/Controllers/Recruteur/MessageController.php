@@ -110,7 +110,7 @@ class MessageController extends Controller
     private function autoriser(Conversation $conversation): void
     {
         abort_if(
-            $conversation->user1_id !== Auth::id() && $conversation->user2_id !== Auth::id(),
+            (int) $conversation->user1_id !== (int) Auth::id() && (int) $conversation->user2_id !== (int) Auth::id(),
             403
         );
     }

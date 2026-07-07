@@ -89,7 +89,7 @@ class PubliciteController extends Controller
 
     public function destroy(Publicite $publicite)
     {
-        abort_if($publicite->user_id !== Auth::id(), 403);
+        abort_if((int) $publicite->user_id !== (int) Auth::id(), 403);
 
         Storage::disk('public')->delete($publicite->image);
         $publicite->delete();

@@ -9,6 +9,6 @@ class FormationPolicy
 {
     public function modify(User $user, Formation $formation): bool
     {
-        return $user->id === $formation->candidat_id;
+        return (int) $user->id === (int) $formation->candidat_id;
     }
 }

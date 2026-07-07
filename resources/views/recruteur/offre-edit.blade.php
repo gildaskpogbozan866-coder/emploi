@@ -144,19 +144,19 @@
 
       <div style="margin-bottom:24px">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">Documents à fournir par le candidat</label>
-        <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
           @php $exigeCv     = old('exige_cv',     $offre->exige_cv     ? '1' : '0') == '1'; @endphp
           @php $exigeLettre = old('exige_lettre',  $offre->exige_lettre ? '1' : '0') == '1'; @endphp
-          <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid {{ $exigeCv ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:{{ $exigeCv ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+          <label style="display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border:1.5px solid {{ $exigeCv ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:13.5px;background:{{ $exigeCv ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
             <input type="checkbox" name="exige_cv" value="1" {{ $exigeCv ? 'checked' : '' }}
-                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'" style="flex-shrink:0">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Exiger un CV (PDF / Word)
           </label>
-          <label style="display:flex;align-items:center;gap:10px;padding:12px 18px;border:1.5px solid {{ $exigeLettre ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;background:{{ $exigeLettre ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+          <label style="display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border:1.5px solid {{ $exigeLettre ? '#185FA5' : '#d1d5db' }};border-radius:10px;cursor:pointer;font-weight:500;font-size:13.5px;background:{{ $exigeLettre ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
             <input type="checkbox" name="exige_lettre" value="1" {{ $exigeLettre ? 'checked' : '' }}
-                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                   onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'" style="flex-shrink:0">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             Exiger une lettre de motivation (PDF / Word)
           </label>
         </div>
@@ -166,13 +166,13 @@
       <div style="margin-bottom:24px">
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">Autres pièces justificatives requises <small style="color:#94a3b8;font-weight:400">(optionnel)</small></label>
         @php $requisIds = old('types_documents_requis', $offre->typesDocumentsRequis->pluck('id')->all()); @endphp
-        <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
           @foreach($typesDocuments as $type)
-          <label style="display:flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid {{ in_array($type->id, $requisIds) ? '#185FA5' : '#d1d5db' }};border-radius:9px;cursor:pointer;font-weight:500;font-size:13.5px;background:{{ in_array($type->id, $requisIds) ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
+          <label style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1.5px solid {{ in_array($type->id, $requisIds) ? '#185FA5' : '#d1d5db' }};border-radius:9px;cursor:pointer;font-weight:500;font-size:13px;background:{{ in_array($type->id, $requisIds) ? '#eff6ff' : '#f9fafb' }};transition:border-color .15s">
             <input type="checkbox" name="types_documents_requis[]" value="{{ $type->id }}"
                    {{ in_array($type->id, $requisIds) ? 'checked' : '' }}
                    onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'"
-                   style="accent-color:#185FA5">
+                   style="flex-shrink:0;accent-color:#185FA5">
             {{ $type->nom }}
           </label>
           @endforeach

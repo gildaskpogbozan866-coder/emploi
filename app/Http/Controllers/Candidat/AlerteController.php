@@ -138,7 +138,7 @@ class AlerteController extends Controller
 
     public function toggle(Alerte $alerte)
     {
-        abort_if($alerte->user_id !== Auth::id(), 403);
+        abort_if((int) $alerte->user_id !== (int) Auth::id(), 403);
         $alerte->update(['active' => ! $alerte->active]);
         $label = $alerte->active ? 'activée' : 'désactivée';
         return back()->with('success', "Alerte {$label}.");
@@ -146,7 +146,7 @@ class AlerteController extends Controller
 
     public function destroy(Alerte $alerte)
     {
-        abort_if($alerte->user_id !== Auth::id(), 403);
+        abort_if((int) $alerte->user_id !== (int) Auth::id(), 403);
         $alerte->delete();
         return back()->with('success', 'Alerte supprimée.');
     }

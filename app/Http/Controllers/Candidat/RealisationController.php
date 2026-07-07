@@ -40,7 +40,7 @@ class RealisationController extends Controller
 
     public function destroy(CandidatRealisation $realisation)
     {
-        abort_unless($realisation->user_id === Auth::id(), 403);
+        abort_unless((int) $realisation->user_id === (int) Auth::id(), 403);
         Storage::disk('public')->delete($realisation->photo);
         $realisation->delete();
 

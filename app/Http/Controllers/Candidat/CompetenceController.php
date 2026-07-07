@@ -46,7 +46,7 @@ class CompetenceController extends Controller
 
     public function destroy(CompetenceCandidat $competence)
     {
-        abort_if($competence->candidat_id !== Auth::id(), 403);
+        abort_if((int) $competence->candidat_id !== (int) Auth::id(), 403);
         $competence->delete();
 
         return response()->json(['success' => true]);

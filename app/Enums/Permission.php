@@ -7,6 +7,7 @@ class Permission
     // ── ADMIN ──────────────────────────────────────────────
     const MANAGE_USERS          = 'manage-users';
     const MANAGE_OFFRES         = 'manage-offres';
+    const MANAGE_CANDIDATURES   = 'manage-candidatures';
     const MANAGE_CVS            = 'manage-cvs';
     const MANAGE_BLOG           = 'manage-blog';
     const MANAGE_SERVICES       = 'manage-services';
@@ -47,6 +48,7 @@ class Permission
         return [
             self::MANAGE_USERS,
             self::MANAGE_OFFRES,
+            self::MANAGE_CANDIDATURES,
             self::MANAGE_CVS,
             self::MANAGE_BLOG,
             self::MANAGE_SERVICES,

@@ -89,7 +89,7 @@ class OffreController extends Controller
     {
         // Une seule vue par session ; le recruteur propriétaire ne compte pas
         $sessionKey = 'vu_offre_' . $offre->id;
-        if (!session()->has($sessionKey) && Auth::id() !== $offre->recruteur_id) {
+        if (!session()->has($sessionKey) && (int) Auth::id() !== (int) $offre->recruteur_id) {
             $offre->increment('vues');
             session()->put($sessionKey, true);
         }

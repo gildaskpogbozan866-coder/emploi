@@ -2,16 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\PageVisit;
+use App\Jobs\TrackPageVisitJob;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class TrackVisit
 {
-    private const LOCAL_IPS = ['127.0.0.1', '::1', 'localhost'];
-
     // Préfixes de routes à ignorer
     private const SKIP_PREFIXES = ['admin', 'api'];
 
@@ -19,6 +16,8 @@ class TrackVisit
     {
         $response = $next($request);
 
+        // Dispatché en file d'attente : la géolocalisation fait un appel HTTP
+        // externe (ip-api.com) qui ne doit jamais bloquer la réponse au visiteur.
         if ($this->shouldTrack($request)) {
             $this->track($request);
         }
@@ -46,48 +45,20 @@ class TrackVisit
             $ip = $request->ip();
             $ua = $request->userAgent() ?? '';
 
-            [$country, $city] = $this->geolocate($ip);
-
-            PageVisit::create([
-                'session_id'  => substr(session()->getId(), 0, 64),
-                'url'         => substr($request->fullUrl(), 0, 500),
-                'page'        => $request->route()?->getName(),
-                'device_type' => $this->detectDevice($ua),
-                'browser'     => $this->detectBrowser($ua),
-                'os'          => $this->detectOs($ua),
-                'country'     => $country,
-                'city'        => $city,
-                'ip_hash'     => hash('sha256', $ip),
-                'user_id'     => auth()->id(),
-            ]);
+            TrackPageVisitJob::dispatch(
+                ip: $ip,
+                userAgent: $ua,
+                url: substr($request->fullUrl(), 0, 500),
+                page: $request->route()?->getName(),
+                deviceType: $this->detectDevice($ua),
+                browser: $this->detectBrowser($ua),
+                os: $this->detectOs($ua),
+                sessionId: substr(session()->getId(), 0, 64),
+                userId: auth()->id(),
+            )->afterResponse();
         } catch (\Throwable) {
             // Ne jamais casser l'app à cause du tracking
         }
-    }
-
-    private function geolocate(string $ip): array
-    {
-        if (in_array($ip, self::LOCAL_IPS)) {
-            return ['Local', 'Local'];
-        }
-
-        return Cache::remember("geo_ip_{$ip}", 86400, function () use ($ip) {
-            try {
-                $ctx  = stream_context_create(['http' => ['timeout' => 2]]);
-                $json = @file_get_contents(
-                    "http://ip-api.com/json/{$ip}?fields=status,country,city",
-                    false,
-                    $ctx
-                );
-                if ($json) {
-                    $data = json_decode($json, true);
-                    if (($data['status'] ?? '') === 'success') {
-                        return [$data['country'] ?? null, $data['city'] ?? null];
-                    }
-                }
-            } catch (\Throwable) {}
-            return [null, null];
-        });
     }
 
     private function detectDevice(string $ua): string

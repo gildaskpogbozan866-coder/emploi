@@ -9,11 +9,11 @@ class CVPolicy
 {
     public function update(User $user, CV $cv): bool
     {
-        return $user->id === $cv->candidat_id || $user->isAdmin();
+        return (int) $user->id === (int) $cv->candidat_id || $user->isAdmin();
     }
 
     public function delete(User $user, CV $cv): bool
     {
-        return $user->id === $cv->candidat_id || $user->isAdmin();
+        return (int) $user->id === (int) $cv->candidat_id || $user->isAdmin();
     }
 }

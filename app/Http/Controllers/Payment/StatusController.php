@@ -10,7 +10,7 @@ class StatusController extends Controller
     private function verifyAccess(Paiement $paiement): void
     {
         if (auth()->check()) {
-            abort_if($paiement->user_id !== auth()->id(), 403);
+            abort_if((int) $paiement->user_id !== (int) auth()->id(), 403);
             return;
         }
 

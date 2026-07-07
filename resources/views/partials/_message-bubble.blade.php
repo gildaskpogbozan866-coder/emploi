@@ -1,4 +1,4 @@
-@php $isMine = $msg->expediteur_id === auth()->id(); @endphp
+@php $isMine = (int) $msg->expediteur_id === (int) auth()->id(); @endphp
 <div class="msg-wrap msg-wrap--{{ $isMine ? 'mine' : 'their' }}">
   <div class="msg-bubble msg-bubble--{{ $isMine ? 'mine' : 'their' }}">
     @if($msg->contenu)

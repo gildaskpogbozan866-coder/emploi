@@ -48,7 +48,7 @@ class LangueController extends Controller
 
     public function destroy(LangueCandidat $langue)
     {
-        abort_if($langue->candidat_id !== Auth::id(), 403);
+        abort_if((int) $langue->candidat_id !== (int) Auth::id(), 403);
         $langue->delete();
 
         return response()->json(['success' => true]);

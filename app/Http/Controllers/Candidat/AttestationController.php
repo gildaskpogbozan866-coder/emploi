@@ -32,7 +32,7 @@ class AttestationController extends Controller
 
     public function destroy(CandidatAttestation $attestation)
     {
-        abort_unless($attestation->user_id === Auth::id(), 403);
+        abort_unless((int) $attestation->user_id === (int) Auth::id(), 403);
         Storage::disk('public')->delete($attestation->fichier);
         $attestation->delete();
 

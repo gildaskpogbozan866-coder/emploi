@@ -55,7 +55,7 @@ class DocumentController extends Controller
 
     public function edit(Document $document)
     {
-        abort_unless($document->user_id === Auth::id(), 403);
+        abort_unless((int) $document->user_id === (int) Auth::id(), 403);
 
         $typesDocuments = TypeDocument::actif()->get();
         return view('candidat.document-edit', compact('document', 'typesDocuments'));
@@ -63,7 +63,7 @@ class DocumentController extends Controller
 
     public function update(Request $request, Document $document)
     {
-        abort_unless($document->user_id === Auth::id(), 403);
+        abort_unless((int) $document->user_id === (int) Auth::id(), 403);
 
         $request->validate([
             'type_document_id' => ['required', 'exists:type_documents,id', Rule::notIn([$this->cvTypeId()])],
@@ -93,7 +93,7 @@ class DocumentController extends Controller
 
     public function destroy(Document $document)
     {
-        abort_unless($document->user_id === Auth::id(), 403);
+        abort_unless((int) $document->user_id === (int) Auth::id(), 403);
 
         Storage::disk('public')->delete($document->fichier);
         $document->delete();
