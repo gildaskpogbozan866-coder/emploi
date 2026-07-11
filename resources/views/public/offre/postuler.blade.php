@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Postuler | ' . $offre->titre)
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/cv/depot-cv.css') }}">
+@endsection
+
 @section('content')
 <section class="section" style="background:#f8fafc;min-height:70vh">
   <div class="container" style="max-width:780px">
@@ -177,6 +181,26 @@
           @if($hasAny)
           </div>{{-- /fileUploadSection --}}
           @endif
+
+          <a href="{{ route('service.commande', 'cv-professionnel') }}" class="cv-promo-banner" style="margin-top:14px">
+            <div class="cv-promo-banner__left">
+              <div class="cv-promo-banner__icon">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#042C53" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="cv-promo-banner__title">Votre CV vous fait rater des opportunités.</div>
+                <div class="cv-promo-banner__sub">Un recruteur décide en 7 secondes. Nos experts rédigent un CV qui passe tous les filtres, livré en 30 min à 1h max.</div>
+              </div>
+            </div>
+            <span class="cv-promo-banner__cta">
+              Commander un CV adéquat
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </span>
+          </a>
         </div>
         @endif
         {{-- ── /CV requis ──────────────────────────────────────────── --}}

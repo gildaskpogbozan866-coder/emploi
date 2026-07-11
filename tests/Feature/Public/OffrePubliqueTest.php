@@ -234,6 +234,31 @@ class OffrePubliqueTest extends TestCase
             ->assertViewIs('public.offre.postuler');
     }
 
+    public function test_postuler_affiche_le_lien_commander_un_cv_si_cv_exige(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $candidat  = $this->creerCandidat();
+        $offre     = $this->creerOffre($recruteur, ['exige_cv' => true]);
+
+        $this->actingAs($candidat)
+            ->get(route('offre.postuler', $offre))
+            ->assertOk()
+            ->assertSee('Commander un CV adéquat')
+            ->assertSee(route('service.commande', 'cv-professionnel'), false);
+    }
+
+    public function test_postuler_masque_le_lien_commander_un_cv_si_cv_non_exige(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $candidat  = $this->creerCandidat();
+        $offre     = $this->creerOffre($recruteur, ['exige_cv' => false]);
+
+        $this->actingAs($candidat)
+            ->get(route('offre.postuler', $offre))
+            ->assertOk()
+            ->assertDontSee('Commander un CV adéquat');
+    }
+
     // ── Sauvegarde / dé-sauvegarde ────────────────────────
 
     public function test_toggle_sauvegarde_ajoute_si_absent(): void
