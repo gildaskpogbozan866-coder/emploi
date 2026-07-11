@@ -42,4 +42,9 @@ class Candidature extends Model
     {
         return $this->belongsToMany(Document::class, 'candidature_document');
     }
+
+    public function historiques()
+    {
+        return $this->hasMany(CandidatureHistorique::class)->latest('created_at');
+    }
 }

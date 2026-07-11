@@ -4,6 +4,8 @@
     $flashWarning = session('warning');
     $flashInfo    = session('info');
     $flashCvPublie = session('cv_publie');
+    $flashAbonnementRequis = session('abonnement_requis');
+    $flashAbonnementRequisUrl = session('abonnement_requis_url');
     $sessionError = $errors->first('session');
 
     $clesIgnorees = ['session','credentials','email','password','mot_de_passe_actuel',
@@ -47,9 +49,26 @@ document.addEventListener('submit', function(e) {
 });
 </script>
 
-@if($flashSuccess || $flashError || $flashWarning || $flashInfo || $flashCvPublie || $sessionError || !empty($autresErreurs))
+@if($flashSuccess || $flashError || $flashWarning || $flashInfo || $flashCvPublie || $flashAbonnementRequis || $sessionError || !empty($autresErreurs))
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    @if($flashAbonnementRequis)
+    Swal.fire({
+        icon: 'info',
+        title: 'Abonnement requis',
+        text: {{ Js::from($flashAbonnementRequis) }},
+        confirmButtonText: 'Voir les plans',
+        confirmButtonColor: '#185FA5',
+        showCancelButton: true,
+        cancelButtonText: 'Fermer',
+        cancelButtonColor: '#94a3b8',
+        reverseButtons: true,
+    }).then(function(r) {
+        @if($flashAbonnementRequisUrl)
+        if (r.isConfirmed) window.location.href = {{ Js::from($flashAbonnementRequisUrl) }};
+        @endif
+    });
+    @endif
     @if($flashCvPublie)
     Swal.fire({
         icon: 'success',

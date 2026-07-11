@@ -104,10 +104,9 @@ class OffreController extends Controller
     {
         $erreurQuota = $this->verifierQuota();
         if ($erreurQuota) {
-            $route = Auth::user()->abonnementActif()->exists()
-                ? 'recruteur.abonnement.plans'
-                : 'recruteur.abonnement';
-            return redirect()->route($route)->with('error', $erreurQuota);
+            return redirect()->route('recruteur.abonnement.plans')
+                ->with('abonnement_requis', $erreurQuota)
+                ->with('abonnement_requis_url', route('recruteur.abonnement.plans'));
         }
         $typeContrats    = TypeContrat::orderBy('libelle')->get();
         $metiers         = Metier::orderBy('nom')->get();
@@ -145,10 +144,9 @@ class OffreController extends Controller
 
         $erreurQuota = $this->verifierQuota();
         if ($erreurQuota) {
-            $route = Auth::user()->abonnementActif()->exists()
-                ? 'recruteur.abonnement.plans'
-                : 'recruteur.abonnement';
-            return redirect()->route($route)->with('error', $erreurQuota);
+            return redirect()->route('recruteur.abonnement.plans')
+                ->with('abonnement_requis', $erreurQuota)
+                ->with('abonnement_requis_url', route('recruteur.abonnement.plans'));
         }
 
         $fichier = $request->hasFile('fichier')
@@ -309,10 +307,9 @@ class OffreController extends Controller
 
         $erreurQuota = $this->verifierQuota();
         if ($erreurQuota) {
-            $route = Auth::user()->abonnementActif()->exists()
-                ? 'recruteur.abonnement.plans'
-                : 'recruteur.abonnement';
-            return redirect()->route($route)->with('error', $erreurQuota);
+            return redirect()->route('recruteur.abonnement.plans')
+                ->with('abonnement_requis', $erreurQuota)
+                ->with('abonnement_requis_url', route('recruteur.abonnement.plans'));
         }
 
         $copie = $offre->replicate(['vues']);

@@ -13,10 +13,28 @@
   </div>
 </div>
 
+{{-- Onglets par statut --}}
+<div class="rec-tabs">
+  @php
+    $currentStatut = request('statut');
+    $tabs = [['value' => null, 'label' => 'Toutes', 'count' => $counts['toutes']]];
+    foreach (\App\Enums\StatutCandidature::cases() as $case) {
+        $tabs[] = ['value' => $case->value, 'label' => $case->label(), 'count' => $counts[$case->value]];
+    }
+  @endphp
+  @foreach($tabs as $tab)
+    <a href="{{ route('recruteur.candidatures', array_filter(array_merge(request()->only(['offre_id', 'q', 'tri']), ['statut' => $tab['value']]))) }}"
+       class="rec-tab {{ $currentStatut === $tab['value'] ? 'rec-tab--active' : '' }}">
+      {{ $tab['label'] }} <span class="rec-tab__count">{{ $tab['count'] }}</span>
+    </a>
+  @endforeach
+</div>
+
 {{-- Filtres --}}
 <div class="rec-card" style="margin-bottom:18px">
   <div class="rec-card__body" style="padding:16px 22px">
     <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <input type="hidden" name="statut" value="{{ request('statut') }}">
       <div style="display:flex;flex-direction:column;gap:5px;flex:2;min-width:180px">
         <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Rechercher</label>
         <input type="text" name="q" value="{{ request('q') }}" placeholder="Nom, prénom ou email…"
@@ -28,15 +46,6 @@
           <option value="">Toutes les offres</option>
           @foreach($offres as $id => $titre)
             <option value="{{ $id }}" {{ request('offre_id') == $id ? 'selected' : '' }}>{{ $titre }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px;min-width:150px">
-        <label style="font-size:11.5px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em">Statut</label>
-        <select name="statut" style="padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13.5px;color:#042C53;background:#fff;outline:none">
-          <option value="">Tous les statuts</option>
-          @foreach(\App\Enums\StatutCandidature::cases() as $case)
-            <option value="{{ $case->value }}" {{ request('statut') === $case->value ? 'selected' : '' }}>{{ $case->label() }}</option>
           @endforeach
         </select>
       </div>

@@ -309,12 +309,39 @@
     </div>
     @endif
 
-    {{-- Mettre à jour le statut --}}
+    {{-- Historique des mises à jour --}}
+    @if($historiques->isNotEmpty())
+    <div class="rec-card">
+      <div class="rec-card__head"><span class="rec-card__title">Historique</span></div>
+      <div class="rec-card__body">
+        <div class="rec-timeline">
+          @foreach($historiques as $h)
+            @php $hStatut = \App\Enums\StatutCandidature::tryFrom($h->statut) @endphp
+            <div class="rec-timeline__item">
+              <span class="rec-timeline__dot rec-timeline__dot--{{ $hStatut?->couleur() ?? 'gray' }}"></span>
+              <div class="rec-timeline__content">
+                <div class="rec-timeline__head">
+                  <span class="rec-badge rec-badge--{{ $hStatut?->couleur() ?? 'gray' }}">{{ $hStatut?->label() ?? ucfirst($h->statut) }}</span>
+                  <span class="rec-timeline__meta">{{ $h->recruteur?->prenom ?? 'Vous' }} · {{ $h->created_at->format('d/m/Y à H:i') }}</span>
+                </div>
+                @if($h->note)
+                  <p class="rec-timeline__note">{{ $h->note }}</p>
+                @endif
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+    @endif
+
+    {{-- Ajouter une mise à jour --}}
     <div class="rec-card">
       <div class="rec-card__head">
-        <span class="rec-card__title">Mettre à jour le statut</span>
+        <span class="rec-card__title">Ajouter une mise à jour</span>
       </div>
       <div class="rec-card__body">
+        <p style="font-size:13px;color:#6b7a8d;margin:0 0 14px">Pour changer le statut de cette candidature ou ajouter une note, choisissez une valeur ci-dessous puis validez.</p>
         <form method="POST" action="{{ route('recruteur.candidatures.statut', $candidature) }}" style="display:flex;flex-direction:column;gap:14px">
           @csrf @method('PATCH')
           <div>
@@ -328,9 +355,10 @@
           <div>
             <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">Note interne (visible par le candidat)</label>
             <textarea name="note_recruteur" rows="3" placeholder="Commentaire envoyé au candidat avec sa notification…"
-                      style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box">{{ $candidature->note_recruteur }}</textarea>
+                      style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box"></textarea>
           </div>
           <button type="submit" class="rec-btn rec-btn--yellow">Enregistrer et notifier le candidat</button>
+          <p style="font-size:12px;color:#94a3b8;margin:0">Le candidat est notifié uniquement si le statut change. Une note laissée vide n'efface pas la précédente — elle apparaît dans l'historique ci-dessus une fois enregistrée.</p>
         </form>
       </div>
     </div>

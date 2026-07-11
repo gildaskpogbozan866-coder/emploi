@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Recruteur;
 use App\Enums\StatutCandidature;
 use App\Http\Controllers\Controller;
 use App\Models\Candidature;
+use App\Models\CandidatureHistorique;
 use App\Models\Notification;
 use App\Notifications\CandidatureStatutNotification;
 use Illuminate\Http\Request;
@@ -13,16 +14,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CandidatureController extends Controller
 {
-    public function index(Request $request)
+    private function scopedQuery(Request $request)
     {
         $offresIds = Auth::user()->offres()->pluck('id');
 
         $query = Candidature::whereIn('offre_id', $offresIds)
             ->with(['candidat', 'offre']);
-
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
 
         if ($request->filled('offre_id')) {
             $query->where('offre_id', $request->offre_id);
@@ -35,6 +32,22 @@ class CandidatureController extends Controller
                    ->orWhere('nom', 'like', "%$q%")
                    ->orWhere('email', 'like', "%$q%")
             );
+        }
+
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $counts = ['toutes' => $this->scopedQuery($request)->count()];
+        foreach (StatutCandidature::cases() as $case) {
+            $counts[$case->value] = $this->scopedQuery($request)->where('statut', $case->value)->count();
+        }
+
+        $query = $this->scopedQuery($request);
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
         }
 
         $tri = $request->input('tri', 'recent');
@@ -49,29 +62,15 @@ class CandidatureController extends Controller
         $candidatures = $query->paginate(20)->withQueryString();
         $offres       = Auth::user()->offres()->pluck('titre', 'id');
 
-        return view('recruteur.candidatures', compact('candidatures', 'offres'));
+        return view('recruteur.candidatures', compact('candidatures', 'offres', 'counts'));
     }
 
     public function export(Request $request): StreamedResponse
     {
-        $offresIds = Auth::user()->offres()->pluck('id');
-
-        $query = Candidature::whereIn('offre_id', $offresIds)
-            ->with(['candidat', 'offre']);
+        $query = $this->scopedQuery($request);
 
         if ($request->filled('statut')) {
             $query->where('statut', $request->statut);
-        }
-        if ($request->filled('offre_id')) {
-            $query->where('offre_id', $request->offre_id);
-        }
-        if ($request->filled('q')) {
-            $q = $request->q;
-            $query->whereHas('candidat', fn($sq) =>
-                $sq->where('prenom', 'like', "%$q%")
-                   ->orWhere('nom', 'like', "%$q%")
-                   ->orWhere('email', 'like', "%$q%")
-            );
         }
 
         $tri = $request->input('tri', 'recent');
@@ -132,9 +131,17 @@ class CandidatureController extends Controller
 
         if ($candidature->statut === 'envoyee') {
             $candidature->update(['statut' => 'vue']);
+            CandidatureHistorique::create([
+                'candidature_id' => $candidature->id,
+                'recruteur_id'   => Auth::id(),
+                'statut'         => 'vue',
+                'note'           => null,
+            ]);
         }
 
-        return view('recruteur.candidature-detail', compact('candidature'));
+        $historiques = $candidature->historiques()->with('recruteur')->get();
+
+        return view('recruteur.candidature-detail', compact('candidature', 'historiques'));
     }
 
     public function updateStatut(Request $request, Candidature $candidature)
@@ -150,9 +157,20 @@ class CandidatureController extends Controller
 
         $ancienStatut = $candidature->statut;
 
+        // Le champ note est toujours vide dans le formulaire (une note par mise à
+        // jour, voir l'historique) : si le recruteur ne retape rien, on ne doit
+        // pas écraser la dernière note connue (affichée à l'admin et au candidat)
+        // avec du vide.
         $candidature->update([
             'statut'         => $request->statut,
-            'note_recruteur' => $request->note_recruteur,
+            'note_recruteur' => $request->filled('note_recruteur') ? $request->note_recruteur : $candidature->note_recruteur,
+        ]);
+
+        CandidatureHistorique::create([
+            'candidature_id' => $candidature->id,
+            'recruteur_id'   => Auth::id(),
+            'statut'         => $request->statut,
+            'note'           => $request->note_recruteur,
         ]);
 
         if ($ancienStatut !== $request->statut) {
@@ -175,6 +193,10 @@ class CandidatureController extends Controller
             ));
         }
 
-        return redirect()->route('recruteur.candidatures.show', $candidature)->with('success', 'Statut mis à jour.');
+        $message = $ancienStatut !== $request->statut
+            ? 'Statut mis à jour et candidat notifié.'
+            : 'Note enregistrée.';
+
+        return redirect()->route('recruteur.candidatures.show', $candidature)->with('success', $message);
     }
 }
