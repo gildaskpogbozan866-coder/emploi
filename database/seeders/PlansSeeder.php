@@ -59,7 +59,7 @@ class PlansSeeder extends Seeder
                 'currency'      => 'FCFA',
                 'duration_days' => null,
                 'is_free'       => true,
-                'is_active'     => true,
+                'is_active'     => false,
                 'features'      => [
                     'job_post_limit'   => '2',
                     'candidate_search' => '0',

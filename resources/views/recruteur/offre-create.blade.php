@@ -165,22 +165,6 @@
           <small style="color:#94a3b8;margin-top:6px;display:block">Si coché, le champ sera obligatoire pour les candidats lors de la soumission.</small>
         </div>
 
-        <div class="rec-form-group full">
-          <label style="margin-bottom:10px;display:block">Autres pièces justificatives requises <small style="color:#94a3b8;font-weight:400">(optionnel)</small></label>
-          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
-            @foreach($typesDocuments as $type)
-            <label style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1.5px solid #d1d5db;border-radius:9px;cursor:pointer;font-weight:500;font-size:13px;background:#f9fafb;transition:border-color .15s">
-              <input type="checkbox" name="types_documents_requis[]" value="{{ $type->id }}"
-                     {{ in_array($type->id, old('types_documents_requis', [])) ? 'checked' : '' }}
-                     onchange="this.closest('label').style.borderColor=this.checked?'#185FA5':'#d1d5db';this.closest('label').style.background=this.checked?'#eff6ff':'#f9fafb'"
-                     style="flex-shrink:0;accent-color:#185FA5">
-              {{ $type->nom }}
-            </label>
-            @endforeach
-          </div>
-          <small style="color:#94a3b8;margin-top:6px;display:block">Le candidat devra fournir un document de chaque type coché (existant dans son espace ou téléversé lors de la candidature).</small>
-        </div>
-
         <div class="rec-form-group">
           <label>Logo de l'entreprise <small style="color:#94a3b8;font-weight:400">(optionnel, JPG, PNG, WebP · max 2 Mo)</small></label>
           <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp,.svg" id="logo-input-create"

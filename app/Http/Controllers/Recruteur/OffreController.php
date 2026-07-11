@@ -10,7 +10,6 @@ use App\Models\NiveauExperience;
 use App\Models\Offre;
 use App\Models\ParametreApp;
 use App\Models\TypeContrat;
-use App\Models\TypeDocument;
 use App\Notifications\NouvelleOffreCreee;
 use App\Jobs\NotifierAlertesOffreJob;
 use App\Rules\DateLimiteWithinAbonnement;
@@ -112,14 +111,7 @@ class OffreController extends Controller
         $metiers         = Metier::orderBy('nom')->get();
         $niveauxExp      = NiveauExperience::orderBy('ordre')->get();
         $niveauxEtude    = NiveauEtude::orderBy('ordre')->get();
-        $typesDocuments  = $this->typesDocumentsSelectionnables();
-        return view('recruteur.offre-create', compact('typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude', 'typesDocuments'));
-    }
-
-    /** Types de documents proposables comme "pièce requise" sur une offre — le CV a déjà son propre toggle exige_cv. */
-    private function typesDocumentsSelectionnables()
-    {
-        return TypeDocument::actif()->where('nom', 'not like', '%Curriculum Vitae%')->get();
+        return view('recruteur.offre-create', compact('typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
     }
 
     public function store(Request $request)
@@ -138,8 +130,6 @@ class OffreController extends Controller
             'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
-            'types_documents_requis'   => 'nullable|array',
-            'types_documents_requis.*' => 'integer|exists:type_documents,id',
         ]);
 
         $erreurQuota = $this->verifierQuota();
@@ -171,7 +161,6 @@ class OffreController extends Controller
         ]);
 
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
-        $offre->typesDocumentsRequis()->sync($request->input('types_documents_requis', []));
         $offre->load(['recruteur', 'competences']);
 
         NotifierAlertesOffreJob::dispatch($offre);
@@ -192,9 +181,7 @@ class OffreController extends Controller
         $metiers         = Metier::orderBy('nom')->get();
         $niveauxExp      = NiveauExperience::orderBy('ordre')->get();
         $niveauxEtude    = NiveauEtude::orderBy('ordre')->get();
-        $typesDocuments  = $this->typesDocumentsSelectionnables();
-        $offre->load('typesDocumentsRequis');
-        return view('recruteur.offre-edit', compact('offre', 'typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude', 'typesDocuments'));
+        return view('recruteur.offre-edit', compact('offre', 'typeContrats', 'metiers', 'niveauxExp', 'niveauxEtude'));
     }
 
     public function update(Request $request, Offre $offre)
@@ -215,8 +202,6 @@ class OffreController extends Controller
             'metier_id'         => 'nullable|exists:metiers,id',
             'niveau_experience' => 'nullable|exists:niveaux_experience,code',
             'niveau_etude'      => 'nullable|exists:niveaux_etudes,code',
-            'types_documents_requis'   => 'nullable|array',
-            'types_documents_requis.*' => 'integer|exists:type_documents,id',
         ]);
 
         $data = array_merge(
@@ -247,7 +232,6 @@ class OffreController extends Controller
 
         $offre->update($data);
         $offre->competences()->sync($this->syncCompetences($request->input('competences', [])));
-        $offre->typesDocumentsRequis()->sync($request->input('types_documents_requis', []));
 
         return redirect()->route('recruteur.offres')->with('success', 'Offre mise à jour.');
     }

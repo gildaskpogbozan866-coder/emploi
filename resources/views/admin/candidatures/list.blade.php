@@ -42,9 +42,9 @@
             <p style="color:#94a3b8;font-size:12px;margin:0">{{ $candidature->candidat->email }}</p>
           </td>
           <td style="max-width:200px">
-            <p style="margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $candidature->offre->titre }}</p>
+            <p style="margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $candidature->offre->titre ?? 'Offre supprimée' }}</p>
           </td>
-          <td style="color:#64748b">{{ $candidature->offre->entreprise }}</td>
+          <td style="color:#64748b">{{ $candidature->offre->entreprise ?? '—' }}</td>
           <td>
             <span class="adm-badge adm-badge--{{ match($candidature->statut) {
               'retenue'   => 'green',

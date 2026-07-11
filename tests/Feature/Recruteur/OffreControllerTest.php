@@ -175,8 +175,11 @@ class OffreControllerTest extends TestCase
         Storage::disk('public')->assertExists($offre->fichier);
     }
 
-    public function test_store_synchronise_les_types_documents_requis(): void
+    public function test_store_ignore_les_types_documents_requis(): void
     {
+        // Le formulaire de création ne propose plus que CV/lettre de motivation
+        // (exige_cv/exige_lettre) — le champ types_documents_requis n'est plus
+        // synchronisé même s'il est soumis (checkboxes retirées de la vue).
         $recruteur = $this->creerRecruteur();
         $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
 
@@ -187,7 +190,7 @@ class OffreControllerTest extends TestCase
             ->assertRedirect(route('recruteur.offres'));
 
         $offre = Offre::where('recruteur_id', $recruteur->id)->first();
-        $this->assertTrue($offre->typesDocumentsRequis->contains($type->id));
+        $this->assertFalse($offre->typesDocumentsRequis->contains($type->id));
     }
 
     public function test_store_sync_competences(): void
@@ -271,21 +274,12 @@ class OffreControllerTest extends TestCase
         $this->assertDatabaseHas('offres', ['id' => $offre->id, 'titre' => 'Titre modifié']);
     }
 
-    public function test_edit_affiche_les_types_documents_requis_deja_coches(): void
+    public function test_update_preserve_les_types_documents_requis_existants(): void
     {
-        $recruteur = $this->creerRecruteur();
-        $offre     = $this->creerOffre($recruteur);
-        $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
-        $offre->typesDocumentsRequis()->attach($type->id);
-
-        $this->actingAs($recruteur)
-            ->get(route('recruteur.offres.edit', $offre))
-            ->assertOk()
-            ->assertSee('Diplôme');
-    }
-
-    public function test_update_synchronise_les_types_documents_requis(): void
-    {
+        // Le formulaire d'édition n'affiche plus les cases "autres pièces
+        // justificatives" — un update() ne doit donc plus les synchroniser,
+        // pour ne pas effacer une exigence déjà en place sur une offre
+        // existante lors d'une modification sans rapport (titre, salaire...).
         $recruteur = $this->creerRecruteur();
         $offre     = $this->creerOffre($recruteur);
         $type      = \App\Models\TypeDocument::create(['nom' => 'Diplôme', 'actif' => true, 'ordre' => 1]);
@@ -299,8 +293,8 @@ class OffreControllerTest extends TestCase
             ->assertRedirect(route('recruteur.offres'));
 
         $offre->refresh();
-        $this->assertFalse($offre->typesDocumentsRequis->contains($type->id));
-        $this->assertTrue($offre->typesDocumentsRequis->contains($autreType->id));
+        $this->assertTrue($offre->typesDocumentsRequis->contains($type->id));
+        $this->assertFalse($offre->typesDocumentsRequis->contains($autreType->id));
     }
 
     public function test_update_remplace_fichier_et_supprime_lancien(): void

@@ -5,7 +5,7 @@
 <div class="adm-topbar">
   <div class="adm-topbar__left">
     <a href="{{ route('admin.candidatures.list') }}" class="adm-btn adm-btn--outline adm-btn--sm" style="margin-bottom:8px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Retour</a>
-    <h1>{{ $candidature->offre->titre }}</h1>
+    <h1>{{ $candidature->offre->titre ?? 'Offre supprimée' }}</h1>
     <p>{{ $candidature->candidat->nom_complet }} · {{ $candidature->candidat->email }}</p>
   </div>
   <div style="display:flex;gap:10px">
@@ -117,9 +117,13 @@
         <h3 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin:0">Offre</h3>
       </div>
       <div style="padding:20px 24px">
-        <p style="font-weight:700;color:#042C53;margin:0 0 4px">{{ $candidature->offre->titre }}</p>
-        <p style="font-size:13px;color:#64748b;margin:0 0 12px">{{ $candidature->offre->entreprise }}</p>
-        <a href="{{ route('admin.offres.detail', $candidature->offre) }}" class="adm-btn adm-btn--outline" style="width:100%;justify-content:center">Voir l'offre (admin)</a>
+        @if($candidature->offre)
+          <p style="font-weight:700;color:#042C53;margin:0 0 4px">{{ $candidature->offre->titre }}</p>
+          <p style="font-size:13px;color:#64748b;margin:0 0 12px">{{ $candidature->offre->entreprise }}</p>
+          <a href="{{ route('admin.offres.detail', $candidature->offre) }}" class="adm-btn adm-btn--outline" style="width:100%;justify-content:center">Voir l'offre (admin)</a>
+        @else
+          <p style="font-size:13.5px;color:#64748b;font-style:italic;margin:0">Offre supprimée.</p>
+        @endif
       </div>
     </div>
   </div>

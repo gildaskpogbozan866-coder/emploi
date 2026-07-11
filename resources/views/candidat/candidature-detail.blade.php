@@ -9,8 +9,8 @@
 <div class="cand-page-header">
   <div class="cand-page-header__left">
     <a href="{{ route('candidat.candidatures') }}" style="color:#185FA5;text-decoration:none;font-size:13px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Mes candidatures</a>
-    <h1 class="cand-page-header__title" style="margin-top:8px">{{ $candidature->offre->titre }}</h1>
-    <p class="cand-page-header__sub">{{ $candidature->offre->entreprise }} · {{ $candidature->offre->localisation }}</p>
+    <h1 class="cand-page-header__title" style="margin-top:8px">{{ $candidature->offre->titre ?? 'Offre supprimée' }}</h1>
+    <p class="cand-page-header__sub">{{ $candidature->offre->entreprise ?? '' }} @if($candidature->offre?->localisation) · {{ $candidature->offre->localisation }} @endif</p>
   </div>
 </div>
 
@@ -127,23 +127,27 @@
         <h2 class="cand-card__title">L'offre</h2>
       </div>
       <div class="cand-card__body">
-        <p style="font-weight:700;color:#042C53;margin:0 0 4px">{{ $candidature->offre->titre }}</p>
-        <p style="font-size:13px;color:#64748b;margin:0 0 12px">{{ $candidature->offre->entreprise }}</p>
-        <p style="font-size:13px;color:#94a3b8;margin:0 0 16px">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-          {{ $candidature->offre->localisation }}
-        </p>
-        <a href="{{ route('offre.detail', $candidature->offre) }}" target="_blank" class="cand-btn cand-btn--outline" style="width:100%;justify-content:center">
-          Voir l'offre complète
-        </a>
-        @if($candidature->offre->recruteur)
-          <form method="POST" action="{{ route('candidat.messagerie.initier', $candidature->offre->recruteur) }}" style="margin-top:10px">
-            @csrf
-            <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Contacter le recruteur
-            </button>
-          </form>
+        @if($candidature->offre)
+          <p style="font-weight:700;color:#042C53;margin:0 0 4px">{{ $candidature->offre->titre }}</p>
+          <p style="font-size:13px;color:#64748b;margin:0 0 12px">{{ $candidature->offre->entreprise }}</p>
+          <p style="font-size:13px;color:#94a3b8;margin:0 0 16px">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            {{ $candidature->offre->localisation }}
+          </p>
+          <a href="{{ route('offre.detail', $candidature->offre) }}" target="_blank" class="cand-btn cand-btn--outline" style="width:100%;justify-content:center">
+            Voir l'offre complète
+          </a>
+          @if($candidature->offre->recruteur)
+            <form method="POST" action="{{ route('candidat.messagerie.initier', $candidature->offre->recruteur) }}" style="margin-top:10px">
+              @csrf
+              <button type="submit" class="cand-btn cand-btn--yellow" style="width:100%;justify-content:center">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Contacter le recruteur
+              </button>
+            </form>
+          @endif
+        @else
+          <p style="font-size:13.5px;color:#64748b;font-style:italic;margin:0">Offre supprimée.</p>
         @endif
       </div>
     </div>
