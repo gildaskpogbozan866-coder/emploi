@@ -120,6 +120,7 @@
           <input class="aform__input @error('email') aform__input--error @enderror"
                  type="email" id="email" name="email"
                  value="{{ old('email') }}" placeholder="vous@exemple.bj" required />
+          <p id="email-hint" class="aform__hint"></p>
           @error('email')<p class="aform__error">{{ $message }}</p>@enderror
         </div>
 
@@ -224,4 +225,6 @@ function selectRole(role) {
 </script>
 <script src="{{ asset('js/tel-field.js') }}"></script>
 <script>initTelField('pays', 'tel-prefix', 'tel');</script>
+<script src="{{ asset('js/email-check.js') }}"></script>
+<script>initEmailCheck('email', 'email-hint');</script>
 @endsection

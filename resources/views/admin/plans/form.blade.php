@@ -166,8 +166,8 @@
     background: #fff;
     box-sizing: border-box;
   }
-  .feature-row select      { flex: 2; }
-  .feature-row input[type="text"] { flex: 1; }
+  .feature-row select      { flex: 2; min-width: 0; }
+  .feature-row input[type="text"] { flex: 1; min-width: 0; }
   .feature-row .remove-btn {
     flex-shrink: 0;
     background: none;
@@ -184,6 +184,20 @@
     justify-content: center;
   }
   .feature-row .remove-btn:hover { background: #fef2f2; }
+
+  @media (max-width: 560px) {
+    .feature-row {
+      flex-wrap: wrap;
+    }
+    .feature-row select,
+    .feature-row input[type="text"] {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+    .feature-row .remove-btn {
+      margin-left: auto;
+    }
+  }
 </style>
 @endsection
 

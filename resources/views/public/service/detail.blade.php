@@ -408,13 +408,12 @@
 
 @php
 /* ── Données contextuelles ── */
-$cats = ['cv-professionnel'=>'Carrière & Emploi','lettre-de-motivation'=>'Carrière & Emploi','preparation-entretien'=>'Carrière & Emploi','linkedin-optimise'=>'Carrière & Emploi','coaching-entretien'=>'Carrière & Emploi','creation-cv-documents'=>'Carrière & Emploi','traduction-documents'=>'Documents & Rédaction','redaction-rapport-memoire'=>'Documents & Rédaction','creation-sites-web'=>'Digital & Web','creation-logo'=>'Digital & Web','gestion-reseaux-sociaux'=>'Digital & Web','marketing-digital'=>'Digital & Web','referencement-seo'=>'Digital & Web','developpement-applications'=>'Digital & Web','formation-informatique'=>'Formation','accompagnement-digital'=>'Formation'];
+$cats = ['cv-professionnel'=>'Carrière & Emploi','preparation-entretien'=>'Carrière & Emploi','linkedin-optimise'=>'Carrière & Emploi','coaching-entretien'=>'Carrière & Emploi','creation-cv-documents'=>'Carrière & Emploi','traduction-documents'=>'Documents & Rédaction','redaction-rapport-memoire'=>'Documents & Rédaction','creation-sites-web'=>'Digital & Web','creation-logo'=>'Digital & Web','gestion-reseaux-sociaux'=>'Digital & Web','marketing-digital'=>'Digital & Web','referencement-seo'=>'Digital & Web','developpement-applications'=>'Digital & Web','formation-informatique'=>'Formation','accompagnement-digital'=>'Formation'];
 $catLabel = $cats[$service->slug] ?? 'Service';
 
 $delai = $service->delai;
 $chips = match($service->slug) {
   'cv-professionnel','creation-cv-documents' => [$delai ?? '30min à 1h','Format Word & PDF','1 révision offerte'],
-  'lettre-de-motivation'    => [$delai ?? '30min à 1h','Personnalisée','1 révision offerte'],
   'linkedin-optimise'       => [$delai ?? '1h à 2h','Profil optimisé ATS','Mots-clés recruteurs'],
   'coaching-entretien','preparation-entretien' => [$delai ?? '1h de session','Feedback détaillé','Plan d\'action'],
   'traduction-documents'    => [$delai ? 'Délai : '.$delai : 'Délai : 1h','FR ↔ EN','Document certifié'],
@@ -425,7 +424,7 @@ $chips = match($service->slug) {
 };
 
 $steps = match(true) {
-  in_array($service->slug, ['cv-professionnel','lettre-de-motivation','linkedin-optimise','creation-cv-documents']) => [
+  in_array($service->slug, ['cv-professionnel','linkedin-optimise','creation-cv-documents']) => [
     ['Commandez en ligne','Remplissez le formulaire avec vos informations et objectifs.'],
     ['Analyse de votre profil','Nos experts étudient votre parcours et le poste visé.'],
     ['Rédaction & livraison','Document livré en Word & PDF dans les délais indiqués.'],

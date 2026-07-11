@@ -372,16 +372,16 @@
                     <div class="formation-card__left">
                         <span class="formation-card__tag">Service n°1, Très demandé</span>
                         <h3 class="formation-card__title">
-                            CV Professionnel <em>&amp; Lettre de Motivation</em><br>
+                            CV Professionnel<br>
                             <span style="font-size:0.75em;color:#64748b;font-weight:600;">Arrêtez de postuler dans le
                                 vide.</span>
                         </h3>
                         <p class="formation-card__hook">
                             Un recruteur décide en <strong>7 secondes</strong>. Nos experts rédigent pour vous un CV
-                            percutant et une lettre convaincante <strong>adaptés au marché africain</strong>.
+                            percutant <strong>adapté au marché africain</strong>.
                         </p>
                         <ul class="formation-card__features">
-                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Lettre de motivation personnalisée et convaincante', 'Livraison Word &amp; PDF prêt à l\'emploi' . ($cvService?->delai ? ' en ' . $cvService->delai : ' de 30min à 1H'), '1 révision gratuite incluse après livraison'] as $f)
+                            @foreach (['Analyse complète de votre profil et de vos objectifs professionnels', 'CV structuré, moderne et optimisé pour passer les filtres ATS', 'Livraison Word &amp; PDF prêt à l\'emploi' . ($cvService?->delai ? ' en ' . $cvService->delai : ' de 30min à 1H'), '1 révision gratuite incluse après livraison'] as $f)
                                 <li class="formation-card__feature">
                                     <span class="formation-card__check"><svg width="10" height="10"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
@@ -464,10 +464,14 @@
 
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
                 @forelse($offres as $offre)
-                    <a href="{{ route('offre.detail', $offre) }}"
-                        style="display:block;background:#fff;border:1.5px solid #e8edf3;border-radius:16px;padding:20px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:0 2px 8px rgba(4,44,83,.06)"
+                    @php $estExpiree = $offre->aExpire(); @endphp
+                    <{{ $estExpiree ? 'div' : 'a' }}
+                        @if(!$estExpiree) href="{{ route('offre.detail', $offre) }}" @endif
+                        style="display:block;background:{{ $estExpiree ? '#e7ebf1' : '#fff' }};border:1.5px {{ $estExpiree ? 'dashed #c3ccd6' : 'solid #e8edf3' }};border-radius:16px;padding:20px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:{{ $estExpiree ? 'none' : '0 2px 8px rgba(4,44,83,.06)' }};{{ $estExpiree ? 'filter:grayscale(.45);cursor:default' : '' }}"
+                        @if(!$estExpiree)
                         onmouseover="this.style.boxShadow='0 8px 28px rgba(4,44,83,.13)';this.style.transform='translateY(-2px)'"
-                        onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'">
+                        onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'"
+                        @endif>
 
                         {{-- En-tête : logo + titre + entreprise + date --}}
                         <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
@@ -518,17 +522,24 @@
                                 <span
                                     style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaireFormate() }}</span>
                             @endif
-                            <span
-                                style="font-size:11.5px;font-weight:700;color:#185FA5;margin-left:auto;display:inline-flex;align-items:center;gap:3px">
-                                Voir l'offre
-                                <svg width="11" height="11" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
-                            </span>
+                            @if ($estExpiree)
+                                <span
+                                    style="font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fff;color:#64748b;border:1px solid #c3ccd6;margin-left:auto">
+                                    Expirée{{ $offre->date_limite ? ' ' . $offre->date_limite->diffForHumans() : '' }}
+                                </span>
+                            @else
+                                <span
+                                    style="font-size:11.5px;font-weight:700;color:#185FA5;margin-left:auto;display:inline-flex;align-items:center;gap:3px">
+                                    Voir l'offre
+                                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </span>
+                            @endif
                         </div>
 
-                    </a>
+                    </{{ $estExpiree ? 'div' : 'a' }}>
                 @empty
                     <p style="color:#64748b;padding:32px 0;text-align:center;grid-column:1/-1">Aucune offre publiée pour
                         l'instant.</p>

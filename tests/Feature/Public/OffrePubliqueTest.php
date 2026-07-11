@@ -52,17 +52,52 @@ class OffrePubliqueTest extends TestCase
         $this->get(route('offre.list'))->assertOk()->assertViewIs('public.offre.list');
     }
 
-    public function test_liste_affiche_uniquement_les_offres_actives(): void
+    public function test_liste_affiche_les_offres_actives_et_expirees_mais_pas_les_autres_statuts(): void
     {
         $recruteur = $this->creerRecruteur();
-        $this->creerOffre($recruteur, ['titre' => 'Offre Active',   'statut' => 'active']);
-        $this->creerOffre($recruteur, ['titre' => 'Offre Expirée',  'statut' => 'expiree']);
-        $this->creerOffre($recruteur, ['titre' => 'Offre Clôturée', 'statut' => 'clos']);
+        $this->creerOffre($recruteur, ['titre' => 'Offre Active',     'statut' => 'active']);
+        $this->creerOffre($recruteur, ['titre' => 'Offre Expirée',    'statut' => 'expiree']);
+        $this->creerOffre($recruteur, ['titre' => 'Offre Clôturée',   'statut' => 'clos']);
+        // 'suspendue' est une action de modération admin (contenu signalé, fraude...) :
+        // ne doit jamais réapparaître publiquement, même grisée.
+        $this->creerOffre($recruteur, ['titre' => 'Offre Suspendue',  'statut' => 'suspendue']);
+        // 'brouillon'/'en_attente' : jamais encore publiées, ne doivent pas fuiter non plus.
+        $this->creerOffre($recruteur, ['titre' => 'Offre Brouillon',  'statut' => 'brouillon']);
+        $this->creerOffre($recruteur, ['titre' => 'Offre En Attente', 'statut' => 'en_attente']);
 
         $this->get(route('offre.list'))
             ->assertSee('Offre Active')
-            ->assertDontSee('Offre Expirée')
-            ->assertDontSee('Offre Clôturée');
+            ->assertSee('Offre Expirée')
+            ->assertDontSee('Offre Clôturée')
+            ->assertDontSee('Offre Suspendue')
+            ->assertDontSee('Offre Brouillon')
+            ->assertDontSee('Offre En Attente');
+    }
+
+    /**
+     * offres:expirer (routes/console.php) ne tourne qu'une fois par jour à 1h : entre le
+     * dépassement réel de date_limite et le prochain passage du cron, `statut` reste
+     * 'active' en base. Offre::aExpire() doit détecter ce cas via date_limite directement,
+     * sans attendre que le cron ait mis à jour le statut.
+     */
+    public function test_offre_active_en_base_mais_date_limite_depassee_est_traitee_comme_expiree(): void
+    {
+        $recruteur = $this->creerRecruteur();
+        $candidat  = $this->creerCandidat();
+        $offre = $this->creerOffre($recruteur, [
+            'titre'       => 'Offre En Retard De Cron',
+            'statut'      => 'active',
+            'date_limite' => now()->subDay(),
+        ]);
+
+        $this->assertTrue($offre->fresh()->aExpire());
+
+        $this->get(route('offre.detail', $offre))
+            ->assertRedirect(route('offre.list'));
+
+        $this->actingAs($candidat)
+            ->post(route('offre.postuler.store', $offre), ['message_motivation' => 'Test'])
+            ->assertRedirect(route('offre.list'));
     }
 
     public function test_liste_filtre_par_type(): void

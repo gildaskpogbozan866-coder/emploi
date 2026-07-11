@@ -13,6 +13,7 @@ use App\Models\TypeContrat;
 use App\Models\TypeDocument;
 use App\Notifications\NouvelleOffreCreee;
 use App\Jobs\NotifierAlertesOffreJob;
+use App\Rules\DateLimiteWithinAbonnement;
 use App\Services\JobPostQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -130,7 +131,7 @@ class OffreController extends Controller
             'localisation'      => 'required|string|max:200',
             'type'              => 'required|exists:type_contrats,id',
             'description'       => 'required|string|min:50',
-            'date_limite'       => 'nullable|date|after_or_equal:today',
+            'date_limite'       => ['nullable', 'date', 'after_or_equal:today', new DateLimiteWithinAbonnement(Auth::user())],
             'salaire_min'       => 'nullable|integer|min:0',
             'salaire_max'       => 'nullable|integer|min:0|gte:salaire_min',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',
@@ -208,6 +209,7 @@ class OffreController extends Controller
             'localisation'      => 'required|string|max:200',
             'type'              => 'required|exists:type_contrats,id',
             'description'       => 'required|string|min:50',
+            'date_limite'       => ['nullable', 'date', 'after_or_equal:today', new DateLimiteWithinAbonnement(Auth::user())],
             'salaire_min'       => 'nullable|integer|min:0',
             'salaire_max'       => 'nullable|integer|min:0|gte:salaire_min',
             'fichier'           => 'nullable|file|mimes:pdf,doc,docx|max:5120',

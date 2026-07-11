@@ -11,6 +11,7 @@ use App\Events\CandidatureDeposee;
 use App\Models\Offre;
 use App\Models\TypeContrat;
 use App\Notifications\CandidatureRecueNotification;
+use App\Rules\DateLimiteWithinAbonnement;
 use App\Services\CvQuotaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class OffreController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Offre::active()->with(['recruteur', 'competences'])->recente();
+        $query = Offre::affichable()->with(['recruteur', 'competences'])->recente();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -87,6 +88,16 @@ class OffreController extends Controller
 
     public function detail(Offre $offre)
     {
+        // Offre expirée/close/suspendue : plus aucune information ne doit rester accessible,
+        // y compris par URL directe — sauf pour le candidat qui y a déjà postulé, qui doit
+        // pouvoir la retrouver depuis son propre espace (historique de candidatures).
+        $aDejaPostule = Auth::check()
+            && Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists();
+
+        if ($offre->aExpire() && !$aDejaPostule) {
+            return redirect()->route('offre.list');
+        }
+
         // Une seule vue par session ; le recruteur propriétaire ne compte pas
         $sessionKey = 'vu_offre_' . $offre->id;
         if (!session()->has($sessionKey) && (int) Auth::id() !== (int) $offre->recruteur_id) {
@@ -95,11 +106,10 @@ class OffreController extends Controller
         }
 
         $offre->load(['recruteur', 'competences']);
-        $aPostule      = false;
+        $aPostule      = $aDejaPostule;
         $estSauvegarde = false;
 
         if (Auth::check()) {
-            $aPostule      = Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists();
             $estSauvegarde = Auth::user()->offresSauvegardees()->where('offre_id', $offre->id)->exists();
         }
 
@@ -137,6 +147,10 @@ class OffreController extends Controller
             return redirect($dashboard)->with('error', 'Seuls les candidats peuvent postuler à une offre.');
         }
 
+        if ($offre->aExpire()) {
+            return redirect()->route('offre.list');
+        }
+
         $aPostule = Candidature::where('offre_id', $offre->id)
             ->where('candidat_id', Auth::id())
             ->exists();
@@ -161,6 +175,10 @@ class OffreController extends Controller
 
         if (!Auth::user()->hasRole(Role::CANDIDAT)) {
             return redirect()->route('home')->with('error', 'Seuls les candidats peuvent postuler à une offre.');
+        }
+
+        if ($offre->aExpire()) {
+            return redirect()->route('offre.list');
         }
 
         if (Candidature::where('offre_id', $offre->id)->where('candidat_id', Auth::id())->exists()) {
@@ -390,7 +408,7 @@ class OffreController extends Controller
             'localisation'=> 'required|string|max:200',
             'type'        => ['required', \Illuminate\Validation\Rule::in(TypeContrat::pluck('code')->toArray())],
             'description' => 'required|string',
-            'date_limite' => 'nullable|date|after_or_equal:today',
+            'date_limite' => ['nullable', 'date', 'after_or_equal:today', new DateLimiteWithinAbonnement(Auth::user())],
         ]);
 
         // published_at n'est pas renseigné ici : l'offre est encore en_attente,

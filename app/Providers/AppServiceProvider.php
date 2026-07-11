@@ -19,14 +19,18 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\File as MimePartFile;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiters();
         $this->configurePasswordReset();
         $this->configureEmailVerification();
+        $this->configureMailLogoEmbed();
 
         // Le mode maintenance (activable depuis Admin > Paramètres) ne doit
         // jamais bloquer l'espace admin ni la connexion — sinon un admin qui
@@ -163,6 +168,50 @@ class AppServiceProvider extends ServiceProvider
                     'hash' => sha1($notifiable->getEmailForVerification()),
                 ]
             );
+        });
+    }
+
+    /**
+     * Le logo de resources/views/vendor/mail/html/header.blade.php est encodé en
+     * data: URI base64 (voir le commentaire de ce fichier). Gmail, Outlook.com et
+     * Yahoo Mail suppriment purement et simplement les images en data: URI par
+     * mesure de sécurité anti-spam — seuls des clients comme Mailtrap (sandbox de
+     * dev) ou Apple Mail les affichent, ce qui masquait le bug en local. On
+     * réécrit donc le logo en pièce jointe "inline" avec un Content-ID juste avant
+     * l'envoi, pour tout mail sortant (Notification ou Mailable), sans avoir à
+     * modifier chaque notification une par une.
+     */
+    private function configureMailLogoEmbed(): void
+    {
+        Event::listen(MessageSending::class, function (MessageSending $event) {
+            $message = $event->message;
+            $html    = $message->getHtmlBody();
+
+            if (!$html || !str_contains($html, 'data:image/png;base64,')) {
+                return;
+            }
+
+            $logoPath = public_path('images/Logo-email.png');
+            if (!is_file($logoPath)) {
+                return;
+            }
+
+            $cid  = 'logo-emploi-bouge-benin@emploibouge';
+            $html = preg_replace(
+                '/src="data:image\/png;base64,[^"]+"/',
+                'src="cid:' . $cid . '"',
+                $html,
+                1,
+                $count
+            );
+
+            if ($count > 0) {
+                $part = (new DataPart(new MimePartFile($logoPath), 'Logo-email.png', 'image/png'))
+                    ->asInline()
+                    ->setContentId($cid);
+                $message->addPart($part);
+                $message->html($html);
+            }
         });
     }
 }

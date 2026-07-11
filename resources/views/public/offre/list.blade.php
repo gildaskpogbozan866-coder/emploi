@@ -323,9 +323,14 @@
       {{-- Offres --}}
       <div class="ol-list">
         @forelse($offres as $offre)
-          <a href="{{ route('offre.detail', $offre) }}" class="ol-card" style="display:block;background:#fff;border:1.5px solid #e8edf3;border-radius:16px;padding:20px 22px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:0 2px 8px rgba(4,44,83,.06)"
+          @php $estExpiree = $offre->aExpire(); @endphp
+          <{{ $estExpiree ? 'div' : 'a' }}
+             @if(!$estExpiree) href="{{ route('offre.detail', $offre) }}" @endif
+             class="ol-card" style="display:block;background:{{ $estExpiree ? '#e7ebf1' : '#fff' }};border:1.5px {{ $estExpiree ? 'dashed #c3ccd6' : 'solid #e8edf3' }};border-radius:16px;padding:20px 22px;text-decoration:none;transition:box-shadow .18s,transform .18s;box-shadow:{{ $estExpiree ? 'none' : '0 2px 8px rgba(4,44,83,.06)' }};{{ $estExpiree ? 'filter:grayscale(.45);cursor:default' : '' }}"
+             @if(!$estExpiree)
              onmouseover="this.style.boxShadow='0 8px 28px rgba(4,44,83,.13)';this.style.transform='translateY(-2px)'"
-             onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'">
+             onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,.06)';this.style.transform='none'"
+             @endif>
 
             {{-- En-tête : logo + titre + entreprise + date --}}
             <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px">
@@ -361,16 +366,22 @@
               @if($offre->salaireFormate())
                 <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">{{ $offre->salaireFormate() }}</span>
               @endif
-              @if($offre->date_limite)
-                <span style="font-size:11px;color:#f59e0b;font-weight:600;margin-left:auto">Expire {{ $offre->date_limite->format('d/m') }}</span>
+              @if($estExpiree)
+                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#fff;color:#64748b;border:1px solid #c3ccd6;margin-left:auto">
+                  Expirée{{ $offre->date_limite ? ' ' . $offre->date_limite->diffForHumans() : '' }}
+                </span>
+              @else
+                @if($offre->date_limite)
+                  <span style="font-size:11px;color:#f59e0b;font-weight:600;margin-left:auto">Expire {{ $offre->date_limite->format('d/m') }}</span>
+                @endif
+                <span style="font-size:12px;font-weight:700;color:#185FA5;margin-left:{{ $offre->date_limite ? '4px' : 'auto' }};display:inline-flex;align-items:center;gap:3px">
+                  Voir l'offre
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </span>
               @endif
-              <span style="font-size:12px;font-weight:700;color:#185FA5;margin-left:{{ $offre->date_limite ? '4px' : 'auto' }};display:inline-flex;align-items:center;gap:3px">
-                Voir l'offre
-                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </span>
             </div>
 
-          </a>
+          </{{ $estExpiree ? 'div' : 'a' }}>
         @empty
           @php
             $str = fn($v) => implode(', ', array_filter((array)$v));

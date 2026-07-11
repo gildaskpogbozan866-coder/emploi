@@ -12,10 +12,10 @@ class ServicesSeeder extends Seeder
         $services = [
             // ── Services existants (mis à jour) ────────────────────
             [
-                'nom'         => 'CV Professionnel + Lettre de Motivation',
+                'nom'         => 'CV Professionnel',
                 'slug'        => 'cv-professionnel',
-                'description' => 'Nos experts rédigent pour vous un CV percutant et une lettre de motivation convaincante, optimisés pour décrocher des entretiens.',
-                'details'     => "Analyse complète de votre profil et de vos objectifs\nCV structuré et optimisé pour passer les filtres ATS\nLettre de motivation ciblée et personnalisée\nLivraison en Word & PDF, prêt à l'emploi\n1 révision gratuite incluse",
+                'description' => 'Nos experts rédigent pour vous un CV percutant, optimisé pour décrocher des entretiens.',
+                'details'     => "Analyse complète de votre profil et de vos objectifs\nCV structuré et optimisé pour passer les filtres ATS\nLivraison en Word & PDF, prêt à l'emploi\n1 révision gratuite incluse",
                 'prix'        => 2500,
                 'delai'       => '30min à 1h',
                 'type'        => 'redaction',
@@ -106,8 +106,8 @@ class ServicesSeeder extends Seeder
             [
                 'nom'         => 'Création de CV et documents administratifs',
                 'slug'        => 'creation-cv-documents',
-                'description' => 'CV professionnel ATS-friendly, lettre de motivation personnalisée, profil LinkedIn soigné et tous vos documents administratifs. Livrés en 30min à 1h.',
-                'details'     => "CV professionnel structuré et optimisé ATS\nLettre de motivation personnalisée au poste visé\nOptimisation du profil LinkedIn\nDemandes de stage, lettres de recommandation\nDocuments administratifs divers\nLivraison en Word & PDF, 1 révision gratuite",
+                'description' => 'CV professionnel ATS-friendly, profil LinkedIn soigné et tous vos documents administratifs. Livrés en 30min à 1h.',
+                'details'     => "CV professionnel structuré et optimisé ATS\nOptimisation du profil LinkedIn\nDemandes de stage, lettres de recommandation\nDocuments administratifs divers\nLivraison en Word & PDF, 1 révision gratuite",
                 'prix'        => 2500,
                 'delai'       => '30min à 1h',
                 'type'        => 'redaction',

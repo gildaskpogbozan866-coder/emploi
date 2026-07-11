@@ -75,6 +75,28 @@ class Offre extends Model
         return $query->where('statut', 'active');
     }
 
+    /** Offres à montrer dans les listings publics : actives + expirées (jamais vides), les actives en tête. */
+    public function scopeAffichable($query)
+    {
+        return $query->whereIn('statut', ['active', 'expiree'])
+            ->orderByRaw("statut = 'expiree' OR (date_limite IS NOT NULL AND date_limite < ?)", [now()->toDateString()]);
+    }
+
+    /**
+     * Vrai si l'offre n'est plus postulable : statut non actif, ou date_limite dépassée.
+     * Ne pas se fier uniquement à `statut` — il ne passe à 'expiree' qu'une fois par jour
+     * via la commande planifiée `offres:expirer` (voir routes/console.php), donc entre le
+     * dépassement réel de la date et le prochain passage du cron, `statut` reste 'active'
+     * en base alors que l'offre a déjà dépassé sa date limite.
+     */
+    public function aExpire(): bool
+    {
+        // date_limite est un jour inclusif (comme offres:expirer : whereDate('date_limite', '<', today())) —
+        // l'offre reste valable jusqu'à la fin de ce jour-là, pas depuis son minuit.
+        return $this->statut !== 'active'
+            || ($this->date_limite !== null && $this->date_limite->lt(now()->startOfDay()));
+    }
+
     public function scopeRecente($query)
     {
         return $query->orderByDesc('created_at');
