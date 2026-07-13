@@ -615,7 +615,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'spatie.role:'.Role:
 
     // Abonnements & Plans
     Route::middleware('permission:'.Permission::MANAGE_ABONNEMENTS)->group(function () {
-        Route::get('/abonnements', [AdminAbonnement::class, 'index'])->name('abonnements');
+        Route::get('/abonnements',        [AdminAbonnement::class, 'index'])->name('abonnements');
+        Route::get('/abonnements/offrir', [AdminAbonnement::class, 'create'])->name('abonnements.create');
+        Route::post('/abonnements',       [AdminAbonnement::class, 'store'])->name('abonnements.store');
 
         Route::prefix('plans')->name('plans.')->group(function () {
             Route::get('/',                [AdminPlan::class, 'index'])->name('list');

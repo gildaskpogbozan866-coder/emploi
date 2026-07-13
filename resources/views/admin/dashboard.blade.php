@@ -31,6 +31,9 @@
     <p>Vue d'ensemble de la plateforme Emploi Bouge Bénin</p>
   </div>
   <div class="adm-topbar__right" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <a href="{{ route('admin.abonnements.create') }}" class="adm-btn adm-btn--primary adm-btn--sm">
+      + Offrir un abonnement
+    </a>
     @if($maintenanceMode)
       <form method="POST" action="{{ route('admin.parametres.maintenance.desactiver') }}">
         @csrf

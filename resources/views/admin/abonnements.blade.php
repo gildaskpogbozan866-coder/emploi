@@ -7,9 +7,14 @@
     <h1>Abonnements souscrits</h1>
     <p>Historique et suivi de tous les abonnements de la plateforme</p>
   </div>
-  <a href="{{ route('admin.plans.list') }}" class="adm-btn adm-btn--outline adm-btn--sm">
-    Gérer les plans →
-  </a>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a href="{{ route('admin.abonnements.create') }}" class="adm-btn adm-btn--primary adm-btn--sm">
+      + Offrir un abonnement
+    </a>
+    <a href="{{ route('admin.plans.list') }}" class="adm-btn adm-btn--outline adm-btn--sm">
+      Gérer les plans →
+    </a>
+  </div>
 </div>
 
 {{-- Stats --}}

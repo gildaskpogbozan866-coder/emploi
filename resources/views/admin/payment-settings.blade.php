@@ -112,6 +112,19 @@
             <p style="font-size:11.5px;color:#94a3b8;margin:4px 0 0">Laisser vide pour conserver la valeur actuelle.</p>
           </div>
 
+          {{-- Webhook secret (FedaPay uniquement) --}}
+          @if($key === 'fedapay')
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px">
+              Webhook secret <span style="font-size:11px;font-weight:400;color:#94a3b8">(signature des notifications)</span>
+            </label>
+            <input type="password" name="webhook_secret" autocomplete="new-password"
+                   placeholder="{{ $setting->webhook_secret ? '••••••••••••••••' : 'Secret généré lors de la création du webhook sur FedaPay' }}"
+                   style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;box-sizing:border-box">
+            <p style="font-size:11.5px;color:#94a3b8;margin:4px 0 0">Laisser vide pour conserver la valeur actuelle. À copier depuis le dashboard FedaPay (Développeurs → Webhooks) après création du webhook vers <code>/payment/webhook/fedapay</code>.</p>
+          </div>
+          @endif
+
         </div>
 
         <div style="margin-top:22px;display:flex;justify-content:flex-end">

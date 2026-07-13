@@ -26,11 +26,18 @@ class AbonnementActiveNotification extends Notification implements ShouldQueue
         $plan       = $abonnement->plan;
         $prenom     = $notifiable->prenom ?? 'Utilisateur';
         $isRecruteur = $notifiable->hasRole(Role::RECRUTEUR);
+        $isAnnonceur = $notifiable->hasRole(Role::ANNONCEUR);
 
-        $typeLabel  = $isRecruteur ? 'recruteur' : 'candidat';
-        $dashRoute  = $isRecruteur
-            ? route('recruteur.abonnement')
-            : route('candidat.abonnement');
+        $typeLabel  = match (true) {
+            $isRecruteur => 'recruteur',
+            $isAnnonceur => 'annonceur',
+            default      => 'candidat',
+        };
+        $dashRoute  = match (true) {
+            $isRecruteur => route('recruteur.abonnement'),
+            $isAnnonceur => route('annonceur.dashboard'),
+            default      => route('candidat.abonnement'),
+        };
 
         $finLabel = $abonnement->ends_at
             ? $abonnement->ends_at->format('d/m/Y')
