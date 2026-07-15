@@ -165,6 +165,11 @@
   margin-bottom: 10px;
 }
 .sdp-hero__pcard-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(24,95,165,.5); }
+.sdp-hero__pcard-wa-text {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  color: #25D366; font-size: 12.5px; font-weight: 700;
+  margin: 8px 0 0;
+}
 .sdp-hero__pcard-order {
   display: flex;
   align-items: center;
@@ -370,7 +375,9 @@
   transition: transform .18s;
 }
 .sdp-cta__btn:hover { transform: translateY(-2px); }
-.sdp-cta__btn--wa   { background: #185FA5; color: #fff; }
+.sdp-cta__btn--green-text:hover { transform: none; }
+.sdp-cta__btn--wa    { background: #185FA5; color: #fff; }
+.sdp-cta__btn--green-text { background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #16a34a; cursor: default; }
 .sdp-cta__btn--back { background: #fff; border: 1.5px solid #bfdbfe; color: #185FA5; }
 .sdp-cta__btn--back:hover { background: #ebf4fd; }
 
@@ -393,8 +400,8 @@
   .sdp-why-grid { grid-template-columns: 1fr; gap: 14px; }
   .sdp-cta { padding: 32px 0; }
   .sdp-cta__inner { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .sdp-cta__btns  { width: 100%; }
-  .sdp-cta__btn   { flex: 1; justify-content: center; }
+  .sdp-cta__btns  { width: 100%; flex-direction: column; }
+  .sdp-cta__btn   { width: 100%; justify-content: center; }
 }
 @media (max-width: 380px) {
   .sdp-hero__title { font-size: 1.4rem; }
@@ -501,6 +508,10 @@ $contactMailUrl     = 'mailto:contact@emploibougebenin.com?subject=' . $contactM
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           Nous écrire par email
         </a>
+        <p class="sdp-hero__pcard-wa-text">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.5 1.34 5.02L2 22l5.13-1.34A9.96 9.96 0 0012.04 22c5.52 0 10-4.48 10-10s-4.48-10-10-10zm0 18.2c-1.6 0-3.16-.43-4.52-1.24l-.32-.19-3.35.88.89-3.27-.21-.33a8.17 8.17 0 01-1.26-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.85 5.79 2.4a8.13 8.13 0 012.4 5.8c0 4.52-3.68 8.2-8.2 8.2zm4.5-6.14c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.16-.29.18-.53.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.24-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43-.14-.01-.31-.01-.47-.01-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05 0 1.2.88 2.37 1 2.53.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+          WhatsApp : +229 42 00 43 72
+        </p>
         @if($service->prix > 0)
         <a href="{{ route('service.commande', $service) }}" class="sdp-hero__pcard-order">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -646,6 +657,10 @@ $contactMailUrl     = 'mailto:contact@emploibougebenin.com?subject=' . $contactM
           <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           Email
         </a>
+        <span class="sdp-cta__btn sdp-cta__btn--green-text">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.5 1.34 5.02L2 22l5.13-1.34A9.96 9.96 0 0012.04 22c5.52 0 10-4.48 10-10s-4.48-10-10-10zm0 18.2c-1.6 0-3.16-.43-4.52-1.24l-.32-.19-3.35.88.89-3.27-.21-.33a8.17 8.17 0 01-1.26-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.85 5.79 2.4a8.13 8.13 0 012.4 5.8c0 4.52-3.68 8.2-8.2 8.2zm4.5-6.14c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.16-.29.18-.53.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.24-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43-.14-.01-.31-.01-.47-.01-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05 0 1.2.88 2.37 1 2.53.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+          WhatsApp : +229 42 00 43 72
+        </span>
         <a href="{{ route('service.list') }}" class="sdp-cta__btn sdp-cta__btn--back">
           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
           Tous les services
