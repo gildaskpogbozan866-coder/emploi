@@ -3,9 +3,9 @@
 
 @section('content')
 @php
-$waNumber  = \App\Models\ParametreApp::get('whatsapp_number', '22951929856');
-$waMessage = urlencode('Bonjour, je souhaite commander « ' . $service->nom . ' » mais j\'ai besoin d\'aide pour remplir le formulaire.');
-$waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
+$contactMailSubject = urlencode('Aide pour commander « ' . $service->nom . ' »');
+$contactMailBody    = urlencode('Bonjour, je souhaite commander « ' . $service->nom . ' » mais j\'ai besoin d\'aide pour remplir le formulaire.');
+$contactMailUrl     = 'mailto:contact@emploibougebenin.com?subject=' . $contactMailSubject . '&body=' . $contactMailBody;
 @endphp
 <style>
 .cmd-page {
@@ -110,21 +110,21 @@ $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
 }
 .cmd-wa-help {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  background: #e7f9f0; border: 1.5px solid #86efac;
+  background: #eaf3fb; border: 1.5px solid #93c5fd;
   border-radius: 12px; padding: 14px 18px;
   margin-bottom: 20px; flex-wrap: wrap;
 }
-.cmd-wa-help__text { font-size: 13px; line-height: 1.5; color: #166534; font-weight: 600; }
+.cmd-wa-help__text { font-size: 13px; line-height: 1.5; color: #185FA5; font-weight: 600; }
 .cmd-wa-help__btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: #22c55e; color: #fff;
+  background: #185FA5; color: #fff;
   padding: 10px 18px; border-radius: 10px;
   font-size: 13.5px; font-weight: 700;
   text-decoration: none; white-space: nowrap;
   transition: background .15s, transform .1s;
   flex-shrink: 0;
 }
-.cmd-wa-help__btn:hover { background: #16a34a; transform: translateY(-1px); }
+.cmd-wa-help__btn:hover { background: #124a80; transform: translateY(-1px); }
 .cmd-card__body {
   padding: 0 28px 24px;
   display: flex; flex-direction: column; gap: 20px;
@@ -299,10 +299,10 @@ $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
       Retour
     </a>
 
-    {{-- Aide WhatsApp --}}
+    {{-- Aide par email --}}
     <div class="cmd-wa-help">
       <span class="cmd-wa-help__text">
-        Nos conseillers vous aident sur WhatsApp à réaliser votre « {{ $service->nom }} »,
+        Nos conseillers vous aident par email à réaliser votre « {{ $service->nom }} »,
         @if(str_contains(strtolower($service->slug), 'cv'))
           même si vous n'avez jamais fait de CV. Il vous suffit de cliquer sur le bouton
         @else
@@ -314,9 +314,9 @@ $waUrl     = 'https://wa.me/' . $waNumber . '?text=' . $waMessage;
           — au prix du service.
         @endif
       </span>
-      <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="cmd-wa-help__btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Écrivez-nous sur WhatsApp
+      <a href="{{ $contactMailUrl }}" class="cmd-wa-help__btn">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        Écrivez-nous par email
       </a>
     </div>
 
